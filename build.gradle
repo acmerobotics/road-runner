@@ -1,0 +1,23 @@
+apply plugin: "idea"
+
+buildscript {
+    ext.kotlin_version = '1.2.41'
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+allprojects {
+    repositories {
+        jcenter() 
+    }
+}
+
+subprojects {
+    version = '1.0-SNAPSHOT'
+}
