@@ -13,7 +13,14 @@ object MotionProfileGenerator {
         epsilon: Double = 1e-6
     ): MotionProfile {
         if (goal.x < start.x) {
-            TODO()
+            return generateMotionProfile(
+                goal,
+                start,
+                velocityConstraints,
+                accelerationConstraints,
+                resolution,
+                epsilon
+            ).reversed()
         }
 
         val length = goal.x - start.x

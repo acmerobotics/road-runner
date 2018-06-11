@@ -13,4 +13,11 @@ class MotionProfile(private val segments: List<MotionSegment>) {
     }
 
     fun duration() = segments.map { it.dt }.sum()
+
+    fun reversed() = MotionProfile(segments.reversed().map {
+        MotionSegment(
+            MotionState(it.start.x, -it.start.v, -it.start.a),
+            it.dt
+        )
+    })
 }
