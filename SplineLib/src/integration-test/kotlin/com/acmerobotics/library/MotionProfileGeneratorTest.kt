@@ -36,9 +36,9 @@ class MotionProfileGeneratorTest {
     }
 
     @Test
-    fun testSimpleTriangleProfile() {
+    fun testSimpleTriangle() {
         saveMotionProfileGraph(
-            "simpleTriangleProfile",
+            "simpleTriangle",
             MotionProfileGenerator.generateSimpleMotionProfile(
                 MotionState(0.0, 0.0, 0.0),
                 MotionState(10.0, 0.0, 0.0),
@@ -49,9 +49,9 @@ class MotionProfileGeneratorTest {
     }
 
     @Test
-    fun testSimpleTrapProfile() {
+    fun testSimpleTrap() {
         saveMotionProfileGraph(
-            "simpleTrapProfile",
+            "simpleTrap",
             MotionProfileGenerator.generateSimpleMotionProfile(
                 MotionState(0.0, 0.0, 0.0),
                 MotionState(10.0, 0.0, 0.0),
@@ -68,6 +68,32 @@ class MotionProfileGeneratorTest {
             MotionProfileGenerator.generateSimpleMotionProfile(
                 MotionState(5.0, 0.0, 0.0),
                 MotionState(15.0, 0.0, 0.0),
+                1000.0,
+                5.0
+            )
+        )
+    }
+
+    @Test
+    fun testSimpleTriangleReversed() {
+        saveMotionProfileGraph(
+            "simpleTriangleReversed",
+            MotionProfileGenerator.generateSimpleMotionProfile(
+                MotionState(10.0, 0.0, 0.0),
+                MotionState(0.0, 0.0, 0.0),
+                1000.0,
+                5.0
+            )
+        )
+    }
+
+    @Test
+    fun testSimpleTriangleStartingOffsetReversed() {
+        saveMotionProfileGraph(
+            "simpleTriangleStartingOffsetReversed",
+            MotionProfileGenerator.generateSimpleMotionProfile(
+                MotionState(15.0, 0.0, 0.0),
+                MotionState(5.0, 0.0, 0.0),
                 1000.0,
                 5.0
             )
