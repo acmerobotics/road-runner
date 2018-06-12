@@ -11,14 +11,23 @@ import java.io.File
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class MotionProfileGeneratorTest {
     companion object {
-        private const val GRAPH_DIR = "./graph/"
+        private const val GRAPH_DIR = "./graphs/"
         private const val GRAPH_DPI = 300
 
         fun saveMotionProfileGraph(name: String, profile: MotionProfile, resolution: Int = 1000) {
-            val xData = (0..resolution).map { it / resolution.toDouble() * profile.duration() }
-            val yData = xData.map { profile[it].v }
+            val timeData = (0..resolution).map { it / resolution.toDouble() * profile.duration() }.toDoubleArray()
+            val positionData = timeData.map { profile[it].x }.toDoubleArray()
+            val velocityData = timeData.map { profile[it].v }.toDoubleArray()
+            val accelerationData = timeData.map { profile[it].a }.toDoubleArray()
 
-            val graph = QuickChart.getChart(name, "time (s)", "", "v(t)", xData, yData)
+            val graph = QuickChart.getChart(
+                name,
+                "time (s)",
+                "",
+                arrayOf("x(t)", "v(t)", "a(t)"),
+                timeData,
+                arrayOf(positionData, velocityData, accelerationData)
+            )
 
             File(GRAPH_DIR).mkdirs()
 
@@ -27,14 +36,41 @@ class MotionProfileGeneratorTest {
     }
 
     @Test
-    fun test() {
-        val profile = MotionProfileGenerator.generateMotionProfile(
-            MotionState(5.0, 0.0, 0.0),
-            MotionState(25.0, 5.0, 0.0),
-            { _ -> 10.0 },
-            { _ -> 5.0 },
-            4
+    fun testSimpleTriangleProfile() {
+        saveMotionProfileGraph(
+            "simpleTriangleProfile",
+            MotionProfileGenerator.generateSimpleMotionProfile(
+                MotionState(0.0, 0.0, 0.0),
+                MotionState(10.0, 0.0, 0.0),
+                1000.0,
+                5.0
+            )
         )
-        saveMotionProfileGraph("test", profile)
+    }
+
+    @Test
+    fun testSimpleTrapProfile() {
+        saveMotionProfileGraph(
+            "simpleTrapProfile",
+            MotionProfileGenerator.generateSimpleMotionProfile(
+                MotionState(0.0, 0.0, 0.0),
+                MotionState(10.0, 0.0, 0.0),
+                5.0,
+                5.0
+            )
+        )
+    }
+
+    @Test
+    fun testSimpleTriangleStartingOffset() {
+        saveMotionProfileGraph(
+            "simpleTriangleStartingOffset",
+            MotionProfileGenerator.generateSimpleMotionProfile(
+                MotionState(5.0, 0.0, 0.0),
+                MotionState(15.0, 0.0, 0.0),
+                1000.0,
+                5.0
+            )
+        )
     }
 }

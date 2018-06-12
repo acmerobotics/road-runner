@@ -10,4 +10,4 @@ out
 *.ipr
 *.iws
 .DS_STORE
-graph
+graphs
