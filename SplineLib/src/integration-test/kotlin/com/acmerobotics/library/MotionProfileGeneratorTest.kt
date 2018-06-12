@@ -6,6 +6,8 @@ import org.knowm.xchart.BitmapEncoder
 import org.knowm.xchart.BitmapEncoder.BitmapFormat
 import org.knowm.xchart.QuickChart
 import java.io.File
+import java.lang.Math.min
+import java.lang.Math.pow
 
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -96,6 +98,45 @@ class MotionProfileGeneratorTest {
                 MotionState(5.0, 0.0, 0.0),
                 1000.0,
                 5.0
+            )
+        )
+    }
+
+    @Test
+    fun testComplex() {
+        saveMotionProfileGraph(
+            "complex",
+            MotionProfileGenerator.generateMotionProfile(
+                MotionState(0.0, 0.0, 0.0),
+                MotionState(10.0, 0.0, 0.0),
+                { pow(it - 5.0, 4.0) + 1},
+                { 5.0 }
+            )
+        )
+    }
+
+    @Test
+    fun testComplex2() {
+        saveMotionProfileGraph(
+            "complex2",
+            MotionProfileGenerator.generateMotionProfile(
+                MotionState(0.0, 0.0, 0.0),
+                MotionState(10.0, 0.0, 0.0),
+                { pow(it - 5.0, 4.0) + 1},
+                { min(pow(it - 5.0, 4.0) + 1, 10.0) }
+            )
+        )
+    }
+
+    @Test
+    fun testComplex2Reversed() {
+        saveMotionProfileGraph(
+            "complex2Reversed",
+            MotionProfileGenerator.generateMotionProfile(
+                MotionState(10.0, 0.0, 0.0),
+                MotionState(0.0, 0.0, 0.0),
+                { pow(it - 5.0, 4.0) + 1},
+                { min(pow(it - 5.0, 4.0) + 1, 10.0) }
             )
         )
     }

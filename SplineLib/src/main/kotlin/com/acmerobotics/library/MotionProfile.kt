@@ -1,8 +1,8 @@
 package com.acmerobotics.library
 
-class MotionProfile(private val segments: List<MotionSegment>) {
+class MotionProfile(private val segments: List<MotionSegment>, private val reversed: Boolean = false) {
     operator fun get(t: Double): MotionState {
-        var remainingTime = t
+        var remainingTime = if (reversed) duration() - t else t
         for (segment in segments) {
             if (remainingTime <= segment.dt) {
                 return segment[remainingTime]
@@ -14,5 +14,5 @@ class MotionProfile(private val segments: List<MotionSegment>) {
 
     fun duration() = segments.map { it.dt }.sum()
 
-    fun reversed() = MotionProfile(segments.map { it.reversed() }.reversed())
+    fun reversed() = MotionProfile(segments, !reversed)
 }

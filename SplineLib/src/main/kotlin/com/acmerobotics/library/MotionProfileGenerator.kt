@@ -4,21 +4,21 @@ import kotlin.math.abs
 import kotlin.math.sqrt
 
 object MotionProfileGenerator {
+    const val EPSILON = 1e-6
+
     fun generateSimpleMotionProfile(
         start: MotionState,
         goal: MotionState,
         maximumVelocity: Double,
-        maximumAcceleration: Double,
-        epsilon: Double = 1e-6
-    ): MotionProfile = generateMotionProfile(start, goal, { maximumVelocity }, { maximumAcceleration }, 1, epsilon)
+        maximumAcceleration: Double
+    ): MotionProfile = generateMotionProfile(start, goal, { maximumVelocity }, { maximumAcceleration }, 1)
 
     fun generateMotionProfile(
         start: MotionState,
         goal: MotionState,
         maximumVelocity: (displacement: Double) -> Double,
         maximumAcceleration: (displacement: Double) -> Double,
-        resolution: Int = 250,
-        epsilon: Double = 1e-6
+        resolution: Int = 250
     ): MotionProfile {
         if (goal.x < start.x) {
             return generateMotionProfile(
@@ -26,8 +26,7 @@ object MotionProfileGenerator {
                 start,
                 maximumVelocity,
                 maximumAcceleration,
-                resolution,
-                epsilon
+                resolution
             ).reversed()
         }
 
@@ -67,7 +66,7 @@ object MotionProfileGenerator {
             var (forwardStartState, forwardDx) = forwardStates[i]
             var (backwardStartState, backwardDx) = backwardStates[j]
 
-            if (abs(forwardDx - backwardDx) > epsilon) {
+            if (abs(forwardDx - backwardDx) > EPSILON) {
                 if (forwardDx < backwardDx) {
                     backwardStates.add(
                         j + 1,
@@ -119,8 +118,9 @@ object MotionProfileGenerator {
 
         val motionSegments = mutableListOf<MotionSegment>()
         for ((state, stateDx) in finalStates) {
-            val dt = if (abs(state.a) > epsilon) {
-                (sqrt(state.v * state.v + 2 * state.a * stateDx) - state.v) / state.a
+            val dt = if (abs(state.a) > EPSILON) {
+                val discriminant = state.v * state.v + 2 * state.a * stateDx
+                ((if (abs(discriminant) < EPSILON) 0.0 else sqrt(discriminant)) - state.v) / state.a
             } else {
                 stateDx / state.v
             }
