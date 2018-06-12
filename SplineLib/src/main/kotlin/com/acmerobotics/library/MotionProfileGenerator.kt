@@ -4,11 +4,19 @@ import kotlin.math.abs
 import kotlin.math.sqrt
 
 object MotionProfileGenerator {
+    fun generateSimpleMotionProfile(
+        start: MotionState,
+        goal: MotionState,
+        maximumVelocity: Double,
+        maximumAcceleration: Double,
+        epsilon: Double = 1e-6
+    ): MotionProfile = generateMotionProfile(start, goal, { maximumVelocity }, { maximumAcceleration }, 1, epsilon)
+
     fun generateMotionProfile(
         start: MotionState,
         goal: MotionState,
-        velocityConstraints: (displacement: Double) -> Double,
-        accelerationConstraints: (displacement: Double) -> Double,
+        maximumVelocity: (displacement: Double) -> Double,
+        maximumAcceleration: (displacement: Double) -> Double,
         resolution: Int = 250,
         epsilon: Double = 1e-6
     ): MotionProfile {
@@ -16,8 +24,8 @@ object MotionProfileGenerator {
             return generateMotionProfile(
                 goal,
                 start,
-                velocityConstraints,
-                accelerationConstraints,
+                maximumVelocity,
+                maximumAcceleration,
                 resolution,
                 epsilon
             ).reversed()
@@ -28,8 +36,8 @@ object MotionProfileGenerator {
 
         val forwardStates = forwardPass(
             MotionState(0.0, start.v, start.a),
-            { velocityConstraints(start.x + it) },
-            { accelerationConstraints(start.x + it) },
+            { maximumVelocity(start.x + it) },
+            { maximumAcceleration(start.x + it) },
             resolution,
             dx
         ).map { (motionState, dx) -> Pair(MotionState(motionState.x + start.x, motionState.v, motionState.a), dx) }
@@ -37,8 +45,8 @@ object MotionProfileGenerator {
 
         val backwardStates = forwardPass(
             MotionState(0.0, goal.v, goal.a),
-            { velocityConstraints(goal.x - it) },
-            { accelerationConstraints(goal.x - it) },
+            { maximumVelocity(goal.x - it) },
+            { maximumAcceleration(goal.x - it) },
             resolution,
             dx
         ).map { (motionState, dx) -> Pair(motionState.afterDisplacement(dx), dx) }.map { (motionState, dx) ->
@@ -119,21 +127,13 @@ object MotionProfileGenerator {
             motionSegments.add(MotionSegment(state, dt))
         }
 
-        println(forwardStates.joinToString("\n"))
-        println()
-        println(backwardStates.joinToString("\n"))
-        println()
-        println(finalStates.joinToString("\n"))
-        println()
-        println(motionSegments.joinToString("\n"))
-
         return MotionProfile(motionSegments)
     }
 
     private fun forwardPass(
         start: MotionState,
-        velocityConstraints: (displacement: Double) -> Double,
-        accelerationConstraints: (displacement: Double) -> Double,
+        maximumVelocity: (displacement: Double) -> Double,
+        maximumAcceleration: (displacement: Double) -> Double,
         resolution: Int,
         dx: Double
     ): List<Pair<MotionState, Double>> {
@@ -143,24 +143,24 @@ object MotionProfileGenerator {
 
         var lastState = start
         for (displacement in displacements) {
-            val maximumVelocity = velocityConstraints(displacement)
-            val maximumAcceleration = accelerationConstraints(displacement)
+            val maxVel = maximumVelocity(displacement)
+            val maxAccel = maximumAcceleration(displacement)
 
-            lastState = if (lastState.v >= maximumVelocity) {
-                val state = MotionState(displacement, maximumVelocity, 0.0)
+            lastState = if (lastState.v >= maxVel) {
+                val state = MotionState(displacement, maxVel, 0.0)
                 forwardStates.add(Pair(state, dx))
                 state.afterDisplacement(dx)
             } else {
-                val desiredVelocity = sqrt(lastState.v * lastState.v + 2 * maximumAcceleration * dx)
-                if (desiredVelocity <= maximumVelocity) {
-                    val state = MotionState(displacement, lastState.v, maximumAcceleration)
+                val desiredVelocity = sqrt(lastState.v * lastState.v + 2 * maxAccel * dx)
+                if (desiredVelocity <= maxVel) {
+                    val state = MotionState(displacement, lastState.v, maxAccel)
                     forwardStates.add(Pair(state, dx))
                     state.afterDisplacement(dx)
                 } else {
                     val accelDx =
-                        (maximumVelocity * maximumVelocity - lastState.v * lastState.v) / (2 * maximumAcceleration)
-                    val accelState = MotionState(displacement, lastState.v, maximumAcceleration)
-                    val coastState = MotionState(displacement + accelDx, maximumVelocity, 0.0)
+                        (maxVel * maxVel - lastState.v * lastState.v) / (2 * maxAccel)
+                    val accelState = MotionState(displacement, lastState.v, maxAccel)
+                    val coastState = MotionState(displacement + accelDx, maxVel, 0.0)
                     forwardStates.add(Pair(accelState, accelDx))
                     forwardStates.add(Pair(coastState, dx - accelDx))
                     coastState.afterDisplacement(dx - accelDx)
