@@ -8,20 +8,12 @@
     <em>most HTML tags may be used</em>
     ]]></description>
 
-    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
-         on how to target different products -->
-    <!-- uncomment to enable plugin in all products
-    <depends>com.intellij.modules.lang</depends>
-    -->
+    <depends>com.intellij.modules.androidstudio</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <!-- Add your extensions here -->
+            <toolWindow id="My Sample Tool Window" anchor="right" factoryClass="com.acmerobotics.plugin.TestToolWindowFactory"/>
     </extensions>
 
     <actions>
-        <group id="Plugin.SampleMenu" text="Greeting" description="Greeting menu">
-            <add-to-group group-id="MainMenu" anchor="last"/>
-            <action id="Plugin.Textboxes" class="HelloAction" text="Hello" description="Says hello"/>
-        </group>
     </actions>
 </idea-plugin>

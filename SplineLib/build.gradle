@@ -4,6 +4,12 @@ repositories {
     mavenCentral()
 }
 
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
 sourceSets {
     integrationTest {
         java {
@@ -21,7 +27,7 @@ configurations {
 }
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 
     integrationTestCompile("org.junit.jupiter:junit-jupiter-api:5.2.0")
     integrationTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.2.0")
