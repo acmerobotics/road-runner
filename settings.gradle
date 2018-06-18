@@ -1,2 +1,4 @@
 rootProject.name = 'motion-planner'
 include ':SplineLib'
+include 'Plugin'
+

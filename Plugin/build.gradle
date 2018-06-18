@@ -1,0 +1,31 @@
+plugins {
+    id 'org.jetbrains.intellij' version '0.3.4'
+}
+
+apply plugin: "kotlin"
+apply plugin: "org.jetbrains.intellij"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib"
+}
+
+intellij {
+    version '2018.1.5'
+    pluginName 'spline-plugin'
+    plugins 'android'
+    updateSinceUntilBuild false
+    alternativeIdePath "/Applications/Android Studio.app/Contents/"
+}
+
+group 'com.acmerobotics'
+version '0.1-SNAPSHOT'
+
+patchPluginXml {
+    changeNotes """
+      Add change notes here.<br>
+      <em>most HTML tags may be used</em>"""
+}
