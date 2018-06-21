@@ -1,6 +1,13 @@
 package com.acmerobotics.library
 
-class HolonomicPath(private val path: Path, private val headingInterpolator: HeadingInterpolator) {
+class HolonomicPath(
+    private val path: Path,
+    private val headingInterpolator: HeadingInterpolator = TangentInterpolator()
+) {
+    init {
+        headingInterpolator.init(path)
+    }
+
     operator fun get(displacement: Double): Pose2d {
         val pos = path[displacement]
         val heading = headingInterpolator[displacement]
