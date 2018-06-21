@@ -1,9 +1,15 @@
 package com.acmerobotics.library
 
-import kotlin.math.abs
 import kotlin.math.sqrt
 
-class BezierSplineSegment(private val p0: Vector2d, private val p1: Vector2d, private val p2: Vector2d, private val p3: Vector2d, private val p4: Vector2d, private val p5: Vector2d) {
+class BezierSplineSegment(
+    private val p0: Vector2d,
+    private val p1: Vector2d,
+    private val p2: Vector2d,
+    private val p3: Vector2d,
+    private val p4: Vector2d,
+    private val p5: Vector2d
+) : Path() {
     companion object {
         private const val LENGTH_SAMPLES = 1000
 
@@ -21,33 +27,35 @@ class BezierSplineSegment(private val p0: Vector2d, private val p1: Vector2d, pr
         }
     }
 
-    val length by lazy { computeLength(LENGTH_SAMPLES) }
+    private val length by lazy { computeLength(LENGTH_SAMPLES) }
 
-    operator fun get(t: Double): Vector2d {
+    override fun length() = length
+
+    override operator fun get(displacement: Double): Vector2d {
+        val t = displacement / length
         val s = 1.0 - t
         return (s * p0 + 5.0 * t * p1) * s * s * s * s +
                 10.0 * (s * p2 + t * p3) * s * s * t * t +
                 (5.0 * s * p4 + t * p5) * t * t * t * t
     }
 
-    fun deriv(t: Double): Vector2d {
+    override fun deriv(displacement: Double): Vector2d {
+        val t = displacement / length
         val s = 1.0 - t
         return 5.0 * ((s * (p1 - p0) + 4.0 * t * (p2 - p1)) * s * s * s +
                 (6.0 * s * (p3 - p2) + 4.0 * t * (p4 - p3)) * s * t * t +
                 t * t * t * t * (p5 - p4))
     }
 
-    fun secondDeriv(t: Double): Vector2d {
+    override fun secondDeriv(displacement: Double): Vector2d {
+        val t = displacement / length
         val s = 1.0 - t
         return 20.0 * ((s * (p2 - 2.0 * p1 + p0) + 3.0 * t * (p3 - 2.0 * p2 + p1)) * s * s +
                 (3.0 * s * (p4 - 2.0 * p3 + p2) + t * (p5 - 2.0 * p4 + p3)) * t * t)
     }
 
-    fun curvature(t: Double): Double {
-        val deriv = deriv(t)
-        val secondDeriv = secondDeriv(t)
-        val norm = deriv.norm()
-        return abs(deriv.x * secondDeriv.y - deriv.y * secondDeriv.x) / (norm * norm * norm)
+    override fun thirdDeriv(displacement: Double): Vector2d {
+        TODO()
     }
 
     private fun computeLength(samples: Int): Double {
