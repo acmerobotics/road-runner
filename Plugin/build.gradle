@@ -1,3 +1,5 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
 plugins {
     id 'org.jetbrains.intellij' version '0.3.4'
 }
@@ -16,6 +18,7 @@ compileKotlin {
 }
 
 dependencies {
+    compile project(':SplineLib')
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 }
 
@@ -24,7 +27,11 @@ intellij {
     pluginName 'spline-plugin'
     plugins 'android'
     updateSinceUntilBuild false
-    alternativeIdePath "/Applications/Android Studio.app/Contents/"
+    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        alternativeIdePath "C:\\Program Files\\Android\\Android Studio"
+    } else {
+        alternativeIdePath "/Applications/Android Studio.app/Contents/"
+    }
 }
 
 group 'com.acmerobotics'
