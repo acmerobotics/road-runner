@@ -5,9 +5,9 @@ import org.apache.commons.math3.linear.MatrixUtils
 import org.apache.commons.math3.linear.RealMatrix
 import kotlin.math.sqrt
 
-class SplineSegment(val start: Waypoint, val end: Waypoint) : Path() {
-    private val coeffX: RealMatrix
-    private val coeffY: RealMatrix
+class SplineSegment(start: Waypoint, end: Waypoint) : Path() {
+    val coeffX: RealMatrix
+    val coeffY: RealMatrix
 
     companion object {
         private val COEFF_MATRIX = MatrixUtils.createRealMatrix(
@@ -128,9 +128,9 @@ class SplineSegment(val start: Waypoint, val end: Waypoint) : Path() {
 
     override operator fun get(displacement: Double) = internalGet(displacement / length)
 
-    override fun deriv(displacement: Double) = internalDeriv(displacement / length)
+    override fun deriv(displacement: Double) = internalDeriv(displacement / length) / length
 
-    override fun secondDeriv(displacement: Double) = internalSecondDeriv(displacement / length)
+    override fun secondDeriv(displacement: Double) = internalSecondDeriv(displacement / length) / (length * length)
 
-    override fun thirdDeriv(displacement: Double) = internalThirdDeriv(displacement / length)
+    override fun thirdDeriv(displacement: Double) = internalThirdDeriv(displacement / length) / (length * length * length)
 }
