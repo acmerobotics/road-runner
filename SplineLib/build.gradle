@@ -27,12 +27,14 @@ configurations {
 }
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 
-    integrationTestCompile("org.junit.jupiter:junit-jupiter-api:5.2.0")
-    integrationTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.2.0")
+    implementation "org.apache.commons:commons-math3:3.6.1"
 
-    integrationTestCompile("org.knowm.xchart:xchart:3.5.2")
+    integrationTestImplementation "org.junit.jupiter:junit-jupiter-api:5.2.0"
+    integrationTestRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.2.0"
+
+    integrationTestImplementation "org.knowm.xchart:xchart:3.5.2"
 }
 
 task integrationTest(type: Test) {
