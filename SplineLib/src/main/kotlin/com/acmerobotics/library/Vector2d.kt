@@ -1,9 +1,9 @@
 package com.acmerobotics.library
 
-import kotlin.math.hypot
+import kotlin.math.sqrt
 
 class Vector2d(val x: Double, val y: Double) {
-    fun norm() = hypot(x, y)
+    fun norm() = sqrt(x*x + y*y)
     operator fun plus(other: Vector2d) = Vector2d(x + other.x, y + other.y)
     operator fun minus(other: Vector2d) = Vector2d(x - other.x, y - other.y)
     operator fun times(scalar: Double) = Vector2d(scalar * x, scalar * y)

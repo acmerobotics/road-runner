@@ -2,12 +2,22 @@ package com.acmerobotics.library
 
 import org.apache.commons.math3.linear.LUDecomposition
 import org.apache.commons.math3.linear.MatrixUtils
-import org.apache.commons.math3.linear.RealMatrix
 import kotlin.math.sqrt
 
 class SplineSegment(start: Waypoint, end: Waypoint) : Path() {
-    val coeffX: RealMatrix
-    val coeffY: RealMatrix
+    private val ax: Double
+    private val bx: Double
+    private val cx: Double
+    private val dx: Double
+    private val ex: Double
+    private val fx: Double
+
+    private val ay: Double
+    private val by: Double
+    private val cy: Double
+    private val dy: Double
+    private val ey: Double
+    private val fy: Double
 
     companion object {
         private val COEFF_MATRIX = MatrixUtils.createRealMatrix(
@@ -32,79 +42,45 @@ class SplineSegment(start: Waypoint, end: Waypoint) : Path() {
                 .transpose()
 
         val solver = LUDecomposition(COEFF_MATRIX).solver
-        coeffX = solver.solve(targetX)
-        coeffY = solver.solve(targetY)
+        val coeffX = solver.solve(targetX)
+        val coeffY = solver.solve(targetY)
+
+        fx = coeffX.getEntry(0, 0)
+        ex = coeffX.getEntry(1, 0)
+        dx = coeffX.getEntry(2, 0)
+        cx = coeffX.getEntry(3, 0)
+        bx = coeffX.getEntry(4, 0)
+        ax = coeffX.getEntry(5, 0)
+
+        fy = coeffY.getEntry(0, 0)
+        ey = coeffY.getEntry(1, 0)
+        dy = coeffY.getEntry(2, 0)
+        cy = coeffY.getEntry(3, 0)
+        by = coeffY.getEntry(4, 0)
+        ay = coeffY.getEntry(5, 0)
     }
 
     private fun internalGet(t: Double): Vector2d {
-        val basis = MatrixUtils.createRealMatrix(
-            arrayOf(
-                doubleArrayOf(
-                    1.0,
-                    t,
-                    t * t,
-                    t * t * t,
-                    t * t * t * t,
-                    t * t * t * t * t
-                )
-            )
-        )
-        val x = basis.multiply(coeffX).getEntry(0, 0)
-        val y = basis.multiply(coeffY).getEntry(0, 0)
+        val x = (ax*t + bx) * (t*t*t*t) + cx * (t*t*t) + dx * (t*t) + ex * t + fx
+        val y = (ay*t + by) * (t*t*t*t) + cy * (t*t*t) + dy * (t*t) + ey * t + fy
         return Vector2d(x, y)
     }
 
     private fun internalDeriv(t: Double): Vector2d {
-        val basis = MatrixUtils.createRealMatrix(
-            arrayOf(
-                doubleArrayOf(
-                    0.0,
-                    1.0,
-                    2.0 * t,
-                    3.0 * t * t,
-                    4.0 * t * t * t,
-                    5.0 * t * t * t * t
-                )
-            )
-        )
-        val x = basis.multiply(coeffX).getEntry(0, 0)
-        val y = basis.multiply(coeffY).getEntry(0, 0)
+        val x = (5*ax*t + 4*bx) * (t*t*t) + (3*cx*t + 2*dx) * t + ex
+        val y = (5*ay*t + 4*by) * (t*t*t) + (3*cy*t + 2*dy) * t + ey
         return Vector2d(x, y)
     }
 
     private fun internalSecondDeriv(t: Double): Vector2d {
-        val basis = MatrixUtils.createRealMatrix(
-            arrayOf(
-                doubleArrayOf(
-                    0.0,
-                    0.0,
-                    2.0,
-                    6.0 * t,
-                    12.0 * t * t,
-                    20.0 * t * t * t
-                )
-            )
-        )
-        val x = basis.multiply(coeffX).getEntry(0, 0)
-        val y = basis.multiply(coeffY).getEntry(0, 0)
+        val x = (20*ax*t + 12*bx) * (t*t) + 6*cx * t + 2*dx
+        val y = (20*ay*t + 12*by) * (t*t) + 6*cy * t + 2*dy
         return Vector2d(x, y)
     }
 
     private fun internalThirdDeriv(t: Double): Vector2d {
-        val basis = MatrixUtils.createRealMatrix(
-            arrayOf(
-                doubleArrayOf(
-                    0.0,
-                    0.0,
-                    0.0,
-                    6.0,
-                    24.0 * t,
-                    60.0 * t * t
-                )
-            )
-        )
-        val x = basis.multiply(coeffX).getEntry(0, 0)
-        val y = basis.multiply(coeffY).getEntry(0, 0)
+        val x = (60*ax*t + 24*bx) * t + 6*cx
+        val y = (60*ay*t + 24*by) * t + 6*cy
         return Vector2d(x, y)
     }
 

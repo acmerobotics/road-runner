@@ -16,19 +16,28 @@ class MotionProfileGeneratorTest {
         private const val GRAPH_DIR = "./graphs/"
         private const val GRAPH_DPI = 300
 
-        fun saveMotionProfileGraph(name: String, profile: MotionProfile, resolution: Int = 1000) {
+        fun saveMotionProfileGraph(name: String, profile: MotionProfile, includeAcceleration: Boolean = true, resolution: Int = 1000) {
             val timeData = (0..resolution).map { it / resolution.toDouble() * profile.duration() }.toDoubleArray()
             val positionData = timeData.map { profile[it].x }.toDoubleArray()
             val velocityData = timeData.map { profile[it].v }.toDoubleArray()
-            val accelerationData = timeData.map { profile[it].a }.toDoubleArray()
+
+            val labels = mutableListOf("x(t)", "v(t)")
+            val data = mutableListOf(positionData, velocityData)
+
+            if (includeAcceleration) {
+                val accelerationData = timeData.map { profile[it].a }.toDoubleArray()
+
+                labels.add("a(t)")
+                data.add(accelerationData)
+            }
 
             val graph = QuickChart.getChart(
                 name,
-                "time (s)",
+                "time (sec)",
                 "",
-                arrayOf("x(t)", "v(t)", "a(t)"),
+                labels.toTypedArray(),
                 timeData,
-                arrayOf(positionData, velocityData, accelerationData)
+                data.toTypedArray()
             )
 
             File(GRAPH_DIR).mkdirs()
