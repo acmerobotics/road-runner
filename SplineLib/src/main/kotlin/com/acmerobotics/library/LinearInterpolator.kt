@@ -1,10 +1,13 @@
 package com.acmerobotics.library
 
-class LinearInterpolator(private val path: Path) : HeadingInterpolator {
-    private val startAngle: Double
-    private val rotAngle: Double
+class LinearInterpolator : HeadingInterpolator {
+    private lateinit var path: Path
+    private var startAngle: Double = 0.0
+    private var rotAngle: Double = 0.0
 
-    init {
+    override fun init(path: Path) {
+        this.path = path
+
         val startDeriv = path.deriv(0.0)
         val endDeriv = path.deriv(path.length())
 
