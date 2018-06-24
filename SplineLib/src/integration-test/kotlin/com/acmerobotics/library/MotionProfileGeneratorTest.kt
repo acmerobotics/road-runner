@@ -118,8 +118,10 @@ class MotionProfileGeneratorTest {
             MotionProfileGenerator.generateMotionProfile(
                 MotionState(0.0, 0.0, 0.0),
                 MotionState(10.0, 0.0, 0.0),
-                { pow(it - 5.0, 4.0) + 1},
-                { 5.0 }
+                object : MotionConstraints {
+                    override fun maximumVelocity(displacement: Double) = pow(displacement - 5.0, 4.0) + 1.0
+                    override fun maximumAcceleration(displacement: Double) = 5.0
+                }
             )
         )
     }
@@ -131,8 +133,10 @@ class MotionProfileGeneratorTest {
             MotionProfileGenerator.generateMotionProfile(
                 MotionState(0.0, 0.0, 0.0),
                 MotionState(10.0, 0.0, 0.0),
-                { pow(it - 5.0, 4.0) + 1},
-                { min(pow(it - 5.0, 4.0) + 1, 10.0) }
+                object : MotionConstraints {
+                    override fun maximumVelocity(displacement: Double) = pow(displacement - 5.0, 4.0) + 1.0
+                    override fun maximumAcceleration(displacement: Double) = min(pow(displacement - 5.0, 4.0) + 1.0, 10.0)
+                }
             )
         )
     }
@@ -144,8 +148,10 @@ class MotionProfileGeneratorTest {
             MotionProfileGenerator.generateMotionProfile(
                 MotionState(10.0, 0.0, 0.0),
                 MotionState(0.0, 0.0, 0.0),
-                { pow(it - 5.0, 4.0) + 1},
-                { min(pow(it - 5.0, 4.0) + 1, 10.0) }
+                object : MotionConstraints {
+                    override fun maximumVelocity(displacement: Double) = pow(displacement - 5.0, 4.0) + 1.0
+                    override fun maximumAcceleration(displacement: Double) = min(pow(displacement - 5.0, 4.0) + 1.0, 10.0)
+                }
             )
         )
     }

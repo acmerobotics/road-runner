@@ -9,7 +9,7 @@ class MotionProfile(private val segments: List<MotionSegment>) {
             }
             remainingTime -= segment.dt
         }
-        throw RuntimeException() // TODO
+        return segments.last().end() // TODO: compare w/RuntimeExceptions for other methods like this
     }
 
     fun duration() = segments.map { it.dt }.sum()
