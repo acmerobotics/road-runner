@@ -11,21 +11,19 @@ object MotionProfileGenerator {
         goal: MotionState,
         maximumVelocity: Double,
         maximumAcceleration: Double
-    ): MotionProfile = generateMotionProfile(start, goal, { maximumVelocity }, { maximumAcceleration }, 1)
+    ): MotionProfile = generateMotionProfile(start, goal, SimpleMotionConstraints(maximumVelocity, maximumAcceleration), 1)
 
     fun generateMotionProfile(
         start: MotionState,
         goal: MotionState,
-        maximumVelocity: (displacement: Double) -> Double,
-        maximumAcceleration: (displacement: Double) -> Double,
+        constraints: MotionConstraints,
         resolution: Int = 250
     ): MotionProfile {
         if (goal.x < start.x) {
             return generateMotionProfile(
                 goal,
                 start,
-                maximumVelocity,
-                maximumAcceleration,
+                constraints,
                 resolution
             ).reversed()
         }
@@ -35,8 +33,8 @@ object MotionProfileGenerator {
 
         val forwardStates = forwardPass(
             MotionState(0.0, start.v, start.a),
-            { maximumVelocity(start.x + it) },
-            { maximumAcceleration(start.x + it) },
+            { constraints.maximumVelocity(start.x + it) },
+            { constraints.maximumAcceleration(start.x + it) },
             resolution,
             dx
         ).map { (motionState, dx) -> Pair(MotionState(motionState.x + start.x, motionState.v, motionState.a), dx) }
@@ -44,8 +42,8 @@ object MotionProfileGenerator {
 
         val backwardStates = forwardPass(
             MotionState(0.0, goal.v, goal.a),
-            { maximumVelocity(goal.x - it) },
-            { maximumAcceleration(goal.x - it) },
+            { constraints.maximumVelocity(goal.x - it) },
+            { constraints.maximumAcceleration(goal.x - it) },
             resolution,
             dx
         ).map { (motionState, dx) -> Pair(motionState.afterDisplacement(dx), dx) }.map { (motionState, dx) ->
@@ -130,6 +128,7 @@ object MotionProfileGenerator {
         return MotionProfile(motionSegments)
     }
 
+    // TODO: consider using MotionConstraints instead of maxVel and maxAccel to match the public interface
     private fun forwardPass(
         start: MotionState,
         maximumVelocity: (displacement: Double) -> Double,
