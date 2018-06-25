@@ -2,53 +2,15 @@ package com.acmerobotics.library
 
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import org.knowm.xchart.BitmapEncoder
-import org.knowm.xchart.BitmapEncoder.BitmapFormat
-import org.knowm.xchart.QuickChart
-import java.io.File
 import java.lang.Math.min
 import java.lang.Math.pow
 
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class MotionProfileGeneratorTest {
-    companion object {
-        private const val GRAPH_DIR = "./graphs/"
-        private const val GRAPH_DPI = 300
-
-        fun saveMotionProfileGraph(name: String, profile: MotionProfile, includeAcceleration: Boolean = true, resolution: Int = 1000) {
-            val timeData = (0..resolution).map { it / resolution.toDouble() * profile.duration() }.toDoubleArray()
-            val positionData = timeData.map { profile[it].x }.toDoubleArray()
-            val velocityData = timeData.map { profile[it].v }.toDoubleArray()
-
-            val labels = mutableListOf("x(t)", "v(t)")
-            val data = mutableListOf(positionData, velocityData)
-
-            if (includeAcceleration) {
-                val accelerationData = timeData.map { profile[it].a }.toDoubleArray()
-
-                labels.add("a(t)")
-                data.add(accelerationData)
-            }
-
-            val graph = QuickChart.getChart(
-                name,
-                "time (sec)",
-                "",
-                labels.toTypedArray(),
-                timeData,
-                data.toTypedArray()
-            )
-
-            File(GRAPH_DIR).mkdirs()
-
-            BitmapEncoder.saveBitmapWithDPI(graph, "$GRAPH_DIR$name", BitmapFormat.PNG, GRAPH_DPI)
-        }
-    }
-
     @Test
     fun testSimpleTriangle() {
-        saveMotionProfileGraph(
+        Graph.saveMotionProfile(
             "simpleTriangle",
             MotionProfileGenerator.generateSimpleMotionProfile(
                 MotionState(0.0, 0.0, 0.0),
@@ -61,7 +23,7 @@ class MotionProfileGeneratorTest {
 
     @Test
     fun testSimpleTrap() {
-        saveMotionProfileGraph(
+        Graph.saveMotionProfile(
             "simpleTrap",
             MotionProfileGenerator.generateSimpleMotionProfile(
                 MotionState(0.0, 0.0, 0.0),
@@ -74,7 +36,7 @@ class MotionProfileGeneratorTest {
 
     @Test
     fun testSimpleTriangleStartingOffset() {
-        saveMotionProfileGraph(
+        Graph.saveMotionProfile(
             "simpleTriangleStartingOffset",
             MotionProfileGenerator.generateSimpleMotionProfile(
                 MotionState(5.0, 0.0, 0.0),
@@ -87,7 +49,7 @@ class MotionProfileGeneratorTest {
 
     @Test
     fun testSimpleTriangleReversed() {
-        saveMotionProfileGraph(
+        Graph.saveMotionProfile(
             "simpleTriangleReversed",
             MotionProfileGenerator.generateSimpleMotionProfile(
                 MotionState(10.0, 0.0, 0.0),
@@ -100,7 +62,7 @@ class MotionProfileGeneratorTest {
 
     @Test
     fun testSimpleTriangleStartingOffsetReversed() {
-        saveMotionProfileGraph(
+        Graph.saveMotionProfile(
             "simpleTriangleStartingOffsetReversed",
             MotionProfileGenerator.generateSimpleMotionProfile(
                 MotionState(15.0, 0.0, 0.0),
@@ -113,7 +75,7 @@ class MotionProfileGeneratorTest {
 
     @Test
     fun testComplex() {
-        saveMotionProfileGraph(
+        Graph.saveMotionProfile(
             "complex",
             MotionProfileGenerator.generateMotionProfile(
                 MotionState(0.0, 0.0, 0.0),
@@ -128,7 +90,7 @@ class MotionProfileGeneratorTest {
 
     @Test
     fun testComplex2() {
-        saveMotionProfileGraph(
+        Graph.saveMotionProfile(
             "complex2",
             MotionProfileGenerator.generateMotionProfile(
                 MotionState(0.0, 0.0, 0.0),
@@ -143,7 +105,7 @@ class MotionProfileGeneratorTest {
 
     @Test
     fun testComplex2Reversed() {
-        saveMotionProfileGraph(
+        Graph.saveMotionProfile(
             "complex2Reversed",
             MotionProfileGenerator.generateMotionProfile(
                 MotionState(10.0, 0.0, 0.0),

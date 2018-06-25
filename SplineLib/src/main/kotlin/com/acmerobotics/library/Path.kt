@@ -2,7 +2,7 @@ package com.acmerobotics.library
 
 import kotlin.math.abs
 
-abstract class Path {
+abstract class Path(val motionConstraints: MotionConstraints) {
     abstract fun length(): Double
     abstract operator fun get(displacement: Double): Vector2d
     abstract fun deriv(displacement: Double): Vector2d

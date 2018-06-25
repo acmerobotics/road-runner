@@ -4,9 +4,13 @@ class HolonomicPath(
     private val path: Path,
     private val headingInterpolator: HeadingInterpolator = TangentInterpolator()
 ) {
+    val motionConstraints: MotionConstraints = path.motionConstraints
+
     init {
         headingInterpolator.init(path)
     }
+
+    fun length() = path.length()
 
     operator fun get(displacement: Double): Pose2d {
         val pos = path[displacement]

@@ -43,3 +43,7 @@ task integrationTest(type: Test) {
     classpath = sourceSets.integrationTest.runtimeClasspath
     outputs.upToDateWhen { false }
 }
+
+tasks["clean"].doFirst {
+    delete file("graphs")
+}

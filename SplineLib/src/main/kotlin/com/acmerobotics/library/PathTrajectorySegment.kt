@@ -1,6 +1,14 @@
 package com.acmerobotics.library
 
-class PathTrajectorySegment(val path: HolonomicPath, val profile: MotionProfile) : TrajectorySegment {
+class PathTrajectorySegment(val path: HolonomicPath, val resolution: Int = 250) : TrajectorySegment {
+    private val profile: MotionProfile
+
+    init {
+        val start = MotionState(0.0, 0.0, 0.0)
+        val goal = MotionState(path.length(), 0.0, 0.0)
+        profile = MotionProfileGenerator.generateMotionProfile(start, goal, path.motionConstraints, resolution)
+    }
+
     override fun duration() = profile.duration()
 
     override operator fun get(time: Double): Pose2d {

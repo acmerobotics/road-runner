@@ -4,7 +4,7 @@ import org.apache.commons.math3.linear.LUDecomposition
 import org.apache.commons.math3.linear.MatrixUtils
 import kotlin.math.sqrt
 
-class SplineSegment(start: Waypoint, end: Waypoint) : Path() {
+class SplineSegment(start: Waypoint, end: Waypoint, motionConstraints: MotionConstraints) : Path(motionConstraints) {
     private val ax: Double
     private val bx: Double
     private val cx: Double
