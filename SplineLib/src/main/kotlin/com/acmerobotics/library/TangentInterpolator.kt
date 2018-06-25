@@ -1,6 +1,6 @@
 package com.acmerobotics.library
 
-class TangentInterpolator(private val path: Path) : HeadingInterpolator {
+class TangentInterpolator : HeadingInterpolator() {
     override fun get(displacement: Double): Double {
         val pathDeriv = path.deriv(displacement)
         return Math.atan2(pathDeriv.y, pathDeriv.x)
