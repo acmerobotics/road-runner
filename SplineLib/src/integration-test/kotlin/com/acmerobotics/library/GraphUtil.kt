@@ -5,7 +5,7 @@ import org.knowm.xchart.QuickChart
 import org.knowm.xchart.XYChart
 import java.io.File
 
-object Graph {
+object GraphUtil {
     private const val GRAPH_DIR = "./graphs/"
     private const val GRAPH_DPI = 300
 

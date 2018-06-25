@@ -2,7 +2,7 @@ package com.acmerobotics.library
 
 import java.io.File
 
-object CSV {
+object CSVUtil {
     private const val CSV_DIR = "./csv/"
 
     fun saveHolonomicPath(name: String, path: HolonomicPath, resolution: Int = 1000) {

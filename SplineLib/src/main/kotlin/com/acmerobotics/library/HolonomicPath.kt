@@ -12,6 +12,15 @@ class HolonomicPath(
 
     fun length() = path.length()
 
+    fun start() = get(0.0)
+    fun end() = get(length())
+
+    fun startDeriv() = deriv(0.0)
+    fun endDeriv() = deriv(length())
+
+    fun startSecondDeriv() = secondDeriv(0.0)
+    fun endSecondDeriv() = secondDeriv(length())
+
     operator fun get(displacement: Double): Pose2d {
         val pos = path[displacement]
         val heading = headingInterpolator[displacement]
@@ -29,6 +38,4 @@ class HolonomicPath(
         val heading = headingInterpolator.secondDeriv(displacement)
         return Pose2d(pos.x, pos.y, heading)
     }
-
-    fun curvature(displacement: Double) = path.curvature(displacement)
 }

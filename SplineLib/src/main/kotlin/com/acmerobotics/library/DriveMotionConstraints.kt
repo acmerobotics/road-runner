@@ -3,24 +3,29 @@ package com.acmerobotics.library
 import kotlin.math.abs
 import kotlin.math.sqrt
 
-class DriveMotionConstraints(private val path: HolonomicPath): MotionConstraints {
-    override fun maximumVelocity(displacement: Double): Double {
-        val maximumVelocities = mutableListOf(path.motionConstraints.maximumVelocity)
+class DriveMotionConstraints(
+    val maximumVelocity: Double,
+    val maximumAcceleration: Double,
+    val maximumAngularVelocity: Double = Double.NaN,
+    val maximumCentripetalAcceleration: Double = Double.NaN
+) : PathMotionConstraints {
+    override fun maximumVelocity(pose: Pose2d, poseDeriv: Pose2d, poseSecondDeriv: Pose2d): Double {
+        val maximumVelocities = mutableListOf(maximumVelocity)
 
-        if (path.motionConstraints.maximumAngularVelocity.isFinite()) {
-            val angularDeriv = path.deriv(displacement).heading
+        if (!maximumAngularVelocity.isNaN()) {
+            val angularDeriv = poseDeriv.heading
             if (angularDeriv != 0.0) {
-                maximumVelocities.add(abs(path.motionConstraints.maximumAngularVelocity / angularDeriv))
+                maximumVelocities.add(abs(maximumAngularVelocity / angularDeriv))
             }
         }
 
-        if (path.motionConstraints.maximumCentripetalAcceleration.isFinite()) {
-            val curvature = path.curvature(displacement)
-            maximumVelocities.add(sqrt(path.motionConstraints.maximumCentripetalAcceleration / curvature))
+        if (!maximumCentripetalAcceleration.isNaN()) {
+            val curvature = MathUtil.curvature(poseDeriv.pos(), poseSecondDeriv.pos())
+            maximumVelocities.add(sqrt(maximumCentripetalAcceleration / curvature))
         }
 
         return maximumVelocities.min() ?: 0.0
     }
 
-    override fun maximumAcceleration(displacement: Double) = path.motionConstraints.maximumAcceleration
+    override fun maximumAcceleration(pose: Pose2d, poseDeriv: Pose2d, poseSecondDeriv: Pose2d) = maximumAcceleration
 }

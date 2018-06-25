@@ -8,12 +8,12 @@ import org.junit.jupiter.api.TestInstance
 class SplineSegmentTest {
     @Test
     fun testSimpleSpline() {
-        val constraints = PathMotionConstraints(0.0, 0.0)
+        val constraints = DriveMotionConstraints(0.0, 0.0)
         val spline = SplineSegment(
             Waypoint(0.0, 0.0, 20.0, 0.0),
             Waypoint(12.0, 24.0, -20.0, 20.0),
             constraints
         )
-        Graph.savePath("simpleSpline", spline)
+        GraphUtil.savePath("simpleSpline", spline)
     }
 }

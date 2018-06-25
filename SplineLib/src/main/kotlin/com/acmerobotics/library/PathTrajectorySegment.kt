@@ -1,27 +1,92 @@
 package com.acmerobotics.library
 
-class PathTrajectorySegment(val path: HolonomicPath, resolution: Int = 250) : TrajectorySegment {
+import kotlin.math.max
+import kotlin.math.min
+
+class PathTrajectorySegment(
+    val paths: List<HolonomicPath>,
+    val motionConstraintsList: List<PathMotionConstraints>,
+    resolution: Int = 250
+) : TrajectorySegment {
     val profile: MotionProfile
 
     init {
+        val length = paths.sumByDouble { it.length() }
+        val compositeConstraints = object : MotionConstraints {
+            override fun maximumVelocity(displacement: Double): Double {
+                var remainingDisplacement = max(0.0, min(displacement, length))
+                for ((path, motionConstraints) in paths.zip(motionConstraintsList)) {
+                    if (remainingDisplacement <= path.length()) {
+                        return motionConstraints.maximumVelocity(
+                            path[remainingDisplacement],
+                            path.deriv(remainingDisplacement),
+                            path.secondDeriv(remainingDisplacement)
+                        )
+                    }
+                    remainingDisplacement -= path.length()
+                }
+                return motionConstraintsList.last()
+                    .maximumVelocity(paths.last().end(), paths.last().endDeriv(), paths.last().endSecondDeriv())
+            }
+
+            override fun maximumAcceleration(displacement: Double): Double {
+                var remainingDisplacement = max(0.0, min(displacement, length))
+                for ((path, motionConstraints) in paths.zip(motionConstraintsList)) {
+                    if (remainingDisplacement <= path.length()) {
+                        return motionConstraints.maximumAcceleration(
+                            path[remainingDisplacement],
+                            path.deriv(remainingDisplacement),
+                            path.secondDeriv(remainingDisplacement)
+                        )
+                    }
+                    remainingDisplacement -= path.length()
+                }
+                return motionConstraintsList.last()
+                    .maximumAcceleration(paths.last().end(), paths.last().endDeriv(), paths.last().endSecondDeriv())
+            }
+        }
+
         val start = MotionState(0.0, 0.0, 0.0)
-        val goal = MotionState(path.length(), 0.0, 0.0)
-        profile = MotionProfileGenerator.generateMotionProfile(start, goal, DriveMotionConstraints(path), resolution)
+        val goal = MotionState(length, 0.0, 0.0)
+        profile = MotionProfileGenerator.generateMotionProfile(start, goal, compositeConstraints, resolution)
     }
 
     override fun duration() = profile.duration()
 
     override operator fun get(time: Double): Pose2d {
-        return path[profile[time].x]
+        var remainingDisplacement = profile[time].x
+        for (path in paths) {
+            if (remainingDisplacement <= path.length()) {
+                return path[remainingDisplacement]
+            }
+            remainingDisplacement -= path.length()
+        }
+        return paths.last().end()
     }
 
     override fun velocity(time: Double): Pose2d {
         val motionState = profile[time]
-        return path.deriv(motionState.x) * motionState.v
+        var remainingDisplacement = profile[time].x
+        for (path in paths) {
+            if (remainingDisplacement <= path.length()) {
+                return path.deriv(remainingDisplacement) * motionState.v
+            }
+            remainingDisplacement -= path.length()
+        }
+        return paths.last().endDeriv() * profile.end().v
     }
 
     override fun acceleration(time: Double): Pose2d {
         val motionState = profile[time]
-        return (path.secondDeriv(motionState.x) * Math.pow(motionState.v, 2.0)) + (path.deriv(motionState.x) * motionState.a)
+        var remainingDisplacement = profile[time].x
+        for (path in paths) {
+            if (remainingDisplacement <= path.length()) {
+                return path.secondDeriv(remainingDisplacement) * motionState.v * motionState.v + path.deriv(
+                    remainingDisplacement
+                ) * motionState.a
+            }
+            remainingDisplacement -= path.length()
+        }
+        return paths.last().endSecondDeriv() * motionState.v * motionState.v + paths.last().endDeriv() * motionState.a
     }
 }
