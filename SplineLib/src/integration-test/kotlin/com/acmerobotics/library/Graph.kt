@@ -58,7 +58,7 @@ object Graph {
         val yVelocityData = velocityData.map { it.y }.toDoubleArray()
         val omegaData = velocityData.map { it.heading }.toDoubleArray()
 
-        val labels = listOf("v_x(t)", "v_y(t)", "\u03C9(t)")
+        val labels = listOf("v_x(t)", "v_y(t)", "ω(t)")
         val data = listOf(xVelocityData, yVelocityData, omegaData)
 
         saveGraph("${name}Trajectory", QuickChart.getChart(

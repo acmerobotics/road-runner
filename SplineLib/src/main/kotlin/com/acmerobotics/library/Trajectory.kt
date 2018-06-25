@@ -1,12 +1,15 @@
 package com.acmerobotics.library
 
+import kotlin.math.max
+import kotlin.math.min
+
 class Trajectory(segments: List<TrajectorySegment> = listOf()) {
     val segments: MutableList<TrajectorySegment> = segments.toMutableList()
 
     fun duration() = segments.map { it.duration() }.sum()
 
     operator fun get(time: Double): Pose2d {
-        var remainingTime = time
+        var remainingTime = max(0.0, min(time, duration()))
         for (segment in segments) {
             if (remainingTime <= segment.duration()) {
                 return segment[remainingTime]
@@ -17,7 +20,7 @@ class Trajectory(segments: List<TrajectorySegment> = listOf()) {
     }
 
     fun velocity(time: Double): Pose2d {
-        var remainingTime = time
+        var remainingTime = max(0.0, min(time, duration()))
         for (segment in segments) {
             if (remainingTime <= segment.duration()) {
                 return segment.velocity(remainingTime)
@@ -28,7 +31,7 @@ class Trajectory(segments: List<TrajectorySegment> = listOf()) {
     }
 
     fun acceleration(time: Double): Pose2d {
-        var remainingTime = time
+        var remainingTime = max(0.0, min(time, duration()))
         for (segment in segments) {
             if (remainingTime <= segment.duration()) {
                 return segment.acceleration(remainingTime)

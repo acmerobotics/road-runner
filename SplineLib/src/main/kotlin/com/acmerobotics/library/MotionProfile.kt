@@ -1,15 +1,18 @@
 package com.acmerobotics.library
 
+import kotlin.math.max
+import kotlin.math.min
+
 class MotionProfile(private val segments: List<MotionSegment>) {
     operator fun get(t: Double): MotionState {
-        var remainingTime = t
+        var remainingTime = max(0.0, min(t, duration()))
         for (segment in segments) {
             if (remainingTime <= segment.dt) {
                 return segment[remainingTime]
             }
             remainingTime -= segment.dt
         }
-        return segments.last().end() // TODO: compare w/RuntimeExceptions for other methods like this
+        return segments.last().end()
     }
 
     fun duration() = segments.map { it.dt }.sum()
