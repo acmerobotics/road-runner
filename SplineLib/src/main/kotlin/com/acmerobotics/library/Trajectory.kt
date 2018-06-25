@@ -1,6 +1,8 @@
 package com.acmerobotics.library
 
-class Trajectory(val segments: MutableList<TrajectorySegment> = mutableListOf()) {
+class Trajectory(segments: List<TrajectorySegment> = listOf()) {
+    val segments: MutableList<TrajectorySegment> = segments.toMutableList()
+
     fun duration() = segments.map { it.duration() }.sum()
 
     operator fun get(time: Double): Pose2d {
@@ -11,7 +13,7 @@ class Trajectory(val segments: MutableList<TrajectorySegment> = mutableListOf())
             }
             remainingTime -= segment.duration()
         }
-        throw RuntimeException() // TODO
+        return segments.last()[segments.last().duration()]
     }
 
     fun velocity(time: Double): Pose2d {
@@ -22,7 +24,7 @@ class Trajectory(val segments: MutableList<TrajectorySegment> = mutableListOf())
             }
             remainingTime -= segment.duration()
         }
-        throw RuntimeException() // TODO
+        return segments.last().velocity(segments.last().duration())
     }
 
     fun acceleration(time: Double): Pose2d {
@@ -33,6 +35,6 @@ class Trajectory(val segments: MutableList<TrajectorySegment> = mutableListOf())
             }
             remainingTime -= segment.duration()
         }
-        throw RuntimeException() // TODO
+        return segments.last().acceleration(segments.last().duration())
     }
 }

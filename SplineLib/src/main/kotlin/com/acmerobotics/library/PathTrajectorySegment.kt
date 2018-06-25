@@ -1,12 +1,12 @@
 package com.acmerobotics.library
 
-class PathTrajectorySegment(val path: HolonomicPath, val resolution: Int = 250) : TrajectorySegment {
-    private val profile: MotionProfile
+class PathTrajectorySegment(val path: HolonomicPath, resolution: Int = 250) : TrajectorySegment {
+    val profile: MotionProfile
 
     init {
         val start = MotionState(0.0, 0.0, 0.0)
         val goal = MotionState(path.length(), 0.0, 0.0)
-        profile = MotionProfileGenerator.generateMotionProfile(start, goal, path.motionConstraints, resolution)
+        profile = MotionProfileGenerator.generateMotionProfile(start, goal, DriveMotionConstraints(path), resolution)
     }
 
     override fun duration() = profile.duration()

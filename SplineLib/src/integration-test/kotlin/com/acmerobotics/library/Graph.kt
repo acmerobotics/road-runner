@@ -50,4 +50,24 @@ object Graph {
         graph.styler.isLegendVisible = false
         saveGraph("${name}Path", graph)
     }
+
+    fun saveTrajectory(name: String, trajectory: Trajectory, resolution: Int = 1000) {
+        val timeData = (0..resolution).map { it / resolution.toDouble() * trajectory.duration() }.toDoubleArray()
+        val velocityData = timeData.map { trajectory.velocity(it) }
+        val xVelocityData = velocityData.map { it.x }.toDoubleArray()
+        val yVelocityData = velocityData.map { it.y }.toDoubleArray()
+        val omegaData = velocityData.map { it.heading }.toDoubleArray()
+
+        val labels = listOf("v_x(t)", "v_y(t)", "\u03C9(t)")
+        val data = listOf(xVelocityData, yVelocityData, omegaData)
+
+        saveGraph("${name}Trajectory", QuickChart.getChart(
+            name,
+            "time (sec)",
+            "",
+            labels.toTypedArray(),
+            timeData,
+            data.toTypedArray()
+        ))
+    }
 }

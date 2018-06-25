@@ -4,7 +4,7 @@ class HolonomicPath(
     private val path: Path,
     private val headingInterpolator: HeadingInterpolator = TangentInterpolator()
 ) {
-    val motionConstraints: MotionConstraints = path.motionConstraints
+    val motionConstraints: PathMotionConstraints = path.motionConstraints
 
     init {
         headingInterpolator.init(path)

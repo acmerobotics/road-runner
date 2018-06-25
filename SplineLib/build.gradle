@@ -46,4 +46,5 @@ task integrationTest(type: Test) {
 
 tasks["clean"].doFirst {
     delete file("graphs")
+    delete file("csv")
 }
