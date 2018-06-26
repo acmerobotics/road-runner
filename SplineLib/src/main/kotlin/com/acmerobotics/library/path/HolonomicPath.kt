@@ -4,7 +4,7 @@ import com.acmerobotics.library.Pose2d
 
 class HolonomicPath(
     private val path: Path,
-    private val headingInterpolator: HeadingInterpolator = TangentInterpolator()
+    private val headingInterpolator: HeadingInterpolator
 ) {
     init {
         headingInterpolator.init(path)

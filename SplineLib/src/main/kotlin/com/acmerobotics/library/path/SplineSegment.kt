@@ -1,5 +1,6 @@
 package com.acmerobotics.library.path
 
+import com.acmerobotics.library.Pose2d
 import com.acmerobotics.library.Vector2d
 import com.acmerobotics.library.Waypoint
 import org.apache.commons.math3.linear.LUDecomposition
@@ -33,6 +34,14 @@ class SplineSegment(start: Waypoint, end: Waypoint) : Path() {
             )
         )
         private const val LENGTH_SAMPLES = 1000
+
+        fun fromPoses(start: Pose2d, end: Pose2d): SplineSegment {
+            // TODO: is this an appropriate default magnitude for the derivative?
+            val distance = (end.pos() - start.pos()).norm()
+            val startWaypoint = Waypoint(start.x, start.y, distance * Math.cos(start.heading), distance * Math.sin(start.heading))
+            val endWaypoint = Waypoint(end.x, end.y, distance * Math.cos(end.heading), distance * Math.sin(end.heading))
+            return SplineSegment(startWaypoint, endWaypoint)
+        }
     }
 
     init {

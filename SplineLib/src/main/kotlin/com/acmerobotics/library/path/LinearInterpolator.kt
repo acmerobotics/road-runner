@@ -1,17 +1,20 @@
 package com.acmerobotics.library.path
 
-class LinearInterpolator : HeadingInterpolator() {
-    private var startAngle: Double = 0.0
+class LinearInterpolator(private var startAngle: Double = Double.NaN, private var endAngle: Double = Double.NaN) : HeadingInterpolator() {
     private var rotAngle: Double = 0.0
 
     override fun init(path: Path) {
         super.init(path)
 
-        val startDeriv = path.deriv(0.0)
-        val endDeriv = path.deriv(path.length())
+        if (startAngle.isNaN()) {
+            val startDeriv = path.deriv(0.0)
+            startAngle = Math.atan2(startDeriv.y, startDeriv.x)
+        }
 
-        startAngle = Math.atan2(startDeriv.y, startDeriv.x)
-        val endAngle = Math.atan2(endDeriv.y, endDeriv.x)
+        if (endAngle.isNaN()) {
+            val endDeriv = path.deriv(path.length())
+            endAngle = Math.atan2(endDeriv.y, endDeriv.x)
+        }
 
         rotAngle = if (endAngle >= startAngle) {
             endAngle - startAngle
