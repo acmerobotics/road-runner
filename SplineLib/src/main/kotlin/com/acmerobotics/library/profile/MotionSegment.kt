@@ -1,4 +1,4 @@
-package com.acmerobotics.library
+package com.acmerobotics.library.profile
 
 class MotionSegment(val start: MotionState, val dt: Double) {
     operator fun get(t: Double) = start[t]

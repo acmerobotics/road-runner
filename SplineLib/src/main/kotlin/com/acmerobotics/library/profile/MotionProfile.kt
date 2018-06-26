@@ -1,4 +1,4 @@
-package com.acmerobotics.library
+package com.acmerobotics.library.profile
 
 import kotlin.math.max
 import kotlin.math.min

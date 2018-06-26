@@ -1,5 +1,7 @@
 package com.acmerobotics.library
 
+import com.acmerobotics.library.path.SplineSegment
+import com.acmerobotics.library.trajectory.DriveMotionConstraints
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 

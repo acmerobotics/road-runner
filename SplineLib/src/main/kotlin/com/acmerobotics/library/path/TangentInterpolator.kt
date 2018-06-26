@@ -1,4 +1,4 @@
-package com.acmerobotics.library
+package com.acmerobotics.library.path
 
 class TangentInterpolator : HeadingInterpolator() {
     override fun get(displacement: Double): Double {

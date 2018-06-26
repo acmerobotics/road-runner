@@ -1,4 +1,4 @@
-package com.acmerobotics.library
+package com.acmerobotics.library.path
 
 abstract class HeadingInterpolator {
     protected lateinit var path: Path

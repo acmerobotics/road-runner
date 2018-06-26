@@ -1,5 +1,11 @@
-package com.acmerobotics.library
+package com.acmerobotics.library.trajectory
 
+import com.acmerobotics.library.Pose2d
+import com.acmerobotics.library.path.HolonomicPath
+import com.acmerobotics.library.profile.MotionConstraints
+import com.acmerobotics.library.profile.MotionProfile
+import com.acmerobotics.library.profile.MotionProfileGenerator
+import com.acmerobotics.library.profile.MotionState
 import kotlin.math.max
 import kotlin.math.min
 
@@ -66,7 +72,7 @@ class PathTrajectorySegment(
 
     override fun velocity(time: Double): Pose2d {
         val motionState = profile[time]
-        var remainingDisplacement = profile[time].x
+        var remainingDisplacement = motionState.x
         for (path in paths) {
             if (remainingDisplacement <= path.length()) {
                 return path.deriv(remainingDisplacement) * motionState.v
@@ -78,7 +84,7 @@ class PathTrajectorySegment(
 
     override fun acceleration(time: Double): Pose2d {
         val motionState = profile[time]
-        var remainingDisplacement = profile[time].x
+        var remainingDisplacement = motionState.x
         for (path in paths) {
             if (remainingDisplacement <= path.length()) {
                 return path.secondDeriv(remainingDisplacement) * motionState.v * motionState.v + path.deriv(
@@ -87,6 +93,6 @@ class PathTrajectorySegment(
             }
             remainingDisplacement -= path.length()
         }
-        return paths.last().endSecondDeriv() * motionState.v * motionState.v + paths.last().endDeriv() * motionState.a
+        return paths.last().endSecondDeriv() * profile.end().v * profile.end().v + paths.last().endDeriv() * profile.end().a
     }
 }

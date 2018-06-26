@@ -1,5 +1,6 @@
-package com.acmerobotics.library
+package com.acmerobotics.library.trajectory
 
+import com.acmerobotics.library.Pose2d
 import kotlin.math.max
 import kotlin.math.min
 

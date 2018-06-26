@@ -1,5 +1,8 @@
 package com.acmerobotics.library
 
+import com.acmerobotics.library.profile.MotionConstraints
+import com.acmerobotics.library.profile.MotionProfileGenerator
+import com.acmerobotics.library.profile.MotionState
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import java.lang.Math.min

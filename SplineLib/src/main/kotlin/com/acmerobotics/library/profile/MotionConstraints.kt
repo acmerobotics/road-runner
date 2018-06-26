@@ -1,4 +1,4 @@
-package com.acmerobotics.library
+package com.acmerobotics.library.profile
 
 interface MotionConstraints {
     fun maximumVelocity(displacement: Double): Double

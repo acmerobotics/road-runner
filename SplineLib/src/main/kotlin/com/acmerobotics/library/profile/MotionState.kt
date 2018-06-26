@@ -1,10 +1,11 @@
-package com.acmerobotics.library
+package com.acmerobotics.library.profile
 
 import kotlin.math.abs
 import kotlin.math.sqrt
 
 class MotionState(val x: Double, val v: Double, val a: Double) {
-    operator fun get(t: Double) = MotionState(x + v * t + 0.5 * a * t * t, v + a * t, a)
+    operator fun get(t: Double) =
+        MotionState(x + v * t + 0.5 * a * t * t, v + a * t, a)
 
     fun afterDisplacement(dx: Double): MotionState {
         val discriminant = v * v + 2 * a * dx

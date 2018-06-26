@@ -1,5 +1,8 @@
 package com.acmerobotics.library
 
+import com.acmerobotics.library.path.Path
+import com.acmerobotics.library.profile.MotionProfile
+import com.acmerobotics.library.trajectory.Trajectory
 import org.knowm.xchart.BitmapEncoder
 import org.knowm.xchart.QuickChart
 import org.knowm.xchart.XYChart
@@ -56,9 +59,9 @@ object GraphUtil {
         val velocityData = timeData.map { trajectory.velocity(it) }
         val xVelocityData = velocityData.map { it.x }.toDoubleArray()
         val yVelocityData = velocityData.map { it.y }.toDoubleArray()
-        val omegaData = velocityData.map { it.heading }.toDoubleArray()
+        val omegaData = velocityData.map { it.heading }.map(Math::toDegrees).toDoubleArray()
 
-        val labels = listOf("v_x(t)", "v_y(t)", "ω(t)")
+        val labels = listOf("vx(t)", "vy(t)", "ω(t)")
         val data = listOf(xVelocityData, yVelocityData, omegaData)
 
         saveGraph("${name}Trajectory", QuickChart.getChart(

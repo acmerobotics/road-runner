@@ -1,4 +1,4 @@
-package com.acmerobotics.library
+package com.acmerobotics.library.path
 
 class LinearInterpolator : HeadingInterpolator() {
     private var startAngle: Double = 0.0

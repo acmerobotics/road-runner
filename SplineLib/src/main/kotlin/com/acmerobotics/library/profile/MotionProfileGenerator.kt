@@ -1,4 +1,4 @@
-package com.acmerobotics.library
+package com.acmerobotics.library.profile
 
 import kotlin.math.abs
 import kotlin.math.sqrt
@@ -11,7 +11,13 @@ object MotionProfileGenerator {
         goal: MotionState,
         maximumVelocity: Double,
         maximumAcceleration: Double
-    ): MotionProfile = generateMotionProfile(start, goal, SimpleMotionConstraints(maximumVelocity, maximumAcceleration), 1)
+    ): MotionProfile =
+        generateMotionProfile(
+            start,
+            goal,
+            SimpleMotionConstraints(maximumVelocity, maximumAcceleration),
+            1
+        )
 
     fun generateMotionProfile(
         start: MotionState,
@@ -37,7 +43,12 @@ object MotionProfileGenerator {
             { constraints.maximumAcceleration(start.x + it) },
             resolution,
             dx
-        ).map { (motionState, dx) -> Pair(MotionState(motionState.x + start.x, motionState.v, motionState.a), dx) }
+        ).map { (motionState, dx) -> Pair(
+            MotionState(
+                motionState.x + start.x,
+                motionState.v,
+                motionState.a
+            ), dx) }
             .toMutableList()
 
         val backwardStates = forwardPass(
@@ -87,7 +98,10 @@ object MotionProfileGenerator {
                 if (forwardEndState.v <= backwardEndState.v) {
                     finalStates.add(Pair(forwardStartState, forwardDx))
                 } else {
-                    val intersection = intersection(forwardStartState, backwardStartState)
+                    val intersection = intersection(
+                        forwardStartState,
+                        backwardStartState
+                    )
                     finalStates.add(Pair(forwardStartState, intersection))
                     finalStates.add(
                         Pair(
@@ -100,7 +114,10 @@ object MotionProfileGenerator {
                 if (forwardEndState.v >= backwardEndState.v) {
                     finalStates.add(Pair(backwardStartState, backwardDx))
                 } else {
-                    val intersection = intersection(forwardStartState, backwardStartState)
+                    val intersection = intersection(
+                        forwardStartState,
+                        backwardStartState
+                    )
                     finalStates.add(Pair(backwardStartState, intersection))
                     finalStates.add(
                         Pair(

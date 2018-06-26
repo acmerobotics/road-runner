@@ -1,4 +1,7 @@
-package com.acmerobotics.library
+package com.acmerobotics.library.path
+
+import com.acmerobotics.library.Vector2d
+import com.acmerobotics.library.trajectory.PathMotionConstraints
 
 abstract class Path(val motionConstraints: PathMotionConstraints) {
     abstract fun length(): Double
