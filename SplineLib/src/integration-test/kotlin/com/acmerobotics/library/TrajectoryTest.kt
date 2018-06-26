@@ -21,8 +21,7 @@ class TrajectoryTest {
         )
         val spline = SplineSegment(
             Waypoint(0.0, 0.0, 200.0, 0.0),
-            Waypoint(108.0, 72.0, -40.0, 200.0),
-            constraints
+            Waypoint(108.0, 72.0, -40.0, 200.0)
         )
         val path = HolonomicPath(spline, TangentInterpolator())
         val trajectory = Trajectory(

@@ -1,14 +1,11 @@
 package com.acmerobotics.library.path
 
-import com.acmerobotics.library.trajectory.PathMotionConstraints
 import com.acmerobotics.library.Pose2d
 
 class HolonomicPath(
     private val path: Path,
     private val headingInterpolator: HeadingInterpolator = TangentInterpolator()
 ) {
-    val motionConstraints: PathMotionConstraints = path.motionConstraints
-
     init {
         headingInterpolator.init(path)
     }

@@ -2,12 +2,11 @@ package com.acmerobotics.library.path
 
 import com.acmerobotics.library.Vector2d
 import com.acmerobotics.library.Waypoint
-import com.acmerobotics.library.trajectory.PathMotionConstraints
 import org.apache.commons.math3.linear.LUDecomposition
 import org.apache.commons.math3.linear.MatrixUtils
 import kotlin.math.sqrt
 
-class SplineSegment(start: Waypoint, end: Waypoint, motionConstraints: PathMotionConstraints) : Path(motionConstraints) {
+class SplineSegment(start: Waypoint, end: Waypoint) : Path() {
     private val ax: Double
     private val bx: Double
     private val cx: Double
