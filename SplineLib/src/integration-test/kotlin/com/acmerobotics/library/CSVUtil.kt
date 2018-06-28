@@ -1,12 +1,12 @@
 package com.acmerobotics.library
 
-import com.acmerobotics.library.path.HolonomicPath
+import com.acmerobotics.library.path.Path
 import java.io.File
 
 object CSVUtil {
     private const val CSV_DIR = "./csv/"
 
-    fun saveHolonomicPath(name: String, path: HolonomicPath, resolution: Int = 1000) {
+    fun savePath(name: String, path: Path, resolution: Int = 1000) {
         File(CSV_DIR).mkdirs()
 
         File("$CSV_DIR$name.csv").printWriter().use { out ->

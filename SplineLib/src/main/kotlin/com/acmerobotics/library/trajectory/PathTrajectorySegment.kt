@@ -1,7 +1,7 @@
 package com.acmerobotics.library.trajectory
 
 import com.acmerobotics.library.Pose2d
-import com.acmerobotics.library.path.HolonomicPath
+import com.acmerobotics.library.path.Path
 import com.acmerobotics.library.profile.MotionConstraints
 import com.acmerobotics.library.profile.MotionProfile
 import com.acmerobotics.library.profile.MotionProfileGenerator
@@ -10,7 +10,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 class PathTrajectorySegment(
-    val paths: List<HolonomicPath>,
+    val paths: List<Path>,
     val motionConstraintsList: List<PathMotionConstraints>,
     resolution: Int = 250
 ) : TrajectorySegment {

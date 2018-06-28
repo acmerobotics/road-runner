@@ -1,6 +1,6 @@
 package com.acmerobotics.library
 
-import com.acmerobotics.library.path.Path
+import com.acmerobotics.library.path.parametric.ParametricCurve
 import com.acmerobotics.library.profile.MotionProfile
 import com.acmerobotics.library.trajectory.Trajectory
 import org.knowm.xchart.BitmapEncoder
@@ -43,15 +43,15 @@ object GraphUtil {
         ))
     }
 
-    fun savePath(name: String, path: Path, resolution: Int = 1000) {
-        val displacementData = (0..resolution).map { it / resolution.toDouble() * path.length() }
-        val points = displacementData.map { path[it] }
+    fun saveParametricCurve(name: String, parametricCurve: ParametricCurve, resolution: Int = 1000) {
+        val displacementData = (0..resolution).map { it / resolution.toDouble() * parametricCurve.length() }
+        val points = displacementData.map { parametricCurve[it] }
         val xData = points.map { it.x }.toDoubleArray()
         val yData = points.map { it.y }.toDoubleArray()
 
-        val graph = QuickChart.getChart(name, "x", "y", "path", xData, yData)
+        val graph = QuickChart.getChart(name, "x", "y", "parametricCurve", xData, yData)
         graph.styler.isLegendVisible = false
-        saveGraph("${name}Path", graph)
+        saveGraph("${name}ParametricCurve", graph)
     }
 
     fun saveTrajectory(name: String, trajectory: Trajectory, resolution: Int = 1000) {

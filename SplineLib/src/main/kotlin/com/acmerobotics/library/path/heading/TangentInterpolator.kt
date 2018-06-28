@@ -1,15 +1,15 @@
-package com.acmerobotics.library.path
+package com.acmerobotics.library.path.heading
 
 class TangentInterpolator : HeadingInterpolator() {
     override fun get(displacement: Double): Double {
-        val pathDeriv = path.deriv(displacement)
+        val pathDeriv = parametricCurve.deriv(displacement)
         val angle = Math.atan2(pathDeriv.y, pathDeriv.x)
         return if (angle.isNaN()) 0.0 else angle
     }
 
     override fun deriv(displacement: Double): Double {
-        val pathDeriv = path.deriv(displacement)
-        val pathSecondDeriv = path.secondDeriv(displacement)
+        val pathDeriv = parametricCurve.deriv(displacement)
+        val pathSecondDeriv = parametricCurve.secondDeriv(displacement)
 
         var deriv = pathDeriv.x * pathSecondDeriv.y - pathSecondDeriv.x * pathDeriv.y
         deriv /= (pathDeriv.x * pathDeriv.x + pathDeriv.y * pathDeriv.y)
@@ -18,9 +18,9 @@ class TangentInterpolator : HeadingInterpolator() {
     }
 
     override fun secondDeriv(displacement: Double): Double {
-        val pathDeriv = path.deriv(displacement)
-        val pathSecondDeriv = path.secondDeriv(displacement)
-        val pathThirdDeriv = path.thirdDeriv(displacement)
+        val pathDeriv = parametricCurve.deriv(displacement)
+        val pathSecondDeriv = parametricCurve.secondDeriv(displacement)
+        val pathThirdDeriv = parametricCurve.thirdDeriv(displacement)
 
         // http://www.wolframalpha.com/input/?i=d%2Fdt(d%2Fdt(arctan((dy%2Fdt)%2F(dx%2Fdt))))
         // I hate everything, especially chain rule

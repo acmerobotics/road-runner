@@ -1,13 +1,13 @@
-package com.acmerobotics.library.path
+package com.acmerobotics.library.path.parametric
 
 import com.acmerobotics.library.Pose2d
 import com.acmerobotics.library.Vector2d
-import com.acmerobotics.library.Waypoint
+import com.acmerobotics.library.Waypoint2d
 import org.apache.commons.math3.linear.LUDecomposition
 import org.apache.commons.math3.linear.MatrixUtils
 import kotlin.math.sqrt
 
-class SplineSegment(start: Waypoint, end: Waypoint) : Path() {
+class QuinticPolynomial2d(start: Waypoint2d, end: Waypoint2d) : ParametricCurve() {
     private val ax: Double
     private val bx: Double
     private val cx: Double
@@ -35,12 +35,10 @@ class SplineSegment(start: Waypoint, end: Waypoint) : Path() {
         )
         private const val LENGTH_SAMPLES = 1000
 
-        fun fromPoses(start: Pose2d, end: Pose2d): SplineSegment {
-            // TODO: is this an appropriate default magnitude for the derivative?
-            val distance = (end.pos() - start.pos()).norm()
-            val startWaypoint = Waypoint(start.x, start.y, distance * Math.cos(start.heading), distance * Math.sin(start.heading))
-            val endWaypoint = Waypoint(end.x, end.y, distance * Math.cos(end.heading), distance * Math.sin(end.heading))
-            return SplineSegment(startWaypoint, endWaypoint)
+        fun fromPoses(start: Pose2d, end: Pose2d): QuinticPolynomial2d {
+            val startWaypoint = Waypoint2d(start.x, start.y, Math.cos(start.heading), Math.sin(start.heading))
+            val endWaypoint = Waypoint2d(end.x, end.y, Math.cos(end.heading), Math.sin(end.heading))
+            return QuinticPolynomial2d(startWaypoint, endWaypoint)
         }
     }
 
@@ -120,4 +118,6 @@ class SplineSegment(start: Waypoint, end: Waypoint) : Path() {
     override fun secondDeriv(displacement: Double) = internalSecondDeriv(displacement / length) / (length * length)
 
     override fun thirdDeriv(displacement: Double) = internalThirdDeriv(displacement / length) / (length * length * length)
+
+    override fun toString() = "($ax*t^5+$bx*t^4+$cx*t^3+$dx*t^2+$ex*t+$fx,$ay*t^5+$by*t^4+$cy*t^3+$dy*t^2+$ey*t+$fy)"
 }
