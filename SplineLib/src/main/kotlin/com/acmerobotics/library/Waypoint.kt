@@ -1,6 +1,6 @@
 package com.acmerobotics.library
 
-class Waypoint2d(
+class Waypoint(
     val x: Double,
     val y: Double,
     var dx: Double = 0.0,

@@ -5,13 +5,13 @@ import com.acmerobotics.library.Pose2d
 import kotlin.math.abs
 import kotlin.math.sqrt
 
-class DriveMotionConstraints(
+class DriveConstraints(
     val maximumVelocity: Double,
     val maximumAcceleration: Double,
-    val maximumAngularVelocity: Double = Double.NaN,
-    val maximumAngularAcceleration: Double = Double.NaN,
+    val maximumAngularVelocity: Double,
+    val maximumAngularAcceleration: Double,
     val maximumCentripetalAcceleration: Double = Double.NaN
-) : PathMotionConstraints {
+) : TrajectoryConstraints {
     override fun maximumVelocity(pose: Pose2d, poseDeriv: Pose2d, poseSecondDeriv: Pose2d): Double {
         val maximumVelocities = mutableListOf<Double>()
 
@@ -23,7 +23,7 @@ class DriveMotionConstraints(
             maximumVelocities.add(abs(maximumVelocity / poseDeriv.y))
         }
 
-        if (!maximumAngularVelocity.isNaN() && poseDeriv.heading != 0.0) {
+        if (poseDeriv.heading != 0.0) {
             maximumVelocities.add(abs(maximumAngularVelocity / poseDeriv.heading))
         }
 
@@ -50,7 +50,7 @@ class DriveMotionConstraints(
                 (maximumAcceleration - poseSecondDeriv.y * maximumVelocity * maximumVelocity) / poseDeriv.y))
         }
 
-        if (!maximumAngularAcceleration.isNaN() && poseDeriv.heading != 0.0) {
+        if (poseDeriv.heading != 0.0) {
             maximumAccelerations.add(abs(
                 (maximumAngularAcceleration - poseSecondDeriv.heading * maximumVelocity * maximumVelocity) / poseDeriv.heading))
         }

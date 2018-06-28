@@ -1,6 +1,6 @@
 package com.acmerobotics.library
 
-import com.acmerobotics.library.path.parametric.QuinticPolynomial2d
+import com.acmerobotics.library.path.parametric.QuinticSplineSegment
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 
@@ -9,9 +9,9 @@ import org.junit.jupiter.api.TestInstance
 class SplineSegmentTest {
     @Test
     fun testSimpleSpline() {
-        val spline = QuinticPolynomial2d(
-            Waypoint2d(0.0, 0.0, 20.0, 0.0),
-            Waypoint2d(12.0, 24.0, -20.0, 20.0)
+        val spline = QuinticSplineSegment(
+            Waypoint(0.0, 0.0, 20.0, 0.0),
+            Waypoint(12.0, 24.0, -20.0, 20.0)
         )
         GraphUtil.saveParametricCurve("simpleSpline2", spline)
     }

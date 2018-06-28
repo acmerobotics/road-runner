@@ -2,8 +2,8 @@ package com.acmerobotics.library
 
 import com.acmerobotics.library.path.Path
 import com.acmerobotics.library.path.heading.TangentInterpolator
-import com.acmerobotics.library.path.parametric.QuinticPolynomial2d
-import com.acmerobotics.library.trajectory.DriveMotionConstraints
+import com.acmerobotics.library.path.parametric.QuinticSplineSegment
+import com.acmerobotics.library.trajectory.DriveConstraints
 import com.acmerobotics.library.trajectory.PathTrajectorySegment
 import com.acmerobotics.library.trajectory.Trajectory
 import org.junit.jupiter.api.Test
@@ -15,12 +15,14 @@ import java.lang.Math.hypot
 class TrajectoryTest {
     @Test
     fun testSimpleSpline() {
-        val constraints = DriveMotionConstraints(
+        val constraints = DriveConstraints(
             50.0,
             500.0,
+            maximumAngularVelocity = 5.0,
+            maximumAngularAcceleration = 1.0,
             maximumCentripetalAcceleration = 15.0
         )
-        val spline = QuinticPolynomial2d.fromPoses(
+        val spline = QuinticSplineSegment.fromPoses(
             Pose2d(0.0, 0.0, Math.PI / 6),
             Pose2d(108.0, 72.0, 3 * Math.PI / 4)
         )

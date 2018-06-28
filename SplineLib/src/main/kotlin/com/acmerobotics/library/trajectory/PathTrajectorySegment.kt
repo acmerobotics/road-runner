@@ -11,7 +11,7 @@ import kotlin.math.min
 
 class PathTrajectorySegment(
     val paths: List<Path>,
-    val motionConstraintsList: List<PathMotionConstraints>,
+    val motionConstraintsList: List<TrajectoryConstraints>,
     resolution: Int = 250
 ) : TrajectorySegment {
     val profile: MotionProfile

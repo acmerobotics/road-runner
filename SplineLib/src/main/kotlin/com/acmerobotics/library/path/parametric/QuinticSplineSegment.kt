@@ -2,12 +2,12 @@ package com.acmerobotics.library.path.parametric
 
 import com.acmerobotics.library.Pose2d
 import com.acmerobotics.library.Vector2d
-import com.acmerobotics.library.Waypoint2d
+import com.acmerobotics.library.Waypoint
 import org.apache.commons.math3.linear.LUDecomposition
 import org.apache.commons.math3.linear.MatrixUtils
 import kotlin.math.sqrt
 
-class QuinticPolynomial2d(start: Waypoint2d, end: Waypoint2d) : ParametricCurve() {
+class QuinticSplineSegment(start: Waypoint, end: Waypoint) : ParametricCurve() {
     private val ax: Double
     private val bx: Double
     private val cx: Double
@@ -35,10 +35,10 @@ class QuinticPolynomial2d(start: Waypoint2d, end: Waypoint2d) : ParametricCurve(
         )
         private const val LENGTH_SAMPLES = 1000
 
-        fun fromPoses(start: Pose2d, end: Pose2d): QuinticPolynomial2d {
-            val startWaypoint = Waypoint2d(start.x, start.y, Math.cos(start.heading), Math.sin(start.heading))
-            val endWaypoint = Waypoint2d(end.x, end.y, Math.cos(end.heading), Math.sin(end.heading))
-            return QuinticPolynomial2d(startWaypoint, endWaypoint)
+        fun fromPoses(start: Pose2d, end: Pose2d): QuinticSplineSegment {
+            val startWaypoint = Waypoint(start.x, start.y, Math.cos(start.heading), Math.sin(start.heading))
+            val endWaypoint = Waypoint(end.x, end.y, Math.cos(end.heading), Math.sin(end.heading))
+            return QuinticSplineSegment(startWaypoint, endWaypoint)
         }
     }
 
