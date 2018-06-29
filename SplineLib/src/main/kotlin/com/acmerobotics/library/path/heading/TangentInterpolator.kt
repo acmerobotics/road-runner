@@ -1,6 +1,8 @@
 package com.acmerobotics.library.path.heading
 
-class TangentInterpolator : HeadingInterpolator() {
+import com.acmerobotics.library.path.parametric.ParametricCurve
+
+class TangentInterpolator(parametricCurve: ParametricCurve) : HeadingInterpolator(parametricCurve) {
     override fun get(displacement: Double): Double {
         val pathDeriv = parametricCurve.deriv(displacement)
         val angle = Math.atan2(pathDeriv.y, pathDeriv.x)

@@ -2,16 +2,13 @@ package com.acmerobotics.library.path
 
 import com.acmerobotics.library.Pose2d
 import com.acmerobotics.library.path.heading.HeadingInterpolator
+import com.acmerobotics.library.path.heading.TangentInterpolator
 import com.acmerobotics.library.path.parametric.ParametricCurve
 
 class Path(
     private val parametricCurve: ParametricCurve,
-    private val headingInterpolator: HeadingInterpolator
+    private val headingInterpolator: HeadingInterpolator = TangentInterpolator(parametricCurve)
 ) {
-    init {
-        headingInterpolator.init(parametricCurve)
-    }
-
     fun length() = parametricCurve.length()
 
     fun start() = get(0.0)

@@ -1,14 +1,9 @@
 package com.acmerobotics.library
 
-import com.acmerobotics.library.path.Path
-import com.acmerobotics.library.path.heading.TangentInterpolator
-import com.acmerobotics.library.path.parametric.QuinticSplineSegment
+import com.acmerobotics.library.path.parametric.QuinticSpline
 import com.acmerobotics.library.trajectory.DriveConstraints
-import com.acmerobotics.library.trajectory.PathTrajectorySegment
-import com.acmerobotics.library.trajectory.Trajectory
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import java.lang.Math.hypot
 
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -17,30 +12,31 @@ class TrajectoryTest {
     fun testSimpleSpline() {
         val constraints = DriveConstraints(
             50.0,
-            500.0,
-            maximumAngularVelocity = 5.0,
-            maximumAngularAcceleration = 1.0,
-            maximumCentripetalAcceleration = 15.0
+            25.0,
+            maximumAngularVelocity = 2 * Math.PI,
+            maximumAngularAcceleration = Math.PI
         )
-        val spline = QuinticSplineSegment.fromPoses(
+        val spline = QuinticSpline.fromPoses(
             Pose2d(0.0, 0.0, Math.PI / 6),
-            Pose2d(108.0, 72.0, 3 * Math.PI / 4)
+            Pose2d(108.0, 72.0, 3 * Math.PI / 4),
+            Pose2d(24.0, 32.0, -Math.PI)
         )
-        println(hypot(40.0, 200.0))
-        println(hypot(108.0, 72.0))
-        val path = Path(spline, TangentInterpolator())
-        val trajectory = Trajectory(
-            listOf(
-                PathTrajectorySegment(
-                    listOf(path),
-                    listOf(constraints),
-                    10000
-                )
-            )
-        )
-        GraphUtil.saveTrajectory("simpleSpline", trajectory)
-        GraphUtil.saveMotionProfile("simpleSpline", (trajectory.segments[0] as PathTrajectorySegment).profile, false)
-        GraphUtil.saveParametricCurve("simpleSpline", spline)
-        CSVUtil.savePath("simpleSpline", path)
+        for (splineSegment in spline) {
+            println(splineSegment)
+            println(splineSegment.length())
+        }
+//        val trajectory = Trajectory(
+//            listOf(
+//                PathTrajectorySegment(
+//                    spline.map { Path(it) },
+//                    spline.map { constraints },
+//                    10000
+//                )
+//            )
+//        )
+//        GraphUtil.saveTrajectory("simpleSpline", trajectory)
+//        GraphUtil.saveMotionProfile("simpleSpline", (trajectory.segments[0] as PathTrajectorySegment).profile, false)
+//        GraphUtil.saveParametricCurve("simpleSpline", spline)
+//        CSVUtil.savePath("simpleSpline", path)
     }
 }
