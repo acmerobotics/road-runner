@@ -24,10 +24,10 @@ class TangentInterpolator(parametricCurve: ParametricCurve) : HeadingInterpolato
         val pathSecondDeriv = parametricCurve.secondDeriv(displacement)
         val pathThirdDeriv = parametricCurve.thirdDeriv(displacement)
 
-        // http://www.wolframalpha.com/input/?i=d%2Fdt(d%2Fdt(arctan((dy%2Fdt)%2F(dx%2Fdt))))
-        // I hate everything, especially chain rule
+        // if you're curious and hate yourself enough, here's the complete formula:
+        // http://www.wolframalpha.com/input/?i=d%2Fds(d%2Fds(arctan((dy%2Fds)%2F(dx%2Fds))))
         val denominator = pathDeriv.x * pathDeriv.x + pathDeriv.y * pathDeriv.y
-        val firstTerm = (pathThirdDeriv.y - pathThirdDeriv.x) / denominator
+        val firstTerm = (pathThirdDeriv.y * pathDeriv.x - pathThirdDeriv.x * pathDeriv.y) / denominator
         var secondTerm = (pathDeriv.x * pathSecondDeriv.y - pathSecondDeriv.x * pathDeriv.y)
         secondTerm *= 2 * (pathDeriv.x * pathSecondDeriv.x + pathDeriv.y * pathSecondDeriv.y)
         secondTerm /= (denominator * denominator)

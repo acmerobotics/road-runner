@@ -1,5 +1,6 @@
 package com.acmerobotics.library
 
+import com.acmerobotics.library.path.Path
 import com.acmerobotics.library.path.parametric.ParametricCurve
 import com.acmerobotics.library.profile.MotionProfile
 import com.acmerobotics.library.trajectory.Trajectory
@@ -54,12 +55,28 @@ object GraphUtil {
         saveGraph("${name}ParametricCurve", graph)
     }
 
+    fun savePathDerivatives(name: String, path: Path, resolution: Int = 1000) {
+        val displacements = (0.. resolution).map { it / resolution.toDouble() * path.length() }
+        val derivs = displacements.map { path.deriv(it) }
+        val secondDerivs = displacements.map { path.secondDeriv(it) }
+
+        val derivGraph = QuickChart.getChart(name + "Deriv", "s", "d/ds", arrayOf("dx/ds", "dy/ds", "dθ/ds"), displacements.toDoubleArray(),
+            arrayOf(derivs.map { it.x }.toDoubleArray(), derivs.map { it.y }.toDoubleArray(), derivs.map { it.heading }.toDoubleArray())
+        )
+        val secondDerivGraph = QuickChart.getChart(name + "SecondDeriv", "s", "d2/ds2", arrayOf("d2x/ds2", "d2y/ds2", "d2θ/ds2"), displacements.toDoubleArray(),
+            arrayOf(secondDerivs.map { it.x }.toDoubleArray(), secondDerivs.map { it.y }.toDoubleArray(), secondDerivs.map { it.heading }.toDoubleArray())
+        )
+
+        saveGraph("${name}Deriv", derivGraph)
+        saveGraph("${name}SecondDeriv", secondDerivGraph)
+    }
+
     fun saveTrajectory(name: String, trajectory: Trajectory, resolution: Int = 1000) {
         val timeData = (0..resolution).map { it / resolution.toDouble() * trajectory.duration() }.toDoubleArray()
         val velocityData = timeData.map { trajectory.velocity(it) }
         val xVelocityData = velocityData.map { it.x }.toDoubleArray()
         val yVelocityData = velocityData.map { it.y }.toDoubleArray()
-        val omegaData = velocityData.map { it.heading }.map(Math::toDegrees).toDoubleArray()
+        val omegaData = velocityData.map { it.heading }.toDoubleArray()
 
         val labels = listOf("vx(t)", "vy(t)", "ω(t)")
         val data = listOf(xVelocityData, yVelocityData, omegaData)

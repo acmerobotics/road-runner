@@ -13,9 +13,9 @@ class Vector2d(val x: Double, val y: Double) {
 
     operator fun div(scalar: Double) = Vector2d(x / scalar, y / scalar)
 
-    operator fun Double.times(vector: Vector2d) = vector.times(this)
-
-    operator fun Double.div(vector: Vector2d) = vector.div(this)
-
     override fun toString() = String.format("(%.3f, %.3f)", x, y)
 }
+
+operator fun Double.times(vector: Vector2d) = vector.times(this)
+
+operator fun Double.div(vector: Vector2d) = vector.div(this)

@@ -1,10 +1,12 @@
 package com.acmerobotics.library.path.parametric
 
+import com.acmerobotics.library.InterpolatingTreeMap
 import com.acmerobotics.library.Pose2d
 import com.acmerobotics.library.Vector2d
 import com.acmerobotics.library.Waypoint
 import org.apache.commons.math3.linear.LUDecomposition
 import org.apache.commons.math3.linear.MatrixUtils
+import java.lang.Math.pow
 import kotlin.math.sqrt
 
 class QuinticSplineSegment(start: Waypoint, end: Waypoint) : ParametricCurve() {
@@ -21,6 +23,10 @@ class QuinticSplineSegment(start: Waypoint, end: Waypoint) : ParametricCurve() {
     private val dy: Double
     private val ey: Double
     private val fy: Double
+
+    private val length: Double
+
+    private val arcLengthSamples = InterpolatingTreeMap()
 
     companion object {
         private val COEFF_MATRIX = MatrixUtils.createRealMatrix(
@@ -67,6 +73,21 @@ class QuinticSplineSegment(start: Waypoint, end: Waypoint) : ParametricCurve() {
         cy = coeffY.getEntry(3, 0)
         by = coeffY.getEntry(4, 0)
         ay = coeffY.getEntry(5, 0)
+
+        arcLengthSamples[0.0] = 0.0
+        val dx = 1.0 / LENGTH_SAMPLES
+        var sum = 0.0
+        var lastIntegrand = 0.0
+        for (i in 1..LENGTH_SAMPLES) {
+            val t = i * dx
+            val deriv = internalDeriv(t)
+            val integrand = sqrt(deriv.x * deriv.x + deriv.y * deriv.y) * dx
+            sum += (integrand + lastIntegrand) / 2.0
+            lastIntegrand = integrand
+
+            arcLengthSamples[sum] = t
+        }
+        length = sum
     }
 
     private fun internalGet(t: Double): Vector2d {
@@ -93,31 +114,42 @@ class QuinticSplineSegment(start: Waypoint, end: Waypoint) : ParametricCurve() {
         return Vector2d(x, y)
     }
 
-    private fun computeLength(samples: Int): Double {
-        val dx = 1.0 / samples
-        var sum = 0.0
-        var lastIntegrand = 0.0
-        for (i in 1..samples) {
-            val t = i * dx
-            val deriv = internalDeriv(t)
-            val integrand = sqrt(deriv.x * deriv.x + deriv.y * deriv.y)
-            sum += (integrand + lastIntegrand) / 2.0
-            lastIntegrand = integrand
-        }
-        return sum * dx
-    }
-
-    private val length by lazy { computeLength(LENGTH_SAMPLES) }
-
     override fun length() = length
 
-    override operator fun get(displacement: Double) = internalGet(displacement / length)
+    override operator fun get(displacement: Double): Vector2d {
+        val t = arcLengthSamples.getInterpolated(displacement) ?: 0.0
+        return internalGet(t)
+    }
 
-    override fun deriv(displacement: Double) = internalDeriv(displacement / length) / length
+    override fun deriv(displacement: Double): Vector2d {
+        val t = arcLengthSamples.getInterpolated(displacement) ?: 0.0
+        val deriv = internalDeriv(t)
+        return deriv / sqrt(deriv.x * deriv.x + deriv.y * deriv.y)
+    }
 
-    override fun secondDeriv(displacement: Double) = internalSecondDeriv(displacement / length) / (length * length)
+    override fun secondDeriv(displacement: Double): Vector2d {
+        val t = arcLengthSamples.getInterpolated(displacement) ?: 0.0
+        val deriv = internalDeriv(t)
+        val secondDeriv = internalSecondDeriv(t)
+        val numerator = -(deriv.x * secondDeriv.x + deriv.y * secondDeriv.y)
+        val denominator = deriv.x * deriv.x + deriv.y * deriv.y
+        return secondDeriv / denominator + deriv * numerator / (denominator * denominator)
+    }
 
-    override fun thirdDeriv(displacement: Double) = internalThirdDeriv(displacement / length) / (length * length * length)
+    override fun thirdDeriv(displacement: Double): Vector2d {
+        val t = arcLengthSamples.getInterpolated(displacement) ?: 0.0
+        val deriv = internalDeriv(t)
+        val secondDeriv = internalSecondDeriv(t)
+        val thirdDeriv = internalThirdDeriv(t)
+        val firstNumerator = -(deriv.x * secondDeriv.x + deriv.y * secondDeriv.y)
+        val secondNumeratorFirstTerm = secondDeriv.x * secondDeriv.x + secondDeriv.y * secondDeriv.y +
+                deriv.x * thirdDeriv.x + deriv.y * thirdDeriv.y
+        val secondNumeratorSecondTerm = -4.0 * firstNumerator
+        val denominator = deriv.x * deriv.x + deriv.y * deriv.y
+        return thirdDeriv / pow(denominator, 1.5) + secondDeriv * 3.0 * firstNumerator / pow(denominator, 2.5) +
+            deriv * (secondNumeratorFirstTerm / pow(denominator, 2.5) +
+                secondNumeratorSecondTerm / pow(denominator, 3.5))
+    }
 
     override fun toString() = "($ax*t^5+$bx*t^4+$cx*t^3+$dx*t^2+$ex*t+$fx,$ay*t^5+$by*t^4+$cy*t^3+$dy*t^2+$ey*t+$fy)"
 }
