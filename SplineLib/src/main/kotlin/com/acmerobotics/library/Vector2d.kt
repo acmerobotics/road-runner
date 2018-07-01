@@ -13,6 +13,8 @@ class Vector2d(val x: Double, val y: Double) {
 
     operator fun div(scalar: Double) = Vector2d(x / scalar, y / scalar)
 
+    infix fun distanceTo(other: Vector2d) = (this - other).norm()
+
     override fun toString() = String.format("(%.3f, %.3f)", x, y)
 }
 

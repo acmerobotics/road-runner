@@ -11,8 +11,6 @@ class Pose2d(val x: Double, val y: Double, val heading: Double) {
 
     operator fun div(scalar: Double) = Pose2d(x / scalar, y / scalar, heading / scalar)
 
-    fun toWaypoint() = Waypoint(x, y, 100 * Math.cos(heading), 100 * Math.sin(heading))
-
     override fun toString() = String.format("(%.3f, %.3f, %.3f°)", x, y, Math.toDegrees(heading))
 }
 

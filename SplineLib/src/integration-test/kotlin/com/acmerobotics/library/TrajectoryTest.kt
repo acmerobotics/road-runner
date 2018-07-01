@@ -21,8 +21,8 @@ class TrajectoryTest {
         )
         val spline = QuinticSpline.fromPoses(
             Pose2d(0.0, 0.0, Math.PI / 6),
-            Pose2d(108.0, 72.0, 3 * Math.PI / 4),
-            Pose2d(24.0, 32.0, -Math.PI)
+            Pose2d(-3.0, 7.2, 3 * Math.PI / 4),
+            Pose2d(2.4, 3.2, -Math.PI)
         )
         val path = Path(spline)
         val trajectory = Trajectory(
