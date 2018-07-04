@@ -5,7 +5,7 @@ import com.acmerobotics.library.path.parametric.QuinticSplineSegment
 class TangentInterpolator: HeadingInterpolator {
     private lateinit var spline: QuinticSplineSegment
 
-    override fun init(spline: QuinticSplineSegment) {
+    override fun fit(spline: QuinticSplineSegment) {
         this.spline = spline
     }
 

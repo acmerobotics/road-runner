@@ -37,7 +37,7 @@ class QuinticSplineSegment(start: Waypoint, end: Waypoint, private val interpola
         }
         length = sum
 
-        interpolator.init(this)
+        interpolator.fit(this)
     }
 
     private fun internalGet(t: Double) = Vector2d(x[t], y[t])
@@ -48,29 +48,22 @@ class QuinticSplineSegment(start: Waypoint, end: Waypoint, private val interpola
 
     private fun internalThirdDeriv(t: Double) = Vector2d(x.thirdDeriv(t), y.thirdDeriv(t))
 
-    fun displacementToInternalParameter(displacement: Double) = arcLengthSamples.getInterpolated(displacement) ?: 0.0
+    fun displacementToParameter(displacement: Double) = arcLengthSamples.getInterpolated(displacement) ?: 0.0
 
-    fun length() = length
-
-    operator fun get(displacement: Double) = internalGet(displacementToInternalParameter(displacement))
-
-    fun deriv(displacement: Double): Vector2d {
-        val t = displacementToInternalParameter(displacement)
+    fun parameterDeriv(t: Double): Double {
         val deriv = internalDeriv(t)
-        return deriv / sqrt(deriv.x * deriv.x + deriv.y * deriv.y)
+        return 1.0 / sqrt(deriv.x * deriv.x + deriv.y * deriv.y)
     }
 
-    fun secondDeriv(displacement: Double): Vector2d {
-        val t = displacementToInternalParameter(displacement)
+    fun parameterSecondDeriv(t: Double): Double {
         val deriv = internalDeriv(t)
         val secondDeriv = internalSecondDeriv(t)
         val numerator = -(deriv.x * secondDeriv.x + deriv.y * secondDeriv.y)
         val denominator = deriv.x * deriv.x + deriv.y * deriv.y
-        return secondDeriv / denominator + deriv * numerator / (denominator * denominator)
+        return numerator / (denominator * denominator)
     }
 
-    fun thirdDeriv(displacement: Double): Vector2d {
-        val t = displacementToInternalParameter(displacement)
+    fun parameterThirdDeriv(t: Double): Double {
         val deriv = internalDeriv(t)
         val secondDeriv = internalSecondDeriv(t)
         val thirdDeriv = internalThirdDeriv(t)
@@ -79,9 +72,40 @@ class QuinticSplineSegment(start: Waypoint, end: Waypoint, private val interpola
                 deriv.x * thirdDeriv.x + deriv.y * thirdDeriv.y
         val secondNumeratorSecondTerm = -4.0 * firstNumerator
         val denominator = deriv.x * deriv.x + deriv.y * deriv.y
-        return thirdDeriv / pow(denominator, 1.5) + secondDeriv * 3.0 * firstNumerator / pow(denominator, 2.5) +
-            deriv * (secondNumeratorFirstTerm / pow(denominator, 2.5) +
+        return (secondNumeratorFirstTerm / pow(denominator, 2.5) +
                 secondNumeratorSecondTerm / pow(denominator, 3.5))
+    }
+
+    fun length() = length
+
+    operator fun get(displacement: Double) = internalGet(displacementToParameter(displacement))
+
+    fun deriv(displacement: Double): Vector2d {
+        val t = displacementToParameter(displacement)
+        return internalDeriv(t) * parameterDeriv(t)
+    }
+
+    fun secondDeriv(displacement: Double): Vector2d {
+        val t = displacementToParameter(displacement)
+        val deriv = internalDeriv(t)
+        val secondDeriv = internalSecondDeriv(t)
+        val splineParameterDeriv = parameterDeriv(t)
+        val splineParameterSecondDeriv = parameterSecondDeriv(t)
+        return secondDeriv * splineParameterDeriv * splineParameterDeriv +
+                deriv * splineParameterSecondDeriv
+    }
+
+    fun thirdDeriv(displacement: Double): Vector2d {
+        val t = displacementToParameter(displacement)
+        val deriv = internalDeriv(t)
+        val secondDeriv = internalSecondDeriv(t)
+        val thirdDeriv = internalThirdDeriv(t)
+        val splineParameterDeriv = parameterDeriv(t)
+        val splineParameterSecondDeriv = parameterSecondDeriv(t)
+        val splineParameterThirdDeriv = parameterThirdDeriv(t)
+        return thirdDeriv * splineParameterDeriv * splineParameterDeriv * splineParameterDeriv +
+                secondDeriv * splineParameterSecondDeriv * splineParameterDeriv * 3.0 +
+                deriv * splineParameterThirdDeriv
     }
 
     fun pose(displacement: Double): Pose2d {

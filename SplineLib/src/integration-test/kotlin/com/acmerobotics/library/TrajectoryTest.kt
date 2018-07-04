@@ -1,6 +1,8 @@
 package com.acmerobotics.library
 
+import com.acmerobotics.library.path.heading.SplineInterpolator
 import com.acmerobotics.library.path.parametric.QuinticSpline
+import com.acmerobotics.library.path.parametric.QuinticSplineSegment
 import com.acmerobotics.library.trajectory.DriveConstraints
 import com.acmerobotics.library.trajectory.SplineTrajectorySegment
 import com.acmerobotics.library.trajectory.Trajectory
@@ -18,11 +20,19 @@ class TrajectoryTest {
             maximumAngularVelocity = 2 * Math.PI,
             maximumAngularAcceleration = Math.PI
         )
-        val spline = QuinticSpline.fromPoses(
-            Pose2d(0.0, 0.0, Math.PI / 6),
-//            Pose2d(-3.0, 7.2, 3 * Math.PI / 4),
-            Pose2d(2.4, 3.2, -Math.PI)
-        )
+//        val spline = QuinticSpline.fromPoses(
+//            Pose2d(0.0, 0.0, Math.PI / 6),
+////            Pose2d(-3.0, 7.2, 3 * Math.PI / 4),
+//            Pose2d(2.4, 3.2, -Math.PI)
+//        )
+        val spline = QuinticSpline(listOf(
+            QuinticSplineSegment(
+                Waypoint(0.0, 0.0, 20.0, 0.0),
+                Waypoint(4.32, 8.2, -40.0, 0.0),
+                SplineInterpolator(0.0, 0.0)
+            )
+        ))
+        println(spline.segments[0])
         val trajectory = Trajectory(
             listOf(
                 SplineTrajectorySegment(

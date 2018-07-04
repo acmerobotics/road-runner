@@ -2,13 +2,15 @@ package com.acmerobotics.library.path.parametric
 
 import com.acmerobotics.library.Pose2d
 import com.acmerobotics.library.Waypoint
+import com.acmerobotics.library.path.heading.HeadingInterpolator
+import com.acmerobotics.library.path.heading.TangentInterpolator
 
-class QuinticSpline(private val segments: List<QuinticSplineSegment>) {
+class QuinticSpline(val segments: List<QuinticSplineSegment>) {
     companion object {
         fun fromWaypoints(vararg waypoints: Waypoint) =
             QuinticSpline((0 until waypoints.lastIndex).map { QuinticSplineSegment(waypoints[it], waypoints[it+1]) })
 
-        fun fromPoses(vararg poses: Pose2d): QuinticSpline {
+        fun fromPoses(vararg poses: Pose2d, interpolator: HeadingInterpolator = TangentInterpolator()): QuinticSpline {
             val poseDistances = (0 until poses.lastIndex)
                 .map { poses[it+1].pos() distanceTo poses[it].pos() }
             val derivativeMagnitudes = (0 until poses.lastIndex - 1)
