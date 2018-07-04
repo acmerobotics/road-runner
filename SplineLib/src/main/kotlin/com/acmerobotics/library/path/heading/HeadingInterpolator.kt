@@ -1,9 +1,10 @@
 package com.acmerobotics.library.path.heading
 
-import com.acmerobotics.library.path.parametric.ParametricCurve
+import com.acmerobotics.library.path.parametric.QuinticSplineSegment
 
-abstract class HeadingInterpolator(val parametricCurve: ParametricCurve) {
-    abstract operator fun get(displacement: Double): Double
-    abstract fun deriv(displacement: Double): Double
-    abstract fun secondDeriv(displacement: Double): Double
+interface HeadingInterpolator {
+    fun init(spline: QuinticSplineSegment)
+    operator fun get(displacement: Double): Double
+    fun deriv(displacement: Double): Double
+    fun secondDeriv(displacement: Double): Double
 }

@@ -1,7 +1,6 @@
 package com.acmerobotics.library
 
-import com.acmerobotics.library.path.Path
-import com.acmerobotics.library.path.parametric.ParametricCurve
+import com.acmerobotics.library.path.parametric.QuinticSpline
 import com.acmerobotics.library.profile.MotionProfile
 import com.acmerobotics.library.trajectory.Trajectory
 import org.knowm.xchart.BitmapEncoder
@@ -44,21 +43,21 @@ object GraphUtil {
         ))
     }
 
-    fun saveParametricCurve(name: String, parametricCurve: ParametricCurve, resolution: Int = 1000) {
-        val displacementData = (0..resolution).map { it / resolution.toDouble() * parametricCurve.length() }
-        val points = displacementData.map { parametricCurve[it] }
+    fun saveSpline(name: String, spline: QuinticSpline, resolution: Int = 1000) {
+        val displacementData = (0..resolution).map { it / resolution.toDouble() * spline.length() }
+        val points = displacementData.map { spline[it] }
         val xData = points.map { it.x }.toDoubleArray()
         val yData = points.map { it.y }.toDoubleArray()
 
-        val graph = QuickChart.getChart(name, "x", "y", "parametricCurve", xData, yData)
+        val graph = QuickChart.getChart(name, "x", "y", "spline", xData, yData)
         graph.styler.isLegendVisible = false
-        saveGraph("${name}ParametricCurve", graph)
+        saveGraph(name, graph)
     }
 
-    fun savePathDerivatives(name: String, path: Path, resolution: Int = 1000) {
-        val displacements = (0.. resolution).map { it / resolution.toDouble() * path.length() }
-        val derivs = displacements.map { path.deriv(it) }
-        val secondDerivs = displacements.map { path.secondDeriv(it) }
+    fun saveSplineDerivatives(name: String, spline: QuinticSpline, resolution: Int = 1000) {
+        val displacements = (0.. resolution).map { it / resolution.toDouble() * spline.length() }
+        val derivs = displacements.map { spline.deriv(it) }
+        val secondDerivs = displacements.map { spline.secondDeriv(it) }
 
         val derivGraph = QuickChart.getChart(name + "Deriv", "s", "d/ds", arrayOf("dx/ds", "dy/ds", "dθ/ds"), displacements.toDoubleArray(),
             arrayOf(derivs.map { it.x }.toDoubleArray(), derivs.map { it.y }.toDoubleArray(), derivs.map { it.heading }.toDoubleArray())
