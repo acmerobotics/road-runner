@@ -1,5 +1,6 @@
-package com.acmerobotics.library
+package com.acmerobotics.library.util
 
+import com.acmerobotics.library.Vector2d
 import kotlin.math.abs
 
 object MathUtil {

@@ -21,7 +21,7 @@ class TrajectoryTest {
         )
         val spline = QuinticSpline.fromPoses(
             Pose2d(0.0, 0.0, Math.PI / 6),
-            Pose2d(-3.0, 7.2, 3 * Math.PI / 4),
+//            Pose2d(-3.0, 7.2, 3 * Math.PI / 4),
             Pose2d(2.4, 3.2, -Math.PI)
         )
         val path = Path(spline)
@@ -29,14 +29,13 @@ class TrajectoryTest {
             listOf(
                 PathTrajectorySegment(
                     listOf(path),
-                    listOf(constraints),
-                    10000
+                    listOf(constraints)
                 )
             )
         )
-        GraphUtil.saveTrajectory("simpleSpline", trajectory, 10000)
+        GraphUtil.saveTrajectory("simpleSpline", trajectory, 100000)
         GraphUtil.saveMotionProfile("simpleSpline", (trajectory.segments[0] as PathTrajectorySegment).profile, false)
-        GraphUtil.savePathDerivatives("simpleSpline", path)
+        GraphUtil.savePathDerivatives("simpleSpline", path, 100000)
         GraphUtil.saveParametricCurve("simpleSpline", spline)
         CSVUtil.savePath("simpleSpline", path)
     }
