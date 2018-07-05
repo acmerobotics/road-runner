@@ -1,30 +1,20 @@
 package com.acmerobotics.library
 
+import com.acmerobotics.library.TestUtil.compareDerivatives
 import com.acmerobotics.library.spline.QuinticSplineSegment
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import kotlin.math.abs
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class QuinticSplineSegmentTest {
-    companion object {
-        fun compareDerivatives(x: List<Double>, dx: List<Double>, ds: Double, epsilon: Double): Boolean {
-            val numDx = (0 until x.size - 2).map { (x[it+2] - x[it]) / (2 * ds) }
-            for (i in 2 until x.size - 2) {
-                if (abs(numDx[i - 1] - dx[i]) > epsilon) {
-                    return false
-                }
-            }
-            return true
-        }
-    }
-
     @Test
     fun testSplineDerivatives() {
         val splineSegment = QuinticSplineSegment(
             Waypoint(0.0, 0.0, 20.0, 40.0),
             Waypoint(45.0, 35.0, 60.0, 10.0)
         )
+
         val resolution = 1000
         val ds = splineSegment.length() / resolution.toDouble()
         val s = (0..resolution).map { it * ds }
@@ -62,5 +52,41 @@ class QuinticSplineSegmentTest {
         assert(compareDerivatives(t, dt, ds, 0.03))
         assert(compareDerivatives(dt, d2t, ds, 0.05))
         assert(compareDerivatives(d2t, d3t, ds, 0.01))
+    }
+
+    @Test
+    fun testInterpolation() {
+        val splineSegment = QuinticSplineSegment(
+            Waypoint(0.0, 0.0, 20.0, 40.0),
+            Waypoint(45.0, 35.0, 60.0, 10.0)
+        )
+
+        assertEquals(splineSegment[0.0].x, 0.0, 0.001)
+        assertEquals(splineSegment[0.0].y, 0.0, 0.001)
+        assertEquals(splineSegment[splineSegment.length()].x, 45.0, 0.001)
+        assertEquals(splineSegment[splineSegment.length()].y, 35.0, 0.001)
+    }
+
+    @Test
+    fun testDerivativeMagnitudeInvariance() {
+        val splineSegment = QuinticSplineSegment(
+            Waypoint(0.0, 0.0, 20.0, 40.0),
+            Waypoint(45.0, 35.0, 60.0, 10.0)
+        )
+
+        val splineSegment2 = QuinticSplineSegment(
+            Waypoint(0.0, 0.0, 40.0, 80.0),
+            Waypoint(45.0, 35.0,  120.0, 20.0)
+        )
+
+        assertEquals(splineSegment.deriv(0.0).x, splineSegment2.deriv(0.0).x, 0.001)
+        assertEquals(splineSegment.deriv(0.0).y, splineSegment2.deriv(0.0).y, 0.001)
+        assertEquals(splineSegment.deriv(splineSegment.length()).x, splineSegment2.deriv(splineSegment.length()).x, 0.001)
+        assertEquals(splineSegment.deriv(splineSegment.length()).y, splineSegment2.deriv(splineSegment.length()).y, 0.001)
+        
+        assertEquals(splineSegment.secondDeriv(0.0).x, splineSegment2.secondDeriv(0.0).x, 0.001)
+        assertEquals(splineSegment.secondDeriv(0.0).y, splineSegment2.secondDeriv(0.0).y, 0.001)
+        assertEquals(splineSegment.secondDeriv(splineSegment.length()).x, splineSegment2.secondDeriv(splineSegment.length()).x, 0.001)
+        assertEquals(splineSegment.secondDeriv(splineSegment.length()).y, splineSegment2.secondDeriv(splineSegment.length()).y, 0.001)
     }
 }
