@@ -1,10 +1,8 @@
-package com.acmerobotics.library.path.parametric
+package com.acmerobotics.library.path
 
 import com.acmerobotics.library.Pose2d
 import com.acmerobotics.library.Vector2d
 import com.acmerobotics.library.Waypoint
-import com.acmerobotics.library.path.heading.HeadingInterpolator
-import com.acmerobotics.library.path.heading.TangentInterpolator
 import com.acmerobotics.library.util.InterpolatingTreeMap
 import java.lang.Math.pow
 import kotlin.math.sqrt
@@ -37,16 +35,49 @@ class QuinticSplineSegment(start: Waypoint, end: Waypoint, private val interpola
         }
         length = sum
 
-        interpolator.fit(this)
+        interpolator.init(this)
     }
 
-    private fun internalGet(t: Double) = Vector2d(x[t], y[t])
+    internal fun internalGet(t: Double) = Vector2d(x[t], y[t])
 
-    private fun internalDeriv(t: Double) = Vector2d(x.deriv(t), y.deriv(t))
+    internal fun internalDeriv(t: Double) = Vector2d(x.deriv(t), y.deriv(t))
 
-    private fun internalSecondDeriv(t: Double) = Vector2d(x.secondDeriv(t), y.secondDeriv(t))
+    internal fun internalSecondDeriv(t: Double) = Vector2d(x.secondDeriv(t), y.secondDeriv(t))
 
-    private fun internalThirdDeriv(t: Double) = Vector2d(x.thirdDeriv(t), y.thirdDeriv(t))
+    internal fun internalThirdDeriv(t: Double) = Vector2d(x.thirdDeriv(t), y.thirdDeriv(t))
+
+    internal fun internalTangentAngle(t: Double): Double {
+        val pathDeriv = internalDeriv(t)
+        val angle = Math.atan2(pathDeriv.y, pathDeriv.x)
+        return if (angle.isNaN()) 0.0 else angle
+    }
+
+    internal fun internalTangentAngleDeriv(t: Double): Double {
+        val pathDeriv = internalDeriv(t)
+        val pathSecondDeriv = internalSecondDeriv(t)
+
+        var deriv = pathDeriv.x * pathSecondDeriv.y - pathSecondDeriv.x * pathDeriv.y
+        deriv /= (pathDeriv.x * pathDeriv.x + pathDeriv.y * pathDeriv.y)
+
+        return if (deriv.isNaN()) 0.0 else deriv
+    }
+
+    internal fun internalTangentAngleSecondDeriv(t: Double): Double {
+        val pathDeriv = internalDeriv(t)
+        val pathSecondDeriv = internalSecondDeriv(t)
+        val pathThirdDeriv = internalThirdDeriv(t)
+
+        // if you're curious and hate yourself enough, here's the complete formula:
+        // http://www.wolframalpha.com/input/?i=d%2Fds(d%2Fds(arctan((dy%2Fds)%2F(dx%2Fds))))
+        val denominator = pathDeriv.x * pathDeriv.x + pathDeriv.y * pathDeriv.y
+        val firstTerm = (pathThirdDeriv.y * pathDeriv.x - pathThirdDeriv.x * pathDeriv.y) / denominator
+        var secondTerm = (pathDeriv.x * pathSecondDeriv.y - pathSecondDeriv.x * pathDeriv.y)
+        secondTerm *= 2 * (pathDeriv.x * pathSecondDeriv.x + pathDeriv.y * pathSecondDeriv.y)
+        secondTerm /= (denominator * denominator)
+        val secondDeriv = firstTerm - secondTerm
+
+        return if (secondDeriv.isNaN()) 0.0 else secondDeriv
+    }
 
     fun displacementToParameter(displacement: Double) = arcLengthSamples.getInterpolated(displacement) ?: 0.0
 
@@ -106,6 +137,22 @@ class QuinticSplineSegment(start: Waypoint, end: Waypoint, private val interpola
         return thirdDeriv * splineParameterDeriv * splineParameterDeriv * splineParameterDeriv +
                 secondDeriv * splineParameterSecondDeriv * splineParameterDeriv * 3.0 +
                 deriv * splineParameterThirdDeriv
+    }
+
+    fun tangentAngle(displacement: Double): Double {
+        val t = displacementToParameter(displacement)
+        return internalTangentAngle(t)
+    }
+
+    fun tangentAngleDeriv(displacement: Double): Double {
+        val t = displacementToParameter(displacement)
+        return internalTangentAngleDeriv(t) * parameterDeriv(t)
+    }
+
+    fun tangentAngleSecondDeriv(displacement: Double): Double {
+        val t = displacementToParameter(displacement)
+        return internalTangentAngleSecondDeriv(t) * parameterDeriv(t) * parameterDeriv(t) +
+                internalTangentAngleDeriv(t) * parameterSecondDeriv(t)
     }
 
     fun pose(displacement: Double): Pose2d {

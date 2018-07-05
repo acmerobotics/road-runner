@@ -1,4 +1,4 @@
-package com.acmerobotics.library.path.parametric
+package com.acmerobotics.library.path
 
 import org.apache.commons.math3.linear.LUDecomposition
 import org.apache.commons.math3.linear.MatrixUtils
@@ -49,4 +49,6 @@ class QuinticPolynomial(start: Double, startDeriv: Double, startSecondDeriv: Dou
     fun secondDeriv(t: Double) = (20*a*t + 12*b) * (t*t) + 6*c * t + 2*d
 
     fun thirdDeriv(t: Double) = (60*a*t + 24*b) * t + 6*c
+
+    override fun toString() = "$a*t^5+$b*t^4+$c*t^3+$d*t^2+$e*t+$f"
 }

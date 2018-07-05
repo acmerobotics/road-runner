@@ -1,9 +1,7 @@
-package com.acmerobotics.library.path.parametric
+package com.acmerobotics.library.path
 
 import com.acmerobotics.library.Pose2d
 import com.acmerobotics.library.Waypoint
-import com.acmerobotics.library.path.heading.HeadingInterpolator
-import com.acmerobotics.library.path.heading.TangentInterpolator
 
 class QuinticSpline(val segments: List<QuinticSplineSegment>) {
     companion object {

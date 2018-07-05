@@ -1,8 +1,8 @@
 package com.acmerobotics.library
 
-import com.acmerobotics.library.path.heading.SplineInterpolator
-import com.acmerobotics.library.path.parametric.QuinticSpline
-import com.acmerobotics.library.path.parametric.QuinticSplineSegment
+import com.acmerobotics.library.path.QuinticSpline
+import com.acmerobotics.library.path.QuinticSplineSegment
+import com.acmerobotics.library.path.WiggleInterpolator
 import com.acmerobotics.library.trajectory.DriveConstraints
 import com.acmerobotics.library.trajectory.SplineTrajectorySegment
 import com.acmerobotics.library.trajectory.Trajectory
@@ -29,7 +29,7 @@ class TrajectoryTest {
             QuinticSplineSegment(
                 Waypoint(0.0, 0.0, 20.0, 0.0),
                 Waypoint(4.32, 8.2, -40.0, 0.0),
-                SplineInterpolator(0.0, 0.0)
+                WiggleInterpolator(Math.toRadians(20.0), 6.0)
             )
         ))
         println(spline.segments[0])

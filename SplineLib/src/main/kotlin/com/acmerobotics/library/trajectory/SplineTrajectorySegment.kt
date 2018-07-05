@@ -1,11 +1,11 @@
 package com.acmerobotics.library.trajectory
 
 import com.acmerobotics.library.Pose2d
-import com.acmerobotics.library.path.parametric.QuinticSpline
 import com.acmerobotics.library.profile.MotionConstraints
 import com.acmerobotics.library.profile.MotionProfile
 import com.acmerobotics.library.profile.MotionProfileGenerator
 import com.acmerobotics.library.profile.MotionState
+import com.acmerobotics.library.path.QuinticSpline
 import kotlin.math.max
 import kotlin.math.min
 

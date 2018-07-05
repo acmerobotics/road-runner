@@ -1,6 +1,6 @@
 package com.acmerobotics.library
 
-import com.acmerobotics.library.path.parametric.QuinticSpline
+import com.acmerobotics.library.path.QuinticSpline
 import java.io.File
 
 object CSVUtil {
