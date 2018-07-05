@@ -14,7 +14,7 @@ class MotionProfileGeneratorTest {
     @Test
     fun testSimpleTriangle() {
         GraphUtil.saveMotionProfile(
-            "simpleTriangle",
+            "profiles/simpleTriangle",
             MotionProfileGenerator.generateSimpleMotionProfile(
                 MotionState(0.0, 0.0, 0.0),
                 MotionState(10.0, 0.0, 0.0),
@@ -27,7 +27,7 @@ class MotionProfileGeneratorTest {
     @Test
     fun testSimpleTrap() {
         GraphUtil.saveMotionProfile(
-            "simpleTrap",
+            "profiles/simpleTrap",
             MotionProfileGenerator.generateSimpleMotionProfile(
                 MotionState(0.0, 0.0, 0.0),
                 MotionState(10.0, 0.0, 0.0),
@@ -40,7 +40,7 @@ class MotionProfileGeneratorTest {
     @Test
     fun testSimpleTriangleStartingOffset() {
         GraphUtil.saveMotionProfile(
-            "simpleTriangleStartingOffset",
+            "profiles/simpleTriangleStartingOffset",
             MotionProfileGenerator.generateSimpleMotionProfile(
                 MotionState(5.0, 0.0, 0.0),
                 MotionState(15.0, 0.0, 0.0),
@@ -53,7 +53,7 @@ class MotionProfileGeneratorTest {
     @Test
     fun testSimpleTriangleReversed() {
         GraphUtil.saveMotionProfile(
-            "simpleTriangleReversed",
+            "profiles/simpleTriangleReversed",
             MotionProfileGenerator.generateSimpleMotionProfile(
                 MotionState(10.0, 0.0, 0.0),
                 MotionState(0.0, 0.0, 0.0),
@@ -66,7 +66,7 @@ class MotionProfileGeneratorTest {
     @Test
     fun testSimpleTriangleStartingOffsetReversed() {
         GraphUtil.saveMotionProfile(
-            "simpleTriangleStartingOffsetReversed",
+            "profiles/simpleTriangleStartingOffsetReversed",
             MotionProfileGenerator.generateSimpleMotionProfile(
                 MotionState(15.0, 0.0, 0.0),
                 MotionState(5.0, 0.0, 0.0),
@@ -79,7 +79,7 @@ class MotionProfileGeneratorTest {
     @Test
     fun testComplex() {
         GraphUtil.saveMotionProfile(
-            "complex",
+            "profiles/complex",
             MotionProfileGenerator.generateMotionProfile(
                 MotionState(0.0, 0.0, 0.0),
                 MotionState(10.0, 0.0, 0.0),
@@ -94,7 +94,7 @@ class MotionProfileGeneratorTest {
     @Test
     fun testComplex2() {
         GraphUtil.saveMotionProfile(
-            "complex2",
+            "profiles/complex2",
             MotionProfileGenerator.generateMotionProfile(
                 MotionState(0.0, 0.0, 0.0),
                 MotionState(10.0, 0.0, 0.0),
@@ -109,7 +109,7 @@ class MotionProfileGeneratorTest {
     @Test
     fun testComplex2Reversed() {
         GraphUtil.saveMotionProfile(
-            "complex2Reversed",
+            "profiles/complex2Reversed",
             MotionProfileGenerator.generateMotionProfile(
                 MotionState(10.0, 0.0, 0.0),
                 MotionState(0.0, 0.0, 0.0),

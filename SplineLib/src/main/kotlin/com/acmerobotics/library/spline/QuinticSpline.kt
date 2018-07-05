@@ -10,7 +10,7 @@ class QuinticSpline(val segments: List<QuinticSplineSegment>) {
 
         fun fromPoses(vararg poses: Pose2d, interpolator: HeadingInterpolator = TangentInterpolator()): QuinticSpline {
             return fromWaypoints(*(0 until poses.size).map { Waypoint(poses[it].x, poses[it].y,
-                Math.cos(poses[it].heading), Math.sin(poses[it].heading)) }.toTypedArray())
+                100 * Math.cos(poses[it].heading), 100 * Math.sin(poses[it].heading)) }.toTypedArray())
         }
     }
 

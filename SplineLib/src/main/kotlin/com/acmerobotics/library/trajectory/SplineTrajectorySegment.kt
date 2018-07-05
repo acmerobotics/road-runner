@@ -87,9 +87,8 @@ class SplineTrajectorySegment(
         var remainingDisplacement = motionState.x
         for (path in paths) {
             if (remainingDisplacement <= path.length()) {
-                return path.secondDeriv(remainingDisplacement) * motionState.v * motionState.v + path.deriv(
-                    remainingDisplacement
-                ) * motionState.a
+                return path.secondDeriv(remainingDisplacement) * motionState.v * motionState.v +
+                        path.deriv(remainingDisplacement) * motionState.a
             }
             remainingDisplacement -= path.length()
         }
