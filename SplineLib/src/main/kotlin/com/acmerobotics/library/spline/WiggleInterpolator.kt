@@ -1,4 +1,4 @@
-package com.acmerobotics.library.path
+package com.acmerobotics.library.spline
 
 import kotlin.math.cos
 import kotlin.math.sin
@@ -42,14 +42,6 @@ class WiggleInterpolator(private val amplitude: Double, private val desiredPerio
             0.0,
             0.0
         )
-
-        println(internalGet(t1))
-        println(beginSpline[1.0])
-        println(internalGet(t2))
-        println(endSpline[0.0])
-
-        println(beginSpline)
-        println(endSpline)
     }
 
     private fun internalGet(t: Double) = amplitude * sin(2.0 * Math.PI * t / period)

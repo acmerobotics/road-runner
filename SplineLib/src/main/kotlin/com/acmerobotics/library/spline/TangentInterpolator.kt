@@ -1,4 +1,4 @@
-package com.acmerobotics.library.path
+package com.acmerobotics.library.spline
 
 class TangentInterpolator: HeadingInterpolator {
     private lateinit var splineSegment: QuinticSplineSegment

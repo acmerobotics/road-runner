@@ -1,4 +1,4 @@
-package com.acmerobotics.library.path
+package com.acmerobotics.library.spline
 
 class SplineInterpolator(private val startHeading: Double, private val endHeading: Double) : HeadingInterpolator {
     private val tangentInterpolator = TangentInterpolator()

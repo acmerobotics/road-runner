@@ -1,8 +1,8 @@
 package com.acmerobotics.library
 
-import com.acmerobotics.library.path.QuinticSpline
-import com.acmerobotics.library.path.QuinticSplineSegment
-import com.acmerobotics.library.path.WiggleInterpolator
+import com.acmerobotics.library.spline.QuinticSpline
+import com.acmerobotics.library.spline.QuinticSplineSegment
+import com.acmerobotics.library.spline.WiggleInterpolator
 import com.acmerobotics.library.trajectory.DriveConstraints
 import com.acmerobotics.library.trajectory.SplineTrajectorySegment
 import com.acmerobotics.library.trajectory.Trajectory
@@ -32,7 +32,6 @@ class TrajectoryTest {
                 WiggleInterpolator(Math.toRadians(20.0), 6.0)
             )
         ))
-        println(spline.segments[0])
         val trajectory = Trajectory(
             listOf(
                 SplineTrajectorySegment(

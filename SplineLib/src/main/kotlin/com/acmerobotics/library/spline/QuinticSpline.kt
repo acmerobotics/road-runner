@@ -1,4 +1,4 @@
-package com.acmerobotics.library.path
+package com.acmerobotics.library.spline
 
 import com.acmerobotics.library.Pose2d
 import com.acmerobotics.library.Waypoint

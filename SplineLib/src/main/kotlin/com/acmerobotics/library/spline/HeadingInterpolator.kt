@@ -1,4 +1,4 @@
-package com.acmerobotics.library.path
+package com.acmerobotics.library.spline
 
 interface HeadingInterpolator {
     fun init(splineSegment: QuinticSplineSegment)

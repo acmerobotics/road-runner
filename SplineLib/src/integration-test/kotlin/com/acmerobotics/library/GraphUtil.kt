@@ -1,6 +1,6 @@
 package com.acmerobotics.library
 
-import com.acmerobotics.library.path.QuinticSpline
+import com.acmerobotics.library.spline.QuinticSpline
 import com.acmerobotics.library.profile.MotionProfile
 import com.acmerobotics.library.trajectory.Trajectory
 import org.knowm.xchart.BitmapEncoder

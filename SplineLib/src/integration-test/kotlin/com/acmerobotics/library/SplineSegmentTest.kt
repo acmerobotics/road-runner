@@ -1,7 +1,7 @@
 package com.acmerobotics.library
 
-import com.acmerobotics.library.path.QuinticSpline
-import com.acmerobotics.library.path.QuinticSplineSegment
+import com.acmerobotics.library.spline.QuinticSpline
+import com.acmerobotics.library.spline.QuinticSplineSegment
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 

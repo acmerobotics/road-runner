@@ -5,7 +5,7 @@ import com.acmerobotics.library.profile.MotionConstraints
 import com.acmerobotics.library.profile.MotionProfile
 import com.acmerobotics.library.profile.MotionProfileGenerator
 import com.acmerobotics.library.profile.MotionState
-import com.acmerobotics.library.path.QuinticSpline
+import com.acmerobotics.library.spline.QuinticSpline
 import kotlin.math.max
 import kotlin.math.min
 
