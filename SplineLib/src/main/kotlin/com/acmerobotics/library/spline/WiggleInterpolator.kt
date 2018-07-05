@@ -55,8 +55,8 @@ class WiggleInterpolator(private val amplitude: Double, private val desiredPerio
         val t = splineSegment.displacementToParameter(displacement)
 
         val heading = when {
-            t < K * period -> return beginSpline[t / (K * period)]
-            t > (1.0 - K * period) -> return endSpline[t / (1 - K * period) - 1.0]
+            t < K * period -> beginSpline[t / (K * period)]
+            t > (1.0 - K * period) -> endSpline[t / (1 - K * period) - 1.0]
             else -> internalGet(t)
         }
 

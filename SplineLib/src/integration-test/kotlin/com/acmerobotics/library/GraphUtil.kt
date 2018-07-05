@@ -1,7 +1,7 @@
 package com.acmerobotics.library
 
-import com.acmerobotics.library.spline.QuinticSpline
 import com.acmerobotics.library.profile.MotionProfile
+import com.acmerobotics.library.spline.QuinticSpline
 import com.acmerobotics.library.trajectory.Trajectory
 import org.knowm.xchart.BitmapEncoder
 import org.knowm.xchart.QuickChart
@@ -33,7 +33,7 @@ object GraphUtil {
             data.add(accelerationData)
         }
 
-        saveGraph("${name}Profile", QuickChart.getChart(
+        saveGraph(name, QuickChart.getChart(
             name,
             "time (sec)",
             "",
@@ -56,16 +56,21 @@ object GraphUtil {
 
     fun saveSplineDerivatives(name: String, spline: QuinticSpline, resolution: Int = 1000) {
         val displacements = (0.. resolution).map { it / resolution.toDouble() * spline.length() }
+        val pos = displacements.map { spline[it] }
         val derivs = displacements.map { spline.deriv(it) }
         val secondDerivs = displacements.map { spline.secondDeriv(it) }
 
-        val derivGraph = QuickChart.getChart(name + "Deriv", "s", "d/ds", arrayOf("dx/ds", "dy/ds", "dθ/ds"), displacements.toDoubleArray(),
+        val posGraph = QuickChart.getChart("${name}Pos", "s", "", arrayOf("x", "y", "θ"), displacements.toDoubleArray(),
+            arrayOf(pos.map { it.x }.toDoubleArray(), pos.map { it.y }.toDoubleArray(), pos.map { it.heading }.toDoubleArray())
+        )
+        val derivGraph = QuickChart.getChart("${name}Deriv", "s", "d/ds", arrayOf("dx/ds", "dy/ds", "dθ/ds"), displacements.toDoubleArray(),
             arrayOf(derivs.map { it.x }.toDoubleArray(), derivs.map { it.y }.toDoubleArray(), derivs.map { it.heading }.toDoubleArray())
         )
-        val secondDerivGraph = QuickChart.getChart(name + "SecondDeriv", "s", "d2/ds2", arrayOf("d2x/ds2", "d2y/ds2", "d2θ/ds2"), displacements.toDoubleArray(),
+        val secondDerivGraph = QuickChart.getChart("${name}SecondDeriv", "s", "d2/ds2", arrayOf("d2x/ds2", "d2y/ds2", "d2θ/ds2"), displacements.toDoubleArray(),
             arrayOf(secondDerivs.map { it.x }.toDoubleArray(), secondDerivs.map { it.y }.toDoubleArray(), secondDerivs.map { it.heading }.toDoubleArray())
         )
 
+        saveGraph("${name}Pos", posGraph)
         saveGraph("${name}Deriv", derivGraph)
         saveGraph("${name}SecondDeriv", secondDerivGraph)
     }

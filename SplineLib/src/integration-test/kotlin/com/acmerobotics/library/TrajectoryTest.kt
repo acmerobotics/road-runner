@@ -28,8 +28,8 @@ class TrajectoryTest {
         val spline = QuinticSpline(listOf(
             QuinticSplineSegment(
                 Waypoint(0.0, 0.0, 20.0, 0.0),
-                Waypoint(4.32, 8.2, -40.0, 0.0),
-                WiggleInterpolator(Math.toRadians(10.0), 2.0)
+                Waypoint(20.0, 40.0, -40.0, 0.0),
+                WiggleInterpolator(Math.toRadians(30.0), 4.0, WiggleInterpolator(Math.toRadians(15.0), 5.0))
             )
         ))
         val trajectory = Trajectory(
