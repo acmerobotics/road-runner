@@ -16,9 +16,9 @@ class TrajectoryTest {
     fun testSimpleSpline() {
         val constraints = DriveConstraints(
             50.0,
-            25.0,
+            50.0,
             maximumAngularVelocity = 2 * Math.PI,
-            maximumAngularAcceleration = Math.PI
+            maximumAngularAcceleration = 2 * Math.PI
         )
 //        val spline = QuinticSpline.fromPoses(
 //            Pose2d(0.0, 0.0, Math.PI / 6),
@@ -29,7 +29,7 @@ class TrajectoryTest {
             QuinticSplineSegment(
                 Waypoint(0.0, 0.0, 20.0, 0.0),
                 Waypoint(4.32, 8.2, -40.0, 0.0),
-                WiggleInterpolator(Math.toRadians(20.0), 6.0)
+                WiggleInterpolator(Math.toRadians(10.0), 2.0)
             )
         ))
         val trajectory = Trajectory(
