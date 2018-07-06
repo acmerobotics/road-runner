@@ -18,7 +18,7 @@ compileKotlin {
 }
 
 dependencies {
-    compile project(':SplineLib')
+    compile project(':spline-lib')
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 }
 
