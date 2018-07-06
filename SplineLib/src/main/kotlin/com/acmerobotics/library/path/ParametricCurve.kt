@@ -33,7 +33,7 @@ abstract class ParametricCurve {
                 deriv * splineParameterThirdDeriv
     }
 
-    internal fun internalTangentAngle(t: Double): Double {
+    private fun internalTangentAngle(t: Double): Double {
         val pathDeriv = internalDeriv(t)
         val angle = Math.atan2(pathDeriv.y, pathDeriv.x)
         return if (angle.isNaN()) 0.0 else angle
