@@ -1,4 +1,4 @@
-package com.acmerobotics.library.spline
+package com.acmerobotics.library.path
 
 import org.apache.commons.math3.linear.LUDecomposition
 import org.apache.commons.math3.linear.MatrixUtils

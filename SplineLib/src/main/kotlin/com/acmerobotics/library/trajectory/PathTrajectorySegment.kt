@@ -1,16 +1,16 @@
 package com.acmerobotics.library.trajectory
 
 import com.acmerobotics.library.Pose2d
+import com.acmerobotics.library.path.Path
 import com.acmerobotics.library.profile.MotionConstraints
 import com.acmerobotics.library.profile.MotionProfile
 import com.acmerobotics.library.profile.MotionProfileGenerator
 import com.acmerobotics.library.profile.MotionState
-import com.acmerobotics.library.spline.QuinticSpline
 import kotlin.math.max
 import kotlin.math.min
 
-class SplineTrajectorySegment(
-    val paths: List<QuinticSpline>,
+class PathTrajectorySegment(
+    val paths: List<Path>,
     val motionConstraintsList: List<TrajectoryConstraints>,
     resolution: Int = 250
 ) : TrajectorySegment {

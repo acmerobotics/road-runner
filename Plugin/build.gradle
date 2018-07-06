@@ -24,7 +24,7 @@ dependencies {
 
 intellij {
     version '2018.1.5'
-    pluginName 'spline-plugin'
+    pluginName 'path-plugin'
     plugins 'android'
     updateSinceUntilBuild false
     if (Os.isFamily(Os.FAMILY_WINDOWS)) {

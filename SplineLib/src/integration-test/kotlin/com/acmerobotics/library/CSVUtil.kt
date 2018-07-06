@@ -1,25 +1,43 @@
 package com.acmerobotics.library
 
-import com.acmerobotics.library.spline.QuinticSpline
+import com.acmerobotics.library.path.ParametricCurve
+import com.acmerobotics.library.path.Path
 import java.io.File
 
 object CSVUtil {
     private const val CSV_DIR = "./csv/"
 
-    fun saveSpline(name: String, spline: QuinticSpline, resolution: Int = 1000) {
+    fun saveCurve(name: String, parametricCurve: ParametricCurve, resolution: Int = 1000) {
+        File(CSV_DIR).mkdirs()
+
+        File("$CSV_DIR$name.csv").printWriter().use { out ->
+            out.println("t,x,y,dx,dy,d2x,d2y")
+            val dx = parametricCurve.length() / resolution
+            (0..resolution)
+                .map { it * dx }
+                .forEach {
+                    val pos = parametricCurve[it]
+                    val deriv = parametricCurve.deriv(it)
+                    val secondDeriv = parametricCurve.secondDeriv(it)
+                    out.println("$it,${pos.x},${pos.y},${deriv.x},${deriv.y},${secondDeriv.x},${secondDeriv.y}")
+                }
+        }
+    }
+
+    fun savePath(name: String, path: Path, resolution: Int = 1000) {
         File(CSV_DIR).mkdirs()
 
         File("$CSV_DIR$name.csv").printWriter().use { out ->
             out.println("t,x,y,heading,dx,dy,omega,d2x,d2y,alpha")
-            val dx = spline.length() / resolution
+            val dx = path.length() / resolution
             (0..resolution)
-                .map { it * dx }
-                .forEach {
-                    val pos = spline[it]
-                    val deriv = spline.deriv(it)
-                    val secondDeriv = spline.secondDeriv(it)
-                    out.println("$it,${pos.x},${pos.y},${pos.heading},${deriv.x},${deriv.y},${deriv.heading},${secondDeriv.x},${secondDeriv.y},${secondDeriv.heading}")
-                }
+                    .map { it * dx }
+                    .forEach {
+                        val pos = path[it]
+                        val deriv = path.deriv(it)
+                        val secondDeriv = path.secondDeriv(it)
+                        out.println("$it,${pos.x},${pos.y},${pos.heading},${deriv.x},${deriv.y},${deriv.heading},${secondDeriv.x},${secondDeriv.y},${secondDeriv.heading}")
+                    }
         }
     }
 }

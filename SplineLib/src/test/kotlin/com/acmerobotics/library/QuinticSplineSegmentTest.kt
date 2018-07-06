@@ -1,7 +1,7 @@
 package com.acmerobotics.library
 
 import com.acmerobotics.library.TestUtil.compareDerivatives
-import com.acmerobotics.library.spline.QuinticSplineSegment
+import com.acmerobotics.library.path.QuinticSplineSegment
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance

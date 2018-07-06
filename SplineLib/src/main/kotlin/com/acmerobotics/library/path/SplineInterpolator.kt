@@ -1,11 +1,11 @@
-package com.acmerobotics.library.spline
+package com.acmerobotics.library.path
 
 class SplineInterpolator(private val startHeading: Double, private val endHeading: Double) : HeadingInterpolator {
     private val tangentInterpolator = TangentInterpolator()
     private lateinit var headingSpline: QuinticPolynomial
     private lateinit var splineSegment: QuinticSplineSegment
 
-    override fun init(splineSegment: QuinticSplineSegment) {
+    override fun init(parametricCurve: ParametricCurve) {
         this.splineSegment = splineSegment
 
         tangentInterpolator.init(splineSegment)

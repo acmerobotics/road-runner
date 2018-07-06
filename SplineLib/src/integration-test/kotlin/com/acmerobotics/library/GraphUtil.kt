@@ -1,7 +1,7 @@
 package com.acmerobotics.library
 
+import com.acmerobotics.library.path.ParametricCurve
 import com.acmerobotics.library.profile.MotionProfile
-import com.acmerobotics.library.spline.QuinticSpline
 import com.acmerobotics.library.trajectory.Trajectory
 import org.knowm.xchart.BitmapEncoder
 import org.knowm.xchart.QuickChart
@@ -45,9 +45,9 @@ object GraphUtil {
         ))
     }
 
-    fun saveSpline(name: String, spline: QuinticSpline, resolution: Int = 1000) {
-        val displacementData = (0..resolution).map { it / resolution.toDouble() * spline.length() }
-        val points = displacementData.map { spline[it] }
+    fun saveParametricCurve(name: String, parametricCurve: ParametricCurve, resolution: Int = 1000) {
+        val displacementData = (0..resolution).map { it / resolution.toDouble() * parametricCurve.length() }
+        val points = displacementData.map { parametricCurve[it] }
         val xData = points.map { it.x }.toDoubleArray()
         val yData = points.map { it.y }.toDoubleArray()
 

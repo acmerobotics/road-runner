@@ -1,4 +1,4 @@
-package com.acmerobotics.library.spline
+package com.acmerobotics.library.path
 
 import kotlin.math.cos
 import kotlin.math.sin
@@ -6,20 +6,20 @@ import kotlin.math.sin
 class WiggleInterpolator(private val amplitude: Double, private val desiredPeriod: Double, private val baseInterpolator: HeadingInterpolator = TangentInterpolator()) :
     HeadingInterpolator {
     companion object {
-        private const val K = 0.5  // fraction of a period replaced by a spline on either side
+        private const val K = 0.5  // fraction of a period replaced by a path on either side
     }
     
     private var period: Double = 0.0
-    private lateinit var splineSegment: QuinticSplineSegment
+    private lateinit var parametricCurve: ParametricCurve
     private lateinit var beginSpline: QuinticPolynomial
     private lateinit var endSpline: QuinticPolynomial
 
-    override fun init(splineSegment: QuinticSplineSegment) {
-        this.splineSegment = splineSegment
+    override fun init(parametricCurve: ParametricCurve) {
+        this.parametricCurve = parametricCurve
 
-        baseInterpolator.init(splineSegment)
+        baseInterpolator.init(parametricCurve)
 
-        val n = (splineSegment.length() / desiredPeriod).toInt()
+        val n = (parametricCurve.length() / desiredPeriod).toInt()
         period = 1.0 / n
 
         val t1 = K * period
@@ -52,7 +52,7 @@ class WiggleInterpolator(private val amplitude: Double, private val desiredPerio
             sin(2.0 * Math.PI * t / period)
 
     override operator fun get(displacement: Double): Double {
-        val t = splineSegment.displacementToParameter(displacement)
+        val t = parametricCurve.displacementToParameter(displacement)
 
         val heading = when {
             t < K * period -> beginSpline[t / (K * period)]
@@ -64,7 +64,7 @@ class WiggleInterpolator(private val amplitude: Double, private val desiredPerio
     }
 
     override fun deriv(displacement: Double): Double {
-        val t = splineSegment.displacementToParameter(displacement)
+        val t = parametricCurve.displacementToParameter(displacement)
 
         val headingDeriv = when {
             t < K * period -> beginSpline.deriv(t / (K * period)) / (K * period)
@@ -72,11 +72,11 @@ class WiggleInterpolator(private val amplitude: Double, private val desiredPerio
             else -> internalDeriv(t)
         }
 
-        return headingDeriv * splineSegment.parameterDeriv(t) + baseInterpolator.deriv(displacement)
+        return headingDeriv * parametricCurve.parameterDeriv(t) + baseInterpolator.deriv(displacement)
     }
 
     override fun secondDeriv(displacement: Double): Double {
-        val t = splineSegment.displacementToParameter(displacement)
+        val t = parametricCurve.displacementToParameter(displacement)
 
         val headingDeriv = when {
             t < K * period -> beginSpline.deriv(t / (K * period)) / (K * period)
@@ -90,7 +90,7 @@ class WiggleInterpolator(private val amplitude: Double, private val desiredPerio
             else -> internalSecondDeriv(t)
         }
 
-        return headingSecondDeriv * splineSegment.parameterDeriv(t) * splineSegment.parameterDeriv(t) +
-                headingDeriv * splineSegment.parameterSecondDeriv(t) + baseInterpolator.secondDeriv(displacement)
+        return headingSecondDeriv * parametricCurve.parameterDeriv(t) * parametricCurve.parameterDeriv(t) +
+                headingDeriv * parametricCurve.parameterSecondDeriv(t) + baseInterpolator.secondDeriv(displacement)
     }
 }
