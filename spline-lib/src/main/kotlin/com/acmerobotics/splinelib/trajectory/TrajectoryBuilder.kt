@@ -17,10 +17,7 @@ class TrajectoryBuilder(private var currentPose: Pose2d, private val constraints
         if (composite) {
             paths.add(line)
         } else {
-            trajectorySegments.add(PathTrajectorySegment(
-                    listOf(line),
-                    listOf(constraints))
-            )
+            trajectorySegments.add(PathTrajectorySegment(listOf(line), listOf(constraints)))
         }
         currentPose = line.end()
         return this
@@ -61,7 +58,7 @@ class TrajectoryBuilder(private var currentPose: Pose2d, private val constraints
 
     @JvmOverloads
     fun splineTo(pose: Pose2d, interpolator: HeadingInterpolator = TangentInterpolator()): TrajectoryBuilder {
-        val derivMag = (currentPose.pos() distanceTo pose.pos()) / 4.0
+        val derivMag = (currentPose.pos() distanceTo pose.pos())
         val spline = Path(QuinticSplineSegment(
                 Waypoint(currentPose.x, currentPose.y, derivMag * Math.cos(currentPose.heading), derivMag * Math.sin(currentPose.heading)),
                 Waypoint(pose.x, pose.y, derivMag * Math.cos(pose.heading), derivMag * Math.sin(pose.heading))),
@@ -92,7 +89,7 @@ class TrajectoryBuilder(private var currentPose: Pose2d, private val constraints
     fun closeComposite(): TrajectoryBuilder {
         composite = false
         trajectorySegments.add(PathTrajectorySegment(paths, paths.map { constraints }))
-        paths.clear()
+        paths = mutableListOf()
         return this
     }
 
