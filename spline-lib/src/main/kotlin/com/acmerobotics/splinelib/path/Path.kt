@@ -2,7 +2,7 @@ package com.acmerobotics.splinelib.path
 
 import com.acmerobotics.splinelib.Pose2d
 
-class Path(val parametricCurve: ParametricCurve, val interpolator: HeadingInterpolator = TangentInterpolator()) {
+class Path(val parametricCurve: ParametricCurve, val interpolator: HeadingInterpolator = TangentInterpolator(), val reversed: Boolean = false) {
     init {
         interpolator.init(parametricCurve)
     }
@@ -10,20 +10,44 @@ class Path(val parametricCurve: ParametricCurve, val interpolator: HeadingInterp
     fun length() = parametricCurve.length()
 
     operator fun get(displacement: Double): Pose2d {
-        val point = parametricCurve[displacement]
-        val heading = interpolator[displacement]
+        val point = if (reversed) {
+            parametricCurve[length() - displacement]
+        } else {
+            parametricCurve[displacement]
+        }
+        val heading = if (reversed) {
+            interpolator[length() - displacement]
+        } else {
+            interpolator[displacement]
+        }
         return Pose2d(point.x, point.y, heading)
     }
 
     fun deriv(displacement: Double): Pose2d {
-        val deriv = parametricCurve.deriv(displacement)
-        val headindDeriv = interpolator.deriv(displacement)
-        return Pose2d(deriv.x, deriv.y, headindDeriv)
+        val deriv = if (reversed) {
+            parametricCurve.deriv(length() - displacement)
+        } else {
+            parametricCurve.deriv(displacement)
+        }
+        val headingDeriv = if (reversed) {
+            interpolator.deriv(length() - displacement)
+        } else {
+            interpolator.deriv(displacement)
+        }
+        return -Pose2d(deriv.x, deriv.y, headingDeriv)
     }
 
     fun secondDeriv(displacement: Double): Pose2d {
-        val secondDeriv = parametricCurve.secondDeriv(displacement)
-        val headingSecondDeriv = interpolator.secondDeriv(displacement)
+        val secondDeriv = if (reversed) {
+            parametricCurve.secondDeriv(length() - displacement)
+        } else {
+            parametricCurve.secondDeriv(displacement)
+        }
+        val headingSecondDeriv = if (reversed) {
+            interpolator.secondDeriv(length() - displacement)
+        } else {
+            interpolator.secondDeriv(displacement)
+        }
         return Pose2d(secondDeriv.x, secondDeriv.y, headingSecondDeriv)
     }
 

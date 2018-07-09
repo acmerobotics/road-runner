@@ -8,15 +8,16 @@ import com.acmerobotics.splinelib.profile.MotionProfileGenerator
 import com.acmerobotics.splinelib.profile.MotionState
 
 // TODO: support CW turns
-class PointTurn(val start: Pose2d, val endHeading: Double, val constraints: DriveConstraints): TrajectorySegment {
+class PointTurn(val start: Pose2d, endHeading: Double, val constraints: DriveConstraints): TrajectorySegment {
     val profile: MotionProfile
-    val turnAngle: Double = if (endHeading >= start.heading) {
-        endHeading - start.heading
-    } else {
-        2 * Math.PI - endHeading + start.heading
-    }
 
     init {
+        val ccwTurnAngle = Angle.norm(endHeading - start.heading)
+        val turnAngle = if (ccwTurnAngle <= Math.PI) {
+            ccwTurnAngle
+        } else {
+            Angle.norm(start.heading - endHeading)
+        }
         val start = MotionState(0.0, 0.0, 0.0)
         val goal = MotionState(turnAngle, 0.0, 0.0)
         profile = MotionProfileGenerator.generateMotionProfile(start, goal, object : MotionConstraints {

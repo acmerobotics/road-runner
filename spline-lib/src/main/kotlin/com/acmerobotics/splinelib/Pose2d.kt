@@ -19,6 +19,8 @@ class Pose2d(val x: Double, val y: Double, val heading: Double) {
 
     operator fun div(scalar: Double) = Pose2d(x / scalar, y / scalar, heading / scalar)
 
+    operator fun unaryMinus() = Pose2d(-x, -y, -heading)
+
     override fun toString() = String.format("(%.3f, %.3f, %.3f°)", x, y, Math.toDegrees(heading))
 }
 

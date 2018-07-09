@@ -17,6 +17,10 @@ class Vector2d(val x: Double, val y: Double) {
 
     operator fun div(scalar: Double) = Vector2d(x / scalar, y / scalar)
 
+    operator fun unaryMinus() = Vector2d(-x, -y)
+
+    infix fun dot(other: Vector2d) = x * other.x + y * other.y
+
     infix fun distanceTo(other: Vector2d) = (this - other).norm()
 
     fun rotated(angle: Double): Vector2d {

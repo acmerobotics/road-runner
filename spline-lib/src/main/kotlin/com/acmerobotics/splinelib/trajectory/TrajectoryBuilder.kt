@@ -6,29 +6,45 @@ import com.acmerobotics.splinelib.Vector2d
 import com.acmerobotics.splinelib.Waypoint
 import com.acmerobotics.splinelib.path.*
 
-class TrajectoryBuilder(private var currentPose: Pose2d, private val constraints: DriveConstraints) {
+class TrajectoryBuilder(private var currentPose: Pose2d, private val globalConstraints: DriveConstraints) {
     private val trajectorySegments = mutableListOf<TrajectorySegment>()
     private var paths = mutableListOf<Path>()
+    private var constraintsList = mutableListOf<TrajectoryConstraints>()
     private var composite = false
+    private var reversed = false
 
-    @JvmOverloads
-    fun lineTo(pos: Vector2d, interpolator: HeadingInterpolator = TangentInterpolator()): TrajectoryBuilder {
-        val line = Path(LineSegment(currentPose.pos(), pos), interpolator)
-        if (composite) {
-            paths.add(line)
-        } else {
-            trajectorySegments.add(PathTrajectorySegment(listOf(line), listOf(constraints)))
-        }
-        currentPose = line.end()
+    // TODO: is there a better solution?
+    fun reverse(): TrajectoryBuilder {
+        reversed = !reversed
         return this
     }
 
-    fun turn(angle: Double): TrajectoryBuilder {
-        return turnTo(Angle.norm(currentPose.heading + angle))
+    @JvmOverloads
+    fun lineTo(pos: Vector2d, interpolator: HeadingInterpolator = TangentInterpolator(), constraintsOverride: TrajectoryConstraints? = null): TrajectoryBuilder {
+        val constraints = constraintsOverride ?: globalConstraints
+        val line = if (reversed) {
+            Path(LineSegment(pos, currentPose.pos()), interpolator, true)
+        } else {
+            Path(LineSegment(currentPose.pos(), pos), interpolator, false)
+        }
+        if (composite) {
+            paths.add(line)
+            constraintsList.add(constraints)
+        } else {
+            trajectorySegments.add(PathTrajectorySegment(listOf(line), listOf(constraints)))
+        }
+        currentPose = Pose2d(pos, currentPose.heading)
+        return this
     }
 
-    fun turnTo(heading: Double): TrajectoryBuilder {
-        val pointTurn = PointTurn(currentPose, heading, constraints)
+    @JvmOverloads
+    fun turn(angle: Double, constraintsOverride: DriveConstraints? = null): TrajectoryBuilder {
+        return turnTo(Angle.norm(currentPose.heading + angle), constraintsOverride)
+    }
+
+    @JvmOverloads
+    fun turnTo(heading: Double, constraintsOverride: DriveConstraints? = null): TrajectoryBuilder {
+        val pointTurn = PointTurn(currentPose, heading, constraintsOverride ?: globalConstraints)
         trajectorySegments.add(pointTurn)
         currentPose = Pose2d(currentPose.x, currentPose.y, heading)
         return this
@@ -57,19 +73,35 @@ class TrajectoryBuilder(private var currentPose: Pose2d, private val constraints
     }
 
     @JvmOverloads
-    fun splineTo(pose: Pose2d, interpolator: HeadingInterpolator = TangentInterpolator()): TrajectoryBuilder {
+    fun splineTo(pose: Pose2d, interpolator: HeadingInterpolator = TangentInterpolator(), constraintsOverride: TrajectoryConstraints? = null): TrajectoryBuilder {
+        val constraints = constraintsOverride ?: this.globalConstraints
         val derivMag = (currentPose.pos() distanceTo pose.pos())
-        val spline = Path(QuinticSplineSegment(
-                Waypoint(currentPose.x, currentPose.y, derivMag * Math.cos(currentPose.heading), derivMag * Math.sin(currentPose.heading)),
-                Waypoint(pose.x, pose.y, derivMag * Math.cos(pose.heading), derivMag * Math.sin(pose.heading))),
-                interpolator
-        )
+        val spline = if (reversed) {
+            Path(
+                    QuinticSplineSegment(
+                            Waypoint(pose.x, pose.y, derivMag * Math.cos(pose.heading), derivMag * Math.sin(pose.heading)),
+                            Waypoint(currentPose.x, currentPose.y, derivMag * Math.cos(currentPose.heading), derivMag * Math.sin(currentPose.heading))
+                    ),
+                    interpolator,
+                    true
+            )
+        } else {
+            Path(
+                    QuinticSplineSegment(
+                            Waypoint(currentPose.x, currentPose.y, derivMag * Math.cos(currentPose.heading), derivMag * Math.sin(currentPose.heading)),
+                            Waypoint(pose.x, pose.y, derivMag * Math.cos(pose.heading), derivMag * Math.sin(pose.heading))
+                    ),
+                    interpolator,
+                    false
+            )
+        }
         if (composite) {
             paths.add(spline)
+            constraintsList.add(constraints)
         } else {
             trajectorySegments.add(PathTrajectorySegment(listOf(spline), listOf(constraints)))
         }
-        currentPose = spline.end()
+        currentPose = pose
         return this
     }
 
@@ -88,8 +120,9 @@ class TrajectoryBuilder(private var currentPose: Pose2d, private val constraints
 
     fun closeComposite(): TrajectoryBuilder {
         composite = false
-        trajectorySegments.add(PathTrajectorySegment(paths, paths.map { constraints }))
+        trajectorySegments.add(PathTrajectorySegment(paths, constraintsList))
         paths = mutableListOf()
+        constraintsList = mutableListOf()
         return this
     }
 
