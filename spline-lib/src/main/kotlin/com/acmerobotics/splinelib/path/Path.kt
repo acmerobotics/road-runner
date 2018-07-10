@@ -25,16 +25,16 @@ class Path(val parametricCurve: ParametricCurve, val interpolator: HeadingInterp
 
     fun deriv(displacement: Double): Pose2d {
         val deriv = if (reversed) {
-            parametricCurve.deriv(length() - displacement)
+            -parametricCurve.deriv(length() - displacement)
         } else {
             parametricCurve.deriv(displacement)
         }
         val headingDeriv = if (reversed) {
-            interpolator.deriv(length() - displacement)
+            -interpolator.deriv(length() - displacement)
         } else {
             interpolator.deriv(displacement)
         }
-        return -Pose2d(deriv.x, deriv.y, headingDeriv)
+        return Pose2d(deriv.x, deriv.y, headingDeriv)
     }
 
     fun secondDeriv(displacement: Double): Pose2d {
