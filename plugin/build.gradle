@@ -19,6 +19,7 @@ compileKotlin {
 
 dependencies {
     compile project(':spline-lib')
+    compile project(':gui')
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 }
 

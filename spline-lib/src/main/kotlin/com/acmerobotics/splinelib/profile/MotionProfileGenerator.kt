@@ -71,7 +71,7 @@ object MotionProfileGenerator {
 
         var i = 0
         var j = 0
-        while (i < forwardStates.size) {
+        while (i < forwardStates.size && i < backwardStates.size) {
             var (forwardStartState, forwardDx) = forwardStates[i]
             var (backwardStartState, backwardDx) = backwardStates[j]
 

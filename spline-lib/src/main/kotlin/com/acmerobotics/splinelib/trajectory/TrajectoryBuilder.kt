@@ -19,6 +19,11 @@ class TrajectoryBuilder(private var currentPose: Pose2d, private val globalConst
         return this
     }
 
+    fun setReversed(reversed: Boolean): TrajectoryBuilder {
+        this.reversed = reversed
+        return this
+    }
+
     @JvmOverloads
     fun lineTo(pos: Vector2d, interpolator: HeadingInterpolator = TangentInterpolator(), constraintsOverride: TrajectoryConstraints? = null): TrajectoryBuilder {
         val constraints = constraintsOverride ?: globalConstraints

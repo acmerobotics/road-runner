@@ -17,7 +17,7 @@ class Trajectory(segments: List<TrajectorySegment> = listOf()) {
             }
             remainingTime -= segment.duration()
         }
-        return segments.last()[segments.last().duration()]
+        return segments.lastOrNull()?.get(segments.last().duration()) ?: Pose2d()
     }
 
     fun velocity(time: Double): Pose2d {
@@ -28,7 +28,7 @@ class Trajectory(segments: List<TrajectorySegment> = listOf()) {
             }
             remainingTime -= segment.duration()
         }
-        return segments.last().velocity(segments.last().duration())
+        return segments.lastOrNull()?.velocity(segments.last().duration()) ?: Pose2d()
     }
 
     fun acceleration(time: Double): Pose2d {
@@ -39,7 +39,7 @@ class Trajectory(segments: List<TrajectorySegment> = listOf()) {
             }
             remainingTime -= segment.duration()
         }
-        return segments.last().acceleration(segments.last().duration())
+        return segments.lastOrNull()?.acceleration(segments.last().duration()) ?: Pose2d()
     }
 
     fun start() = get(0.0)

@@ -1,20 +1,25 @@
 package com.acmerobotics.splinelib
 
-import com.acmerobotics.splinelib.path.QuinticSplineSegment
+import com.acmerobotics.splinelib.trajectory.Trajectory
 import java.awt.*
 import java.awt.geom.AffineTransform
 import java.awt.geom.Point2D
 import java.io.File
+import java.lang.reflect.Field
 import javax.imageio.ImageIO
 import javax.swing.JPanel
 import kotlin.math.min
 import kotlin.math.roundToInt
+import javax.swing.ImageIcon
+
+
 
 class FieldPanel : JPanel() {
-    private val spline = QuinticSplineSegment(
-            Waypoint(10.0, 20.0, 20.0, 10.0),
-            Waypoint(35.0, 50.0, -25.0, 12.0)
-    )
+    companion object {
+        const val RESOLUTION = 1000
+    }
+
+    var trajectory = Trajectory()
 
     init {
         preferredSize = Dimension(500, 500)
@@ -27,6 +32,7 @@ class FieldPanel : JPanel() {
 
         // antialiasing
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
         g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY)
 
         // transform coordinate frame
@@ -36,20 +42,21 @@ class FieldPanel : JPanel() {
 
         val transform = AffineTransform()
         transform.translate(width / 2.0, height / 2.0)
-        transform.scale(fieldSize / 144.0, -fieldSize / 144.0)
+        transform.scale(fieldSize / 144.0, fieldSize / 144.0)
         transform.rotate(Math.PI / 2)
+        transform.scale(-1.0, 1.0)
 
         // draw field
-        val fieldImage = ImageIO.read(File("gui/src/main/resources/transparent_field.png"))
+        val fieldImage = ImageIO.read(javaClass.getResource("/transparent_field.png"));
         g2d.drawImage(fieldImage, offsetX.roundToInt(), offsetY.roundToInt(), fieldSize, fieldSize, null)
 
         // draw spline
-        g2d.stroke = BasicStroke(2F)
+        g2d.stroke = BasicStroke(5F)
         g2d.color = Color(76, 175, 80)
-        val displacements = (0..1000).map { it / 1000.0 * spline.length() }
-        for (i in 1..1000) {
-            val firstRawPoint = spline[displacements[i-1]]
-            val secondRawPoint = spline[displacements[i]]
+        val displacements = (0..RESOLUTION).map { it / RESOLUTION.toDouble() * trajectory.duration() }
+        for (i in 1..RESOLUTION) {
+            val firstRawPoint = trajectory[displacements[i-1]]
+            val secondRawPoint = trajectory[displacements[i]]
             val firstPoint = Point2D.Double()
             val secondPoint = Point2D.Double()
             transform.transform(Point2D.Double(firstRawPoint.x, firstRawPoint.y), firstPoint)

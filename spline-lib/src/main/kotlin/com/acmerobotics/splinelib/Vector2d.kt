@@ -2,7 +2,7 @@ package com.acmerobotics.splinelib
 
 import kotlin.math.sqrt
 
-class Vector2d(val x: Double, val y: Double) {
+class Vector2d(val x: Double = 0.0, val y: Double = 0.0) {
     fun x() = x
 
     fun y() = y
