@@ -6,6 +6,7 @@ import com.acmerobotics.splinelib.path.QuinticSplineSegment
 import com.acmerobotics.splinelib.path.SplineInterpolator
 import com.acmerobotics.splinelib.trajectory.DriveConstraints
 import com.acmerobotics.splinelib.trajectory.PathTrajectorySegment
+import com.acmerobotics.splinelib.trajectory.TankModifier
 import com.acmerobotics.splinelib.trajectory.Trajectory
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -14,7 +15,7 @@ import org.junit.jupiter.api.TestInstance
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class SplineTrajectoryTest {
     companion object {
-        private val CONSTRAINTS = DriveConstraints(50.0, 25.0, Math.PI / 2, Math.PI / 2, 500.0)
+        private val CONSTRAINTS = DriveConstraints(50.0, 25.0, Math.PI / 2, Math.PI / 2, 500.0, TankModifier(12.0))
     }
 
     @Test
@@ -61,5 +62,7 @@ class SplineTrajectoryTest {
 
         GraphUtil.saveParametricCurve("compositeSpline/curve", spline)
         GraphUtil.saveTrajectory("compositeSpline/trajectory", trajectory)
+        GraphUtil.saveMotionProfile("compositeSpline/right", trajectory.modify(TankModifier(12.0))[0], includeAcceleration = false)
+        GraphUtil.saveMotionProfile("compositeSpline/left", trajectory.modify(TankModifier(12.0))[1], includeAcceleration = false)
     }
 }

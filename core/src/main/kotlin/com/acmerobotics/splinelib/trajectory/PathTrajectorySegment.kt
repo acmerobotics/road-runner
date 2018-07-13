@@ -2,10 +2,7 @@ package com.acmerobotics.splinelib.trajectory
 
 import com.acmerobotics.splinelib.Pose2d
 import com.acmerobotics.splinelib.path.Path
-import com.acmerobotics.splinelib.profile.MotionConstraints
-import com.acmerobotics.splinelib.profile.MotionProfile
-import com.acmerobotics.splinelib.profile.MotionProfileGenerator
-import com.acmerobotics.splinelib.profile.MotionState
+import com.acmerobotics.splinelib.profile.*
 import kotlin.math.max
 import kotlin.math.min
 

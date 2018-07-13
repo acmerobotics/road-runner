@@ -2,6 +2,7 @@ package com.acmerobotics.splinelib
 
 import com.acmerobotics.splinelib.path.ParametricCurve
 import com.acmerobotics.splinelib.profile.MotionProfile
+import com.acmerobotics.splinelib.profile.SegmentedMotionProfile
 import com.acmerobotics.splinelib.trajectory.Trajectory
 import org.knowm.xchart.BitmapEncoder
 import org.knowm.xchart.QuickChart

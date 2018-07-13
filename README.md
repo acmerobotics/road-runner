@@ -18,11 +18,14 @@ A simple Kotlin library for planning 2D mobile robot paths and trajectories desi
 - [ ] Localization routines?
 
 ## GUI
-- [ ] Path view
-- [ ] Waypoint list
+- [x] Path view
+- [x] Waypoint list
+- [ ] Constraint specification
+- [ ] Heading control (for holonomic)
 - [ ] Interactive waypoint dragging
 - [ ] Curvature/profile visualization
 
 ## Plugin
 - [ ] Path serialization/loading
+- [ ] Path group management
 - [ ] Live positional feedback

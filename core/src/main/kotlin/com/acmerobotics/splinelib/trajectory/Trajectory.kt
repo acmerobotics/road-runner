@@ -1,6 +1,8 @@
 package com.acmerobotics.splinelib.trajectory
 
 import com.acmerobotics.splinelib.Pose2d
+import com.acmerobotics.splinelib.profile.MotionProfile
+import com.acmerobotics.splinelib.profile.MotionState
 import kotlin.math.max
 import kotlin.math.min
 
@@ -41,6 +43,18 @@ class Trajectory(segments: List<TrajectorySegment> = listOf()) {
         }
         return segments.lastOrNull()?.acceleration(segments.last().duration()) ?: Pose2d()
     }
+
+    fun modify(modifier: DriveModifier): List<MotionProfile> =
+        (0 until modifier.numWheelProfiles).map { object : MotionProfile() {
+            override fun get(t: Double) =
+                MotionState(
+                        modifier.inverseKinematics(this@Trajectory[t])[it],
+                        modifier.inverseKinematics(this@Trajectory.velocity(t))[it],
+                        modifier.inverseKinematics(this@Trajectory.acceleration(t))[it]
+                )
+
+            override fun duration() = this@Trajectory.duration()
+        } }
 
     fun start() = get(0.0)
 
