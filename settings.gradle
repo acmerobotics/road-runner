@@ -1,5 +1,5 @@
 rootProject.name = 'motion-planner'
-include ':spline-lib'
+include ':core'
 include ':gui'
 include ':plugin'
 

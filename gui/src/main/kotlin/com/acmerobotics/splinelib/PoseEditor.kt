@@ -22,7 +22,7 @@ class PoseEditor : JPanel() {
         add(JLabel("X", SwingConstants.CENTER))
         add(JLabel("Y", SwingConstants.CENTER))
         add(JLabel("Heading", SwingConstants.CENTER))
-        val addButton = JButton("Add Pose")
+        val addButton = JButton("Add")
         addButton.addActionListener { addPose(poses.lastOrNull()?.immutable() ?: Pose2d(0.0, 0.0, 0.0)) }
         add(addButton)
 
