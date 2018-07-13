@@ -15,7 +15,7 @@ import org.junit.jupiter.api.TestInstance
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class PerformanceTest {
     companion object {
-        private val CONSTRAINTS = DriveConstraints(50.0, 25.0, Math.PI / 2, Math.PI / 2)
+        private val CONSTRAINTS = DriveConstraints(50.0, 25.0, Math.PI / 2, Math.PI / 2, 500.0)
     }
 
     @Ignore

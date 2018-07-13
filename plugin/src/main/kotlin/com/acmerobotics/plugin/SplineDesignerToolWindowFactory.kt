@@ -1,8 +1,7 @@
 package com.acmerobotics.plugin
 
-import com.acmerobotics.splinelib.EditorPanel
 import com.acmerobotics.splinelib.FieldPanel
-import com.acmerobotics.splinelib.trajectory.Trajectory
+import com.acmerobotics.splinelib.PoseEditor
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.wm.ToolWindowFactory
@@ -10,22 +9,18 @@ import javax.swing.BoxLayout
 import javax.swing.JPanel
 
 
-class TestToolWindowFactory : ToolWindowFactory {
+class SplineDesignerToolWindowFactory : ToolWindowFactory {
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
-        val editorPanel = EditorPanel()
+        val poseEditor = PoseEditor()
         val fieldPanel = FieldPanel()
 
-        editorPanel.trajectoryListener = {
-            trajectory: Trajectory ->
-            fieldPanel.trajectory = trajectory
-            fieldPanel.repaint()
-        }
+        poseEditor.onUpdateListener = fieldPanel::updatePoses
 
         val panel = JPanel()
         val panel2 = JPanel()
         val layout = BoxLayout(panel, BoxLayout.PAGE_AXIS)
         panel.layout = layout
-        panel2.add(editorPanel)
+        panel2.add(poseEditor)
         panel.add(fieldPanel)
         panel.add(panel2)
 

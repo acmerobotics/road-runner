@@ -1,6 +1,5 @@
 package com.acmerobotics.splinelib
 
-import com.acmerobotics.splinelib.trajectory.Trajectory
 import java.awt.Dimension
 import javax.swing.BoxLayout
 import javax.swing.JFrame
@@ -12,14 +11,10 @@ class MainFrame : JFrame() {
         size = Dimension(650, 1000)
         defaultCloseOperation = JFrame.EXIT_ON_CLOSE
 
-        val editorPanel = EditorPanel()
+        val editorPanel = PoseEditor()
         val fieldPanel = FieldPanel()
 
-        editorPanel.trajectoryListener = {
-            trajectory: Trajectory ->
-                fieldPanel.trajectory = trajectory
-                fieldPanel.repaint()
-        }
+        editorPanel.onUpdateListener = fieldPanel::updatePoses
 
         val panel = JPanel()
         val panel2 = JPanel()
