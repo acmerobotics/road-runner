@@ -4,10 +4,7 @@ import com.acmerobotics.splinelib.path.LineSegment
 import com.acmerobotics.splinelib.path.Path
 import com.acmerobotics.splinelib.path.QuinticSplineSegment
 import com.acmerobotics.splinelib.path.SplineInterpolator
-import com.acmerobotics.splinelib.trajectory.DriveConstraints
-import com.acmerobotics.splinelib.trajectory.PathTrajectorySegment
-import com.acmerobotics.splinelib.trajectory.TankModifier
-import com.acmerobotics.splinelib.trajectory.Trajectory
+import com.acmerobotics.splinelib.trajectory.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 
@@ -57,12 +54,14 @@ class SplineTrajectoryTest {
             Waypoint(30.0, 15.0, 20.0, 5.0)
         )
         val trajectory = Trajectory(listOf(
-            PathTrajectorySegment(listOf(Path(line, SplineInterpolator(0.0, Math.PI / 4)), Path(spline)), listOf(CONSTRAINTS, CONSTRAINTS))
+            PathTrajectorySegment(listOf(Path(line), Path(spline)), listOf(CONSTRAINTS, CONSTRAINTS))
         ))
+        val wheelProfiles = trajectory.modify(TankModifier(12.0))
+        for (i in wheelProfiles.indices) {
+            GraphUtil.saveMotionProfile("compositeSpline/wheel$i", wheelProfiles[i], includeAcceleration = false)
+        }
 
         GraphUtil.saveParametricCurve("compositeSpline/curve", spline)
         GraphUtil.saveTrajectory("compositeSpline/trajectory", trajectory)
-        GraphUtil.saveMotionProfile("compositeSpline/right", trajectory.modify(TankModifier(12.0))[0], includeAcceleration = false)
-        GraphUtil.saveMotionProfile("compositeSpline/left", trajectory.modify(TankModifier(12.0))[1], includeAcceleration = false)
     }
 }
