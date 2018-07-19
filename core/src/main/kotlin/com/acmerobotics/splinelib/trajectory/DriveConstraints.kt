@@ -14,8 +14,7 @@ open class DriveConstraints @JvmOverloads constructor(
         val maximumAcceleration: Double,
         val maximumAngularVelocity: Double,
         val maximumAngularAcceleration: Double,
-        val maximumCentripetalAcceleration: Double = Double.NaN,
-        private val driveModifier: DriveModifier? = null
+        val maximumCentripetalAcceleration: Double = Double.NaN
 ) : TrajectoryConstraints {
     override fun maximumVelocity(pose: Pose2d, poseDeriv: Pose2d, poseSecondDeriv: Pose2d): Double {
         val maximumVelocities = mutableListOf(maximumVelocity)
@@ -23,11 +22,6 @@ open class DriveConstraints @JvmOverloads constructor(
         if (!maximumCentripetalAcceleration.isNaN()) {
             val curvature = MathUtil.curvature(poseDeriv.pos(), poseSecondDeriv.pos())
             maximumVelocities.add(sqrt(maximumCentripetalAcceleration / curvature))
-        }
-
-        if (driveModifier != null) {
-            val robotPoseDeriv = Pose2d(poseDeriv.pos().rotated(-pose.heading), poseDeriv.heading)
-            maximumVelocities.add(driveModifier.getMaximumRobotVelocity(robotPoseDeriv, maximumVelocity))
         }
 
         return maximumVelocities.min() ?: 0.0

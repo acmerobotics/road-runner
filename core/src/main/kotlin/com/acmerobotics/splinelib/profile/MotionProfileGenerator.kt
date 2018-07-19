@@ -11,7 +11,7 @@ object MotionProfileGenerator {
         goal: MotionState,
         maximumVelocity: Double,
         maximumAcceleration: Double
-    ): SegmentedMotionProfile =
+    ): MotionProfile =
         generateMotionProfile(
             start,
             goal,
@@ -24,7 +24,7 @@ object MotionProfileGenerator {
         goal: MotionState,
         constraints: MotionConstraints,
         resolution: Int = 250
-    ): SegmentedMotionProfile {
+    ): MotionProfile {
         if (goal.x < start.x) {
             return generateMotionProfile(
                 goal,
@@ -142,7 +142,7 @@ object MotionProfileGenerator {
             motionSegments.add(MotionSegment(state, dt))
         }
 
-        return SegmentedMotionProfile(motionSegments)
+        return MotionProfile(motionSegments)
     }
 
     // TODO: consider using MotionConstraints instead of maxVel and maxAccel to match the public interface

@@ -3,7 +3,6 @@ package com.acmerobotics.splinelib
 import com.acmerobotics.splinelib.path.LineSegment
 import com.acmerobotics.splinelib.path.Path
 import com.acmerobotics.splinelib.path.QuinticSplineSegment
-import com.acmerobotics.splinelib.path.SplineInterpolator
 import com.acmerobotics.splinelib.trajectory.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -12,7 +11,8 @@ import org.junit.jupiter.api.TestInstance
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class SplineTrajectoryTest {
     companion object {
-        private val CONSTRAINTS = DriveConstraints(50.0, 25.0, Math.PI / 2, Math.PI / 2, 500.0, TankModifier(12.0))
+        private val BASE_CONSTRAINTS = DriveConstraints(50.0, 25.0, Math.PI / 2, Math.PI / 2, 500.0)
+        private val CONSTRAINTS = TankConstraints(BASE_CONSTRAINTS, 12.0)
     }
 
     @Test
@@ -22,7 +22,7 @@ class SplineTrajectoryTest {
                 Vector2d(25.0, 25.0)
         )
         val trajectory = Trajectory(listOf(
-                PathTrajectorySegment(listOf(Path(line)), listOf(CONSTRAINTS))
+                PathTrajectorySegment(listOf(Path(line)), listOf(BASE_CONSTRAINTS))
         ))
 
         GraphUtil.saveParametricCurve("lineSegment/curve", line)
@@ -36,7 +36,7 @@ class SplineTrajectoryTest {
             Waypoint(30.0, 15.0, -30.0, 10.0)
         )
         val trajectory = Trajectory(listOf(
-            PathTrajectorySegment(listOf(Path(spline)), listOf(CONSTRAINTS))
+            PathTrajectorySegment(listOf(Path(spline)), listOf(BASE_CONSTRAINTS))
         ))
 
         GraphUtil.saveParametricCurve("simpleSpline/curve", spline)
@@ -56,10 +56,6 @@ class SplineTrajectoryTest {
         val trajectory = Trajectory(listOf(
             PathTrajectorySegment(listOf(Path(line), Path(spline)), listOf(CONSTRAINTS, CONSTRAINTS))
         ))
-        val wheelProfiles = trajectory.modify(TankModifier(12.0))
-        for (i in wheelProfiles.indices) {
-            GraphUtil.saveMotionProfile("compositeSpline/wheel$i", wheelProfiles[i], includeAcceleration = false)
-        }
 
         GraphUtil.saveParametricCurve("compositeSpline/curve", spline)
         GraphUtil.saveTrajectory("compositeSpline/trajectory", trajectory)
