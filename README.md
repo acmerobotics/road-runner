@@ -10,11 +10,11 @@ A simple Kotlin library for planning 2D mobile robot paths and trajectories desi
 - [x] Linear segments
 - [x] Dynamic constraint-capable trapezoidal motion profiling
 - [x] Heading interpolators
-- [ ] Modifiers for common FTC drivetrains
+- [x] ~~Modifiers for common FTC drivetrains~~
 - [ ] Nice DSL/builder
-- [ ] Spline optimizer
 - [ ] Various spline followers (PID, pure pursuit, time-varying non-linear feedback, gvf, etc.)
 - [ ] Feedforward/drivetrain parameter tuning routines
+- [ ] Spline optimizer
 - [ ] Localization routines?
 
 ## GUI
