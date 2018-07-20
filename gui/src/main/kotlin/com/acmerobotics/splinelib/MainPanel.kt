@@ -8,6 +8,8 @@ import javax.swing.JPanel
 import javax.swing.JTabbedPane
 import kotlin.math.abs
 
+
+
 class MainPanel : JPanel() {
     companion object {
         val DEFAULT_CONSTRAINTS = DriveConstraints(25.0, 40.0, Math.toRadians(180.0), Math.toRadians(360.0), 40.0)
@@ -45,6 +47,7 @@ class MainPanel : JPanel() {
     }
 
     private val fieldPanel = FieldPanel()
+    private val trajectoryGraphPanel = TrajectoryGraphPanel()
     private val trajectoryInfoPanel = TrajectoryInfoPanel()
     private val poseEditorPanel = PoseEditorPanel()
     private val constraintsPanel = ConstraintsPanel()
@@ -57,8 +60,10 @@ class MainPanel : JPanel() {
         this.constraints = constraints
 
         val trajectory = posesToTrajectory(poses, constraints)
+
         fieldPanel.updateTrajectoryAndPoses(trajectory, poses)
         trajectoryInfoPanel.updateTrajectory(trajectory)
+        trajectoryGraphPanel.updateTrajectory(trajectory)
     }
 
     init {
@@ -67,15 +72,19 @@ class MainPanel : JPanel() {
 
         constraintsPanel.updateConstraints(DEFAULT_CONSTRAINTS)
 
-        val tabbedPane = JTabbedPane()
+        val upperTabbedPane = JTabbedPane()
+        upperTabbedPane.addTab("Field", fieldPanel)
+        upperTabbedPane.addTab("Trajectory", trajectoryGraphPanel)
+
+        val lowerTabbedPane = JTabbedPane()
         val panel = JPanel()
         panel.add(poseEditorPanel)
-        tabbedPane.addTab("Poses", panel)
-        tabbedPane.addTab("Constraints", constraintsPanel)
+        lowerTabbedPane.addTab("Poses", panel)
+        lowerTabbedPane.addTab("Constraints", constraintsPanel)
 
         layout = BoxLayout(this, BoxLayout.PAGE_AXIS)
-        add(fieldPanel)
+        add(upperTabbedPane)
         add(trajectoryInfoPanel)
-        add(tabbedPane)
+        add(lowerTabbedPane)
     }
 }

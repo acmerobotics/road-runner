@@ -7,7 +7,7 @@ import javax.swing.JPanel
 class MainFrame : JFrame() {
     init {
         title = "Spline Designer"
-        size = Dimension(600, 1000)
+        size = Dimension(600, 800)
         defaultCloseOperation = JFrame.EXIT_ON_CLOSE
         isResizable = false
 
