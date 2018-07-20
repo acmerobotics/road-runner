@@ -1,30 +1,50 @@
 package com.acmerobotics.splinelib
 
+import java.awt.Dimension
 import java.awt.GridLayout
 import javax.swing.*
+import kotlin.math.min
 
 
 class PoseEditorPanel : JPanel() {
+    override fun getPreferredSize(): Dimension {
+        val size = super.getPreferredSize()
+
+        return Dimension(size.width, min(150, size.height))
+    }
+
     private class MutablePose2d(var x: Double, var y: Double, var heading: Double) {
         constructor(pose: Pose2d) : this(pose.x, pose.y, pose.heading)
 
         fun immutable() = Pose2d(x, y, heading)
     }
 
+    private val headerPanel = JPanel()
+    private val scrollPanel = JPanel()
+
     var onPosesUpdateListener: ((List<Pose2d>) -> Unit)? = null
     private val poses = mutableListOf<MutablePose2d>()
 
     init {
-        layout = GridLayout(0, 4, 5, 0)
+        headerPanel.layout = GridLayout(1, 4, 5, 0)
+        scrollPanel.layout = GridLayout(0, 4, 5, 0)
 
-        add(JLabel("X", SwingConstants.CENTER))
-        add(JLabel("Y", SwingConstants.CENTER))
-        add(JLabel("Heading", SwingConstants.CENTER))
+        headerPanel.add(JLabel("X", SwingConstants.CENTER))
+        headerPanel.add(JLabel("Y", SwingConstants.CENTER))
+        headerPanel.add(JLabel("Heading", SwingConstants.CENTER))
         val addButton = JButton("Add")
         addButton.addActionListener { addPose(poses.lastOrNull()?.immutable() ?: Pose2d(0.0, 0.0, 0.0)) }
-        add(addButton)
+        headerPanel.add(addButton)
 
         addPose(Pose2d(0.0, 0.0, 0.0))
+
+        layout = BoxLayout(this, BoxLayout.PAGE_AXIS)
+
+        val scrollPane = JScrollPane(ScrollPanelHost(scrollPanel))
+        scrollPane.border = BorderFactory.createEmptyBorder()
+
+        add(headerPanel)
+        add(scrollPane)
     }
 
     fun fireUpdate() {
@@ -61,14 +81,14 @@ class PoseEditorPanel : JPanel() {
 
         val uiComponents = listOf<JComponent>(xField, yField, headingField, removeButton)
         for (comp in uiComponents) {
-            add(comp)
+            scrollPanel.add(comp)
         }
 
         poses.add(mutablePose)
 
         removeButton.addActionListener {
             for (comp in uiComponents) {
-                remove(comp)
+                scrollPanel.remove(comp)
             }
             poses.remove(mutablePose)
 
