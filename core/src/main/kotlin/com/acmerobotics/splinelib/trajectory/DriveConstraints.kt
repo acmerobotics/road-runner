@@ -9,20 +9,18 @@ import kotlin.math.sqrt
  * robot acceleration, and centripetal acceleration are limited.  For point turns, the angular velocity and angular
  * acceleration are limited.
  */
-open class DriveConstraints @JvmOverloads constructor(
+open class DriveConstraints(
         val maximumVelocity: Double,
         val maximumAcceleration: Double,
         val maximumAngularVelocity: Double,
         val maximumAngularAcceleration: Double,
-        val maximumCentripetalAcceleration: Double = Double.NaN
+        val maximumCentripetalAcceleration: Double
 ) : TrajectoryConstraints {
     override fun maximumVelocity(pose: Pose2d, poseDeriv: Pose2d, poseSecondDeriv: Pose2d): Double {
         val maximumVelocities = mutableListOf(maximumVelocity)
 
-        if (!maximumCentripetalAcceleration.isNaN()) {
-            val curvature = MathUtil.curvature(poseDeriv.pos(), poseSecondDeriv.pos())
-            maximumVelocities.add(sqrt(maximumCentripetalAcceleration / curvature))
-        }
+        val curvature = MathUtil.curvature(poseDeriv.pos(), poseSecondDeriv.pos())
+        maximumVelocities.add(sqrt(maximumCentripetalAcceleration / curvature))
 
         return maximumVelocities.min() ?: 0.0
     }

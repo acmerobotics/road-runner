@@ -2,18 +2,16 @@ package com.acmerobotics.splinelib
 
 import java.awt.GridLayout
 import javax.swing.*
-import javax.swing.event.DocumentEvent
-import javax.swing.event.DocumentListener
 
 
-class PoseEditor : JPanel() {
+class PoseEditorPanel : JPanel() {
     private class MutablePose2d(var x: Double, var y: Double, var heading: Double) {
         constructor(pose: Pose2d) : this(pose.x, pose.y, pose.heading)
 
         fun immutable() = Pose2d(x, y, heading)
     }
 
-    var onUpdateListener: ((List<Pose2d>) -> Unit)? = null
+    var onPosesUpdateListener: ((List<Pose2d>) -> Unit)? = null
     private val poses = mutableListOf<MutablePose2d>()
 
     init {
@@ -30,7 +28,7 @@ class PoseEditor : JPanel() {
     }
 
     fun fireUpdate() {
-        onUpdateListener?.invoke(poses.map(MutablePose2d::immutable))
+        onPosesUpdateListener?.invoke(poses.map(MutablePose2d::immutable))
     }
 
     fun makeNumField(initialVal: Double): JTextField {
@@ -84,15 +82,3 @@ class PoseEditor : JPanel() {
         fireUpdate()
     }
 }
-
-fun JTextField.addChangeListener(listener: () -> Unit) {
-    document.addDocumentListener(object : DocumentListener {
-        override fun changedUpdate(e: DocumentEvent?) = listener()
-        override fun insertUpdate(e: DocumentEvent?) = listener()
-        override fun removeUpdate(e: DocumentEvent?) = listener()
-    })
-}
-
-fun Double.toDegrees() = Math.toDegrees(this)
-
-fun Double.toRadians() = Math.toRadians(this)

@@ -1,14 +1,11 @@
 package com.acmerobotics.splinelib
 
-import com.acmerobotics.splinelib.trajectory.DriveConstraints
 import com.acmerobotics.splinelib.trajectory.Trajectory
-import com.acmerobotics.splinelib.trajectory.TrajectoryBuilder
 import java.awt.*
 import java.awt.geom.AffineTransform
 import java.awt.geom.Point2D
 import javax.imageio.ImageIO
 import javax.swing.JPanel
-import kotlin.math.abs
 import kotlin.math.min
 import kotlin.math.roundToInt
 
@@ -26,39 +23,9 @@ class FieldPanel : JPanel() {
         preferredSize = Dimension(500, 500)
     }
 
-    fun updatePoses(poses: List<Pose2d>) {
+    fun updateTrajectoryAndPoses(trajectory: Trajectory, poses: List<Pose2d>) {
         this.poses = poses
-
-        // update the trajectory
-        trajectory = if (poses.isEmpty()) {
-            Trajectory()
-        } else {
-            val builder = TrajectoryBuilder(poses.first(), DriveConstraints(10.0, 10.0, 10.0, 10.0, 10.0))
-            for (i in 1 until poses.size) {
-                val startPose = poses[i-1]
-                val endPose = poses[i]
-                if (abs(startPose.x - endPose.x) < EPSILON && abs(startPose.y - endPose.y) < EPSILON) {
-                    // this is probably a turn
-                    builder.turnTo(endPose.heading)
-                } else {
-                    builder.beginComposite()
-                    val diff = endPose - startPose
-                    val cosAngle = (Math.cos(endPose.heading) * diff.x + Math.sin(endPose.heading) * diff.y) / diff.pos().norm()
-
-                    builder.setReversed(cosAngle < 0)
-
-                    if (abs(startPose.heading - endPose.heading)  < EPSILON && abs(1 - abs(cosAngle)) < EPSILON) {
-                        // this is probably a line
-                        builder.lineTo(endPose.pos())
-                    } else {
-                        // this is probably a spline
-                        builder.splineTo(endPose)
-                    }
-                }
-            }
-            builder.build()
-        }
-
+        this.trajectory = trajectory
         repaint()
     }
 

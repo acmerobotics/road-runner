@@ -2,7 +2,10 @@ package com.acmerobotics.splinelib.trajectory
 
 import com.acmerobotics.splinelib.Angle
 import com.acmerobotics.splinelib.Pose2d
-import com.acmerobotics.splinelib.profile.*
+import com.acmerobotics.splinelib.profile.MotionConstraints
+import com.acmerobotics.splinelib.profile.MotionProfile
+import com.acmerobotics.splinelib.profile.MotionProfileGenerator
+import com.acmerobotics.splinelib.profile.MotionState
 
 // TODO: support CW turns
 class PointTurn(val start: Pose2d, endHeading: Double, val constraints: DriveConstraints): TrajectorySegment {

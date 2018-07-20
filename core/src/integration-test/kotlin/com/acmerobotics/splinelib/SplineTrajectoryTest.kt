@@ -3,7 +3,10 @@ package com.acmerobotics.splinelib
 import com.acmerobotics.splinelib.path.LineSegment
 import com.acmerobotics.splinelib.path.Path
 import com.acmerobotics.splinelib.path.QuinticSplineSegment
-import com.acmerobotics.splinelib.trajectory.*
+import com.acmerobotics.splinelib.trajectory.DriveConstraints
+import com.acmerobotics.splinelib.trajectory.PathTrajectorySegment
+import com.acmerobotics.splinelib.trajectory.TankConstraints
+import com.acmerobotics.splinelib.trajectory.Trajectory
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 
