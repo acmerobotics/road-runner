@@ -9,7 +9,6 @@ import javax.swing.JPanel
 import kotlin.math.min
 import kotlin.math.roundToInt
 
-
 class FieldPanel : JPanel() {
     companion object {
         const val RESOLUTION = 1000

@@ -47,17 +47,17 @@ class PoseEditorPanel : JPanel() {
         add(scrollPane)
     }
 
-    fun fireUpdate() {
+    private fun fireUpdate() {
         onPosesUpdateListener?.invoke(poses.map(MutablePose2d::immutable))
     }
 
-    fun makeNumField(initialVal: Double): JTextField {
+    private fun makeNumField(initialVal: Double): JTextField {
         val numField = JTextField(initialVal.toString())
         numField.horizontalAlignment = SwingConstants.CENTER
         return numField
     }
 
-    fun addPose(pose: Pose2d) {
+    private fun addPose(pose: Pose2d) {
         val mutablePose = MutablePose2d(pose)
 
         val xField = makeNumField(pose.x)
