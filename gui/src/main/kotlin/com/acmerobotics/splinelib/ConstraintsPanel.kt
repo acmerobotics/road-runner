@@ -12,23 +12,20 @@ class ConstraintsPanel : JPanel() {
             var maximumVelocity: Double,
             var maximumAcceleration: Double,
             var maximumAngularVelocity: Double,
-            var maximumAngularAcceleration: Double,
-            var maximumCentripetalAcceleration: Double
+            var maximumAngularAcceleration: Double
     ) {
         constructor(constraints: DriveConstraints): this(
                 constraints.maximumVelocity,
                 constraints.maximumAcceleration,
                 constraints.maximumAngularVelocity,
-                constraints.maximumAngularAcceleration,
-                constraints.maximumCentripetalAcceleration
+                constraints.maximumAngularAcceleration
         )
 
         fun immutable(): DriveConstraints = DriveConstraints(
                 maximumVelocity,
                 maximumAcceleration,
                 maximumAngularVelocity,
-                maximumAngularAcceleration,
-                maximumCentripetalAcceleration
+                maximumAngularAcceleration
         )
     }
 
@@ -36,9 +33,8 @@ class ConstraintsPanel : JPanel() {
     private val maxAccelTextField: JTextField
     private val maxAngVelTextField: JTextField
     private val maxAngAccelTextField: JTextField
-    private val maxCentripetalAccelTextField: JTextField
 
-    private var mutableConstraints: MutableDriveConstraints = MutableDriveConstraints(0.0, 0.0, 0.0, 0.0, 0.0)
+    private var mutableConstraints: MutableDriveConstraints = MutableDriveConstraints(0.0, 0.0, 0.0, 0.0)
 
     var onConstraintsUpdateListener: ((DriveConstraints) -> Unit)? = null
 
@@ -78,14 +74,6 @@ class ConstraintsPanel : JPanel() {
         }
         panel.add(maxAngAccelTextField)
 
-        panel.add(JLabel("Max Centripetal Accel", SwingConstants.RIGHT))
-        maxCentripetalAccelTextField = JTextField()
-        maxCentripetalAccelTextField.addChangeListener {
-            mutableConstraints.maximumCentripetalAcceleration = maxCentripetalAccelTextField.text.toDoubleOrNull() ?: mutableConstraints.maximumCentripetalAcceleration
-            fireUpdate()
-        }
-        panel.add(maxCentripetalAccelTextField)
-
         add(panel)
     }
 
@@ -100,6 +88,5 @@ class ConstraintsPanel : JPanel() {
         maxAccelTextField.text = String.format("%.2f", constraints.maximumAcceleration)
         maxAngVelTextField.text = String.format("%.2f", constraints.maximumAngularVelocity.toDegrees())
         maxAngAccelTextField.text = String.format("%.2f", constraints.maximumAngularAcceleration.toDegrees())
-        maxCentripetalAccelTextField.text = String.format("%.2f", constraints.maximumCentripetalAcceleration)
     }
 }

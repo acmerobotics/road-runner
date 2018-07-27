@@ -4,7 +4,7 @@ import com.acmerobotics.splinelib.Pose2d
 import kotlin.math.abs
 import kotlin.math.min
 
-class TankConstraints(baseConstraints: DriveConstraints, val trackWidth: Double) : DriveConstraints(baseConstraints.maximumVelocity, baseConstraints.maximumAcceleration, baseConstraints.maximumAngularVelocity, baseConstraints.maximumAngularAcceleration, baseConstraints.maximumCentripetalAcceleration) {
+class TankConstraints(baseConstraints: DriveConstraints, val trackWidth: Double) : DriveConstraints(baseConstraints.maximumVelocity, baseConstraints.maximumAcceleration, baseConstraints.maximumAngularVelocity, baseConstraints.maximumAngularAcceleration) {
     override fun maximumVelocity(pose: Pose2d, poseDeriv: Pose2d, poseSecondDeriv: Pose2d): Double {
         val robotPositionDeriv = poseDeriv.pos().rotated(-pose.heading)
 

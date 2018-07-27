@@ -1,26 +1,29 @@
 package com.acmerobotics.splinelib.trajectory
 
 import com.acmerobotics.splinelib.Pose2d
-import com.acmerobotics.splinelib.util.MathUtil
-import kotlin.math.sqrt
+import kotlin.math.abs
 
 /**
  * This class describes general robot trajectory constraints. More specifically, for paths, the robot wheel velocities,
- * robot acceleration, and centripetal acceleration are limited.  For point turns, the angular velocity and angular
+ * robot acceleration, and robot angular velocity are limited.  For point turns, the angular velocity and angular
  * acceleration are limited.
  */
 open class DriveConstraints(
         val maximumVelocity: Double,
         val maximumAcceleration: Double,
         val maximumAngularVelocity: Double,
-        val maximumAngularAcceleration: Double,
-        val maximumCentripetalAcceleration: Double
+        val maximumAngularAcceleration: Double
 ) : TrajectoryConstraints {
+    companion object {
+        private const val EPSILON = 1e-6
+    }
+
     override fun maximumVelocity(pose: Pose2d, poseDeriv: Pose2d, poseSecondDeriv: Pose2d): Double {
         val maximumVelocities = mutableListOf(maximumVelocity)
 
-        val curvature = MathUtil.curvature(poseDeriv.pos(), poseSecondDeriv.pos())
-        maximumVelocities.add(sqrt(maximumCentripetalAcceleration / curvature))
+        if (abs(poseDeriv.heading) > EPSILON) {
+            maximumVelocities.add(maximumAngularVelocity / Math.abs(poseDeriv.heading))
+        }
 
         return maximumVelocities.min() ?: 0.0
     }
