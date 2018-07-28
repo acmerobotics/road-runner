@@ -20,7 +20,6 @@ class MainPanel : JPanel() {
         val DEFAULT_CONSTRAINTS = DriveConstraints(25.0, 40.0, Math.toRadians(180.0), Math.toRadians(360.0))
 
         fun posesToTrajectory(poses: List<Pose2d>, constraints: DriveConstraints) =
-        // update the trajectory
                 if (poses.isEmpty()) {
                     Trajectory()
                 } else {

@@ -53,7 +53,7 @@ class PoseEditorPanel : JPanel() {
     }
 
     private fun makeNumField(initialVal: Double): JTextField {
-        val numField = JTextField(initialVal.toString())
+        val numField = JTextField(String.format("%.2f", initialVal))
         numField.horizontalAlignment = SwingConstants.CENTER
         return numField
     }

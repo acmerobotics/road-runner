@@ -49,6 +49,9 @@ class TrajectoryBuilder(private var currentPose: Pose2d, private val globalConst
 
     @JvmOverloads
     fun turnTo(heading: Double, constraintsOverride: DriveConstraints? = null): TrajectoryBuilder {
+        if (composite) {
+            closeComposite()
+        }
         val pointTurn = PointTurn(currentPose, heading, constraintsOverride ?: globalConstraints)
         trajectorySegments.add(pointTurn)
         currentPose = Pose2d(currentPose.x, currentPose.y, heading)
@@ -116,9 +119,6 @@ class TrajectoryBuilder(private var currentPose: Pose2d, private val globalConst
     }
 
     fun beginComposite(): TrajectoryBuilder {
-        if (composite) {
-            closeComposite()
-        }
         composite = true
         return this
     }
