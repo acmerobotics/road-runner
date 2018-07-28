@@ -24,6 +24,7 @@ class PoseEditorPanel : JPanel() {
 
     var onPosesUpdateListener: ((List<Pose2d>) -> Unit)? = null
     private val poses = mutableListOf<MutablePose2d>()
+    private val poseComponents = mutableListOf<List<JComponent>>()
 
     init {
         headerPanel.layout = GridLayout(1, 4, 5, 0)
@@ -85,20 +86,43 @@ class PoseEditorPanel : JPanel() {
         }
 
         poses.add(mutablePose)
+        poseComponents.add(uiComponents)
 
-        removeButton.addActionListener {
-            for (comp in uiComponents) {
-                scrollPanel.remove(comp)
-            }
-            poses.remove(mutablePose)
-
-            revalidate()
-
-            fireUpdate()
-        }
+        removeButton.addActionListener { removePose(mutablePose) }
 
         revalidate()
 
         fireUpdate()
+    }
+
+    private fun removePose(pose: MutablePose2d) {
+        removePoseAt(poses.indexOf(pose))
+    }
+
+    private fun removePoseAt(index: Int) {
+        for (comp in poseComponents[index]) {
+            scrollPanel.remove(comp)
+        }
+        poses.removeAt(index)
+        poseComponents.removeAt(index)
+
+        revalidate()
+
+        fireUpdate()
+    }
+
+    private fun clearPoses() {
+        while (poses.size > 0) {
+            removePoseAt(0)
+        }
+    }
+
+    // TODO: implement more efficient pose updates
+    fun updatePoses(poses: List<Pose2d>) {
+        clearPoses()
+
+        for (pose in poses) {
+            addPose(pose)
+        }
     }
 }

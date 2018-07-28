@@ -3,14 +3,19 @@ package com.acmerobotics.splinelib
 import com.acmerobotics.splinelib.trajectory.DriveConstraints
 import com.acmerobotics.splinelib.trajectory.Trajectory
 import com.acmerobotics.splinelib.trajectory.TrajectoryBuilder
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
+import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import java.io.File
 import javax.swing.BoxLayout
 import javax.swing.JPanel
 import javax.swing.JTabbedPane
 import kotlin.math.abs
 
 
-
 class MainPanel : JPanel() {
+    val mapper = ObjectMapper(YAMLFactory()).registerKotlinModule()
+
     companion object {
         val DEFAULT_CONSTRAINTS = DriveConstraints(25.0, 40.0, Math.toRadians(180.0), Math.toRadians(360.0))
 
@@ -55,17 +60,6 @@ class MainPanel : JPanel() {
     private var poses = listOf<Pose2d>()
     private var constraints = DEFAULT_CONSTRAINTS
 
-    fun updateTrajectory(poses: List<Pose2d>, constraints: DriveConstraints) {
-        this.poses = poses
-        this.constraints = constraints
-
-        val trajectory = posesToTrajectory(poses, constraints)
-
-        fieldPanel.updateTrajectoryAndPoses(trajectory, poses)
-        trajectoryInfoPanel.updateTrajectory(trajectory)
-        trajectoryGraphPanel.updateTrajectory(trajectory)
-    }
-
     init {
         poseEditorPanel.onPosesUpdateListener = { updateTrajectory(it, constraints) }
         constraintsPanel.onConstraintsUpdateListener = { updateTrajectory(poses, it) }
@@ -86,5 +80,27 @@ class MainPanel : JPanel() {
         add(upperTabbedPane)
         add(trajectoryInfoPanel)
         add(lowerTabbedPane)
+    }
+
+    fun updateTrajectory(poses: List<Pose2d>, constraints: DriveConstraints) {
+        this.poses = poses
+        this.constraints = constraints
+
+        val trajectory = posesToTrajectory(poses, constraints)
+
+        fieldPanel.updateTrajectoryAndPoses(trajectory, poses)
+        trajectoryInfoPanel.updateTrajectory(trajectory)
+        trajectoryGraphPanel.updateTrajectory(trajectory)
+    }
+
+    fun save(filename: String) {
+        mapper.writerWithDefaultPrettyPrinter().writeValue(File(filename), TrajectoryConfig(poses, constraints))
+    }
+
+    fun load(filename: String) {
+        val trajectoryConfig = mapper.readValue(File(filename), TrajectoryConfig::class.java)
+        updateTrajectory(trajectoryConfig.poses, trajectoryConfig.constraints)
+        poseEditorPanel.updatePoses(poses)
+        constraintsPanel.updateConstraints(constraints)
     }
 }
