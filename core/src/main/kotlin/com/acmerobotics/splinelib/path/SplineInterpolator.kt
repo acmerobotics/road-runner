@@ -20,6 +20,8 @@ class SplineInterpolator(private val startHeading: Double, private val endHeadin
         )
     }
 
+    override fun respectsDerivativeContinuity() = false
+
     override operator fun get(displacement: Double): Double {
         val t = parametricCurve.displacementToParameter(displacement)
         return headingSpline[t]

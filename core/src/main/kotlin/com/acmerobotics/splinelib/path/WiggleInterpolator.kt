@@ -44,6 +44,8 @@ class WiggleInterpolator(private val amplitude: Double, private val desiredPerio
         )
     }
 
+    override fun respectsDerivativeContinuity() = baseInterpolator.respectsDerivativeContinuity()
+
     private fun internalGet(t: Double) = amplitude * sin(2.0 * Math.PI * t / period)
 
     private fun internalDeriv(t: Double) = 2.0 * Math.PI * amplitude / period * cos(2.0 * Math.PI * t / period)

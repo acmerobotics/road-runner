@@ -11,7 +11,9 @@ class LinearInterpolator(private val startHeading: Double, endHeading: Double) :
     override fun init(parametricCurve: ParametricCurve) {
         length = parametricCurve.length()
     }
-    
+
+    override fun respectsDerivativeContinuity() = false
+
     override fun get(displacement: Double) = (startHeading + displacement / length * turnAngle) % (2 * Math.PI)
 
     override fun deriv(displacement: Double) = turnAngle / length

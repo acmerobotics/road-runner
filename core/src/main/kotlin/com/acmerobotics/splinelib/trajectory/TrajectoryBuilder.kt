@@ -26,6 +26,13 @@ class TrajectoryBuilder(private var currentPose: Pose2d, private val globalConst
 
     @JvmOverloads
     fun lineTo(pos: Vector2d, interpolator: HeadingInterpolator = TangentInterpolator(), constraintsOverride: TrajectoryConstraints? = null): TrajectoryBuilder {
+        val postBeginComposite = if (!interpolator.respectsDerivativeContinuity() && composite) {
+            closeComposite()
+            true
+        } else {
+            false
+        }
+
         val constraints = constraintsOverride ?: globalConstraints
         val line = if (reversed) {
             Path(LineSegment(pos, currentPose.pos()), interpolator, true)
@@ -39,6 +46,11 @@ class TrajectoryBuilder(private var currentPose: Pose2d, private val globalConst
             trajectorySegments.add(PathTrajectorySegment(listOf(line), listOf(constraints)))
         }
         currentPose = Pose2d(pos, currentPose.heading)
+
+        if (postBeginComposite) {
+            beginComposite()
+        }
+
         return this
     }
 
@@ -82,6 +94,13 @@ class TrajectoryBuilder(private var currentPose: Pose2d, private val globalConst
 
     @JvmOverloads
     fun splineTo(pose: Pose2d, interpolator: HeadingInterpolator = TangentInterpolator(), constraintsOverride: TrajectoryConstraints? = null): TrajectoryBuilder {
+        val postBeginComposite = if (!interpolator.respectsDerivativeContinuity() && composite) {
+            closeComposite()
+            true
+        } else {
+            false
+        }
+
         val constraints = constraintsOverride ?: this.globalConstraints
         val derivMag = (currentPose.pos() distanceTo pose.pos())
         val spline = if (reversed) {
@@ -110,6 +129,11 @@ class TrajectoryBuilder(private var currentPose: Pose2d, private val globalConst
             trajectorySegments.add(PathTrajectorySegment(listOf(spline), listOf(constraints)))
         }
         currentPose = pose
+
+        if (postBeginComposite) {
+            beginComposite()
+        }
+
         return this
     }
 

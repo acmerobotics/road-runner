@@ -7,6 +7,8 @@ class TangentInterpolator: HeadingInterpolator {
         this.parametricCurve = parametricCurve
     }
 
+    override fun respectsDerivativeContinuity() = false
+
     override fun get(displacement: Double) = parametricCurve.tangentAngle(displacement)
 
     override fun deriv(displacement: Double) = parametricCurve.tangentAngleDeriv(displacement)
