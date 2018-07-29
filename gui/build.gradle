@@ -19,10 +19,6 @@ dependencies {
 
     implementation "org.knowm.xchart:xchart:3.5.2"
 
-    implementation "com.fasterxml.jackson.core:jackson-databind:2.9.6"
-    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.6"
-    implementation "com.fasterxml.jackson.module:jackson-module-kotlin:2.9.+"
-
     testImplementation "org.junit.jupiter:junit-jupiter-api:5.2.0"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.2.0"
 }

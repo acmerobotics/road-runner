@@ -13,7 +13,7 @@ class TrajectoryTest {
     fun testTrajectoryDerivatives() {
         val cryptoColWidth = 7.5
         val stonePose = Pose2d(48.0, -47.5, Math.PI)
-        val trajectory = TrajectoryBuilder(stonePose, DriveConstraints(5.0, 10.0, 2.0, 3.0, 500.0))
+        val trajectory = TrajectoryBuilder(stonePose, DriveConstraints(5.0, 10.0, 2.0, 3.0))
                 .lineTo(Vector2d(12 - cryptoColWidth, stonePose.y()))
                 .turnTo(Math.PI / 2)
                 .reverse()

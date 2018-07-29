@@ -54,7 +54,7 @@ class SplineDesignerPanel(private val project: Project) : JPanel() {
         val trajectoryLabel = JLabel("Trajectory", SwingConstants.RIGHT)
         trajectoryComboBox.addActionListener {
             if (currentTrajectory.isNotBlank()) {
-                selectTrajectory(currentModule, currentTrajectory)
+                selectTrajectory(currentTrajectory)
             }
         }
 
@@ -66,7 +66,7 @@ class SplineDesignerPanel(private val project: Project) : JPanel() {
         nameTextField.addFocusListener(object : FocusListener {
             override fun focusLost(e: FocusEvent?) {
                 if (nameTextField.text != currentTrajectory) {
-                    renameTrajectory(currentModule, currentTrajectory, nameTextField.text)
+                    renameTrajectory(currentTrajectory, nameTextField.text)
                 }
             }
 
@@ -87,7 +87,7 @@ class SplineDesignerPanel(private val project: Project) : JPanel() {
             override fun keyReleased(e: KeyEvent?) {
                 if (e?.keyCode == KeyEvent.VK_ENTER) {
                     if (nameTextField.text != currentTrajectory) {
-                        renameTrajectory(currentModule, currentTrajectory, nameTextField.text)
+                        renameTrajectory(currentTrajectory, nameTextField.text)
                     }
                 }
             }
@@ -100,7 +100,7 @@ class SplineDesignerPanel(private val project: Project) : JPanel() {
 
         val deleteButton = JButton("Delete")
         deleteButton.addActionListener {
-            deleteTrajectory(currentModule, currentTrajectory)
+            deleteTrajectory(currentTrajectory)
         }
 
         groupLayout.autoCreateGaps = true
@@ -172,46 +172,46 @@ class SplineDesignerPanel(private val project: Project) : JPanel() {
         saveTrajectory(currentModule, name)
         trajectoryComboBox.model = DefaultComboBoxModel(trajectories.toTypedArray())
         trajectoryComboBox.selectedItem = name
-        selectTrajectory(currentModule, name)
+        selectTrajectory(name)
     }
 
-    private fun deleteTrajectory(module: String, trajectory: String) {
-        val trajectoryFile = File(getTrajectoryAssetsDir(module), "$trajectory.yaml")
+    private fun deleteTrajectory(trajectory: String) {
+        val trajectoryFile = File(getTrajectoryAssetsDir(currentModule), "$trajectory.yaml")
         trajectoryFile.delete()
-        val trajectories = listTrajectoryAssets(module).filter { it != trajectory }
+        val trajectories = listTrajectoryAssets(currentModule).filter { it != trajectory }
         trajectoryComboBox.model = DefaultComboBoxModel(trajectories.toTypedArray())
         if (trajectories.isNotEmpty()) {
-            selectTrajectory(module, currentTrajectory)
+            selectTrajectory(currentTrajectory)
         } else {
             clearSelectedTrajectory()
         }
     }
 
-    private fun renameTrajectory(module: String, oldTrajectory: String, newTrajectory: String) {
-        saveTrajectory(module, oldTrajectory)
-        val assetsDir = getTrajectoryAssetsDir(module)
+    private fun renameTrajectory(oldTrajectory: String, newTrajectory: String) {
+        saveTrajectory(currentModule, oldTrajectory)
+        val assetsDir = getTrajectoryAssetsDir(currentModule)
         val oldTrajectoryFile = File(assetsDir, "$oldTrajectory.yaml")
         val newTrajectoryFile = File(assetsDir, "$newTrajectory.yaml")
         oldTrajectoryFile.copyTo(newTrajectoryFile)
         oldTrajectoryFile.delete()
-        val trajectories = listTrajectoryAssets(module).map { if (it == oldTrajectory) newTrajectory else it }
+        val trajectories = listTrajectoryAssets(currentModule).map { if (it == oldTrajectory) newTrajectory else it }
         trajectoryComboBox.model = DefaultComboBoxModel(trajectories.toTypedArray())
         trajectoryComboBox.selectedItem = newTrajectory
-        selectTrajectory(module, newTrajectory)
+        selectTrajectory(newTrajectory)
     }
 
     private fun selectModule(module: String) {
         val trajectories = listTrajectoryAssets(module)
         trajectoryComboBox.model = DefaultComboBoxModel(trajectories.toTypedArray())
         if (trajectories.isNotEmpty()) {
-            selectTrajectory(module, trajectories.first())
+            selectTrajectory(trajectories.first())
         } else {
             clearSelectedTrajectory()
         }
     }
 
-    private fun selectTrajectory(module: String, trajectory: String) {
-        mainPanel.load(File(getTrajectoryAssetsDir(module), "$trajectory.yaml"))
+    private fun selectTrajectory(trajectory: String) {
+        mainPanel.load(File(getTrajectoryAssetsDir(currentModule), "$trajectory.yaml"))
         nameTextField.text = trajectory
     }
 
@@ -234,6 +234,6 @@ class SplineDesignerPanel(private val project: Project) : JPanel() {
 
     private fun clearSelectedTrajectory() {
         nameTextField.text = ""
-        mainPanel.updateTrajectory(listOf(), MainPanel.DEFAULT_CONSTRAINTS)
+        mainPanel.clearTrajectory()
     }
 }
