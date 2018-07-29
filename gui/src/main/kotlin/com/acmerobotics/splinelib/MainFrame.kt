@@ -4,6 +4,7 @@ import java.awt.Dimension
 import java.awt.FileDialog
 import java.awt.Toolkit
 import java.awt.event.KeyEvent
+import java.io.File
 import javax.swing.*
 
 class MainFrame : JFrame() {
@@ -31,7 +32,7 @@ class MainFrame : JFrame() {
 
             if (fileDialog.file != null) {
                 val filename = fileDialog.directory + fileDialog.file
-                mainPanel.load(filename)
+                mainPanel.load(File(filename))
             }
         }
         openMenuItem.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_O, COMMAND_MASK)
@@ -48,7 +49,7 @@ class MainFrame : JFrame() {
                     fileDialog.file + ".yaml"
                 }
 
-                mainPanel.save(filename)
+                mainPanel.save(File(filename))
             }
         }
         saveMenuItem.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_S, COMMAND_MASK)

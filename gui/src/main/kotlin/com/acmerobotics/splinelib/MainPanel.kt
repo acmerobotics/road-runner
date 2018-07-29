@@ -92,12 +92,16 @@ class MainPanel : JPanel() {
         trajectoryGraphPanel.updateTrajectory(trajectory)
     }
 
-    fun save(filename: String) {
-        mapper.writerWithDefaultPrettyPrinter().writeValue(File(filename), TrajectoryConfig(poses, constraints))
+    fun clearTrajectory() {
+        updateTrajectory(listOf(), DEFAULT_CONSTRAINTS)
     }
 
-    fun load(filename: String) {
-        val trajectoryConfig = mapper.readValue(File(filename), TrajectoryConfig::class.java)
+    fun save(file: File) {
+        mapper.writerWithDefaultPrettyPrinter().writeValue(file, TrajectoryConfig(poses, constraints))
+    }
+
+    fun load(file: File) {
+        val trajectoryConfig = mapper.readValue(file, TrajectoryConfig::class.java)
         updateTrajectory(trajectoryConfig.poses, trajectoryConfig.constraints)
         poseEditorPanel.updatePoses(poses)
         constraintsPanel.updateConstraints(constraints)
