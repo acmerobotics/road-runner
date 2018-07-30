@@ -39,6 +39,10 @@ class TrajectoryGraphPanel : JPanel() {
         chart = QuickChart.getChart("", "", "", arrayOf("ẋ ", "ẏ ", "ω"), t, arrayOf(x, y, heading))
         chart.styler.legendPosition = Styler.LegendPosition.InsideNE
         chart.styler.chartBackgroundColor = background
+        chart.styler.plotBackgroundColor = background
+        chart.styler.legendBackgroundColor = background
+        chart.styler.axisTickLabelsColor = foreground
+        chart.styler.chartFontColor = foreground
 
         repaint()
     }

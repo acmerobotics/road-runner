@@ -11,7 +11,7 @@
     <depends>com.intellij.modules.androidstudio</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-            <toolWindow id="Spline Designer" anchor="right" factoryClass="com.acmerobotics.plugin.SplineDesignerToolWindowFactory"/>
+        <toolWindow id="Spline Designer" anchor="right" factoryClass="com.acmerobotics.plugin.SplineDesignerToolWindowFactory"/>
     </extensions>
 
     <actions>

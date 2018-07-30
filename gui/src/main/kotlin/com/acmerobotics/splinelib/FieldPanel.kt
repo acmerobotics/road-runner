@@ -12,11 +12,10 @@ import kotlin.math.roundToInt
 class FieldPanel : JPanel() {
     companion object {
         const val RESOLUTION = 1000
-        const val EPSILON = 1e-6
     }
 
-    var poses = listOf<Pose2d>()
-    var trajectory = Trajectory()
+    private var poses = listOf<Pose2d>()
+    private var trajectory = Trajectory()
 
     init {
         preferredSize = Dimension(500, 500)
