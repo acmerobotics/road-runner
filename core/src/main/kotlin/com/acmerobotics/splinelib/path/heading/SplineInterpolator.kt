@@ -1,4 +1,7 @@
-package com.acmerobotics.splinelib.path
+package com.acmerobotics.splinelib.path.heading
+
+import com.acmerobotics.splinelib.path.ParametricCurve
+import com.acmerobotics.splinelib.path.QuinticPolynomial
 
 class SplineInterpolator(private val startHeading: Double, private val endHeading: Double) : HeadingInterpolator {
     private val tangentInterpolator = TangentInterpolator()
@@ -11,16 +14,16 @@ class SplineInterpolator(private val startHeading: Double, private val endHeadin
         tangentInterpolator.init(this.parametricCurve)
 
         headingSpline = QuinticPolynomial(
-            startHeading,
-            this.parametricCurve.internalTangentAngleDeriv(0.0),
-            this.parametricCurve.internalTangentAngleSecondDeriv(0.0),
-            endHeading,
-            this.parametricCurve.internalTangentAngleDeriv(1.0),
-            this.parametricCurve.internalTangentAngleSecondDeriv(1.0)
+                startHeading,
+                this.parametricCurve.internalTangentAngleDeriv(0.0),
+                this.parametricCurve.internalTangentAngleSecondDeriv(0.0),
+                endHeading,
+                this.parametricCurve.internalTangentAngleDeriv(1.0),
+                this.parametricCurve.internalTangentAngleSecondDeriv(1.0)
         )
     }
 
-    override fun respectsDerivativeContinuity() = false
+    override fun respectsDerivativeContinuity() = true
 
     override operator fun get(displacement: Double): Double {
         val t = parametricCurve.displacementToParameter(displacement)

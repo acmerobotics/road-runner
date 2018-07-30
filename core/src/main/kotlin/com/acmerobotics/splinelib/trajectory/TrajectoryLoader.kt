@@ -6,11 +6,16 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import java.io.File
 
 object TrajectoryLoader {
-    private val mapper = ObjectMapper(YAMLFactory()).registerKotlinModule()
+    private val MAPPER = ObjectMapper(YAMLFactory()).registerKotlinModule()
 
+    @JvmStatic
     fun saveConfig(trajectoryConfig: TrajectoryConfig, file: File) {
-        mapper.writerWithDefaultPrettyPrinter().writeValue(file, trajectoryConfig)
+        MAPPER.writerWithDefaultPrettyPrinter().writeValue(file, trajectoryConfig)
     }
 
-    fun loadConfig(file: File) = mapper.readValue(file, TrajectoryConfig::class.java)
+    @JvmStatic
+    fun loadConfig(file: File) = MAPPER.readValue(file, TrajectoryConfig::class.java)
+
+    @JvmStatic
+    fun load(file: File) = loadConfig(file).toTrajectory()
 }

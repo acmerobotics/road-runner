@@ -1,4 +1,6 @@
-package com.acmerobotics.splinelib.path
+package com.acmerobotics.splinelib.path.heading
+
+import com.acmerobotics.splinelib.path.ParametricCurve
 
 class LinearInterpolator(private val startHeading: Double, endHeading: Double) : HeadingInterpolator {
     private val turnAngle: Double = if (endHeading >= startHeading) {

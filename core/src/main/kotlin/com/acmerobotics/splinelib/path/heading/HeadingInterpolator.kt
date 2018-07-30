@@ -1,4 +1,6 @@
-package com.acmerobotics.splinelib.path
+package com.acmerobotics.splinelib.path.heading
+
+import com.acmerobotics.splinelib.path.ParametricCurve
 
 interface HeadingInterpolator {
     fun init(parametricCurve: ParametricCurve)

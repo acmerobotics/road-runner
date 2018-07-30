@@ -1,4 +1,7 @@
-apply plugin: "kotlin"
+plugins {
+    id 'kotlin'
+    id 'maven-publish'
+}
 
 repositories {
     mavenCentral()
@@ -42,6 +45,17 @@ dependencies {
     integrationTestRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.2.0"
 
     integrationTestImplementation "org.knowm.xchart:xchart:3.5.2"
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = 'com.acmerobotics.splinelib'
+            artifactId = 'core'
+            version = '0.1-SNAPSHOT'
+            from components.java
+        }
+    }
 }
 
 task integrationTest(type: Test) {

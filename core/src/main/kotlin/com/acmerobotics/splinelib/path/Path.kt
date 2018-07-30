@@ -1,6 +1,8 @@
 package com.acmerobotics.splinelib.path
 
 import com.acmerobotics.splinelib.Pose2d
+import com.acmerobotics.splinelib.path.heading.HeadingInterpolator
+import com.acmerobotics.splinelib.path.heading.TangentInterpolator
 
 class Path(val parametricCurve: ParametricCurve, val interpolator: HeadingInterpolator = TangentInterpolator(), val reversed: Boolean = false) {
     init {

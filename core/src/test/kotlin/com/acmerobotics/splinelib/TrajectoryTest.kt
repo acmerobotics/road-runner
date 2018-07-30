@@ -1,7 +1,7 @@
 package com.acmerobotics.splinelib
 
-import com.acmerobotics.splinelib.path.TangentInterpolator
-import com.acmerobotics.splinelib.path.WiggleInterpolator
+import com.acmerobotics.splinelib.path.heading.TangentInterpolator
+import com.acmerobotics.splinelib.path.heading.WiggleInterpolator
 import com.acmerobotics.splinelib.trajectory.DriveConstraints
 import com.acmerobotics.splinelib.trajectory.TrajectoryBuilder
 import org.junit.jupiter.api.Test

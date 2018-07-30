@@ -5,6 +5,8 @@ import com.acmerobotics.splinelib.Pose2d
 import com.acmerobotics.splinelib.Vector2d
 import com.acmerobotics.splinelib.Waypoint
 import com.acmerobotics.splinelib.path.*
+import com.acmerobotics.splinelib.path.heading.HeadingInterpolator
+import com.acmerobotics.splinelib.path.heading.TangentInterpolator
 
 class TrajectoryBuilder(private var currentPose: Pose2d, private val globalConstraints: DriveConstraints) {
     private val trajectorySegments = mutableListOf<TrajectorySegment>()
@@ -149,9 +151,11 @@ class TrajectoryBuilder(private var currentPose: Pose2d, private val globalConst
 
     fun closeComposite(): TrajectoryBuilder {
         composite = false
-        trajectorySegments.add(PathTrajectorySegment(paths, constraintsList))
-        paths = mutableListOf()
-        constraintsList = mutableListOf()
+        if (paths.isNotEmpty() && constraintsList.isNotEmpty()) {
+            trajectorySegments.add(PathTrajectorySegment(paths, constraintsList))
+            paths = mutableListOf()
+            constraintsList = mutableListOf()
+        }
         return this
     }
 

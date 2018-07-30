@@ -1,10 +1,12 @@
-package com.acmerobotics.splinelib.path
+package com.acmerobotics.splinelib.path.heading
 
+import com.acmerobotics.splinelib.path.ParametricCurve
+import com.acmerobotics.splinelib.path.QuinticPolynomial
 import kotlin.math.cos
 import kotlin.math.sin
 
 class WiggleInterpolator(private val amplitude: Double, private val desiredPeriod: Double, private val baseInterpolator: HeadingInterpolator = TangentInterpolator()) :
-    HeadingInterpolator {
+        HeadingInterpolator {
     companion object {
         private const val K = 0.5  // fraction of a period replaced by a path on either side
     }
@@ -26,21 +28,21 @@ class WiggleInterpolator(private val amplitude: Double, private val desiredPerio
         val t2 = 1.0 - t1
 
         beginSpline = QuinticPolynomial(
-            0.0,
-            0.0,
-            0.0,
-            internalGet(t1),
-            internalDeriv(t1) * (K * period),
-            internalSecondDeriv(t1) * (K * K * period * period)
+                0.0,
+                0.0,
+                0.0,
+                internalGet(t1),
+                internalDeriv(t1) * (K * period),
+                internalSecondDeriv(t1) * (K * K * period * period)
         )
 
         endSpline = QuinticPolynomial(
-            internalGet(t2),
-            internalDeriv(t2) * (1 - K * period),
-            internalSecondDeriv(t2) * ((1 - K * period) * (1 - K * period)),
-            0.0,
-            0.0,
-            0.0
+                internalGet(t2),
+                internalDeriv(t2) * (1 - K * period),
+                internalSecondDeriv(t2) * ((1 - K * period) * (1 - K * period)),
+                0.0,
+                0.0,
+                0.0
         )
     }
 

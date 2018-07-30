@@ -1,4 +1,6 @@
-package com.acmerobotics.splinelib.path
+package com.acmerobotics.splinelib.path.heading
+
+import com.acmerobotics.splinelib.path.ParametricCurve
 
 class TangentInterpolator: HeadingInterpolator {
     private lateinit var parametricCurve: ParametricCurve
@@ -7,7 +9,7 @@ class TangentInterpolator: HeadingInterpolator {
         this.parametricCurve = parametricCurve
     }
 
-    override fun respectsDerivativeContinuity() = false
+    override fun respectsDerivativeContinuity() = true
 
     override fun get(displacement: Double) = parametricCurve.tangentAngle(displacement)
 
