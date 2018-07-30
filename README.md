@@ -11,22 +11,27 @@ A simple Kotlin library for planning 2D mobile robot paths and trajectories desi
 - [x] Dynamic constraint-capable trapezoidal motion profiling
 - [x] Heading interpolators
 - [x] ~~Modifiers for common FTC drivetrains~~
-- [ ] Nice DSL/builder
-- [ ] Various spline followers (PID, pure pursuit, time-varying non-linear feedback, gvf, etc.)
+- [x] Nice ~~DSL~~/builder
+- [ ] First class dashboard and Java support
+- [ ] PIDV trajectory follower
 - [ ] Feedforward/drivetrain parameter tuning routines
-- [ ] Spline optimizer
-- [ ] Localization routines?
+- [ ] Comprehensive quickstart and examples
+- [ ] Docs
+- [ ] Ramsete trajectory follower
+- [ ] PP path follower?
+- [ ] GVF path follower?
 
 ## GUI
 - [x] Path view
 - [x] Waypoint list
 - [x] Basic constraint specification
-- [ ] Heading control (for holonomic)
+- [x] Curvature/profile visualization
+- [ ] Virtual file system updates
 - [ ] Advanced constraint support
 - [ ] Interactive waypoint dragging
-- [ ] Curvature/profile visualization
+- [ ] Heading control (for holonomic)
 
 ## Plugin
-- [ ] Path serialization/loading
+- [x] Path serialization/loading
 - [ ] Path group management
 - [ ] Live positional feedback
