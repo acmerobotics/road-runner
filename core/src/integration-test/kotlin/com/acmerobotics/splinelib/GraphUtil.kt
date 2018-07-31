@@ -13,7 +13,7 @@ object GraphUtil {
     private const val GRAPH_DIR = "./graphs/"
     private const val GRAPH_DPI = 300
 
-    private fun saveGraph(name: String, graph: XYChart) {
+    fun saveGraph(name: String, graph: XYChart) {
         val file = File(Paths.get(GRAPH_DIR, name).toString())
         file.parentFile.mkdirs()
 
