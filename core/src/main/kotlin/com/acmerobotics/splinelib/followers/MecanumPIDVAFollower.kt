@@ -20,7 +20,6 @@ class MecanumPIDVAFollower(
         private val kA: Double,
         private val kStatic: Double
 ) : TrajectoryFollower() {
-    // TODO: figure out how to subtract the velocity in the derivative nicely
     private val axialController = PIDFController(translationalCoeffs)
     private val lateralController = PIDFController(translationalCoeffs)
     private val headingController = PIDFController(headingCoeffs)
@@ -41,9 +40,9 @@ class MecanumPIDVAFollower(
         lateralController.targetPosition = targetRobotPose.y
         headingController.targetPosition = targetRobotPose.heading
 
-        val axialCorrection = axialController.update(currentRobotPose.x)
-        val lateralCorrection = lateralController.update(currentRobotPose.y)
-        val headingCorrection = headingController.update(currentRobotPose.heading)
+        val axialCorrection = axialController.update(currentRobotPose.x, targetRobotPoseVelocity.x)
+        val lateralCorrection = lateralController.update(currentRobotPose.y, targetRobotPoseVelocity.y)
+        val headingCorrection = headingController.update(currentRobotPose.heading, targetRobotPoseVelocity.heading)
 
         val correctedVelocity = targetRobotPoseVelocity + Pose2d(axialCorrection, lateralCorrection, headingCorrection)
 

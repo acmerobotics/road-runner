@@ -20,7 +20,7 @@ class PIDFController(val pid: PIDCoefficients, val kV: Double = 0.0, val kA: Dou
             errorSum += error * dt
             val errorDeriv = error / dt
 
-            val output = pid.kP * error + pid.kI * errorSum + pid.kD * (errorDeriv - kV * velocity) + kV * velocity + kA * acceleration + kF(position)
+            val output = pid.kP * error + pid.kI * errorSum + pid.kD * (errorDeriv - velocity) + kV * velocity + kA * acceleration + kF(position)
             return output + sign(output) * kStatic
         }
     }

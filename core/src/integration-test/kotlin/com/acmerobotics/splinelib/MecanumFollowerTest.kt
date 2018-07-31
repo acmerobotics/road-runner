@@ -4,13 +4,9 @@ import com.acmerobotics.splinelib.control.PIDCoefficients
 import com.acmerobotics.splinelib.drive.MecanumDrive
 import com.acmerobotics.splinelib.drive.MecanumKinematics
 import com.acmerobotics.splinelib.followers.MecanumPIDVAFollower
-import com.acmerobotics.splinelib.path.LineSegment
-import com.acmerobotics.splinelib.path.Path
-import com.acmerobotics.splinelib.path.QuinticSplineSegment
 import com.acmerobotics.splinelib.trajectory.DriveConstraints
 import com.acmerobotics.splinelib.trajectory.MecanumConstraints
-import com.acmerobotics.splinelib.trajectory.PathTrajectorySegment
-import com.acmerobotics.splinelib.trajectory.Trajectory
+import com.acmerobotics.splinelib.trajectory.TrajectoryBuilder
 import org.apache.commons.math3.distribution.NormalDistribution
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -24,15 +20,17 @@ import kotlin.math.min
 class MecanumFollowerTest {
     companion object {
         const val kV = 1.0 / 60.0
-        const val SIMULATION_HZ = 50
+        const val SIMULATION_HZ = 25
+        const val TRACK_WIDTH = 1.0
 
         private val BASE_CONSTRAINTS = DriveConstraints(50.0, 25.0, Math.PI / 2, Math.PI / 2)
-        private val CONSTRAINTS = MecanumConstraints(BASE_CONSTRAINTS, 6.0)
+        private val CONSTRAINTS = MecanumConstraints(BASE_CONSTRAINTS, TRACK_WIDTH)
     }
 
-    private class SimulatedMecanumDrive : MecanumDrive(6.0) {
+    private class SimulatedMecanumDrive(trackWidth: Double, wheelBase: Double = trackWidth) : MecanumDrive(trackWidth, wheelBase) {
         companion object {
-            val VOLTAGE_NOISE_DIST = NormalDistribution(0.0, 0.5 / 12.0)
+//            val VOLTAGE_NOISE_DIST = NormalDistribution(0.0, 0.25 / 12.0)
+            val VOLTAGE_NOISE_DIST = NormalDistribution(1.0, 0.05)
 
             fun clamp(value: Double, min: Double, max: Double) = min(max, max(min, value))
         }
@@ -43,10 +41,10 @@ class MecanumFollowerTest {
         var frontRightPower: Double = 0.0
 
         override fun setMotorPowers(frontLeft: Double, rearLeft: Double, rearRight: Double, frontRight: Double) {
-            frontLeftPower = clamp(frontLeft + VOLTAGE_NOISE_DIST.sample(), 0.0, 1.0)
-            rearLeftPower = clamp(rearLeft + VOLTAGE_NOISE_DIST.sample(), 0.0, 1.0)
-            rearRightPower = clamp(rearRight + VOLTAGE_NOISE_DIST.sample(), 0.0, 1.0)
-            frontRightPower = clamp(frontRight + VOLTAGE_NOISE_DIST.sample(), 0.0, 1.0)
+            frontLeftPower = clamp(frontLeft * VOLTAGE_NOISE_DIST.sample(), 0.0, 1.0)
+            rearLeftPower = clamp(rearLeft * VOLTAGE_NOISE_DIST.sample(), 0.0, 1.0)
+            rearRightPower = clamp(rearRight * VOLTAGE_NOISE_DIST.sample(), 0.0, 1.0)
+            frontRightPower = clamp(frontRight * VOLTAGE_NOISE_DIST.sample(), 0.0, 1.0)
         }
     }
 
@@ -54,20 +52,14 @@ class MecanumFollowerTest {
     fun simulatePIDVAFollower() {
         val dt = 1.0 / SIMULATION_HZ
 
-        val line = LineSegment(
-                Vector2d(0.0, 0.0),
-                Vector2d(15.0, 15.0)
-        )
-        val spline = QuinticSplineSegment(
-                Waypoint(15.0, 15.0, 15.0, 15.0),
-                Waypoint(5.0, 35.0, -20.0, 5.0)
-        )
-        val trajectory = Trajectory(listOf(
-                PathTrajectorySegment(listOf(Path(line), Path(spline)), listOf(CONSTRAINTS, CONSTRAINTS))
-        ))
+        val trajectory = TrajectoryBuilder(Pose2d(0.0, 0.0, 0.0), CONSTRAINTS)
+                .splineTo(Pose2d(15.0, 15.0, Math.PI))
+                .splineTo(Pose2d(5.0, 35.0, Math.PI / 3))
+                .waitFor(0.5)
+                .build()
 
-        val drive = SimulatedMecanumDrive()
-        val follower = MecanumPIDVAFollower(drive, PIDCoefficients(1.0), PIDCoefficients(5.0), kV, 0.0, 0.0)
+        val drive = SimulatedMecanumDrive(TRACK_WIDTH)
+        val follower = MecanumPIDVAFollower(drive, PIDCoefficients(1.0), PIDCoefficients(15.0), kV, 0.0, 0.0)
         follower.followTrajectory(trajectory, 0.0)
 
         val targetPositions = mutableListOf<Vector2d>()
