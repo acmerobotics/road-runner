@@ -3,6 +3,8 @@ package com.acmerobotics.splinelib.drive
 import com.acmerobotics.splinelib.Pose2d
 import org.apache.commons.math3.linear.MatrixUtils
 
+// TODO: does unrolling mecanum kinematic matrix multiplies obscure intent?
+// the answer seems to be no for tank/differential
 object MecanumKinematics {
     // TODO: it might be better to just pass K to better facilitate experimental results
     // alternatively, they can just pass k as trackWidth
