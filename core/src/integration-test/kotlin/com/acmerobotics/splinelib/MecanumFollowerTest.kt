@@ -59,7 +59,7 @@ class MecanumFollowerTest {
                 .build()
 
         val drive = SimulatedMecanumDrive(TRACK_WIDTH)
-        val follower = MecanumPIDVAFollower(drive, PIDCoefficients(1.0), PIDCoefficients(15.0), kV, 0.0, 0.0)
+        val follower = MecanumPIDVAFollower(drive, PIDCoefficients(1.0), PIDCoefficients(5.0), kV, 0.0, 0.0)
         follower.followTrajectory(trajectory, 0.0)
 
         val targetPositions = mutableListOf<Vector2d>()
