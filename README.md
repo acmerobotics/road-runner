@@ -12,11 +12,12 @@ A simple Kotlin library for planning 2D mobile robot paths and trajectories desi
 - [x] Heading interpolators
 - [x] ~~Modifiers for common FTC drivetrains~~
 - [x] Nice ~~DSL~~/builder
-- [ ] First class dashboard and Java support
-- [ ] PIDV trajectory follower
+- [x] First class dashboard and Java support
+- [x] PIDV trajectory follower
 - [ ] Feedforward/drivetrain parameter tuning routines
 - [ ] Comprehensive quickstart and examples
 - [ ] Docs
+- [ ] Branding
 - [ ] Ramsete trajectory follower
 - [ ] PP path follower?
 - [ ] GVF path follower?
@@ -33,5 +34,6 @@ A simple Kotlin library for planning 2D mobile robot paths and trajectories desi
 
 ## Plugin
 - [x] Path serialization/loading
+- [ ] Proper plugin description
 - [ ] Path group management
 - [ ] Live positional feedback
