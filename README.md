@@ -34,6 +34,6 @@ A simple Kotlin library for planning 2D mobile robot paths and trajectories desi
 
 ## Plugin
 - [x] Path serialization/loading
-- [ ] Proper plugin description
+- [x] Proper plugin description
 - [ ] Path group management
 - [ ] Live positional feedback

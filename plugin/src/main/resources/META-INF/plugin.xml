@@ -1,19 +1,22 @@
 <idea-plugin>
-    <id>plugin</id>
-    <name>Plugin display name here</name>
-    <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">YourCompany</vendor>
+    <name>Spline Designer</name>
+    <id>com.acmerobotics.plugin</id>
 
     <description><![CDATA[
-    Enter short description for your plugin here.<br>
-    <em>most HTML tags may be used</em>
+    Convenient UI for ACME Robotics' <a href="https://github.com/acmerobotics/motion-planner">motion planning library</a>.
     ]]></description>
+
+    <change-notes><![CDATA[
+    Snapshot
+    ]]></change-notes>
+
+    <version>0.1-SNAPSHOT</version>
+
+    <vendor email="goacmerobotics@gmail.com" url="https://goacmerobotics.com">ACME Robotics</vendor>
 
     <depends>com.intellij.modules.androidstudio</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <toolWindow id="Spline Designer" anchor="right" factoryClass="com.acmerobotics.plugin.SplineDesignerToolWindowFactory"/>
     </extensions>
-
-    <actions>
-    </actions>
 </idea-plugin>
