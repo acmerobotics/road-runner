@@ -1,10 +1,21 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:0.9.17"
+    }
+}
+
 plugins {
     id 'kotlin'
     id 'maven-publish'
 }
+apply plugin: 'org.jetbrains.dokka'
 
 repositories {
-    mavenCentral()
+    jcenter()
 }
 
 compileKotlin {
@@ -31,6 +42,20 @@ sourceSets {
 configurations {
     integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
     integrationTestImplementation.extendsFrom testImplementation
+}
+
+dokka {
+    moduleName = 'core'
+    outputFormat = 'javadoc'
+    outputDirectory = "$buildDir/javadoc"
+
+    jdkVersion = 7
+
+    linkMapping {
+        dir = "core/src/main/kotlin"
+        url = "https://github.com/acmerobotics/motion-planner/blob/master/core/src/main/kotlin"
+        suffix = "#L"
+    }
 }
 
 dependencies {
