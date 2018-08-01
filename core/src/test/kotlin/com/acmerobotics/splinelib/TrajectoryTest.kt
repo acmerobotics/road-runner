@@ -28,7 +28,7 @@ class TrajectoryTest {
                 .closeComposite()
                 .build()
 
-        val dt = trajectory.duration() / 100000.0
+        val dt = trajectory.duration() / 10000.0
         val t = (0..10000).map { it * dt }
 
         val x = t.map { trajectory[it].x }
@@ -40,8 +40,7 @@ class TrajectoryTest {
         val accelY = t.map { trajectory.acceleration(it).y }
 
         assert(TestUtil.compareDerivatives(x, velX, dt, 0.01))
-        // TODO: why is there such a disparity between velX and accelX?
-        assert(TestUtil.compareDerivatives(velX, accelX, dt, 3.0))
+        assert(TestUtil.compareDerivatives(velX, accelX, dt, 0.01))
 
         assert(TestUtil.compareDerivatives(y, velY, dt, 0.01))
         assert(TestUtil.compareDerivatives(velY, accelY, dt, 0.01))

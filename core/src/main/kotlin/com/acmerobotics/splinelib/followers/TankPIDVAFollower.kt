@@ -3,7 +3,6 @@ package com.acmerobotics.splinelib.followers
 import com.acmerobotics.splinelib.Pose2d
 import com.acmerobotics.splinelib.control.PIDCoefficients
 import com.acmerobotics.splinelib.control.PIDFController
-import com.acmerobotics.splinelib.drive.MecanumKinematics
 import com.acmerobotics.splinelib.drive.TankDrive
 import com.acmerobotics.splinelib.drive.TankKinematics
 import kotlin.math.sign
