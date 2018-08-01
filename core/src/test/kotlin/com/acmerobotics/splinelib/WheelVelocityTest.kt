@@ -9,7 +9,6 @@ import com.acmerobotics.splinelib.trajectory.TrajectoryBuilder
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import org.knowm.xchart.QuickChart
 
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -38,60 +37,18 @@ class WheelVelocityTest {
             val poseVel = trajectory.velocity(it)
             val poseAccel = trajectory.acceleration(it)
             Pose2d(
-                    poseAccel.x * Math.cos(-pose.heading) - poseVel.x * Math.sin(-pose.heading) * poseVel.heading - poseAccel.y * Math.sin(-pose.heading) - poseVel.y * Math.cos(-pose.heading) * poseVel.heading,
-                    poseAccel.x * Math.sin(-pose.heading) + poseVel.x * Math.cos(-pose.heading) * poseVel.heading + poseAccel.y * Math.cos(-pose.heading) - poseVel.y * Math.sin(-pose.heading) * poseVel.heading,
+                    poseAccel.x * Math.cos(-pose.heading) + poseVel.x * Math.sin(-pose.heading) * poseVel.heading - poseAccel.y * Math.sin(-pose.heading) + poseVel.y * Math.cos(-pose.heading) * poseVel.heading,
+                    poseAccel.x * Math.sin(-pose.heading) - poseVel.x * Math.cos(-pose.heading) * poseVel.heading + poseAccel.y * Math.cos(-pose.heading) + poseVel.y * Math.sin(-pose.heading) * poseVel.heading,
                     poseAccel.heading
             )
         }
         val wheelAccelerations = robotAccelerations.map { MecanumKinematics.robotToWheelAccelerations(it, TRACK_WIDTH) }
 
-        val charts = listOf(
-                QuickChart.getChart(
-                        "x",
-                        "time",
-                        "",
-                        arrayOf("vel", "accel"),
-                        t.toDoubleArray(),
-                        arrayOf(robotVelocities.map { it.x }.toDoubleArray(), robotAccelerations.map { it.x }.toDoubleArray())
-                ),
-                QuickChart.getChart(
-                        "y",
-                        "time",
-                        "",
-                        arrayOf("vel", "accel"),
-                        t.toDoubleArray(),
-                        arrayOf(robotVelocities.map { it.y }.toDoubleArray(), robotAccelerations.map { it.y }.toDoubleArray())
-                ),
-                QuickChart.getChart(
-                        "heading",
-                        "time",
-                        "",
-                        arrayOf("vel", "accel"),
-                        t.toDoubleArray(),
-                        arrayOf(robotVelocities.map { it.heading }.toDoubleArray(), robotAccelerations.map { it.heading }.toDoubleArray())
-                )
-        )
-//        SwingWrapper(charts).displayChartMatrix()
-//
-//        Thread.sleep(10000000)
-
-//        val charts = mutableListOf<XYChart>()
         for (i in 0..3) {
-            println(i)
             val vel = wheelVelocities.map { it[i] }
             val accel = wheelAccelerations.map { it[i] }
 
-//            val chart = QuickChart.getChart(
-//                    "wheel$i",
-//                    "time (sec)",
-//                    "",
-//                    arrayOf("vel", "accel"),
-//                    t.toDoubleArray(),
-//                    arrayOf(vel.toDoubleArray(), accel.toDoubleArray())
-//            )
-//            charts.add(chart)
-            assertTrue(TestUtil.compareDerivatives(vel, accel, dt, 0.01))
+            assertTrue(TestUtil.compareDerivatives(vel, accel, dt, 0.1, 0.02))
         }
-////        SwingWrapper(charts).displayChartMatrix()
     }
 }
