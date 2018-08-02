@@ -139,7 +139,7 @@ abstract class ParametricCurve {
     }
 
     /**
-     * Returns the seocnd derivative of the tangent angle [displacement] units along the curve.
+     * Returns the second derivative of the tangent angle [displacement] units along the curve.
      */
     fun tangentAngleSecondDeriv(displacement: Double): Double {
         val t = displacementToParameter(displacement)
