@@ -4,28 +4,51 @@ import com.acmerobotics.splinelib.Angle
 import com.acmerobotics.splinelib.Pose2d
 import com.acmerobotics.splinelib.Vector2d
 import com.acmerobotics.splinelib.Waypoint
-import com.acmerobotics.splinelib.path.*
+import com.acmerobotics.splinelib.path.LineSegment
+import com.acmerobotics.splinelib.path.Path
+import com.acmerobotics.splinelib.path.QuinticSplineSegment
 import com.acmerobotics.splinelib.path.heading.HeadingInterpolator
 import com.acmerobotics.splinelib.path.heading.TangentInterpolator
 
-class TrajectoryBuilder(private var currentPose: Pose2d, private val globalConstraints: DriveConstraints) {
+/**
+ * Easy-to-use builder for creating [Trajectory] instances.
+ *
+ * @param startPose start pose
+ * @param globalConstraints global drive constraints (overridable for specific segments)
+ */
+class TrajectoryBuilder(startPose: Pose2d, private val globalConstraints: DriveConstraints) {
+    private var currentPose: Pose2d = startPose
     private val trajectorySegments = mutableListOf<TrajectorySegment>()
     private var paths = mutableListOf<Path>()
     private var constraintsList = mutableListOf<TrajectoryConstraints>()
     private var composite = false
     private var reversed = false
 
+    /**
+     * Reverse the direction of robot travel.
+     */
     // TODO: is there a better solution?
     fun reverse(): TrajectoryBuilder {
         reversed = !reversed
         return this
     }
 
+    /**
+     * Sets the robot travel direction.
+     */
     fun setReversed(reversed: Boolean): TrajectoryBuilder {
         this.reversed = reversed
         return this
     }
 
+    /**
+     * Adds a line path segment.
+     *
+     * @param pos end position
+     * @param interpolator heading interpolator
+     * @param constraintsOverride line-specific drive constraints
+     */
+    // TODO: add lineToPose()?
     @JvmOverloads
     fun lineTo(pos: Vector2d, interpolator: HeadingInterpolator = TangentInterpolator(), constraintsOverride: TrajectoryConstraints? = null): TrajectoryBuilder {
         val postBeginComposite = if (!interpolator.respectsDerivativeContinuity() && composite) {
@@ -56,11 +79,23 @@ class TrajectoryBuilder(private var currentPose: Pose2d, private val globalConst
         return this
     }
 
+    /**
+     * Adds a point turn.
+     *
+     * @param angle angle to turn by (relative to the current heading)
+     * @param constraintsOverride turn-specific drive constraints
+     */
     @JvmOverloads
     fun turn(angle: Double, constraintsOverride: DriveConstraints? = null): TrajectoryBuilder {
         return turnTo(Angle.norm(currentPose.heading + angle), constraintsOverride)
     }
 
+    /**
+     * Adds a point turn.
+     *
+     * @param heading heading to turn to
+     * @param constraintsOverride turn-specific drive constraints
+     */
     @JvmOverloads
     fun turnTo(heading: Double, constraintsOverride: DriveConstraints? = null): TrajectoryBuilder {
         if (composite) {
@@ -72,6 +107,11 @@ class TrajectoryBuilder(private var currentPose: Pose2d, private val globalConst
         return this
     }
 
+    /**
+     * Adds a line straight forward.
+     *
+     * @param distance distance to travel forward
+     */
     fun forward(distance: Double): TrajectoryBuilder {
         return lineTo(currentPose.pos() + Vector2d(
                 distance * Math.cos(currentPose.heading),
@@ -79,10 +119,20 @@ class TrajectoryBuilder(private var currentPose: Pose2d, private val globalConst
         ))
     }
 
+    /**
+     * Adds a line straight backward.
+     *
+     * @param distance distance to travel backward
+     */
     fun back(distance: Double): TrajectoryBuilder {
         return forward(-distance)
     }
 
+    /**
+     * Adds a segment that strafes left in the robot reference frame.
+     *
+     * @param distance distance to strafe left
+     */
     fun strafeLeft(distance: Double): TrajectoryBuilder {
         return lineTo(currentPose.pos() + Vector2d(
                 distance * Math.cos(currentPose.heading + Math.PI / 2),
@@ -90,10 +140,22 @@ class TrajectoryBuilder(private var currentPose: Pose2d, private val globalConst
         ))
     }
 
+    /**
+     * Adds a segment that strafes right in the robot reference frame.
+     *
+     * @param distance distance to strafe right
+     */
     fun strafeRight(distance: Double): TrajectoryBuilder {
         return strafeLeft(-distance)
     }
 
+    /**
+     * Adds a spline segment.
+     *
+     * @param pose end pose
+     * @param interpolator heading interpolator
+     * @param constraintsOverride spline-specific constraints
+     */
     @JvmOverloads
     fun splineTo(pose: Pose2d, interpolator: HeadingInterpolator = TangentInterpolator(), constraintsOverride: TrajectoryConstraints? = null): TrajectoryBuilder {
         val postBeginComposite = if (!interpolator.respectsDerivativeContinuity() && composite) {
@@ -139,16 +201,27 @@ class TrajectoryBuilder(private var currentPose: Pose2d, private val globalConst
         return this
     }
 
+    /**
+     * Adds a wait segment.
+     *
+     * @param duration wait duration
+     */
     fun waitFor(duration: Double): TrajectoryBuilder {
         trajectorySegments.add(WaitSegment(currentPose, duration))
         return this
     }
 
+    /**
+     * Begins a composite path trajectory segment backed by a single continuous profile.
+     */
     fun beginComposite(): TrajectoryBuilder {
         composite = true
         return this
     }
 
+    /**
+     * Closes a composite path trajectory segment (see [beginComposite]).
+     */
     fun closeComposite(): TrajectoryBuilder {
         composite = false
         if (paths.isNotEmpty() && constraintsList.isNotEmpty()) {
@@ -159,6 +232,9 @@ class TrajectoryBuilder(private var currentPose: Pose2d, private val globalConst
         return this
     }
 
+    /**
+     * Constructs the [Trajectory] instance.
+     */
     fun build(): Trajectory {
         if (composite) {
             closeComposite()

@@ -9,7 +9,7 @@ import kotlin.math.sign
 
 /**
  * Traditional PID controller with feedforward velocity and acceleration components to follow a trajectory. More
- * specifically, one feedback loop controls the path displacement (i.e., "x" in the robot reference frame), and
+ * specifically, one feedback loop controls the path displacement (i.e., x in the robot reference frame), and
  * another feedback loop to minimize cross track (lateral) error via heading correction (overall, very similar to
  * [MecanumPIDVAFollower] except adjusted for the nonholonomic constraint). Feedforward is applied at the wheel level.
  *

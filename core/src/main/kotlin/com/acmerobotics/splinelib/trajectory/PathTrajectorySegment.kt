@@ -9,6 +9,13 @@ import com.acmerobotics.splinelib.profile.MotionState
 import kotlin.math.max
 import kotlin.math.min
 
+/**
+ * Trajectory segment backed by a list of [Path] objects.
+ *
+ * @param paths paths
+ * @param motionConstraintsList motion constraints for each respective path
+ * @param resolution resolution used for the motion profile (see [MotionProfileGenerator.generateMotionProfile])
+ */
 class PathTrajectorySegment(
     val paths: List<Path>,
     val motionConstraintsList: List<TrajectoryConstraints>,

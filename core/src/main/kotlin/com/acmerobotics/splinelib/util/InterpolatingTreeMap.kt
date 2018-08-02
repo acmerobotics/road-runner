@@ -2,13 +2,17 @@ package com.acmerobotics.splinelib.util;
 
 import java.util.*
 
-/*
+/**
  * Interpolating Tree Maps are used to get values at points that are not defined by making a guess from points that are
  * defined. This uses linear interpolation.
  *
  * Credit to FRC Team 254: https://github.com/Team254/FRC-2017-Public/blob/master/src/com/team254/lib/util/InterpolatingTreeMap.java
  */
 class InterpolatingTreeMap : TreeMap<Double, Double>() {
+
+    /**
+     * Returns the linearly-interpolated value for [key] or null if it's out of range.
+     */
     fun getInterpolated(key: Double): Double? {
         val exactValue = get(key)
         if (exactValue == null) {

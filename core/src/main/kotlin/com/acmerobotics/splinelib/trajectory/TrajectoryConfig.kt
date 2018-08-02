@@ -3,11 +3,21 @@ package com.acmerobotics.splinelib.trajectory
 import com.acmerobotics.splinelib.Pose2d
 import kotlin.math.abs
 
+/**
+ * Basic trajectory configuration intended for serialization. Intentionally more simplistic and less flexible than
+ * [TrajectoryBuilder].
+ *
+ * @param poses poses
+ * @param constraints constraints
+ */
 class TrajectoryConfig(val poses: List<Pose2d>, val constraints: DriveConstraints) {
     companion object {
         const val EPSILON = 1e-2
     }
 
+    /**
+     * Converts the configuration into a real [Trajectory].
+     */
     fun toTrajectory() =
             if (poses.isEmpty()) {
                 Trajectory()

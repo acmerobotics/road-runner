@@ -69,5 +69,11 @@ abstract class TrajectoryFollower {
         }
     }
 
+    /**
+     * Internal version of [update].
+     *
+     * @param currentPose current pose
+     * @param currentTimestamp current timestamp
+     */
     protected abstract fun internalUpdate(currentPose: Pose2d, currentTimestamp: Double)
 }
