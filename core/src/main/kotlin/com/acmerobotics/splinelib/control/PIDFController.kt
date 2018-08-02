@@ -9,7 +9,7 @@ import kotlin.math.sign
  * @param pid traditional PID coefficients
  * @param kV feedforward velocity gain
  * @param kA feedforward acceleration gain
- * @param kStatic constant additive feedforward contribution
+ * @param kStatic additive feedforward constant
  * @param kF custom, position-dependent feedforward (e.g., a cos term for arms)
  */
 class PIDFController @JvmOverloads constructor(

@@ -3,9 +3,20 @@ package com.acmerobotics.splinelib.profile
 import kotlin.math.abs
 import kotlin.math.sqrt
 
+/**
+ * Trapezoidal motion profile generator with dynamic constraint support and arbitrary start and end motion states.
+ */
 object MotionProfileGenerator {
     const val EPSILON = 1e-6
 
+    /**
+     * Generate a simple motion profile with constant [maximumVelocity] and [maximumAcceleration]
+     *
+     * @param start start motion state
+     * @param goal goal motion state
+     * @param maximumVelocity maximum velocity
+     * @param maximumAcceleration maximum acceleration
+     */
     fun generateSimpleMotionProfile(
         start: MotionState,
         goal: MotionState,
@@ -15,10 +26,21 @@ object MotionProfileGenerator {
         generateMotionProfile(
             start,
             goal,
-            SimpleMotionConstraints(maximumVelocity, maximumAcceleration),
+            object : MotionConstraints {
+                override fun maximumVelocity(displacement: Double) = maximumVelocity
+                override fun maximumAcceleration(displacement: Double) = maximumAcceleration
+            },
             1
         )
 
+    /**
+     * Generate a motion profile with dynamic maximum velocity and acceleration.
+     *
+     * @param start start motion state
+     * @param end end motion state
+     * @param constraints motion constraints
+     * @param resolution number of constraint samples
+     */
     fun generateMotionProfile(
         start: MotionState,
         goal: MotionState,
