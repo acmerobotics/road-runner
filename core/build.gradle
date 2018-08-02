@@ -46,7 +46,7 @@ configurations {
 
 dokka {
     moduleName = 'core'
-    outputFormat = 'javadoc'
+    outputFormat = 'html'
     outputDirectory = "$buildDir/javadoc"
 
     jdkVersion = 7

@@ -6,6 +6,12 @@ import com.acmerobotics.splinelib.util.InterpolatingTreeMap
 import java.lang.Math.pow
 import kotlin.math.sqrt
 
+/**
+ * Combination of two quintic polynomials into a 2D quintic spline.
+ *
+ * @param start start waypoint
+ * @param end end waypoint
+ */
 class QuinticSplineSegment(start: Waypoint, end: Waypoint) : ParametricCurve() {
     val x: QuinticPolynomial = QuinticPolynomial(start.x, start.dx, start.dx2, end.x, end.dx, end.dx2)
     val y: QuinticPolynomial = QuinticPolynomial(start.y, start.dy, start.dy2, end.y, end.dy, end.dy2)

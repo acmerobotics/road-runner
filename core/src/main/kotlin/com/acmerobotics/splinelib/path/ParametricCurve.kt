@@ -2,14 +2,27 @@ package com.acmerobotics.splinelib.path
 
 import com.acmerobotics.splinelib.Vector2d
 
+/**
+ * Parametric curve with two components (x and y).
+ */
 abstract class ParametricCurve {
+
+    /**
+     * Returns the vector [displacement] units along the curve.
+     */
     operator fun get(displacement: Double) = internalGet(displacementToParameter(displacement))
 
+    /**
+     * Returns the derivative [displacement] units along the curve.
+     */
     fun deriv(displacement: Double): Vector2d {
         val t = displacementToParameter(displacement)
         return internalDeriv(t) * parameterDeriv(t)
     }
 
+    /**
+     * Returns the second derivative [displacement] units along the curve.
+     */
     fun secondDeriv(displacement: Double): Vector2d {
         val t = displacementToParameter(displacement)
         val deriv = internalDeriv(t)
@@ -20,6 +33,9 @@ abstract class ParametricCurve {
                 deriv * splineParameterSecondDeriv
     }
 
+    /**
+     * Returns the third derivative [displacement] units along the curve.
+     */
     fun thirdDeriv(displacement: Double): Vector2d {
         val t = displacementToParameter(displacement)
         val deriv = internalDeriv(t)
@@ -33,20 +49,44 @@ abstract class ParametricCurve {
                 deriv * splineParameterThirdDeriv
     }
 
+    /**
+     * Returns the start vector.
+     */
     fun start() = get(0.0)
 
+    /**
+     * Returns the start derivative.
+     */
     fun startDeriv() = deriv(0.0)
 
+    /**
+     * Returns the start second derivative.
+     */
     fun startSecondDeriv() = secondDeriv(0.0)
 
+    /**
+     * Returns the start third derivative.
+     */
     fun startThirdDeriv() = thirdDeriv(0.0)
 
+    /**
+     * Returns the end vector.
+     */
     fun end() = get(length())
 
+    /**
+     * Returns the end derivative.
+     */
     fun endDeriv() = deriv(length())
 
+    /**
+     * Returns the end second derivative.
+     */
     fun endSecondDeriv() = secondDeriv(length())
 
+    /**
+     * Returns the end third derivative.
+     */
     fun endThirdDeriv() = thirdDeriv(length())
 
     private fun internalTangentAngle(t: Double): Double {
@@ -82,22 +122,34 @@ abstract class ParametricCurve {
         return if (secondDeriv.isNaN()) 0.0 else secondDeriv
     }
 
+    /**
+     * Returns the angle of the tangent line [displacement] units along the curve.
+     */
     fun tangentAngle(displacement: Double): Double {
         val t = displacementToParameter(displacement)
         return internalTangentAngle(t)
     }
 
+    /**
+     * Returns the derivative of the tangent angle [displacement] units along the curve.
+     */
     fun tangentAngleDeriv(displacement: Double): Double {
         val t = displacementToParameter(displacement)
         return internalTangentAngleDeriv(t) * parameterDeriv(t)
     }
 
+    /**
+     * Returns the seocnd derivative of the tangent angle [displacement] units along the curve.
+     */
     fun tangentAngleSecondDeriv(displacement: Double): Double {
         val t = displacementToParameter(displacement)
         return internalTangentAngleSecondDeriv(t) * parameterDeriv(t) * parameterDeriv(t) +
                 internalTangentAngleDeriv(t) * parameterSecondDeriv(t)
     }
 
+    /**
+     * Returns the length of the curve.
+     */
     abstract fun length(): Double
 
     internal abstract fun internalGet(t: Double): Vector2d

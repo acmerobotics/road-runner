@@ -2,6 +2,9 @@ package com.acmerobotics.splinelib.path.heading
 
 import com.acmerobotics.splinelib.path.ParametricCurve
 
+/**
+ * Tangent (default) interpolator for tank/differential and other nonholonomic drives.
+ */
 class TangentInterpolator: HeadingInterpolator {
     private lateinit var parametricCurve: ParametricCurve
 

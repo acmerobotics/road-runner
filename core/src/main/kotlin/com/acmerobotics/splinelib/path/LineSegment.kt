@@ -2,7 +2,10 @@ package com.acmerobotics.splinelib.path
 
 import com.acmerobotics.splinelib.Vector2d
 
-class LineSegment(private val start: Vector2d, private val end: Vector2d) : ParametricCurve() {
+/**
+ * Parametric representation of a line.
+ */
+class LineSegment(private val start: Vector2d, end: Vector2d) : ParametricCurve() {
     private val diff = end - start
 
     override fun length() = diff.norm()

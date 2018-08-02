@@ -11,6 +11,13 @@ import kotlin.math.sign
  * Traditional PID controller with feedforward velocity and acceleration components to follow a trajectory. More
  * specifically, the feedback is applied to the components of the robot's pose (x position, y position, and heading) to
  * determine the velocity correction. The feedforward components are instead applied at the wheel level.
+ *
+ * @param drive mecanum drive instance
+ * @param translationalCoeffs PID coefficients for the robot axial and lateral (x and y, respectively) controllers
+ * @param headingCoeffs PID coefficients for the robot heading controller
+ * @param kV feedforward velocity gain
+ * @param kA feedforward acceleration gain
+ * @param kStatic signed, additive feedforward constant (used to overcome static friction)
  */
 class MecanumPIDVAFollower(
         private val drive: MecanumDrive,

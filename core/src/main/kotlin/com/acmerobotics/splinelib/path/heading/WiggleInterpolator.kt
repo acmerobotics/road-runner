@@ -5,6 +5,10 @@ import com.acmerobotics.splinelib.path.QuinticPolynomial
 import kotlin.math.cos
 import kotlin.math.sin
 
+/**
+ * Heading interpolator that wraps another interpolator and adds sinusoidal oscillations ("wiggles") while preserving
+ * continuity. More specifically, the wiggle function is composed of a sine wave with a quintic spline on either end.
+ */
 class WiggleInterpolator(private val amplitude: Double, private val desiredPeriod: Double, private val baseInterpolator: HeadingInterpolator = TangentInterpolator()) :
         HeadingInterpolator {
     companion object {

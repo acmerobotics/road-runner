@@ -2,6 +2,9 @@ package com.acmerobotics.splinelib.path.heading
 
 import com.acmerobotics.splinelib.path.ParametricCurve
 
+/**
+ * Linear heading interpolator for time-optimal transitions between poses.
+ */
 class LinearInterpolator(private val startHeading: Double, endHeading: Double) : HeadingInterpolator {
     private val turnAngle: Double = if (endHeading >= startHeading) {
         endHeading - startHeading
