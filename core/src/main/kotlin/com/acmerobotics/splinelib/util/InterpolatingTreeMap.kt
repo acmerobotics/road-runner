@@ -6,7 +6,7 @@ import java.util.*
  * Interpolating Tree Maps are used to get values at points that are not defined by making a guess from points that are
  * defined. This uses linear interpolation.
  *
- * Credit to FRC Team 254: https://github.com/Team254/FRC-2017-Public/blob/master/src/com/team254/lib/util/InterpolatingTreeMap.java
+ * Credit to FRC Team 254: [InterpolatingTreeMap.java](https://github.com/Team254/FRC-2017-Public/blob/master/src/com/team254/lib/util/InterpolatingTreeMap.java)
  */
 class InterpolatingTreeMap : TreeMap<Double, Double>() {
 
