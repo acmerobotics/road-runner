@@ -27,7 +27,12 @@ class MecanumFollowerTest {
         private val CONSTRAINTS = MecanumConstraints(BASE_CONSTRAINTS, TRACK_WIDTH)
     }
 
+    // TODO: fix simulation
     private class SimulatedMecanumDrive(trackWidth: Double, wheelBase: Double = trackWidth) : MecanumDrive(trackWidth, wheelBase) {
+        override fun getMotorPositions(): List<Double> {
+            TODO("not implemented")
+        }
+
         companion object {
 //            val VOLTAGE_NOISE_DIST = NormalDistribution(0.0, 0.25 / 12.0)
             val VOLTAGE_NOISE_DIST = NormalDistribution(1.0, 0.05)
