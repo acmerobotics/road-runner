@@ -11,4 +11,8 @@ object TankKinematics {
     // follows from linearity of the derivative
     fun robotToWheelAccelerations(robotPoseAcceleration: Pose2d, trackWidth: Double) =
             robotToWheelVelocities(robotPoseAcceleration, trackWidth)
+
+    fun wheelToRobotVelocities(wheelVelocities: List<Double>, trackWidth: Double) =
+        Pose2d((wheelVelocities[0] + wheelVelocities[1]) / 2.0,
+                (wheelVelocities[0] - wheelVelocities[1]) / trackWidth)
 }

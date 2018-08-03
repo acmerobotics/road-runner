@@ -38,14 +38,14 @@ class TankPIDVAFollower(
         val targetPoseVelocity = trajectory.velocity(t)
         val targetPoseAcceleration = trajectory.acceleration(t)
 
-        val targetRobotPose = Pose2d(targetPose.pos().rotated(-targetPose.heading), targetPose.heading)
+        val targetRobotPose = Pose2d(targetPose.pos().rotated(-targetPose.heading), 0.0)
         val targetRobotPoseVelocity = Pose2d(targetPoseVelocity.pos().rotated(-targetPose.heading), targetPoseVelocity.heading)
         val targetRobotPoseAcceleration = Pose2d(targetPoseAcceleration.pos().rotated(-targetPose.heading), targetPoseAcceleration.heading) +
                 Pose2d(-targetPoseVelocity.x * Math.sin(targetPose.heading) + targetPoseVelocity.y * Math.cos(targetPose.heading),
                         -targetPoseVelocity.x * Math.cos(targetPose.heading) - targetPoseVelocity.y * Math.sin(targetPose.heading),
                         0.0
                 ) * targetPoseVelocity.heading
-        val currentRobotPose = Pose2d(currentPose.pos().rotated(-currentPose.heading), currentPose.heading)
+        val currentRobotPose = Pose2d(currentPose.pos().rotated(-targetPose.heading), currentPose.heading - targetPose.heading)
 
         displacementController.targetPosition = targetRobotPose.x
         crossTrackController.targetPosition = targetRobotPose.y
