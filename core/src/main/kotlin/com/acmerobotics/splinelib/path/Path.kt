@@ -1,8 +1,12 @@
 package com.acmerobotics.splinelib.path
 
 import com.acmerobotics.splinelib.Pose2d
+import com.acmerobotics.splinelib.Vector2d
 import com.acmerobotics.splinelib.path.heading.HeadingInterpolator
 import com.acmerobotics.splinelib.path.heading.TangentInterpolator
+import org.apache.commons.math3.fitting.leastsquares.*
+import org.apache.commons.math3.linear.*
+
 
 /**
  * Path composed of a parametric curve and a heading interpolator.
@@ -16,6 +20,8 @@ class Path @JvmOverloads constructor(
         val interpolator: HeadingInterpolator = TangentInterpolator(),
         val reversed: Boolean = false
 ) {
+    class ProjectionResult(val displacement: Double, val distance: Double)
+
     init {
         interpolator.init(parametricCurve)
     }
@@ -74,6 +80,36 @@ class Path @JvmOverloads constructor(
             interpolator.secondDeriv(displacement)
         }
         return Pose2d(secondDeriv.x, secondDeriv.y, headingSecondDeriv)
+    }
+
+    fun project(point: Vector2d, initialDisplacement: Double = length() / 2.0): ProjectionResult {
+        val problem = LeastSquaresBuilder()
+                .start(doubleArrayOf(initialDisplacement))
+                .model {
+                    val pathPoint = this[it.getEntry(0)].pos()
+                    val pathDerivative = deriv(it.getEntry(0)).pos()
+
+                    val distance = point distanceTo pathPoint
+
+                    val value = ArrayRealVector(doubleArrayOf(distance))
+
+                    val diff = pathPoint - point
+                    val derivative = (diff.x * pathDerivative.x + diff.y * pathDerivative.y) / distance
+                    val jacobian = MatrixUtils.createRealMatrix(arrayOf(doubleArrayOf(derivative)))
+
+                    org.apache.commons.math3.util.Pair<RealVector, RealMatrix>(value, jacobian)
+                }
+                .target(doubleArrayOf(0.0))
+                .lazyEvaluation(false)
+                .maxEvaluations(1000)
+                .maxIterations(1000)
+                .build()
+
+        val optimum = LevenbergMarquardtOptimizer().optimize(problem)
+        val displacement = optimum.point.getEntry(0)
+        val optimumPoint = this[displacement].pos()
+
+        return ProjectionResult(displacement, point distanceTo optimumPoint)
     }
 
     /**

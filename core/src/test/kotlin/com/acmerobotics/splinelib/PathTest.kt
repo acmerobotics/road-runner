@@ -39,4 +39,15 @@ class PathTest {
         assert(TestUtil.compareDerivatives(heading, headingDeriv, ds, 0.01))
         assert(TestUtil.compareDerivatives(headingDeriv, headingSecondDeriv, ds, 0.01))
     }
+
+    @Test
+    fun testProjection() {
+//        val line = LineSegment(Vector2d(0.0, 0.0), Vector2d(10.0, 10.0))
+        val spline = QuinticSplineSegment(Waypoint(0.0, 0.0, 1.0, 0.0), Waypoint(5.0, 5.0, 1.0, 0.0))
+        val path = Path(spline)
+        val projectionResult = path.project(Vector2d(2.0, 2.0))
+        println(path[projectionResult.displacement].pos())
+        println(projectionResult.displacement)
+        println(projectionResult.distance)
+    }
 }
