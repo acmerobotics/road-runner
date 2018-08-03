@@ -115,7 +115,7 @@ class TankFollowerTest {
                 .build()
 
         val drive = SimulatedTankDrive(dt, kV, TRACK_WIDTH)
-        val follower = RamseteFollower(drive, 0.1, 0.5, kV, 0.0, 0.0)
+        val follower = RamseteFollower(drive, 0.0008, 0.5, kV, 0.0, 0.0)
         follower.followTrajectory(trajectory, 0.0)
 
         val targetPositions = mutableListOf<Vector2d>()

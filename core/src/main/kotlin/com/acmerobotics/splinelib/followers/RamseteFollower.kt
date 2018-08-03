@@ -33,9 +33,9 @@ class RamseteFollower(
         val targetPose = trajectory[t]
         val targetPoseVelocity = trajectory.velocity(t)
 
-        val targetRobotPose = Pose2d(targetPose.pos().rotated(-targetPose.heading), targetPose.heading)
-        val currentRobotPose = Pose2d(currentPose.pos().rotated(-currentPose.heading), currentPose.heading)
+        val targetRobotPose = Pose2d(targetPose.pos().rotated(-targetPose.heading), 0.0)
         val targetRobotPoseVelocity = Pose2d(targetPoseVelocity.pos().rotated(-targetPose.heading), targetPoseVelocity.heading)
+        val currentRobotPose = Pose2d(currentPose.pos().rotated(-targetPose.heading), currentPose.heading - targetPose.heading)
 
         val targetV = targetRobotPoseVelocity.x
         val targetOmega = targetRobotPoseVelocity.heading
@@ -48,7 +48,7 @@ class RamseteFollower(
         val v = targetV * cos(error.heading) +
                 k1 * (cos(currentPose.heading) * error.x + sin(currentPose.heading) * error.y)
         val omega = targetOmega + k2 * targetV * sin(error.heading) / error.heading *
-                (cos(currentPose.heading) * error.x - sin(currentPose.heading) * error.y) +
+                (cos(currentPose.heading) * error.y - sin(currentPose.heading) * error.x) +
                 k3 * error.heading
 
         // TODO: is Ramsete acceleration FF worth?
