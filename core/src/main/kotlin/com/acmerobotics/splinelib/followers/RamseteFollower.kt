@@ -3,7 +3,10 @@ package com.acmerobotics.splinelib.followers
 import com.acmerobotics.splinelib.Pose2d
 import com.acmerobotics.splinelib.drive.TankDrive
 import com.acmerobotics.splinelib.drive.TankKinematics
-import kotlin.math.*
+import kotlin.math.cos
+import kotlin.math.sign
+import kotlin.math.sin
+import kotlin.math.sqrt
 
 /**
  * Time-varying, non-linear feedback controller for nonholonomic drives. See equation 5.12 of
@@ -45,7 +48,7 @@ class RamseteFollower(
         val v = targetV * cos(error.heading) +
                 k1 * (cos(currentPose.heading) * error.x + sin(currentPose.heading) * error.y)
         val omega = targetOmega + k2 * targetV * sin(error.heading) / error.heading *
-                (cos(currentPose.heading) * error.y - sin(currentPose.heading) * error.x) +
+                (cos(currentPose.heading) * error.x - sin(currentPose.heading) * error.y) +
                 k3 * error.heading
 
         // TODO: is Ramsete acceleration FF worth?

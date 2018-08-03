@@ -78,7 +78,7 @@ class MecanumFollowerTest {
         val actualPositions = mutableListOf<Vector2d>()
 
         val samples = ceil(trajectory.duration() / dt).toInt()
-        for (sample in 0..samples) {
+        for (sample in 1..samples) {
             val t = sample * dt
             follower.update(drive.getPoseEstimate(), t)
             drive.updatePoseEstimate(t)

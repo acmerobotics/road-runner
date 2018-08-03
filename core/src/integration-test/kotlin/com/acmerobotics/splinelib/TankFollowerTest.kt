@@ -2,6 +2,7 @@ package com.acmerobotics.splinelib
 
 import com.acmerobotics.splinelib.control.PIDCoefficients
 import com.acmerobotics.splinelib.drive.TankDrive
+import com.acmerobotics.splinelib.followers.RamseteFollower
 import com.acmerobotics.splinelib.followers.TankPIDVAFollower
 import com.acmerobotics.splinelib.trajectory.DriveConstraints
 import com.acmerobotics.splinelib.trajectory.TankConstraints
@@ -70,7 +71,7 @@ class TankFollowerTest {
                 .build()
 
         val drive = SimulatedTankDrive(dt, kV, TRACK_WIDTH)
-        val follower = TankPIDVAFollower(drive, PIDCoefficients(1.0), PIDCoefficients(kP = 5.0, kD = 2.0), kV, 0.0, 0.0)
+        val follower = TankPIDVAFollower(drive, PIDCoefficients(1.0), PIDCoefficients(kP = 1.0), kV, 0.0, 0.0)
         follower.followTrajectory(trajectory, 0.0)
 
         val targetPositions = mutableListOf<Vector2d>()
@@ -78,7 +79,7 @@ class TankFollowerTest {
 
         drive.resetPoseEstimate(trajectory.start())
         val samples = ceil(trajectory.duration() / dt).toInt()
-        for (sample in 0..samples) {
+        for (sample in 1..samples) {
             val t = sample * dt
             follower.update(drive.getPoseEstimate(), t)
             drive.updatePoseEstimate(t)
@@ -98,6 +99,50 @@ class TankFollowerTest {
                 actualPositions.map { it.x }.toDoubleArray(),
                 actualPositions.map { it.y }.toDoubleArray())
         graph.seriesMap.values.forEach { it.marker = None() }
-        GraphUtil.saveGraph("tankSim", graph)
+        GraphUtil.saveGraph("tankPIDVASim", graph)
+    }
+
+    @Test
+    fun simulateRamseteFollower() {
+        val dt = 1.0 / SIMULATION_HZ
+
+        val trajectory = TrajectoryBuilder(Pose2d(0.0, 0.0, 0.0), CONSTRAINTS)
+                .beginComposite()
+                .splineTo(Pose2d(15.0, 15.0, Math.PI))
+                .splineTo(Pose2d(5.0, 35.0, Math.PI / 3))
+                .closeComposite()
+                .waitFor(0.5)
+                .build()
+
+        val drive = SimulatedTankDrive(dt, kV, TRACK_WIDTH)
+        val follower = RamseteFollower(drive, 0.1, 0.5, kV, 0.0, 0.0)
+        follower.followTrajectory(trajectory, 0.0)
+
+        val targetPositions = mutableListOf<Vector2d>()
+        val actualPositions = mutableListOf<Vector2d>()
+
+        drive.resetPoseEstimate(trajectory.start())
+        val samples = ceil(trajectory.duration() / dt).toInt()
+        for (sample in 1..samples) {
+            val t = sample * dt
+            follower.update(drive.getPoseEstimate(), t)
+            drive.updatePoseEstimate(t)
+
+            targetPositions.add(trajectory[t].pos())
+            actualPositions.add(drive.getPoseEstimate().pos())
+        }
+
+        val graph = XYChart(600, 400)
+        graph.title = "Tank Ramsete Follower Sim"
+        graph.addSeries(
+                "Target Trajectory",
+                targetPositions.map { it.x }.toDoubleArray(),
+                targetPositions.map { it.y }.toDoubleArray())
+        graph.addSeries(
+                "Actual Trajectory",
+                actualPositions.map { it.x }.toDoubleArray(),
+                actualPositions.map { it.y }.toDoubleArray())
+        graph.seriesMap.values.forEach { it.marker = None() }
+        GraphUtil.saveGraph("tankRamseteSim", graph)
     }
 }
