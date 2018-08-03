@@ -14,5 +14,6 @@ object TankKinematics {
 
     fun wheelToRobotVelocities(wheelVelocities: List<Double>, trackWidth: Double) =
         Pose2d((wheelVelocities[0] + wheelVelocities[1]) / 2.0,
-                (wheelVelocities[0] - wheelVelocities[1]) / trackWidth)
+                0.0,
+                (-wheelVelocities[0] + wheelVelocities[1]) / trackWidth)
 }

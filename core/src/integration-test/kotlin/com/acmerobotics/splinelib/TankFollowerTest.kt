@@ -1,10 +1,10 @@
 package com.acmerobotics.splinelib
 
 import com.acmerobotics.splinelib.control.PIDCoefficients
-import com.acmerobotics.splinelib.drive.MecanumDrive
-import com.acmerobotics.splinelib.followers.MecanumPIDVAFollower
+import com.acmerobotics.splinelib.drive.TankDrive
+import com.acmerobotics.splinelib.followers.TankPIDVAFollower
 import com.acmerobotics.splinelib.trajectory.DriveConstraints
-import com.acmerobotics.splinelib.trajectory.MecanumConstraints
+import com.acmerobotics.splinelib.trajectory.TankConstraints
 import com.acmerobotics.splinelib.trajectory.TrajectoryBuilder
 import org.apache.commons.math3.distribution.NormalDistribution
 import org.junit.jupiter.api.Test
@@ -15,23 +15,23 @@ import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
 
+
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class MecanumFollowerTest {
+class TankFollowerTest {
     companion object {
         const val kV = 1.0 / 60.0
         const val SIMULATION_HZ = 25
         const val TRACK_WIDTH = 3.0
 
         private val BASE_CONSTRAINTS = DriveConstraints(50.0, 25.0, Math.PI / 2, Math.PI / 2)
-        private val CONSTRAINTS = MecanumConstraints(BASE_CONSTRAINTS, TRACK_WIDTH)
+        private val CONSTRAINTS = TankConstraints(BASE_CONSTRAINTS, TRACK_WIDTH)
     }
 
-    private class SimulatedMecanumDrive(
+    private class SimulatedTankDrive(
             private val dt: Double,
             private val kV: Double,
-            trackWidth: Double,
-            wheelBase: Double = trackWidth
-    ) : MecanumDrive(trackWidth, wheelBase) {
+            trackWidth: Double
+    ) : TankDrive(trackWidth) {
         companion object {
 //            val VOLTAGE_NOISE_DIST = NormalDistribution(0.0, 0.25 / 12.0)
             val VOLTAGE_NOISE_DIST = NormalDistribution(1.0, 0.05)
@@ -39,11 +39,11 @@ class MecanumFollowerTest {
             fun clamp(value: Double, min: Double, max: Double) = min(max, max(min, value))
         }
 
-        var powers = listOf(0.0, 0.0, 0.0, 0.0)
-        var positions = listOf(0.0, 0.0, 0.0, 0.0)
+        var powers = listOf(0.0, 0.0)
+        var positions = listOf(0.0, 0.0)
 
-        override fun setMotorPowers(frontLeft: Double, rearLeft: Double, rearRight: Double, frontRight: Double) {
-            powers = listOf(frontLeft, rearLeft, rearRight, frontRight)
+        override fun setMotorPowers(left: Double, right: Double) {
+            powers = listOf(left, right)
                     .map { it * VOLTAGE_NOISE_DIST.sample() }
                     .map { clamp(it, 0.0, 1.0) }
         }
@@ -55,7 +55,6 @@ class MecanumFollowerTest {
                     .map { it.first + it.second / kV * dt }
             super.updatePoseEstimate(timestamp)
         }
-
     }
 
     @Test
@@ -70,13 +69,14 @@ class MecanumFollowerTest {
                 .waitFor(0.5)
                 .build()
 
-        val drive = SimulatedMecanumDrive(dt, kV, TRACK_WIDTH)
-        val follower = MecanumPIDVAFollower(drive, PIDCoefficients(1.0), PIDCoefficients(5.0), kV, 0.0, 0.0)
+        val drive = SimulatedTankDrive(dt, kV, TRACK_WIDTH)
+        val follower = TankPIDVAFollower(drive, PIDCoefficients(1.0), PIDCoefficients(kP = 5.0, kD = 2.0), kV, 0.0, 0.0)
         follower.followTrajectory(trajectory, 0.0)
 
         val targetPositions = mutableListOf<Vector2d>()
         val actualPositions = mutableListOf<Vector2d>()
 
+        drive.resetPoseEstimate(trajectory.start())
         val samples = ceil(trajectory.duration() / dt).toInt()
         for (sample in 0..samples) {
             val t = sample * dt
@@ -88,7 +88,7 @@ class MecanumFollowerTest {
         }
 
         val graph = XYChart(600, 400)
-        graph.title = "Mecanum PIDVA Follower Sim"
+        graph.title = "Tank PIDVA Follower Sim"
         graph.addSeries(
                 "Target Trajectory",
                 targetPositions.map { it.x }.toDoubleArray(),
@@ -98,6 +98,6 @@ class MecanumFollowerTest {
                 actualPositions.map { it.x }.toDoubleArray(),
                 actualPositions.map { it.y }.toDoubleArray())
         graph.seriesMap.values.forEach { it.marker = None() }
-        GraphUtil.saveGraph("mecanumSim", graph)
+        GraphUtil.saveGraph("tankSim", graph)
     }
 }
