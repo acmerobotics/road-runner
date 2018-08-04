@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.knowm.xchart.XYChart
 import org.knowm.xchart.style.markers.None
+import kotlin.math.atan
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
@@ -167,7 +168,8 @@ class TankFollowerTest {
                 5.0,
                 kV,
                 0.0,
-                0.0)
+                0.0,
+                ::atan)
         follower.followPath(path, 0.0)
 
         val actualPositions = mutableListOf<Vector2d>()

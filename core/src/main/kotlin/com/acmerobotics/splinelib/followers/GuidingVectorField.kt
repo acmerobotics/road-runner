@@ -5,10 +5,10 @@ import com.acmerobotics.splinelib.path.Path
 import kotlin.math.sign
 
 /**
- * Guiding vector field for effective path following. Described in section III, eq. (9) of
+ * Guiding vector field for effective path following described in section III, eq. (9) of
  * [1610.04391.pdf](https://arxiv.org/pdf/1610.04391.pdf). Implementation note: 2D parametric curves are used to
- * describe paths instead of f(x,y) = 0 as described in the paper (which dramatically affects the cross track error
- * calculation).
+ * describe paths instead of implicit curves of the form f(x,y) = 0 as described in the paper (which dramatically
+ * affects the cross track error calculation).
  *
  * @param path path to follow (interpolator is ignored)
  * @param kN path normal weight (see eq. (9))
