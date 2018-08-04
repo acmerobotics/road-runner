@@ -4,7 +4,7 @@ import com.acmerobotics.splinelib.Pose2d
 import com.acmerobotics.splinelib.trajectory.Trajectory
 
 /**
- * Generic trajectory follower for time-based pose reference tracking.
+ * Generic [Trajectory] follower for time-based pose reference tracking.
  */
 abstract class TrajectoryFollower {
     private var startTimestamp: Double = 0.0
@@ -40,40 +40,10 @@ abstract class TrajectoryFollower {
     protected fun elapsedTime(currentTimestamp: Double = System.nanoTime() / 1e9) = currentTimestamp - startTimestamp
 
     /**
-     * Run a single step of the trajectory follower. If the trajectory has finished (based on [currentTimestamp]), this
-     * does nothing.
+     * Run a single iteration of the trajectory follower.
      *
      * @param currentPose current robot pose
      * @param currentTimestamp current timestamp override (for simulation)
-     * @return true if the update was carried out, false if the trajectory already finished
      */
-    fun update(currentPose: Pose2d, currentTimestamp: Double = System.nanoTime() / 1e9): Boolean {
-        return if (isFollowing(currentTimestamp)) {
-            internalUpdate(currentPose, currentTimestamp)
-            true
-        } else {
-            false
-        }
-    }
-
-    /**
-     * Wait for the current trajectory to finish executing.
-     */
-    fun awaitCompletion() {
-        while (isFollowing() && !Thread.currentThread().isInterrupted) {
-            try {
-                Thread.sleep(5)
-            } catch (e: InterruptedException) {
-                Thread.currentThread().interrupt()
-            }
-        }
-    }
-
-    /**
-     * Internal version of [update].
-     *
-     * @param currentPose current pose
-     * @param currentTimestamp current timestamp
-     */
-    protected abstract fun internalUpdate(currentPose: Pose2d, currentTimestamp: Double)
+    abstract fun update(currentPose: Pose2d, currentTimestamp: Double = System.nanoTime() / 1e9)
 }

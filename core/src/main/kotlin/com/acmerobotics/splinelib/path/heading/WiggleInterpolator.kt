@@ -9,19 +9,21 @@ import kotlin.math.sin
  * Heading interpolator that wraps another interpolator and adds sinusoidal oscillations ("wiggles") while preserving
  * continuity. More specifically, the wiggle function is composed of a sine wave with a quintic spline on either end.
  */
-class WiggleInterpolator(private val amplitude: Double, private val desiredPeriod: Double, private val baseInterpolator: HeadingInterpolator = TangentInterpolator()) :
-        HeadingInterpolator {
+class WiggleInterpolator(
+        private val amplitude: Double,
+        private val desiredPeriod: Double,
+        private val baseInterpolator: HeadingInterpolator = TangentInterpolator()
+) : HeadingInterpolator() {
     companion object {
         private const val K = 0.5  // fraction of a period replaced by a path on either side
     }
     
     private var period: Double = 0.0
-    private lateinit var parametricCurve: ParametricCurve
     private lateinit var beginSpline: QuinticPolynomial
     private lateinit var endSpline: QuinticPolynomial
 
     override fun init(parametricCurve: ParametricCurve) {
-        this.parametricCurve = parametricCurve
+        super.init(parametricCurve)
 
         baseInterpolator.init(parametricCurve)
 

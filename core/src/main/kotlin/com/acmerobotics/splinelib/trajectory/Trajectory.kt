@@ -9,9 +9,7 @@ import kotlin.math.min
  *
  * @param segments trajectory segments
  */
-class Trajectory(segments: List<TrajectorySegment> = listOf()) {
-    val segments: MutableList<TrajectorySegment> = segments.toMutableList()
-
+class Trajectory(val segments: List<TrajectorySegment> = listOf()) {
     /**
      * Returns the trajectory duration.
      */

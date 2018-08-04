@@ -7,13 +7,12 @@ import com.acmerobotics.splinelib.path.QuinticPolynomial
  * Spline heading interpolator for transitioning smoothly between headings without violating continuity (and hence
  * allowing for integration into longer profiles).
  */
-class SplineInterpolator(private val startHeading: Double, private val endHeading: Double) : HeadingInterpolator {
+class SplineInterpolator(private val startHeading: Double, private val endHeading: Double) : HeadingInterpolator() {
     private val tangentInterpolator = TangentInterpolator()
     private lateinit var headingSpline: QuinticPolynomial
-    private lateinit var parametricCurve: ParametricCurve
 
     override fun init(parametricCurve: ParametricCurve) {
-        this.parametricCurve = parametricCurve
+        super.init(parametricCurve)
 
         tangentInterpolator.init(this.parametricCurve)
 

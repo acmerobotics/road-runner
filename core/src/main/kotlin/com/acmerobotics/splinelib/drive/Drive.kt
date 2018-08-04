@@ -2,6 +2,8 @@ package com.acmerobotics.splinelib.drive
 
 import com.acmerobotics.splinelib.Pose2d
 
+// TODO: add some kind of FF support (i.e., kV, kA, and kStatic) at this level
+// or even the next level down (TankDrive, MecanumDrive)
 interface Drive {
     fun setVelocity(poseVelocity: Pose2d)
 

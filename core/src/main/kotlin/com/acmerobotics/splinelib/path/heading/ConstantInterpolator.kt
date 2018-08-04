@@ -1,15 +1,9 @@
 package com.acmerobotics.splinelib.path.heading
 
-import com.acmerobotics.splinelib.path.ParametricCurve
-
 /**
  * Constant heading interpolator used for arbitrary holonomic translations.
  */
-class ConstantInterpolator(val heading: Double) : HeadingInterpolator {
-    override fun init(parametricCurve: ParametricCurve) {
-
-    }
-
+class ConstantInterpolator(val heading: Double) : HeadingInterpolator() {
     override fun respectsDerivativeContinuity() = false
 
     override fun get(displacement: Double) = heading

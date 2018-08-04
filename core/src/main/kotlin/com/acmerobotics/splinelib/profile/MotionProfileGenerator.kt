@@ -26,10 +26,7 @@ object MotionProfileGenerator {
         generateMotionProfile(
             start,
             goal,
-            object : MotionConstraints {
-                override fun maximumVelocity(displacement: Double) = maximumVelocity
-                override fun maximumAcceleration(displacement: Double) = maximumAcceleration
-            },
+            SimpleMotionConstraints(maximumVelocity, maximumAcceleration),
             1
         )
 

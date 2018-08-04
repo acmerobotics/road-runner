@@ -2,8 +2,12 @@ package com.acmerobotics.splinelib
 
 import com.acmerobotics.splinelib.control.PIDCoefficients
 import com.acmerobotics.splinelib.drive.TankDrive
+import com.acmerobotics.splinelib.followers.GVFFollower
 import com.acmerobotics.splinelib.followers.RamseteFollower
 import com.acmerobotics.splinelib.followers.TankPIDVAFollower
+import com.acmerobotics.splinelib.path.Path
+import com.acmerobotics.splinelib.path.QuinticSplineSegment
+import com.acmerobotics.splinelib.profile.SimpleMotionConstraints
 import com.acmerobotics.splinelib.trajectory.DriveConstraints
 import com.acmerobotics.splinelib.trajectory.TankConstraints
 import com.acmerobotics.splinelib.trajectory.TrajectoryBuilder
@@ -144,5 +148,54 @@ class TankFollowerTest {
                 actualPositions.map { it.y }.toDoubleArray())
         graph.seriesMap.values.forEach { it.marker = None() }
         GraphUtil.saveGraph("tankRamseteSim", graph)
+    }
+
+    @Test
+    fun simulateGVFFollower() {
+        val dt = 1.0 / SIMULATION_HZ
+
+        val path = Path(QuinticSplineSegment(
+                Waypoint(0.0, 0.0, 20.0, 0.0),
+                Waypoint(15.0, 15.0, 20.0, 0.0)
+        ))
+
+        val drive = SimulatedTankDrive(dt, kV, TRACK_WIDTH)
+        val follower = GVFFollower(
+                drive,
+                SimpleMotionConstraints(5.0, 25.0),
+                3.0,
+                5.0,
+                kV,
+                0.0,
+                0.0)
+        follower.followPath(path, 0.0)
+
+        val actualPositions = mutableListOf<Vector2d>()
+
+        drive.resetPoseEstimate(Pose2d(0.0, 10.0, -Math.PI / 2))
+        var t = 0.0
+        while (follower.isFollowing()) {
+            t += dt
+            follower.update(drive.getPoseEstimate(), t)
+            drive.updatePoseEstimate(t)
+
+            actualPositions.add(drive.getPoseEstimate().pos())
+        }
+
+        val pathPoints = (0..10000)
+                .map { it / 10000.0 * path.length() }
+                .map { path[it] }
+        val graph = XYChart(600, 400)
+        graph.title = "Tank GVF Follower Sim"
+        graph.addSeries(
+                "Target Trajectory",
+                pathPoints.map { it.x }.toDoubleArray(),
+                pathPoints.map { it.y }.toDoubleArray())
+        graph.addSeries(
+                "Actual Trajectory",
+                actualPositions.map { it.x }.toDoubleArray(),
+                actualPositions.map { it.y }.toDoubleArray())
+        graph.seriesMap.values.forEach { it.marker = None() }
+        GraphUtil.saveGraph("tankGVFSim", graph)
     }
 }

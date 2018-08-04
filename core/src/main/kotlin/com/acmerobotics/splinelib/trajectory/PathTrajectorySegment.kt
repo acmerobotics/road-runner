@@ -13,14 +13,20 @@ import kotlin.math.min
  * Trajectory segment backed by a list of [Path] objects.
  *
  * @param paths paths
- * @param motionConstraintsList motion constraints for each respective path
+ * @param trajectoryConstraintsList motion constraints for each respective path
  * @param resolution resolution used for the motion profile (see [MotionProfileGenerator.generateMotionProfile])
  */
 class PathTrajectorySegment(
-    val paths: List<Path>,
-    val motionConstraintsList: List<TrajectoryConstraints>,
-    resolution: Int = 250
+        val paths: List<Path> = listOf(),
+        val trajectoryConstraintsList: List<TrajectoryConstraints> = listOf(),
+        resolution: Int = 250
 ) : TrajectorySegment {
+    constructor(
+            path: Path,
+            trajectoryConstraints: TrajectoryConstraints,
+            resolution: Int = 250
+    ) : this(listOf(path), listOf(trajectoryConstraints), resolution)
+
     val profile: MotionProfile
 
     init {
@@ -28,7 +34,7 @@ class PathTrajectorySegment(
         val compositeConstraints = object : MotionConstraints {
             override fun maximumVelocity(displacement: Double): Double {
                 var remainingDisplacement = max(0.0, min(displacement, length))
-                for ((path, motionConstraints) in paths.zip(motionConstraintsList)) {
+                for ((path, motionConstraints) in paths.zip(trajectoryConstraintsList)) {
                     if (remainingDisplacement <= path.length()) {
                         return motionConstraints.maximumVelocity(
                             path[remainingDisplacement],
@@ -38,13 +44,13 @@ class PathTrajectorySegment(
                     }
                     remainingDisplacement -= path.length()
                 }
-                return motionConstraintsList.last()
+                return trajectoryConstraintsList.last()
                     .maximumVelocity(paths.last().end(), paths.last().endDeriv(), paths.last().endSecondDeriv())
             }
 
             override fun maximumAcceleration(displacement: Double): Double {
                 var remainingDisplacement = max(0.0, min(displacement, length))
-                for ((path, motionConstraints) in paths.zip(motionConstraintsList)) {
+                for ((path, motionConstraints) in paths.zip(trajectoryConstraintsList)) {
                     if (remainingDisplacement <= path.length()) {
                         return motionConstraints.maximumAcceleration(
                             path[remainingDisplacement],
@@ -54,7 +60,7 @@ class PathTrajectorySegment(
                     }
                     remainingDisplacement -= path.length()
                 }
-                return motionConstraintsList.last()
+                return trajectoryConstraintsList.last()
                     .maximumAcceleration(paths.last().end(), paths.last().endDeriv(), paths.last().endSecondDeriv())
             }
         }
@@ -74,7 +80,7 @@ class PathTrajectorySegment(
             }
             remainingDisplacement -= path.length()
         }
-        return paths.last().end()
+        return paths.lastOrNull()?.end() ?: Pose2d()
     }
 
     override fun velocity(time: Double): Pose2d {
@@ -86,7 +92,7 @@ class PathTrajectorySegment(
             }
             remainingDisplacement -= path.length()
         }
-        return paths.last().endDeriv() * profile.end().v
+        return (paths.lastOrNull()?.endDeriv() ?: Pose2d()) * profile.end().v
     }
 
     override fun acceleration(time: Double): Pose2d {
@@ -99,6 +105,7 @@ class PathTrajectorySegment(
             }
             remainingDisplacement -= path.length()
         }
-        return paths.last().endSecondDeriv() * profile.end().v * profile.end().v + paths.last().endDeriv() * profile.end().a
+        return (paths.lastOrNull()?.endSecondDeriv() ?: Pose2d()) * profile.end().v * profile.end().v +
+                (paths.lastOrNull()?.endDeriv() ?: Pose2d()) * profile.end().a
     }
 }

@@ -27,7 +27,12 @@ class RamseteFollower(
         private val kA: Double,
         private val kStatic: Double
 ) : TrajectoryFollower() {
-    override fun internalUpdate(currentPose: Pose2d, currentTimestamp: Double) {
+    override fun update(currentPose: Pose2d, currentTimestamp: Double) {
+        if (!isFollowing(currentTimestamp)) {
+            drive.setMotorPowers(0.0, 0.0)
+            return
+        }
+
         val t = elapsedTime(currentTimestamp)
 
         val targetPose = trajectory[t]

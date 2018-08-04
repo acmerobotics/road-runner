@@ -20,6 +20,8 @@ import org.apache.commons.math3.linear.RealVector
  * @param interpolator heading interpolator
  * @param reversed whether or not to travel along the path in reverse
  */
+// TODO: support composite paths?
+// or find another way for gvf to follow composite curves
 class Path @JvmOverloads constructor(
         val parametricCurve: ParametricCurve,
         val interpolator: HeadingInterpolator = TangentInterpolator(),

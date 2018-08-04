@@ -31,7 +31,12 @@ class TankPIDVAFollower(
     private val displacementController = PIDFController(displacementCoeffs)
     private val crossTrackController = PIDFController(crossTrackCoeffs)
 
-    override fun internalUpdate(currentPose: Pose2d, currentTimestamp: Double) {
+    override fun update(currentPose: Pose2d, currentTimestamp: Double) {
+        if (!isFollowing(currentTimestamp)) {
+            drive.setMotorPowers(0.0, 0.0)
+            return
+        }
+
         val t = elapsedTime(currentTimestamp)
 
         val targetPose = trajectory[t]

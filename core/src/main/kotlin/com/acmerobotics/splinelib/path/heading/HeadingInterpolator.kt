@@ -3,16 +3,19 @@ package com.acmerobotics.splinelib.path.heading
 import com.acmerobotics.splinelib.path.ParametricCurve
 
 /**
- * Interface for specifying the heading for holonomic paths.
+ * Interpolator for specifying the heading for holonomic paths.
  */
-interface HeadingInterpolator {
+abstract class HeadingInterpolator {
+    protected lateinit var parametricCurve: ParametricCurve
 
     /**
      * Initialize the interpolator with a [parametricCurve].
      *
      *  @param parametricCurve parametric curve
      */
-    fun init(parametricCurve: ParametricCurve)
+    open fun init(parametricCurve: ParametricCurve) {
+        this.parametricCurve = parametricCurve
+    }
 
     /**
      * Returns true if the heading interpolator respects derivative continuity at path segment endpoints. That is,
@@ -20,20 +23,50 @@ interface HeadingInterpolator {
      *
      * @return true if derivatives match [TangentInterpolator]
      */
-    fun respectsDerivativeContinuity(): Boolean
+    abstract fun respectsDerivativeContinuity(): Boolean
 
     /**
      * Returns the heading at the specified [displacement].
      */
-    operator fun get(displacement: Double): Double
+    abstract operator fun get(displacement: Double): Double
 
     /**
      * Returns the heading derivative at the specified [displacement].
      */
-    fun deriv(displacement: Double): Double
+    abstract fun deriv(displacement: Double): Double
 
     /**
      * Returns the heading second derivative at the specified [displacement].
      */
-    fun secondDeriv(displacement: Double): Double
+    abstract fun secondDeriv(displacement: Double): Double
+
+    /**
+     * Returns the start heading.
+     */
+    fun start() = get(0.0)
+
+    /**
+     * Returns the start heading derivative.
+     */
+    fun startDeriv() = deriv(0.0)
+
+    /**
+     * Returns the start heading second derivative.
+     */
+    fun startSecondDeriv() = secondDeriv(0.0)
+
+    /**
+     * Returns the end heading.
+     */
+    fun end() = get(parametricCurve.length())
+
+    /**
+     * Returns the end heading derivative.
+     */
+    fun endDeriv() = deriv(parametricCurve.length())
+
+    /**
+     * Returns the end heading second derivative.
+     */
+    fun endSecondDeriv() = secondDeriv(parametricCurve.length())
 }
