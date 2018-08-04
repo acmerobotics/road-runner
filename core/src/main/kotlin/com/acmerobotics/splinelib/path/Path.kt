@@ -4,8 +4,13 @@ import com.acmerobotics.splinelib.Pose2d
 import com.acmerobotics.splinelib.Vector2d
 import com.acmerobotics.splinelib.path.heading.HeadingInterpolator
 import com.acmerobotics.splinelib.path.heading.TangentInterpolator
-import org.apache.commons.math3.fitting.leastsquares.*
-import org.apache.commons.math3.linear.*
+import org.apache.commons.math3.exception.ConvergenceException
+import org.apache.commons.math3.fitting.leastsquares.LeastSquaresBuilder
+import org.apache.commons.math3.fitting.leastsquares.LevenbergMarquardtOptimizer
+import org.apache.commons.math3.linear.ArrayRealVector
+import org.apache.commons.math3.linear.MatrixUtils
+import org.apache.commons.math3.linear.RealMatrix
+import org.apache.commons.math3.linear.RealVector
 
 
 /**
@@ -89,11 +94,11 @@ class Path @JvmOverloads constructor(
                     val pathPoint = this[it.getEntry(0)].pos()
                     val pathDerivative = deriv(it.getEntry(0)).pos()
 
-                    val distance = point distanceTo pathPoint
+                    val diff = pathPoint - point
+                    val distance = diff.norm()
 
                     val value = ArrayRealVector(doubleArrayOf(distance))
 
-                    val diff = pathPoint - point
                     val derivative = (diff.x * pathDerivative.x + diff.y * pathDerivative.y) / distance
                     val jacobian = MatrixUtils.createRealMatrix(arrayOf(doubleArrayOf(derivative)))
 
@@ -105,8 +110,12 @@ class Path @JvmOverloads constructor(
                 .maxIterations(1000)
                 .build()
 
-        val optimum = LevenbergMarquardtOptimizer().optimize(problem)
-        val displacement = optimum.point.getEntry(0)
+        val displacement = try {
+            val optimum = LevenbergMarquardtOptimizer().optimize(problem)
+            optimum.point.getEntry(0)
+        } catch (e: ConvergenceException) {
+            0.0
+        }
         val optimumPoint = this[displacement].pos()
 
         return ProjectionResult(displacement, point distanceTo optimumPoint)

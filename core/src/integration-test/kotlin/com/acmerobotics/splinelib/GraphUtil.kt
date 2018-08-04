@@ -10,7 +10,7 @@ import java.io.File
 import java.nio.file.Paths
 
 object GraphUtil {
-    private const val GRAPH_DIR = "./graphs/"
+    const val GRAPH_DIR = "./graphs/"
     private const val GRAPH_DPI = 300
 
     fun saveGraph(name: String, graph: XYChart) {

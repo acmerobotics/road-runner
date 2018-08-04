@@ -79,5 +79,5 @@ class QuinticSplineSegment(start: Waypoint, end: Waypoint) : ParametricCurve() {
 
     override fun length() = length
 
-    override fun toString() = "(${x.a}*t^5+${x.b}*t^4+${x.c}*t^3+${x.d}*t^2+${x.e}*t+${x.f},${y.a}*t^5+${y.b}*t^4+${y.c}*t^3+${y.d}*t^2+${y.e}*t+${y.f})"
+    override fun toString() = "($x,$y)"
 }

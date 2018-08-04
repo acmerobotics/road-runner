@@ -72,5 +72,5 @@ class QuinticPolynomial(start: Double, startDeriv: Double, startSecondDeriv: Dou
      */
     fun thirdDeriv(t: Double) = (60*a*t + 24*b) * t + 6*c
 
-    override fun toString() = "$a*t^5+$b*t^4+$c*t^3+$d*t^2+$e*t+$f"
+    override fun toString() = String.format("%.5f*t^5+%.5f*t^4+%.5f*t^3+%.5f*t^2+%.5f*t+%.5f", a, b, c, d, e, f)
 }

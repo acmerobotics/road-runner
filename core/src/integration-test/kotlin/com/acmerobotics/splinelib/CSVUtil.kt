@@ -5,7 +5,7 @@ import com.acmerobotics.splinelib.path.Path
 import java.io.File
 
 object CSVUtil {
-    private const val CSV_DIR = "./csv/"
+    const val CSV_DIR = "./csv/"
 
     fun saveCurve(name: String, parametricCurve: ParametricCurve, resolution: Int = 1000) {
         File(CSV_DIR).mkdirs()
