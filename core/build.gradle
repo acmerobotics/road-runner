@@ -78,6 +78,16 @@ dependencies {
     integrationTestImplementation "org.knowm.xchart:xchart:3.5.2"
 }
 
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
+task dokkaJar(type: Jar) {
+    from dokka
+    classifier = 'javadoc'
+}
+
 publishing {
     publications {
         maven(MavenPublication) {
@@ -85,6 +95,8 @@ publishing {
             artifactId = 'core'
             version = '0.1-SNAPSHOT'
             from components.java
+            artifact sourcesJar
+            artifact dokkaJar
         }
     }
 }

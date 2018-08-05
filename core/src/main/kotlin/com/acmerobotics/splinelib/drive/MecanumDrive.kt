@@ -2,7 +2,7 @@ package com.acmerobotics.splinelib.drive
 
 import com.acmerobotics.splinelib.Pose2d
 
-abstract class MecanumDrive(val trackWidth: Double, val wheelBase: Double = trackWidth) : Drive {
+abstract class MecanumDrive @JvmOverloads constructor(val trackWidth: Double, val wheelBase: Double = trackWidth) : Drive {
     private var internalPoseEstimate = Pose2d()
     private var lastPoseUpdateTimestamp = Double.NaN
     private var lastMotorPositions = emptyList<Double>()

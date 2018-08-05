@@ -16,12 +16,12 @@ import kotlin.math.min
  * @param trajectoryConstraintsList motion constraints for each respective path
  * @param resolution resolution used for the motion profile (see [MotionProfileGenerator.generateMotionProfile])
  */
-class PathTrajectorySegment(
+class PathTrajectorySegment @JvmOverloads constructor(
         val paths: List<Path> = listOf(),
         val trajectoryConstraintsList: List<TrajectoryConstraints> = listOf(),
         resolution: Int = 250
 ) : TrajectorySegment {
-    constructor(
+    @JvmOverloads constructor(
             path: Path,
             trajectoryConstraints: TrajectoryConstraints,
             resolution: Int = 250

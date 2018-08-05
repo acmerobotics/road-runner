@@ -1,6 +1,6 @@
 package com.acmerobotics.splinelib
 
-class Waypoint(
+class Waypoint @JvmOverloads constructor(
     val x: Double,
     val y: Double,
     var dx: Double = 0.0,
