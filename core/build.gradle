@@ -49,6 +49,8 @@ dokka {
     outputFormat = 'html'
     outputDirectory = "$buildDir/javadoc"
 
+    includes = ['packages.md']
+
     jdkVersion = 7
 
     linkMapping {

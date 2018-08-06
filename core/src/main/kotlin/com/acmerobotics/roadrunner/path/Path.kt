@@ -89,6 +89,12 @@ class Path @JvmOverloads constructor(
         return Pose2d(secondDeriv.x, secondDeriv.y, headingSecondDeriv)
     }
 
+    /**
+     * Project [point] onto the current path.
+     *
+     * @param point query point
+     * @param initialDisplacement guess for the projected point's displacement along the path
+     */
     fun project(point: Vector2d, initialDisplacement: Double = length() / 2.0): ProjectionResult {
         val problem = LeastSquaresBuilder()
                 .start(doubleArrayOf(initialDisplacement))

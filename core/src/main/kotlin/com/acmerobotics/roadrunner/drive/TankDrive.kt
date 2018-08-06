@@ -27,7 +27,7 @@ abstract class TankDrive(val trackWidth: Double) : Drive() {
     }
 
     /**
-     * Sets the following motor powers (normalized voltages). All arguments are on the interval [0.0, 1.0].
+     * Sets the following motor powers (normalized voltages). All arguments are on the interval `[0.0, 1.0]`.
      */
     abstract fun setMotorPowers(left: Double, right: Double)
 

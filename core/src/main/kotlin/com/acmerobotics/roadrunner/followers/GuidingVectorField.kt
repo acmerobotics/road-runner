@@ -20,16 +20,25 @@ class GuidingVectorField(
         private val errorMapFunc: (Double) -> Double = { it }
 ) {
 
+    /**
+     * Container for the direction of the GVF and intermediate values used in its computation.
+     *
+     * @param vector normalized direction vector of the GVF
+     * @param pathPoint point on the path from the projection
+     * @param displacement displacement along the path of [pathPoint]
+     * @param error signed cross track error (distance between [pathPoint] and the query point)
+     */
     class GVFResult(
-            val displacement: Double,
-            val error: Double,
+            val vector: Vector2d,
             val pathPoint: Vector2d,
-            val vector: Vector2d
+            val displacement: Double,
+            val error: Double
     )
 
     /**
      * Returns the normalized value of the vector field at the given point along with useful intermediate computations.
      */
+    // TODO: support initial displacement guesses from GVF follower, especially with self-intersecting paths
     fun getExtended(x: Double, y: Double): GVFResult {
         val point = Vector2d(x, y)
         val projectResult = path.project(Vector2d(x, y))
@@ -40,7 +49,7 @@ class GuidingVectorField(
         val error = orientation * projectResult.distance
         val normal = tangent.rotated(Math.PI / 2.0)
         val vector = tangent - normal * kN * errorMapFunc(error)
-        return GVFResult(projectResult.displacement, error, pathPoint, vector / vector.norm())
+        return GVFResult(vector / vector.norm(), pathPoint, projectResult.displacement, error)
     }
 
     /**

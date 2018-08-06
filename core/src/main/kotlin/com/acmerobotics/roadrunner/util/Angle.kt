@@ -1,4 +1,4 @@
-package com.acmerobotics.roadrunner
+package com.acmerobotics.roadrunner.util
 
 /**
  * Various utilities for working with angles.

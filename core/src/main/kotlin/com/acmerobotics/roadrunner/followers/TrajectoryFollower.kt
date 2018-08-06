@@ -27,7 +27,7 @@ abstract class TrajectoryFollower @JvmOverloads constructor(protected val clock:
     }
 
     /**
-     * Returns the elapsed time since [startTimestamp].
+     * Returns the elapsed time since the last [followTrajectory] calls.
      */
     protected fun elapsedTime() = clock.seconds() - startTimestamp
 

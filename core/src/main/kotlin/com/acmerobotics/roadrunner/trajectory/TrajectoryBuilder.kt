@@ -1,6 +1,6 @@
 package com.acmerobotics.roadrunner.trajectory
 
-import com.acmerobotics.roadrunner.Angle
+import com.acmerobotics.roadrunner.util.Angle
 import com.acmerobotics.roadrunner.Pose2d
 import com.acmerobotics.roadrunner.Vector2d
 import com.acmerobotics.roadrunner.path.LineSegment
