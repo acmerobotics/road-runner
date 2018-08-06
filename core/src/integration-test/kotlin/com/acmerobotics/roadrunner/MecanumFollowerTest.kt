@@ -6,7 +6,6 @@ import com.acmerobotics.roadrunner.followers.MecanumPIDVAFollower
 import com.acmerobotics.roadrunner.trajectory.DriveConstraints
 import com.acmerobotics.roadrunner.trajectory.MecanumConstraints
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
-import com.acmerobotics.roadrunner.util.SimulatedClock
 import org.apache.commons.math3.distribution.NormalDistribution
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
