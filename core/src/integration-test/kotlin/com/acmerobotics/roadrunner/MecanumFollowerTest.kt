@@ -6,6 +6,7 @@ import com.acmerobotics.roadrunner.followers.MecanumPIDVAFollower
 import com.acmerobotics.roadrunner.trajectory.DriveConstraints
 import com.acmerobotics.roadrunner.trajectory.MecanumConstraints
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
+import com.acmerobotics.roadrunner.util.SimulatedClock
 import org.apache.commons.math3.distribution.NormalDistribution
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -50,10 +51,10 @@ class MecanumFollowerTest {
 
         override fun getMotorPositions(): List<Double> = positions
 
-        override fun updatePoseEstimate(timestamp: Double) {
+        override fun updatePoseEstimate() {
             positions = positions.zip(powers)
                     .map { it.first + it.second / kV * dt }
-            super.updatePoseEstimate(timestamp)
+            super.updatePoseEstimate()
         }
 
     }
@@ -71,8 +72,9 @@ class MecanumFollowerTest {
                 .build()
 
         val drive = SimulatedMecanumDrive(dt, kV, TRACK_WIDTH)
-        val follower = MecanumPIDVAFollower(drive, PIDCoefficients(1.0), PIDCoefficients(5.0), kV, 0.0, 0.0)
-        follower.followTrajectory(trajectory, 0.0)
+        val clock = SimulatedClock()
+        val follower = MecanumPIDVAFollower(drive, PIDCoefficients(1.0), PIDCoefficients(5.0), kV, 0.0, 0.0, clock)
+        follower.followTrajectory(trajectory)
 
         val targetPositions = mutableListOf<Vector2d>()
         val actualPositions = mutableListOf<Vector2d>()
@@ -80,8 +82,9 @@ class MecanumFollowerTest {
         val samples = ceil(trajectory.duration() / dt).toInt()
         for (sample in 1..samples) {
             val t = sample * dt
-            follower.update(drive.getPoseEstimate(), t)
-            drive.updatePoseEstimate(t)
+            clock.time = t
+            follower.update(drive.getPoseEstimate())
+            drive.updatePoseEstimate()
 
             targetPositions.add(trajectory[t].pos())
             actualPositions.add(drive.getPoseEstimate().pos())

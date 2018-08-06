@@ -3,6 +3,7 @@ package com.acmerobotics.roadrunner.followers
 import com.acmerobotics.roadrunner.Pose2d
 import com.acmerobotics.roadrunner.drive.TankDrive
 import com.acmerobotics.roadrunner.drive.TankKinematics
+import com.acmerobotics.roadrunner.util.NanoClock
 import kotlin.math.cos
 import kotlin.math.sign
 import kotlin.math.sin
@@ -19,21 +20,22 @@ import kotlin.math.sqrt
  * @param kA feedforward acceleration gain (currently unused)
  * @param kStatic additive feedforward constant (used to overcome static friction)
  */
-class RamseteFollower(
+class RamseteFollower @JvmOverloads constructor(
         private val drive: TankDrive,
         private val b: Double,
         private val zeta: Double,
         private val kV: Double,
         private val kA: Double,
-        private val kStatic: Double
-) : TrajectoryFollower() {
-    override fun update(currentPose: Pose2d, currentTimestamp: Double) {
-        if (!isFollowing(currentTimestamp)) {
+        private val kStatic: Double,
+        clock: NanoClock = NanoClock.default()
+) : TrajectoryFollower(clock) {
+    override fun update(currentPose: Pose2d) {
+        if (!isFollowing()) {
             drive.setMotorPowers(0.0, 0.0)
             return
         }
 
-        val t = elapsedTime(currentTimestamp)
+        val t = elapsedTime()
 
         val targetPose = trajectory[t]
         val targetPoseVelocity = trajectory.velocity(t)

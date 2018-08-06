@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.drive.TankDrive
 import com.acmerobotics.roadrunner.drive.TankKinematics
 import com.acmerobotics.roadrunner.path.Path
 import com.acmerobotics.roadrunner.profile.SimpleMotionConstraints
+import com.acmerobotics.roadrunner.util.NanoClock
 import kotlin.math.sign
 import kotlin.math.sqrt
 
@@ -20,7 +21,7 @@ import kotlin.math.sqrt
  * @param kStatic additive feedforward constant (used to overcome static friction)
  * @param errorMapFunc error map function (see [GuidingVectorField])
  */
-class GVFFollower(
+class GVFFollower @JvmOverloads constructor(
         private val drive: TankDrive,
         private val constraints: SimpleMotionConstraints,
         private val kN: Double,
@@ -28,24 +29,25 @@ class GVFFollower(
         private val kV: Double,
         private val kA: Double,
         private val kStatic: Double,
-        private val errorMapFunc: (Double) -> Double = { it }
-) : PathFollower() {
+        private val errorMapFunc: (Double) -> Double = { it },
+        clock: NanoClock = NanoClock.default()
+) : PathFollower(clock) {
     private lateinit var gvf: GuidingVectorField
     private var following: Boolean = false
     private var lastUpdateTimestamp: Double = 0.0
     private var lastVelocity: Double = 0.0
 
-    override fun followPath(path: Path, startTimestamp: Double) {
+    override fun followPath(path: Path) {
         gvf = GuidingVectorField(path, kN, errorMapFunc)
         following = true
-        lastUpdateTimestamp = startTimestamp
+        lastUpdateTimestamp = clock.seconds()
         lastVelocity = 0.0
-        super.followPath(path, startTimestamp)
+        super.followPath(path)
     }
 
     override fun isFollowing() = following
 
-    override fun update(currentPose: Pose2d, currentTimestamp: Double) {
+    override fun update(currentPose: Pose2d) {
         if (!isFollowing()) {
             drive.setMotorPowers(0.0, 0.0)
             return
@@ -65,7 +67,8 @@ class GVFFollower(
         val desiredOmega = 0.0
         val omega = desiredOmega - kOmega * headingError
 
-        val dt = currentTimestamp - lastUpdateTimestamp
+        val timestamp = clock.seconds()
+        val dt = timestamp - lastUpdateTimestamp
         val remainingDistance = currentPose.pos() distanceTo path.end().pos()
         val maxVelToStop = sqrt(2 * constraints.maximumAcceleration * remainingDistance)
         val maxVelFromLast = lastVelocity + constraints.maximumAcceleration * dt
@@ -76,7 +79,7 @@ class GVFFollower(
         val motorPowers = wheelVelocities.map { it * kV + sign(it) * kStatic }
         drive.setMotorPowers(motorPowers[0], motorPowers[1])
 
-        lastUpdateTimestamp = currentTimestamp
+        lastUpdateTimestamp = timestamp
         lastVelocity = velocity
     }
 

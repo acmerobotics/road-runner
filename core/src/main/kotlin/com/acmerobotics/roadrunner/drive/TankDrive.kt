@@ -19,16 +19,15 @@ abstract class TankDrive(val trackWidth: Double) : Drive {
         lastPoseUpdateTimestamp = Double.NaN
     }
 
-    override fun updatePoseEstimate(timestamp: Double) {
+    override fun updatePoseEstimate() {
         val motorPositions = getMotorPositions()
-        if (!lastPoseUpdateTimestamp.isNaN()) {
+        if (lastMotorPositions.isNotEmpty()) {
             val positionDeltas = motorPositions.zip(lastMotorPositions).map { it.first - it.second }
             val robotPoseDelta = TankKinematics.wheelToRobotVelocities(positionDeltas, trackWidth)
             val newHeading = internalPoseEstimate.heading + robotPoseDelta.heading
             internalPoseEstimate += Pose2d(robotPoseDelta.pos().rotated(newHeading), robotPoseDelta.heading)
         }
         lastMotorPositions = motorPositions
-        lastPoseUpdateTimestamp = timestamp
     }
 
     abstract fun setMotorPowers(left: Double, right: Double)

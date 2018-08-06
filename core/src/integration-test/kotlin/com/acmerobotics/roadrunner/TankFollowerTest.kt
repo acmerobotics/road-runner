@@ -7,11 +7,11 @@ import com.acmerobotics.roadrunner.followers.RamseteFollower
 import com.acmerobotics.roadrunner.followers.TankPIDVAFollower
 import com.acmerobotics.roadrunner.path.Path
 import com.acmerobotics.roadrunner.path.QuinticSplineSegment
-import com.acmerobotics.roadrunner.path.Waypoint
 import com.acmerobotics.roadrunner.profile.SimpleMotionConstraints
 import com.acmerobotics.roadrunner.trajectory.DriveConstraints
 import com.acmerobotics.roadrunner.trajectory.TankConstraints
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
+import com.acmerobotics.roadrunner.util.SimulatedClock
 import org.apache.commons.math3.distribution.NormalDistribution
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -57,10 +57,10 @@ class TankFollowerTest {
 
         override fun getMotorPositions(): List<Double> = positions
 
-        override fun updatePoseEstimate(timestamp: Double) {
+        override fun updatePoseEstimate() {
             positions = positions.zip(powers)
                     .map { it.first + it.second / kV * dt }
-            super.updatePoseEstimate(timestamp)
+            super.updatePoseEstimate()
         }
     }
 
@@ -77,8 +77,9 @@ class TankFollowerTest {
                 .build()
 
         val drive = SimulatedTankDrive(dt, kV, TRACK_WIDTH)
-        val follower = TankPIDVAFollower(drive, PIDCoefficients(1.0), PIDCoefficients(kP = 1.0), kV, 0.0, 0.0)
-        follower.followTrajectory(trajectory, 0.0)
+        val clock = SimulatedClock()
+        val follower = TankPIDVAFollower(drive, PIDCoefficients(1.0), PIDCoefficients(kP = 1.0), kV, 0.0, 0.0, clock)
+        follower.followTrajectory(trajectory)
 
         val targetPositions = mutableListOf<Vector2d>()
         val actualPositions = mutableListOf<Vector2d>()
@@ -87,8 +88,9 @@ class TankFollowerTest {
         val samples = ceil(trajectory.duration() / dt).toInt()
         for (sample in 1..samples) {
             val t = sample * dt
-            follower.update(drive.getPoseEstimate(), t)
-            drive.updatePoseEstimate(t)
+            clock.time = t
+            follower.update(drive.getPoseEstimate())
+            drive.updatePoseEstimate()
 
             targetPositions.add(trajectory[t].pos())
             actualPositions.add(drive.getPoseEstimate().pos())
@@ -121,8 +123,9 @@ class TankFollowerTest {
                 .build()
 
         val drive = SimulatedTankDrive(dt, kV, TRACK_WIDTH)
-        val follower = RamseteFollower(drive, 0.0008, 0.5, kV, 0.0, 0.0)
-        follower.followTrajectory(trajectory, 0.0)
+        val clock = SimulatedClock()
+        val follower = RamseteFollower(drive, 0.0008, 0.5, kV, 0.0, 0.0, clock)
+        follower.followTrajectory(trajectory)
 
         val targetPositions = mutableListOf<Vector2d>()
         val actualPositions = mutableListOf<Vector2d>()
@@ -131,8 +134,9 @@ class TankFollowerTest {
         val samples = ceil(trajectory.duration() / dt).toInt()
         for (sample in 1..samples) {
             val t = sample * dt
-            follower.update(drive.getPoseEstimate(), t)
-            drive.updatePoseEstimate(t)
+            clock.time = t
+            follower.update(drive.getPoseEstimate())
+            drive.updatePoseEstimate()
 
             targetPositions.add(trajectory[t].pos())
             actualPositions.add(drive.getPoseEstimate().pos())
@@ -157,11 +161,12 @@ class TankFollowerTest {
         val dt = 1.0 / SIMULATION_HZ
 
         val path = Path(QuinticSplineSegment(
-                Waypoint(0.0, 0.0, 20.0, 0.0),
-                Waypoint(15.0, 15.0, 20.0, 0.0)
+                QuinticSplineSegment.Waypoint(0.0, 0.0, 20.0, 0.0),
+                QuinticSplineSegment.Waypoint(15.0, 15.0, 20.0, 0.0)
         ))
 
         val drive = SimulatedTankDrive(dt, kV, TRACK_WIDTH)
+        val clock = SimulatedClock()
         val follower = GVFFollower(
                 drive,
                 SimpleMotionConstraints(5.0, 25.0),
@@ -170,8 +175,9 @@ class TankFollowerTest {
                 kV,
                 0.0,
                 0.0,
-                ::atan)
-        follower.followPath(path, 0.0)
+                ::atan,
+                clock)
+        follower.followPath(path)
 
         val actualPositions = mutableListOf<Vector2d>()
 
@@ -179,8 +185,9 @@ class TankFollowerTest {
         var t = 0.0
         while (follower.isFollowing()) {
             t += dt
-            follower.update(drive.getPoseEstimate(), t)
-            drive.updatePoseEstimate(t)
+            clock.time = t
+            follower.update(drive.getPoseEstimate())
+            drive.updatePoseEstimate()
 
             actualPositions.add(drive.getPoseEstimate().pos())
         }

@@ -2,30 +2,25 @@ package com.acmerobotics.roadrunner.followers
 
 import com.acmerobotics.roadrunner.Pose2d
 import com.acmerobotics.roadrunner.path.Path
+import com.acmerobotics.roadrunner.util.NanoClock
 
 /**
  * Generic [Path] follower for time-independent pose reference tracking.
  */
-abstract class PathFollower {
+abstract class PathFollower @JvmOverloads constructor(protected val clock: NanoClock = NanoClock.default()) {
     private var startTimestamp: Double = 0.0
     protected lateinit var path: Path
 
     /**
-     * Follow the given [path] starting at [startTimestamp].
-     *
-     * @param path trajectory to follow
-     * @param startTimestamp start timestamp override (often for simulation)
+     * Follow the given [path].
      */
-    open fun followPath(path: Path, startTimestamp: Double = System.nanoTime() / 1e9) {
-        this.startTimestamp = startTimestamp
+    open fun followPath(path: Path) {
+        this.startTimestamp = clock.seconds()
         this.path = path
     }
 
     /**
      * Returns true if the current trajectory has finished executing.
-     *
-     * @param currentTimestamp current timestamp override (for simulation)
-     * @return true if the trajectory has finished executing
      */
     abstract fun isFollowing(): Boolean
 
@@ -33,7 +28,6 @@ abstract class PathFollower {
      * Run a single iteration of the trajectory follower.
      *
      * @param currentPose current robot pose
-     * @param currentTimestamp current timestamp override (for simulation)
      */
-    abstract fun update(currentPose: Pose2d, currentTimestamp: Double = System.nanoTime() / 1e9)
+    abstract fun update(currentPose: Pose2d)
 }

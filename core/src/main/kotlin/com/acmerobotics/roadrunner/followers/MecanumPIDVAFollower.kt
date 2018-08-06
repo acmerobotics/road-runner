@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.control.PIDCoefficients
 import com.acmerobotics.roadrunner.control.PIDFController
 import com.acmerobotics.roadrunner.drive.MecanumDrive
 import com.acmerobotics.roadrunner.drive.MecanumKinematics
+import com.acmerobotics.roadrunner.util.NanoClock
 import kotlin.math.sign
 
 /**
@@ -19,25 +20,26 @@ import kotlin.math.sign
  * @param kA feedforward acceleration gain
  * @param kStatic signed, additive feedforward constant (used to overcome static friction)
  */
-class MecanumPIDVAFollower(
+class MecanumPIDVAFollower @JvmOverloads constructor(
         private val drive: MecanumDrive,
         translationalCoeffs: PIDCoefficients,
         headingCoeffs: PIDCoefficients,
         private val kV: Double,
         private val kA: Double,
-        private val kStatic: Double
-) : TrajectoryFollower() {
+        private val kStatic: Double,
+        clock: NanoClock = NanoClock.default()
+) : TrajectoryFollower(clock) {
     private val axialController = PIDFController(translationalCoeffs)
     private val lateralController = PIDFController(translationalCoeffs)
     private val headingController = PIDFController(headingCoeffs)
 
-    override fun update(currentPose: Pose2d, currentTimestamp: Double) {
-        if (!isFollowing(currentTimestamp)) {
+    override fun update(currentPose: Pose2d) {
+        if (!isFollowing()) {
             drive.setMotorPowers(0.0, 0.0, 0.0, 0.0)
             return
         }
 
-        val t = elapsedTime(currentTimestamp)
+        val t = elapsedTime()
 
         val targetPose = trajectory[t]
         val targetPoseVelocity = trajectory.velocity(t)

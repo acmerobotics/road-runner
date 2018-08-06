@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.control.PIDCoefficients
 import com.acmerobotics.roadrunner.control.PIDFController
 import com.acmerobotics.roadrunner.drive.TankDrive
 import com.acmerobotics.roadrunner.drive.TankKinematics
+import com.acmerobotics.roadrunner.util.NanoClock
 import kotlin.math.sign
 
 /**
@@ -26,18 +27,19 @@ class TankPIDVAFollower(
         crossTrackCoeffs: PIDCoefficients,
         private val kV: Double,
         private val kA: Double,
-        private val kStatic: Double
-) : TrajectoryFollower() {
+        private val kStatic: Double,
+        clock: NanoClock = NanoClock.default()
+) : TrajectoryFollower(clock) {
     private val displacementController = PIDFController(displacementCoeffs)
     private val crossTrackController = PIDFController(crossTrackCoeffs)
 
-    override fun update(currentPose: Pose2d, currentTimestamp: Double) {
-        if (!isFollowing(currentTimestamp)) {
+    override fun update(currentPose: Pose2d) {
+        if (!isFollowing()) {
             drive.setMotorPowers(0.0, 0.0)
             return
         }
 
-        val t = elapsedTime(currentTimestamp)
+        val t = elapsedTime()
 
         val targetPose = trajectory[t]
         val targetPoseVelocity = trajectory.velocity(t)
