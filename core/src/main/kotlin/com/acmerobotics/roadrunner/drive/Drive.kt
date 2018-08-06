@@ -2,12 +2,22 @@ package com.acmerobotics.roadrunner.drive
 
 import com.acmerobotics.roadrunner.Pose2d
 
-// TODO: add some kind of FF support (i.e., kV, kA, and kStatic) at this level
-// or even the next level down (TankDrive, MecanumDrive)
-interface Drive {
-    fun setVelocity(poseVelocity: Pose2d)
+/**
+ * Abstraction for generic drivetrain motion and localization.
+ */
+abstract class Drive {
+    /**
+     * The robot's current pose estimate.
+     */
+    var poseEstimate: Pose2d = Pose2d()
 
-    fun getPoseEstimate(): Pose2d
-    fun resetPoseEstimate(newPose: Pose2d)
-    fun updatePoseEstimate()
+    /**
+     * Sets the [poseVelocity] of the robot.
+     */
+    abstract fun setVelocity(poseVelocity: Pose2d)
+
+    /**
+     * Updates [poseEstimate] with the most recent positional change.
+     */
+    abstract fun updatePoseEstimate()
 }

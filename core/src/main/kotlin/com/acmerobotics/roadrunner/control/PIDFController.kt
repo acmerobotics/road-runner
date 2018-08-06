@@ -23,7 +23,7 @@ class PIDFController @JvmOverloads constructor(
     private var lastUpdateTimestamp: Double = Double.NaN
 
     /**
-     * Target position (i.e., the controller setpoint)
+     * Target position (that is, the controller setpoint)
      */
     var targetPosition: Double = 0.0
 

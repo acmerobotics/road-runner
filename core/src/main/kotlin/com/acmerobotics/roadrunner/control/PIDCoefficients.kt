@@ -7,4 +7,8 @@ package com.acmerobotics.roadrunner.control
  * @param kI integral gain
  * @param kD derivative gain
  */
-class PIDCoefficients(val kP: Double = 0.0, val kI: Double = 0.0, val kD: Double = 0.0)
+class PIDCoefficients(
+        @JvmField var kP: Double = 0.0,
+        @JvmField var kI: Double = 0.0,
+        @JvmField var kD: Double = 0.0
+)
