@@ -91,7 +91,7 @@ task dokkaJar(type: Jar) {
 publishing {
     publications {
         maven(MavenPublication) {
-            groupId = 'com.acmerobotics.splinelib'
+            groupId = 'com.acmerobotics.roadrunner'
             artifactId = 'core'
             version = '0.1-SNAPSHOT'
             from components.java

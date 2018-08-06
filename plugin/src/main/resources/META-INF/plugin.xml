@@ -1,9 +1,9 @@
 <idea-plugin>
-    <name>Spline Designer</name>
-    <id>com.acmerobotics.plugin</id>
+    <name>Road Runner Path Designer</name>
+    <id>com.acmerobotics.roadrunner</id>
 
     <description><![CDATA[
-    Convenient UI for ACME Robotics' <a href="https://github.com/acmerobotics/motion-planner">motion planning library</a>.
+    Convenient UI for ACME Robotics' <a href="https://github.com/acmerobotics/road-runner">motion planning library</a>.
     ]]></description>
 
     <change-notes><![CDATA[
@@ -17,6 +17,6 @@
     <depends>com.intellij.modules.androidstudio</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow id="Spline Designer" anchor="right" factoryClass="com.acmerobotics.plugin.SplineDesignerToolWindowFactory"/>
+        <toolWindow id="Path Designer" anchor="right" factoryClass="com.acmerobotics.roadrunner.plugin.PathDesignerToolWindowFactory"/>
     </extensions>
 </idea-plugin>

@@ -1,4 +1,4 @@
-rootProject.name = 'motion-planner'
+rootProject.name = 'road-runner'
 include ':core'
 include ':gui'
 include ':plugin'
