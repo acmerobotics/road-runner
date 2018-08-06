@@ -17,10 +17,10 @@ import kotlin.math.min
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class MecanumFollowerTest {
-    companion object {
-        const val kV = 1.0 / 60.0
-        const val SIMULATION_HZ = 25
-        const val TRACK_WIDTH = 3.0
+    private companion object {
+        private const val kV = 1.0 / 60.0
+        private const val SIMULATION_HZ = 25
+        private const val TRACK_WIDTH = 3.0
 
         private val BASE_CONSTRAINTS = DriveConstraints(50.0, 25.0, Math.PI / 2, Math.PI / 2)
         private val CONSTRAINTS = MecanumConstraints(BASE_CONSTRAINTS, TRACK_WIDTH)
@@ -32,9 +32,9 @@ class MecanumFollowerTest {
             trackWidth: Double,
             wheelBase: Double = trackWidth
     ) : MecanumDrive(trackWidth, wheelBase) {
-        companion object {
+        private companion object {
 //            val VOLTAGE_NOISE_DIST = NormalDistribution(0.0, 0.25 / 12.0)
-            val VOLTAGE_NOISE_DIST = NormalDistribution(1.0, 0.05)
+            private val VOLTAGE_NOISE_DIST = NormalDistribution(1.0, 0.05)
 
             fun clamp(value: Double, min: Double, max: Double) = min(max, max(min, value))
         }
@@ -82,11 +82,11 @@ class MecanumFollowerTest {
         for (sample in 1..samples) {
             val t = sample * dt
             clock.time = t
-            follower.update(drive.getPoseEstimate())
+            follower.update(drive.poseEstimate)
             drive.updatePoseEstimate()
 
             targetPositions.add(trajectory[t].pos())
-            actualPositions.add(drive.getPoseEstimate().pos())
+            actualPositions.add(drive.poseEstimate.pos())
         }
 
         val graph = XYChart(600, 400)

@@ -37,7 +37,7 @@ class QuinticSplineSegment(start: Waypoint, end: Waypoint) : ParametricCurve() {
 
     private val arcLengthSamples = InterpolatingTreeMap()
 
-    companion object {
+    private companion object {
         private const val LENGTH_SAMPLES = 1000
     }
 

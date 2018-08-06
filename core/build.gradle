@@ -47,18 +47,25 @@ configurations {
 dokka {
     moduleName = 'core'
     outputFormat = 'html'
-    outputDirectory = "$buildDir/javadoc"
+    outputDirectory = "$buildDir/kdoc"
 
     includes = ['packages.md']
 
-    jdkVersion = 7
+    jdkVersion = 8
 
     linkMapping {
-        dir = "core/src/main/kotlin"
+        dir = "src/main/kotlin"
         url = "https://github.com/acmerobotics/motion-planner/blob/master/core/src/main/kotlin"
         suffix = "#L"
     }
 }
+
+task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
+    outputFormat = 'javadoc'
+    outputDirectory = "$buildDir/javadoc"
+}
+
+dokka.dependsOn dokkaJavadoc
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"

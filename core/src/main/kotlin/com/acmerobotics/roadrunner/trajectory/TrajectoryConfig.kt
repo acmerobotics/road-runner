@@ -11,7 +11,7 @@ import kotlin.math.abs
  * @param constraints constraints
  */
 class TrajectoryConfig(val poses: List<Pose2d>, val constraints: DriveConstraints) {
-    companion object {
+    private companion object {
         private const val EPSILON = 1e-2
     }
 

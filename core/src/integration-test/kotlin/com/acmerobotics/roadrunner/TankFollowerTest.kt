@@ -24,10 +24,10 @@ import kotlin.math.min
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TankFollowerTest {
-    companion object {
-        const val kV = 1.0 / 60.0
-        const val SIMULATION_HZ = 25
-        const val TRACK_WIDTH = 3.0
+    private companion object {
+        private const val kV = 1.0 / 60.0
+        private const val SIMULATION_HZ = 25
+        private const val TRACK_WIDTH = 3.0
 
         private val BASE_CONSTRAINTS = DriveConstraints(50.0, 25.0, Math.PI / 2, Math.PI / 2)
         private val CONSTRAINTS = TankConstraints(BASE_CONSTRAINTS, TRACK_WIDTH)
@@ -38,11 +38,11 @@ class TankFollowerTest {
             private val kV: Double,
             trackWidth: Double
     ) : TankDrive(trackWidth) {
-        companion object {
+        private companion object {
 //            val VOLTAGE_NOISE_DIST = NormalDistribution(0.0, 0.25 / 12.0)
-            val VOLTAGE_NOISE_DIST = NormalDistribution(1.0, 0.05)
+            private val VOLTAGE_NOISE_DIST = NormalDistribution(1.0, 0.05)
 
-            fun clamp(value: Double, min: Double, max: Double) = min(max, max(min, value))
+            private fun clamp(value: Double, min: Double, max: Double) = min(max, max(min, value))
         }
 
         var powers = listOf(0.0, 0.0)
@@ -54,7 +54,7 @@ class TankFollowerTest {
                     .map { clamp(it, 0.0, 1.0) }
         }
 
-        override fun getMotorPositions(): List<Double> = positions
+        override fun getWheelPositions(): List<Double> = positions
 
         override fun updatePoseEstimate() {
             positions = positions.zip(powers)
@@ -83,16 +83,16 @@ class TankFollowerTest {
         val targetPositions = mutableListOf<Vector2d>()
         val actualPositions = mutableListOf<Vector2d>()
 
-        drive.resetPoseEstimate(trajectory.start())
+        drive.poseEstimate = trajectory.start()
         val samples = ceil(trajectory.duration() / dt).toInt()
         for (sample in 1..samples) {
             val t = sample * dt
             clock.time = t
-            follower.update(drive.getPoseEstimate())
+            follower.update(drive.poseEstimate)
             drive.updatePoseEstimate()
 
             targetPositions.add(trajectory[t].pos())
-            actualPositions.add(drive.getPoseEstimate().pos())
+            actualPositions.add(drive.poseEstimate.pos())
         }
 
         val graph = XYChart(600, 400)
@@ -129,16 +129,16 @@ class TankFollowerTest {
         val targetPositions = mutableListOf<Vector2d>()
         val actualPositions = mutableListOf<Vector2d>()
 
-        drive.resetPoseEstimate(trajectory.start())
+        drive.poseEstimate = trajectory.start()
         val samples = ceil(trajectory.duration() / dt).toInt()
         for (sample in 1..samples) {
             val t = sample * dt
             clock.time = t
-            follower.update(drive.getPoseEstimate())
+            follower.update(drive.poseEstimate)
             drive.updatePoseEstimate()
 
             targetPositions.add(trajectory[t].pos())
-            actualPositions.add(drive.getPoseEstimate().pos())
+            actualPositions.add(drive.poseEstimate.pos())
         }
 
         val graph = XYChart(600, 400)
@@ -180,15 +180,15 @@ class TankFollowerTest {
 
         val actualPositions = mutableListOf<Vector2d>()
 
-        drive.resetPoseEstimate(Pose2d(0.0, 10.0, -Math.PI / 2))
+        drive.poseEstimate = Pose2d(0.0, 10.0, -Math.PI / 2)
         var t = 0.0
         while (follower.isFollowing()) {
             t += dt
             clock.time = t
-            follower.update(drive.getPoseEstimate())
+            follower.update(drive.poseEstimate)
             drive.updatePoseEstimate()
 
-            actualPositions.add(drive.getPoseEstimate().pos())
+            actualPositions.add(drive.poseEstimate.pos())
         }
 
         val pathPoints = (0..10000)

@@ -14,7 +14,7 @@ class WiggleInterpolator(
         private val desiredPeriod: Double,
         private val baseInterpolator: HeadingInterpolator = TangentInterpolator()
 ) : HeadingInterpolator() {
-    companion object {
+    private companion object {
         private const val K = 0.5  // fraction of a period replaced by a path on either side
     }
     

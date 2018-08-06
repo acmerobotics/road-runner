@@ -19,6 +19,7 @@ import kotlin.math.sign
  * @param kV feedforward velocity gain
  * @param kA feedforward acceleration gain
  * @param kStatic signed, additive feedforward constant (used to overcome static friction)
+ * @param clock clock
  */
 class MecanumPIDVAFollower @JvmOverloads constructor(
         private val drive: MecanumDrive,

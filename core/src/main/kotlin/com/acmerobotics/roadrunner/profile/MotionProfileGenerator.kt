@@ -17,6 +17,7 @@ object MotionProfileGenerator {
      * @param maximumVelocity maximum velocity
      * @param maximumAcceleration maximum acceleration
      */
+    @JvmStatic
     fun generateSimpleMotionProfile(
         start: MotionState,
         goal: MotionState,
@@ -38,6 +39,7 @@ object MotionProfileGenerator {
      * @param constraints motion constraints
      * @param resolution number of constraint samples
      */
+    @JvmStatic
     fun generateMotionProfile(
         start: MotionState,
         goal: MotionState,

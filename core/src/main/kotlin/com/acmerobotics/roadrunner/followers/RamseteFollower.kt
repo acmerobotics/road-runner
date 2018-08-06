@@ -19,6 +19,7 @@ import kotlin.math.sqrt
  * @param kV feedforward velocity gain
  * @param kA feedforward acceleration gain (currently unused)
  * @param kStatic additive feedforward constant (used to overcome static friction)
+ * @param clock clock
  */
 class RamseteFollower @JvmOverloads constructor(
         private val drive: TankDrive,

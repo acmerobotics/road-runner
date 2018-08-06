@@ -22,7 +22,7 @@ class QuinticPolynomial(start: Double, startDeriv: Double, startSecondDeriv: Dou
     val e: Double
     val f: Double
 
-    companion object {
+    private companion object {
         private val COEFF_MATRIX = MatrixUtils.createRealMatrix(
             arrayOf(
                 doubleArrayOf(1.0, 0.0, 0.0, 0.0, 0.0, 0.0),

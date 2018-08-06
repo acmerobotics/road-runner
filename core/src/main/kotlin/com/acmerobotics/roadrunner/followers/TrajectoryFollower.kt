@@ -6,6 +6,8 @@ import com.acmerobotics.roadrunner.util.NanoClock
 
 /**
  * Generic [Trajectory] follower for time-based pose reference tracking.
+ *
+ * @param clock clock
  */
 abstract class TrajectoryFollower @JvmOverloads constructor(protected val clock: NanoClock = NanoClock.default()) {
     private var startTimestamp: Double = 0.0

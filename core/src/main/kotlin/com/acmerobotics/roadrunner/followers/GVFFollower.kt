@@ -20,6 +20,7 @@ import kotlin.math.sqrt
  * @param kA feedforward acceleration gain (currently unused)
  * @param kStatic additive feedforward constant (used to overcome static friction)
  * @param errorMapFunc error map function (see [GuidingVectorField])
+ * @param clock clock
  */
 class GVFFollower @JvmOverloads constructor(
         private val drive: TankDrive,

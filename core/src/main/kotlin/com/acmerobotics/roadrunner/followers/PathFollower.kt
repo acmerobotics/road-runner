@@ -1,15 +1,19 @@
 package com.acmerobotics.roadrunner.followers
 
 import com.acmerobotics.roadrunner.Pose2d
+import com.acmerobotics.roadrunner.Vector2d
+import com.acmerobotics.roadrunner.path.LineSegment
 import com.acmerobotics.roadrunner.path.Path
 import com.acmerobotics.roadrunner.util.NanoClock
 
 /**
  * Generic [Path] follower for time-independent pose reference tracking.
+ *
+ * @param clock clock
  */
 abstract class PathFollower @JvmOverloads constructor(protected val clock: NanoClock = NanoClock.default()) {
     private var startTimestamp: Double = 0.0
-    protected lateinit var path: Path
+    protected var path: Path = Path(LineSegment(Vector2d(), Vector2d()))
 
     /**
      * Follow the given [path].

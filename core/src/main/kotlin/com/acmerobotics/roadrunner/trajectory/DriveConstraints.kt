@@ -19,7 +19,7 @@ open class DriveConstraints(
         val maximumAngularVelocity: Double,
         val maximumAngularAcceleration: Double
 ) : TrajectoryConstraints {
-    companion object {
+    private companion object {
         private const val EPSILON = 1e-6
     }
 

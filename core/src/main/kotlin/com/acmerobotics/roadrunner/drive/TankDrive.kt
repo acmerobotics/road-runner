@@ -8,12 +8,6 @@ import com.acmerobotics.roadrunner.Pose2d
  * @param trackWidth lateral distance between pairs of wheels on different sides of the robot
  */
 abstract class TankDrive(val trackWidth: Double) : Drive() {
-    override var poseEstimate: Pose2d = Pose2d()
-        get() = super.poseEstimate
-        set(value) {
-            lastWheelPositions = emptyList()
-            field = value
-        }
     private var lastWheelPositions = emptyList<Double>()
 
     override fun setVelocity(poseVelocity: Pose2d) {
