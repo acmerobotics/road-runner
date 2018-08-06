@@ -1,7 +1,6 @@
 package com.acmerobotics.roadrunner.path
 
 import com.acmerobotics.roadrunner.Vector2d
-import com.acmerobotics.roadrunner.Waypoint
 import com.acmerobotics.roadrunner.util.InterpolatingTreeMap
 import java.lang.Math.pow
 import kotlin.math.sqrt
@@ -13,8 +12,26 @@ import kotlin.math.sqrt
  * @param end end waypoint
  */
 class QuinticSplineSegment(start: Waypoint, end: Waypoint) : ParametricCurve() {
-    val x: QuinticPolynomial = QuinticPolynomial(start.x, start.dx, start.dx2, end.x, end.dx, end.dx2)
-    val y: QuinticPolynomial = QuinticPolynomial(start.y, start.dy, start.dy2, end.y, end.dy, end.dy2)
+    val x: QuinticPolynomial = QuinticPolynomial(start.x, start.dx, start.d2x, end.x, end.dx, end.d2x)
+    val y: QuinticPolynomial = QuinticPolynomial(start.y, start.dy, start.d2y, end.y, end.dy, end.d2y)
+
+    /**
+     * Class for representing the end points of interpolated quintic splines.
+     */
+    class Waypoint @JvmOverloads constructor(
+            val x: Double,
+            val y: Double,
+            val dx: Double = 0.0,
+            val dy: Double = 0.0,
+            val d2x: Double = 0.0,
+            val d2y: Double = 0.0
+    ) {
+        fun pos() = Vector2d(x, y)
+
+        fun deriv() = Vector2d(dx, dy)
+
+        fun secondDeriv() = Vector2d(d2x, d2y)
+    }
 
     private val length: Double
 

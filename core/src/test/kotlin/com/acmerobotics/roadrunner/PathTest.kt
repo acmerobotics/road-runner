@@ -10,8 +10,8 @@ class PathTest {
     @Test
     fun testPathDerivatives() {
         val splineSegment = Path(QuinticSplineSegment(
-                Waypoint(0.0, 0.0, 20.0, 40.0),
-                Waypoint(45.0, 35.0, 60.0, 10.0)
+                QuinticSplineSegment.Waypoint(0.0, 0.0, 20.0, 40.0),
+                QuinticSplineSegment.Waypoint(45.0, 35.0, 60.0, 10.0)
         ))
 
         val resolution = 1000

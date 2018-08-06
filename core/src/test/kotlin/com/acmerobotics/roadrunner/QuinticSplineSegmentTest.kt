@@ -11,8 +11,8 @@ class QuinticSplineSegmentTest {
     @Test
     fun testSplineDerivatives() {
         val splineSegment = QuinticSplineSegment(
-            Waypoint(0.0, 0.0, 20.0, 40.0),
-            Waypoint(45.0, 35.0, 60.0, 10.0)
+                QuinticSplineSegment.Waypoint(0.0, 0.0, 20.0, 40.0),
+                QuinticSplineSegment.Waypoint(45.0, 35.0, 60.0, 10.0)
         )
 
         val resolution = 1000
@@ -57,8 +57,8 @@ class QuinticSplineSegmentTest {
     @Test
     fun testInterpolation() {
         val splineSegment = QuinticSplineSegment(
-            Waypoint(0.0, 0.0, 20.0, 40.0),
-            Waypoint(45.0, 35.0, 60.0, 10.0)
+                QuinticSplineSegment.Waypoint(0.0, 0.0, 20.0, 40.0),
+                QuinticSplineSegment.Waypoint(45.0, 35.0, 60.0, 10.0)
         )
 
         assertEquals(splineSegment[0.0].x, 0.0, 0.001)
@@ -70,13 +70,13 @@ class QuinticSplineSegmentTest {
     @Test
     fun testDerivativeMagnitudeInvariance() {
         val splineSegment = QuinticSplineSegment(
-            Waypoint(0.0, 0.0, 20.0, 40.0),
-            Waypoint(45.0, 35.0, 60.0, 10.0)
+                QuinticSplineSegment.Waypoint(0.0, 0.0, 20.0, 40.0),
+                QuinticSplineSegment.Waypoint(45.0, 35.0, 60.0, 10.0)
         )
 
         val splineSegment2 = QuinticSplineSegment(
-            Waypoint(0.0, 0.0, 40.0, 80.0),
-            Waypoint(45.0, 35.0,  120.0, 20.0)
+                QuinticSplineSegment.Waypoint(0.0, 0.0, 40.0, 80.0),
+                QuinticSplineSegment.Waypoint(45.0, 35.0, 120.0, 20.0)
         )
 
         assertEquals(splineSegment.deriv(0.0).x, splineSegment2.deriv(0.0).x, 0.001)

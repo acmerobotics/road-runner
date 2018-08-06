@@ -2,11 +2,13 @@ package com.acmerobotics.roadrunner
 
 import kotlin.math.sqrt
 
-class Vector2d(val x: Double = 0.0, val y: Double = 0.0) {
-    fun x() = x
-
-    fun y() = y
-
+/**
+ * Class for representing 2D vectors (x and y).
+ */
+class Vector2d @JvmOverloads constructor(
+        val x: Double = 0.0,
+        val y: Double = 0.0
+) {
     fun norm() = sqrt(x*x + y*y)
 
     operator fun plus(other: Vector2d) = Vector2d(x + other.x, y + other.y)

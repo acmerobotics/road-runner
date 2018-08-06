@@ -3,6 +3,7 @@ package com.acmerobotics.roadrunner
 import com.acmerobotics.roadrunner.followers.GuidingVectorField
 import com.acmerobotics.roadrunner.path.Path
 import com.acmerobotics.roadrunner.path.QuinticSplineSegment
+import com.acmerobotics.roadrunner.path.Waypoint
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import java.io.File

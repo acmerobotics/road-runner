@@ -1,13 +1,14 @@
 package com.acmerobotics.roadrunner
 
-class Pose2d(val x: Double = 0.0, val y: Double = 0.0, val heading: Double = 0.0) {
+/**
+ * Class for representing 2D robot poses (x, y, and heading) and their derivatives.
+ */
+class Pose2d @JvmOverloads constructor(
+        val x: Double = 0.0,
+        val y: Double = 0.0,
+        val heading: Double = 0.0
+) {
     constructor(pos: Vector2d, heading: Double) : this(pos.x, pos.y, heading)
-
-    fun x() = x
-
-    fun y() = y
-
-    fun heading() = heading
 
     fun pos() = Vector2d(x, y)
 

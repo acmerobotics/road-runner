@@ -3,7 +3,6 @@ package com.acmerobotics.roadrunner.trajectory
 import com.acmerobotics.roadrunner.Angle
 import com.acmerobotics.roadrunner.Pose2d
 import com.acmerobotics.roadrunner.Vector2d
-import com.acmerobotics.roadrunner.Waypoint
 import com.acmerobotics.roadrunner.path.LineSegment
 import com.acmerobotics.roadrunner.path.Path
 import com.acmerobotics.roadrunner.path.QuinticSplineSegment
@@ -170,8 +169,8 @@ class TrajectoryBuilder(startPose: Pose2d, private val globalConstraints: DriveC
         val spline = if (reversed) {
             Path(
                     QuinticSplineSegment(
-                            Waypoint(pose.x, pose.y, derivMag * Math.cos(pose.heading), derivMag * Math.sin(pose.heading)),
-                            Waypoint(currentPose.x, currentPose.y, derivMag * Math.cos(currentPose.heading), derivMag * Math.sin(currentPose.heading))
+                            QuinticSplineSegment.Waypoint(pose.x, pose.y, derivMag * Math.cos(pose.heading), derivMag * Math.sin(pose.heading)),
+                            QuinticSplineSegment.Waypoint(currentPose.x, currentPose.y, derivMag * Math.cos(currentPose.heading), derivMag * Math.sin(currentPose.heading))
                     ),
                     interpolator,
                     true
@@ -179,8 +178,8 @@ class TrajectoryBuilder(startPose: Pose2d, private val globalConstraints: DriveC
         } else {
             Path(
                     QuinticSplineSegment(
-                            Waypoint(currentPose.x, currentPose.y, derivMag * Math.cos(currentPose.heading), derivMag * Math.sin(currentPose.heading)),
-                            Waypoint(pose.x, pose.y, derivMag * Math.cos(pose.heading), derivMag * Math.sin(pose.heading))
+                            QuinticSplineSegment.Waypoint(currentPose.x, currentPose.y, derivMag * Math.cos(currentPose.heading), derivMag * Math.sin(currentPose.heading)),
+                            QuinticSplineSegment.Waypoint(pose.x, pose.y, derivMag * Math.cos(pose.heading), derivMag * Math.sin(pose.heading))
                     ),
                     interpolator,
                     false

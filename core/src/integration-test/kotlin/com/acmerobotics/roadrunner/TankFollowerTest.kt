@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.followers.RamseteFollower
 import com.acmerobotics.roadrunner.followers.TankPIDVAFollower
 import com.acmerobotics.roadrunner.path.Path
 import com.acmerobotics.roadrunner.path.QuinticSplineSegment
+import com.acmerobotics.roadrunner.path.Waypoint
 import com.acmerobotics.roadrunner.profile.SimpleMotionConstraints
 import com.acmerobotics.roadrunner.trajectory.DriveConstraints
 import com.acmerobotics.roadrunner.trajectory.TankConstraints
