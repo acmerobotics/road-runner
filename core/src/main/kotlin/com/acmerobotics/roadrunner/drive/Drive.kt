@@ -9,7 +9,7 @@ abstract class Drive {
     /**
      * The robot's current pose estimate.
      */
-    var poseEstimate: Pose2d = Pose2d()
+    open var poseEstimate: Pose2d = Pose2d()
 
     /**
      * Sets the [poseVelocity] of the robot.

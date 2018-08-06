@@ -48,7 +48,7 @@ class MecanumFollowerTest {
                     .map { clamp(it, 0.0, 1.0) }
         }
 
-        override fun getMotorPositions(): List<Double> = positions
+        override fun getWheelPositions(): List<Double> = positions
 
         override fun updatePoseEstimate() {
             positions = positions.zip(powers)

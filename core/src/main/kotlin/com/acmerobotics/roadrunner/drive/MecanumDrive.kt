@@ -12,7 +12,13 @@ abstract class MecanumDrive @JvmOverloads constructor(
         val trackWidth: Double,
         val wheelBase: Double = trackWidth
 ) : Drive() {
-    private var lastMotorPositions = emptyList<Double>()
+    override var poseEstimate: Pose2d = Pose2d()
+        get() = super.poseEstimate
+        set(value) {
+            lastWheelPositions = emptyList()
+            field = value
+        }
+    private var lastWheelPositions = emptyList<Double>()
 
     override fun setVelocity(poseVelocity: Pose2d) {
         val powers = MecanumKinematics.robotToWheelVelocities(poseVelocity, trackWidth, wheelBase)
@@ -20,14 +26,16 @@ abstract class MecanumDrive @JvmOverloads constructor(
     }
 
     override fun updatePoseEstimate() {
-        val motorPositions = getMotorPositions()
-        if (lastMotorPositions.isNotEmpty()) {
-            val positionDeltas = motorPositions.zip(lastMotorPositions).map { it.first - it.second }
+        val wheelPositions = getWheelPositions()
+        if (lastWheelPositions.isNotEmpty()) {
+            val positionDeltas = wheelPositions
+                    .zip(lastWheelPositions)
+                    .map { it.first - it.second }
             val robotPoseDelta = MecanumKinematics.wheelToRobotVelocities(positionDeltas, wheelBase, trackWidth)
             val newHeading = poseEstimate.heading + robotPoseDelta.heading
             poseEstimate += Pose2d(robotPoseDelta.pos().rotated(newHeading), robotPoseDelta.heading)
         }
-        lastMotorPositions = motorPositions
+        lastWheelPositions = wheelPositions
     }
 
     /**
@@ -36,7 +44,7 @@ abstract class MecanumDrive @JvmOverloads constructor(
     abstract fun setMotorPowers(frontLeft: Double, rearLeft: Double, rearRight: Double, frontRight: Double)
 
     /**
-     * Returns the positions of the motors in radians.
+     * Returns the positions of the wheels in linear distance units.
      */
-    abstract fun getMotorPositions(): List<Double>
+    abstract fun getWheelPositions(): List<Double>
 }

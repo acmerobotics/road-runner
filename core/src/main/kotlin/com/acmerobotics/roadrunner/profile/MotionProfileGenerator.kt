@@ -7,7 +7,7 @@ import kotlin.math.sqrt
  * Trapezoidal motion profile generator with dynamic constraint support and arbitrary start and end motion states.
  */
 object MotionProfileGenerator {
-    private const val EPSILON = 1e-6
+    internal const val EPSILON = 1e-6
 
     /**
      * Generate a simple motion profile with constant [maximumVelocity] and [maximumAcceleration]
