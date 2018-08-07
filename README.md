@@ -14,7 +14,7 @@ A simple Kotlin library for planning 2D mobile robot paths and trajectories desi
 
 1. Open up the `build.gradle` file in the module you'd like to install in (usually `TeamCode`).
 
-1. At the bottom of the file, add a `repositories` block with `jcenter()` and `mavenLocal()`. Next add a `dependencies` block with `implementation 'com.acmerobotics.roadrunner:core:0.1-SNAPSHOT'`. After you're finished, your `build.gradle` should look like this:
+1. At the bottom of the file, add a `repositories` block with `jcenter()` and `mavenLocal()`. Next add a `dependencies` block with `compile 'com.acmerobotics.roadrunner:core:0.1-SNAPSHOT'`. After you're finished, your `build.gradle` should look like this:
 
 ```groovy
 // beginning of the file
