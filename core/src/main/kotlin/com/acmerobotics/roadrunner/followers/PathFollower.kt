@@ -24,12 +24,12 @@ abstract class PathFollower @JvmOverloads constructor(protected val clock: NanoC
     }
 
     /**
-     * Returns true if the current trajectory has finished executing.
+     * Returns true if the current path has finished executing.
      */
     abstract fun isFollowing(): Boolean
 
     /**
-     * Run a single iteration of the trajectory follower.
+     * Run a single iteration of the path follower.
      *
      * @param currentPose current robot pose
      */
