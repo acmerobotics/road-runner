@@ -25,12 +25,12 @@ class QuinticPolynomial(start: Double, startDeriv: Double, startSecondDeriv: Dou
     private companion object {
         private val COEFF_MATRIX = MatrixUtils.createRealMatrix(
             arrayOf(
-                doubleArrayOf(1.0, 0.0, 0.0, 0.0, 0.0, 0.0),
-                doubleArrayOf(0.0, 1.0, 0.0, 0.0, 0.0, 0.0),
-                doubleArrayOf(0.0, 0.0, 2.0, 0.0, 0.0, 0.0),
+                doubleArrayOf(0.0, 0.0, 0.0, 0.0, 0.0, 1.0),
+                doubleArrayOf(0.0, 0.0, 0.0, 0.0, 1.0, 0.0),
+                doubleArrayOf(0.0, 0.0, 0.0, 2.0, 0.0, 0.0),
                 doubleArrayOf(1.0, 1.0, 1.0, 1.0, 1.0, 1.0),
-                doubleArrayOf(0.0, 1.0, 2.0, 3.0, 4.0, 5.0),
-                doubleArrayOf(0.0, 0.0, 2.0, 6.0, 12.0, 20.0)
+                doubleArrayOf(5.0, 4.0, 3.0, 2.0, 1.0, 0.0),
+                doubleArrayOf(20.0, 12.0, 6.0, 2.0, 0.0, 0.0)
             )
         )
     }
@@ -44,12 +44,12 @@ class QuinticPolynomial(start: Double, startDeriv: Double, startSecondDeriv: Dou
         val solver = LUDecomposition(COEFF_MATRIX).solver
         val coeff = solver.solve(target)
 
-        f = coeff.getEntry(0, 0)
-        e = coeff.getEntry(1, 0)
-        d = coeff.getEntry(2, 0)
-        c = coeff.getEntry(3, 0)
-        b = coeff.getEntry(4, 0)
-        a = coeff.getEntry(5, 0)
+        a = coeff.getEntry(0, 0)
+        b = coeff.getEntry(1, 0)
+        c = coeff.getEntry(2, 0)
+        d = coeff.getEntry(3, 0)
+        e = coeff.getEntry(4, 0)
+        f = coeff.getEntry(5, 0)
     }
 
     /**
