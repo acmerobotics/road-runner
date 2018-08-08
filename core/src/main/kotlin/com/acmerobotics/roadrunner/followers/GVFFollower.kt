@@ -37,12 +37,14 @@ class GVFFollower @JvmOverloads constructor(
     private var following: Boolean = false
     private var lastUpdateTimestamp: Double = 0.0
     private var lastVelocity: Double = 0.0
+    private var lastProjectionDisplacement: Double = 0.0
 
     override fun followPath(path: Path) {
         gvf = GuidingVectorField(path, kN, errorMapFunc)
         following = true
         lastUpdateTimestamp = clock.seconds()
         lastVelocity = 0.0
+        lastProjectionDisplacement = 0.0
         super.followPath(path)
     }
 
@@ -54,7 +56,7 @@ class GVFFollower @JvmOverloads constructor(
             return
         }
 
-        val gvfResult = gvf.getExtended(currentPose.x, currentPose.y)
+        val gvfResult = gvf.getExtended(currentPose.x, currentPose.y, lastProjectionDisplacement)
         if (gvfResult.displacement > path.length()) {
             following = false
             drive.setMotorPowers(0.0, 0.0)
@@ -82,6 +84,7 @@ class GVFFollower @JvmOverloads constructor(
 
         lastUpdateTimestamp = timestamp
         lastVelocity = velocity
+        lastProjectionDisplacement = gvfResult.displacement
     }
 
 }

@@ -39,9 +39,9 @@ class GuidingVectorField(
      * Returns the normalized value of the vector field at the given point along with useful intermediate computations.
      */
     // TODO: support initial displacement guesses from GVF follower, especially with self-intersecting paths
-    fun getExtended(x: Double, y: Double): GVFResult {
+    fun getExtended(x: Double, y: Double, projectGuess: Double = path.length() / 2.0): GVFResult {
         val point = Vector2d(x, y)
-        val projectResult = path.project(Vector2d(x, y))
+        val projectResult = path.project(Vector2d(x, y), projectGuess)
         val pathPoint = path[projectResult.displacement].pos()
         val tangent = path.deriv(projectResult.displacement).pos()
         val pathToPoint = point - pathPoint

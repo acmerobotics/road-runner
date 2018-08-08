@@ -93,11 +93,11 @@ class Path @JvmOverloads constructor(
      * Project [point] onto the current path.
      *
      * @param point query point
-     * @param initialDisplacement guess for the projected point's displacement along the path
+     * @param projectGuess guess for the projected point's displacement along the path
      */
-    fun project(point: Vector2d, initialDisplacement: Double = length() / 2.0): ProjectionResult {
+    fun project(point: Vector2d, projectGuess: Double = length() / 2.0): ProjectionResult {
         val problem = LeastSquaresBuilder()
-                .start(doubleArrayOf(initialDisplacement))
+                .start(doubleArrayOf(projectGuess))
                 .model {
                     val pathPoint = this[it.getEntry(0)].pos()
                     val pathDerivative = deriv(it.getEntry(0)).pos()
