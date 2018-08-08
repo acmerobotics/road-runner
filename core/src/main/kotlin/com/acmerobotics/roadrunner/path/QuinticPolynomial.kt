@@ -3,6 +3,17 @@ package com.acmerobotics.roadrunner.path
 import org.apache.commons.math3.linear.LUDecomposition
 import org.apache.commons.math3.linear.MatrixUtils
 
+private val COEFF_MATRIX = MatrixUtils.createRealMatrix(
+        arrayOf(
+                doubleArrayOf(0.0, 0.0, 0.0, 0.0, 0.0, 1.0),
+                doubleArrayOf(0.0, 0.0, 0.0, 0.0, 1.0, 0.0),
+                doubleArrayOf(0.0, 0.0, 0.0, 2.0, 0.0, 0.0),
+                doubleArrayOf(1.0, 1.0, 1.0, 1.0, 1.0, 1.0),
+                doubleArrayOf(5.0, 4.0, 3.0, 2.0, 1.0, 0.0),
+                doubleArrayOf(20.0, 12.0, 6.0, 2.0, 0.0, 0.0)
+        )
+)
+
 /**
  * Quintic polynomial interpolated according to the provided derivatives.
  *
@@ -21,19 +32,6 @@ class QuinticPolynomial(start: Double, startDeriv: Double, startSecondDeriv: Dou
     val d: Double
     val e: Double
     val f: Double
-
-    private companion object {
-        private val COEFF_MATRIX = MatrixUtils.createRealMatrix(
-            arrayOf(
-                doubleArrayOf(0.0, 0.0, 0.0, 0.0, 0.0, 1.0),
-                doubleArrayOf(0.0, 0.0, 0.0, 0.0, 1.0, 0.0),
-                doubleArrayOf(0.0, 0.0, 0.0, 2.0, 0.0, 0.0),
-                doubleArrayOf(1.0, 1.0, 1.0, 1.0, 1.0, 1.0),
-                doubleArrayOf(5.0, 4.0, 3.0, 2.0, 1.0, 0.0),
-                doubleArrayOf(20.0, 12.0, 6.0, 2.0, 0.0, 0.0)
-            )
-        )
-    }
 
     init {
         val target =

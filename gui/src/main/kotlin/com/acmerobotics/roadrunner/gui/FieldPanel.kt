@@ -10,10 +10,9 @@ import javax.swing.JPanel
 import kotlin.math.min
 import kotlin.math.roundToInt
 
+private const val RESOLUTION = 1000
+
 class FieldPanel : JPanel() {
-    companion object {
-        const val RESOLUTION = 1000
-    }
 
     private var poses = listOf<Pose2d>()
     private var trajectory = Trajectory()

@@ -7,10 +7,9 @@ import java.awt.event.KeyEvent
 import java.io.File
 import javax.swing.*
 
+private val COMMAND_MASK = Toolkit.getDefaultToolkit().menuShortcutKeyMask
+
 class MainFrame : JFrame() {
-    companion object {
-        val COMMAND_MASK = Toolkit.getDefaultToolkit().menuShortcutKeyMask
-    }
 
     init {
         title = "Spline Designer"

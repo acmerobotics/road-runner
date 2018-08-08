@@ -9,11 +9,9 @@ import javax.swing.BoxLayout
 import javax.swing.JPanel
 import javax.swing.JTabbedPane
 
+private val DEFAULT_CONSTRAINTS = DriveConstraints(25.0, 40.0, Math.toRadians(180.0), Math.toRadians(360.0))
 
 class MainPanel : JPanel() {
-    companion object {
-        val DEFAULT_CONSTRAINTS = DriveConstraints(25.0, 40.0, Math.toRadians(180.0), Math.toRadians(360.0))
-    }
 
     private val fieldPanel = FieldPanel()
     private val trajectoryGraphPanel = TrajectoryGraphPanel()

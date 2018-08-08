@@ -5,6 +5,8 @@ import com.acmerobotics.roadrunner.path.QuinticPolynomial
 import kotlin.math.cos
 import kotlin.math.sin
 
+private const val K = 0.5  // fraction of a period replaced by a path on either side
+
 /**
  * Heading interpolator that wraps another interpolator and adds sinusoidal oscillations ("wiggles") while preserving
  * continuity. More specifically, the wiggle function is composed of a sine wave with a quintic spline on either end.
@@ -14,9 +16,6 @@ class WiggleInterpolator(
         private val desiredPeriod: Double,
         private val baseInterpolator: HeadingInterpolator = TangentInterpolator()
 ) : HeadingInterpolator() {
-    private companion object {
-        private const val K = 0.5  // fraction of a period replaced by a path on either side
-    }
     
     private var period: Double = 0.0
     private lateinit var beginSpline: QuinticPolynomial

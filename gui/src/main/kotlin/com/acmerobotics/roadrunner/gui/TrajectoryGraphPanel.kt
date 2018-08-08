@@ -8,10 +8,9 @@ import java.awt.Graphics
 import java.awt.Graphics2D
 import javax.swing.JPanel
 
+private const val RESOLUTION = 1000
+
 class TrajectoryGraphPanel : JPanel() {
-    companion object {
-        const val RESOLUTION = 1000
-    }
 
     private var chart: XYChart = QuickChart.getChart("", "time", "velocity",
             arrayOf("ẋ ", "ẏ ", "ω"), doubleArrayOf(0.0), arrayOf(doubleArrayOf(0.0), doubleArrayOf(0.0), doubleArrayOf(0.0)))

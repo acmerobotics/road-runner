@@ -10,14 +10,11 @@ import com.acmerobotics.roadrunner.trajectory.Trajectory
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 
+private val BASE_CONSTRAINTS = DriveConstraints(50.0, 25.0, Math.PI / 2, Math.PI / 2)
+private val CONSTRAINTS = TankConstraints(BASE_CONSTRAINTS, 12.0)
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class SplineTrajectoryTest {
-    private companion object {
-        private val BASE_CONSTRAINTS = DriveConstraints(50.0, 25.0, Math.PI / 2, Math.PI / 2)
-        private val CONSTRAINTS = TankConstraints(BASE_CONSTRAINTS, 12.0)
-    }
-
     @Test
     fun testLineSegment() {
         val line = LineSegment(

@@ -10,15 +10,12 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 
+private const val TRACK_WIDTH = 1.0
+private val BASE_CONSTRAINTS = DriveConstraints(50.0, 25.0, Math.PI / 2, Math.PI / 2)
+private val CONSTRAINTS = MecanumConstraints(BASE_CONSTRAINTS, TRACK_WIDTH)
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class WheelVelocityTest {
-    private companion object {
-        private const val TRACK_WIDTH = 1.0
-        private val BASE_CONSTRAINTS = DriveConstraints(50.0, 25.0, Math.PI / 2, Math.PI / 2)
-        private val CONSTRAINTS = MecanumConstraints(BASE_CONSTRAINTS, TRACK_WIDTH)
-    }
-
     @Test
     fun testMecanumWheelVelocityDerivatives() {
         val trajectory = TrajectoryBuilder(Pose2d(0.0, 0.0, 0.0), CONSTRAINTS)

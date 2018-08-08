@@ -3,6 +3,8 @@ package com.acmerobotics.roadrunner.trajectory
 import com.acmerobotics.roadrunner.Pose2d
 import kotlin.math.abs
 
+private const val EPSILON = 1e-6
+
 /**
  * This class describes general robot trajectory constraints. More specifically, for paths, the robot velocity,
  * robot acceleration, and robot angular velocity are limited.  For point turns, the angular velocity and angular
@@ -19,9 +21,6 @@ open class DriveConstraints(
         val maximumAngularVelocity: Double,
         val maximumAngularAcceleration: Double
 ) : TrajectoryConstraints {
-    private companion object {
-        private const val EPSILON = 1e-6
-    }
 
     // TODO: should lateral/axial robot velocities be explicitly constrained?
     override fun maximumVelocity(pose: Pose2d, poseDeriv: Pose2d, poseSecondDeriv: Pose2d): Double {

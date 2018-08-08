@@ -3,6 +3,8 @@ package com.acmerobotics.roadrunner.trajectory
 import com.acmerobotics.roadrunner.Pose2d
 import kotlin.math.abs
 
+private const val EPSILON = 1e-2
+
 /**
  * Basic trajectory configuration intended for serialization. Intentionally more simplistic and less flexible than
  * [TrajectoryBuilder].
@@ -11,9 +13,6 @@ import kotlin.math.abs
  * @param constraints constraints
  */
 class TrajectoryConfig(val poses: List<Pose2d>, val constraints: DriveConstraints) {
-    private companion object {
-        private const val EPSILON = 1e-2
-    }
 
     /**
      * Converts the configuration into a real [Trajectory].

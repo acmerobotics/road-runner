@@ -5,6 +5,8 @@ import com.acmerobotics.roadrunner.util.InterpolatingTreeMap
 import java.lang.Math.pow
 import kotlin.math.sqrt
 
+private const val LENGTH_SAMPLES = 1000
+
 /**
  * Combination of two quintic polynomials into a 2D quintic spline.
  *
@@ -36,10 +38,6 @@ class QuinticSplineSegment(start: Waypoint, end: Waypoint) : ParametricCurve() {
     private val length: Double
 
     private val arcLengthSamples = InterpolatingTreeMap()
-
-    private companion object {
-        private const val LENGTH_SAMPLES = 1000
-    }
 
     init {
         arcLengthSamples[0.0] = 0.0
