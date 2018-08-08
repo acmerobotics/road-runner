@@ -6,6 +6,7 @@ buildscript {
 
     dependencies {
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:0.9.17"
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
     }
 }
 
@@ -14,6 +15,7 @@ plugins {
     id 'maven-publish'
 }
 apply plugin: 'org.jetbrains.dokka'
+apply plugin: 'com.jfrog.bintray'
 
 repositories {
     jcenter()
@@ -98,16 +100,61 @@ task dokkaJar(type: Jar) {
     classifier = 'javadoc'
 }
 
+def pomConfig = {
+    licenses {
+        license {
+            name "The MIT License"
+            url "https://opensource.org/licenses/MIT"
+            distribution "repo"
+        }
+    }
+    developers {
+        developer {
+            id "rbrott"
+            name "Ryan Brott"
+            email "rcbrott@gmail.com"
+        }
+    }
+
+    scm {
+        url "https://github.com/acmerobotics/road-runner"
+    }
+}
+
 publishing {
     publications {
         maven(MavenPublication) {
-            groupId = 'com.acmerobotics.roadrunner'
-            artifactId = 'core'
-            version = '0.1-SNAPSHOT'
             from components.java
             artifact sourcesJar
             artifact dokkaJar
+            groupId = 'com.acmerobotics.roadrunner'
+            artifactId = 'core'
+            version version
+            pom.withXml {
+                def root = asNode()
+                root.appendNode('description', '2D mobile robot motion planning library written in Kotlin')
+                root.appendNode('name', 'Road Runner')
+                root.appendNode('url', 'https://github.com/acmerobotics/road-runner')
+                root.children().last() + pomConfig
+            }
         }
+    }
+}
+
+bintray {
+    user = System.getenv('BINTRAY_USER')
+    key = System.getenv('BINTRAY_KEY')
+    pkg {
+        repo = 'maven'
+        name = 'road-runner'
+        userOrg = 'acmerobotics'
+        licenses = ['MIT']
+        vcsUrl = 'https://github.com/acmerobotics/road-runner.git'
+        version {
+            name = version
+            released  = new Date()
+        }
+        publications = ['maven']
     }
 }
 
