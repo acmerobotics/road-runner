@@ -6,10 +6,6 @@
     Convenient UI for ACME Robotics' <a href="https://github.com/acmerobotics/road-runner">motion planning library</a>.
     ]]></description>
 
-    <change-notes><![CDATA[
-    Snapshot
-    ]]></change-notes>
-
     <version>0.1-SNAPSHOT</version>
 
     <vendor email="goacmerobotics@gmail.com" url="https://goacmerobotics.com">ACME Robotics</vendor>

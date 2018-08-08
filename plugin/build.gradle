@@ -35,7 +35,7 @@ intellij {
     }
 }
 
-group 'com.acmerobotics'
+group 'com.acmerobotics.roadrunner'
 version road_runner_version
 
 patchPluginXml {
