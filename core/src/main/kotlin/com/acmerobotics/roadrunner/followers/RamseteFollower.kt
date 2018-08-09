@@ -28,7 +28,7 @@ class RamseteFollower @JvmOverloads constructor(
         private val kV: Double,
         private val kA: Double,
         private val kStatic: Double,
-        clock: NanoClock = NanoClock.default()
+        clock: NanoClock = NanoClock.system()
 ) : TrajectoryFollower(clock) {
     override fun update(currentPose: Pose2d) {
         if (!isFollowing()) {

@@ -22,14 +22,14 @@ import kotlin.math.sign
  * @param kStatic signed, additive feedforward constant (used to overcome static friction)
  * @param clock clock
  */
-class TankPIDVAFollower(
+class TankPIDVAFollower @JvmOverloads constructor(
         private val drive: TankDrive,
         displacementCoeffs: PIDCoefficients,
         crossTrackCoeffs: PIDCoefficients,
         private val kV: Double,
         private val kA: Double,
         private val kStatic: Double,
-        clock: NanoClock = NanoClock.default()
+        clock: NanoClock = NanoClock.system()
 ) : TrajectoryFollower(clock) {
     private val displacementController = PIDFController(displacementCoeffs)
     private val crossTrackController = PIDFController(crossTrackCoeffs)

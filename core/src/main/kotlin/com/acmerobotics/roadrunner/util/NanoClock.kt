@@ -8,9 +8,9 @@ interface NanoClock {
 
     companion object {
         /**
-         * Returns the default version of [NanoClock] backed by [System.nanoTime].
+         * Returns a [NanoClock] backed by [System.nanoTime].
          */
-        fun default() = object : NanoClock {
+        fun system() = object : NanoClock {
             override fun seconds() = System.nanoTime() / 1e9
         }
     }

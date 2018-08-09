@@ -1,7 +1,7 @@
 package com.acmerobotics.roadrunner.path.heading
 
 /**
- * Tangent (default) interpolator for tank/differential and other nonholonomic drives.
+ * Tangent (system) interpolator for tank/differential and other nonholonomic drives.
  */
 class TangentInterpolator: HeadingInterpolator() {
     override fun respectsDerivativeContinuity() = true

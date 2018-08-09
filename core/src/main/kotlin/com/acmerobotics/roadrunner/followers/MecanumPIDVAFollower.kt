@@ -28,7 +28,7 @@ class MecanumPIDVAFollower @JvmOverloads constructor(
         private val kV: Double,
         private val kA: Double,
         private val kStatic: Double,
-        clock: NanoClock = NanoClock.default()
+        clock: NanoClock = NanoClock.system()
 ) : TrajectoryFollower(clock) {
     private val axialController = PIDFController(translationalCoeffs)
     private val lateralController = PIDFController(translationalCoeffs)

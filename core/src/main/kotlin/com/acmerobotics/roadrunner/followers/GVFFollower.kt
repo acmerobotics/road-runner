@@ -31,7 +31,7 @@ class GVFFollower @JvmOverloads constructor(
         private val kA: Double,
         private val kStatic: Double,
         private val errorMapFunc: (Double) -> Double = { it },
-        clock: NanoClock = NanoClock.default()
+        clock: NanoClock = NanoClock.system()
 ) : PathFollower(clock) {
     private lateinit var gvf: GuidingVectorField
     private var following: Boolean = false

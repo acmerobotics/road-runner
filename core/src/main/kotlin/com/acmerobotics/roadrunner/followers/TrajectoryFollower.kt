@@ -9,7 +9,7 @@ import com.acmerobotics.roadrunner.util.NanoClock
  *
  * @param clock clock
  */
-abstract class TrajectoryFollower @JvmOverloads constructor(protected val clock: NanoClock = NanoClock.default()) {
+abstract class TrajectoryFollower @JvmOverloads constructor(protected val clock: NanoClock = NanoClock.system()) {
     private var startTimestamp: Double = 0.0
     protected var trajectory: Trajectory = Trajectory()
 
