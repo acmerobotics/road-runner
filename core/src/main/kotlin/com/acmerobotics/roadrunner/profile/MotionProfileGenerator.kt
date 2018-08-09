@@ -32,7 +32,8 @@ object MotionProfileGenerator {
         )
 
     /**
-     * Generate a motion profile with dynamic maximum velocity and acceleration.
+     * Generate a motion profile with dynamic maximum velocity and acceleration. Uses the algorithm described in section
+     * 3.2 of [Sprunk2008.pdf](http://www2.informatik.uni-freiburg.de/~lau/students/Sprunk2008.pdf).
      *
      * @param start start motion state
      * @param end end motion state
