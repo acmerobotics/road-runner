@@ -30,7 +30,7 @@ A simple Kotlin library for planning 2D mobile robot paths and trajectories desi
 
 1. You're finished!
 
-1. In some cases, Road Runner's dependencies may exceed the limit of method references. To fix it, add `compile 'com.android.support:multidex:1.0.3'` to your dependencies (for more information, see [this article](https://developer.android.com/studio/build/multidex)).
+1. In some cases, Road Runner's dependencies may exceed the limit of method references. To fix it, add `compile 'com.android.support:multidex:1.0.3'` to your dependencies (for more information, see [this article](https://developer.android.com/studio/build/multidex)) and add `multiDexEnabled true` to the `defaultConfig` closure (for FTC, this is located inside `build.common.gradle`).
 
 ### GUI
 
