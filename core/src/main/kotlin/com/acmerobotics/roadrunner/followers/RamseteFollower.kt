@@ -4,10 +4,9 @@ import com.acmerobotics.roadrunner.Pose2d
 import com.acmerobotics.roadrunner.drive.TankDrive
 import com.acmerobotics.roadrunner.drive.TankKinematics
 import com.acmerobotics.roadrunner.util.NanoClock
-import kotlin.math.cos
-import kotlin.math.sign
-import kotlin.math.sin
-import kotlin.math.sqrt
+import kotlin.math.*
+
+private const val EPSILON = 1e-2
 
 /**
  * Time-varying, non-linear feedback controller for nonholonomic drives. See equation 5.12 of
@@ -68,6 +67,6 @@ class RamseteFollower @JvmOverloads constructor(
         val motorPowers = wheelVelocities
                 .zip(wheelAccelerations)
                 .map { it.first * kV + it.second * kA }
-                .map { it + sign(it) * kStatic }
+                .map { if (abs(it) > EPSILON) it + sign(it) * kStatic else 0.0 }
         drive.setMotorPowers(motorPowers[0], motorPowers[1])    }
 }

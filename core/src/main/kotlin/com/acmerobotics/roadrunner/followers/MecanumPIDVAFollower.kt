@@ -6,7 +6,10 @@ import com.acmerobotics.roadrunner.control.PIDFController
 import com.acmerobotics.roadrunner.drive.MecanumDrive
 import com.acmerobotics.roadrunner.drive.MecanumKinematics
 import com.acmerobotics.roadrunner.util.NanoClock
+import kotlin.math.abs
 import kotlin.math.sign
+
+private const val EPSILON = 1e-2
 
 /**
  * Traditional PID controller with feedforward velocity and acceleration components to follow a trajectory. More
@@ -71,7 +74,7 @@ class MecanumPIDVAFollower @JvmOverloads constructor(
         val motorPowers = wheelVelocities
                 .zip(wheelAccelerations)
                 .map { it.first * kV + it.second * kA }
-                .map { it + sign(it) * kStatic }
+                .map { if (abs(it) > EPSILON) it + sign(it) * kStatic else 0.0 }
         drive.setMotorPowers(motorPowers[0], motorPowers[1], motorPowers[2], motorPowers[3])
     }
 }

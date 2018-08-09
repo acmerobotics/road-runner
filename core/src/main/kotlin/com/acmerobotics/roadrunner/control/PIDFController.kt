@@ -1,6 +1,9 @@
 package com.acmerobotics.roadrunner.control
 
+import kotlin.math.abs
 import kotlin.math.sign
+
+private const val EPSILON = 1e-2
 
 /**
  * PID controller with various feedforward components. [kV], [kA], and [kStatic] are designed for DC motor feedforward
@@ -47,7 +50,7 @@ class PIDFController @JvmOverloads constructor(
             val errorDeriv = error / dt
 
             val output = pid.kP * error + pid.kI * errorSum + pid.kD * (errorDeriv - velocity) + kV * velocity + kA * acceleration + kF(position)
-            return output + sign(output) * kStatic
+            return if (abs(output) > EPSILON) output + sign(output) * kStatic else 0.0
         }
     }
 
