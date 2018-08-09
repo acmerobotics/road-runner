@@ -24,7 +24,7 @@ shadowJar {
     baseName = 'road-runner-gui'
     destinationDir = buildDir
     classifier = null
-    version = '0.1-SNAPSHOT'
+    version = road_runner_version
     manifest {
         attributes 'Main-Class': 'com.acmerobotics.roadrunner.gui.Main'
     }

@@ -7,6 +7,7 @@ buildscript {
     dependencies {
         classpath "org.jetbrains.dokka:dokka-gradle-plugin:0.9.17"
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.4'
     }
 }
 
@@ -16,6 +17,7 @@ plugins {
 }
 apply plugin: 'org.jetbrains.dokka'
 apply plugin: 'com.jfrog.bintray'
+apply plugin: 'com.github.johnrengelman.shadow'
 
 repositories {
     jcenter()
@@ -69,6 +71,13 @@ task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
 }
 
 dokka.dependsOn dokkaJavadoc
+
+shadowJar {
+    baseName = 'road-runner-core'
+    destinationDir = buildDir
+    classifier = null
+    version = road_runner_version
+}
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
