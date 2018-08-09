@@ -12,6 +12,11 @@ abstract class MecanumDrive @JvmOverloads constructor(
         val trackWidth: Double,
         val wheelBase: Double = trackWidth
 ) : Drive() {
+    override var poseEstimate: Pose2d = Pose2d()
+        set(value) {
+            lastWheelPositions = emptyList()
+            field = value
+        }
     private var lastWheelPositions = emptyList<Double>()
 
     override fun setVelocity(poseVelocity: Pose2d) {
