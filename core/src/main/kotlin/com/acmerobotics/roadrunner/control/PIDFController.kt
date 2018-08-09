@@ -23,6 +23,7 @@ class PIDFController @JvmOverloads constructor(
         val kF: (Double) -> Double = { 0.0 }
 ) {
     private var errorSum: Double = 0.0
+    private var lastError: Double = 0.0
     private var lastUpdateTimestamp: Double = Double.NaN
 
     /**
@@ -40,14 +41,18 @@ class PIDFController @JvmOverloads constructor(
      */
     @JvmOverloads
     fun update(position: Double, velocity: Double = 0.0, acceleration: Double = 0.0, currentTimestamp: Double = System.nanoTime() / 1e9): Double {
+        val error = targetPosition - position
         return if (lastUpdateTimestamp.isNaN()) {
+            lastError = error
             lastUpdateTimestamp = currentTimestamp
             0.0
         } else {
             val dt = currentTimestamp - lastUpdateTimestamp
-            val error = targetPosition - position
-            errorSum += error * dt
-            val errorDeriv = error / dt
+            errorSum += 0.5 * (error + lastError) * dt
+            val errorDeriv = (error - lastError) / dt
+
+            lastError = error
+            lastUpdateTimestamp = currentTimestamp
 
             val output = pid.kP * error + pid.kI * errorSum + pid.kD * (errorDeriv - velocity) + kV * velocity + kA * acceleration + kF(position)
             return if (abs(output) > EPSILON) output + sign(output) * kStatic else 0.0
@@ -59,6 +64,7 @@ class PIDFController @JvmOverloads constructor(
      */
     fun reset() {
         errorSum = 0.0
+        lastError = 0.0
         lastUpdateTimestamp = Double.NaN
     }
 }
