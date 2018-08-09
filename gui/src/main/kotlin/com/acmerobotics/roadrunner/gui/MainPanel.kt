@@ -1,7 +1,7 @@
 package com.acmerobotics.roadrunner.gui
 
 import com.acmerobotics.roadrunner.Pose2d
-import com.acmerobotics.roadrunner.trajectory.DriveConstraints
+import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import com.acmerobotics.roadrunner.trajectory.TrajectoryConfig
 import com.acmerobotics.roadrunner.trajectory.TrajectoryLoader
 import java.io.File

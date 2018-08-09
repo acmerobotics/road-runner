@@ -8,8 +8,8 @@ import com.acmerobotics.roadrunner.followers.TankPIDVAFollower
 import com.acmerobotics.roadrunner.path.Path
 import com.acmerobotics.roadrunner.path.QuinticSplineSegment
 import com.acmerobotics.roadrunner.profile.SimpleMotionConstraints
-import com.acmerobotics.roadrunner.trajectory.DriveConstraints
-import com.acmerobotics.roadrunner.trajectory.TankConstraints
+import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
+import com.acmerobotics.roadrunner.trajectory.constraints.TankConstraints
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
 import com.sun.javafx.util.Utils.clamp
 import org.apache.commons.math3.distribution.NormalDistribution

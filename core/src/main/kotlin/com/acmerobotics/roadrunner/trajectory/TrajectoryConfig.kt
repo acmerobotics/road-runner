@@ -1,6 +1,7 @@
 package com.acmerobotics.roadrunner.trajectory
 
 import com.acmerobotics.roadrunner.Pose2d
+import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import kotlin.math.abs
 
 private const val EPSILON = 1e-2

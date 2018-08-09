@@ -3,8 +3,8 @@ package com.acmerobotics.roadrunner
 import com.acmerobotics.roadrunner.control.PIDCoefficients
 import com.acmerobotics.roadrunner.drive.MecanumDrive
 import com.acmerobotics.roadrunner.followers.MecanumPIDVAFollower
-import com.acmerobotics.roadrunner.trajectory.DriveConstraints
-import com.acmerobotics.roadrunner.trajectory.MecanumConstraints
+import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
+import com.acmerobotics.roadrunner.trajectory.constraints.MecanumConstraints
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
 import com.sun.javafx.util.Utils.clamp
 import org.apache.commons.math3.distribution.NormalDistribution

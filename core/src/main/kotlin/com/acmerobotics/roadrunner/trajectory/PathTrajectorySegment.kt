@@ -6,6 +6,7 @@ import com.acmerobotics.roadrunner.profile.MotionConstraints
 import com.acmerobotics.roadrunner.profile.MotionProfile
 import com.acmerobotics.roadrunner.profile.MotionProfileGenerator
 import com.acmerobotics.roadrunner.profile.MotionState
+import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryConstraints
 import kotlin.math.max
 import kotlin.math.min
 

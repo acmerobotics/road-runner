@@ -2,7 +2,7 @@ package com.acmerobotics.roadrunner
 
 import com.acmerobotics.roadrunner.path.heading.TangentInterpolator
 import com.acmerobotics.roadrunner.path.heading.WiggleInterpolator
-import com.acmerobotics.roadrunner.trajectory.DriveConstraints
+import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance

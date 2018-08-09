@@ -1,4 +1,4 @@
-package com.acmerobotics.roadrunner.trajectory
+package com.acmerobotics.roadrunner.trajectory.constraints
 
 import com.acmerobotics.roadrunner.Pose2d
 import kotlin.math.abs

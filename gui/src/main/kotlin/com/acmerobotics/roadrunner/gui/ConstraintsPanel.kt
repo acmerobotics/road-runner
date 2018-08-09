@@ -1,6 +1,6 @@
 package com.acmerobotics.roadrunner.gui
 
-import com.acmerobotics.roadrunner.trajectory.DriveConstraints
+import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import java.awt.GridLayout
 import javax.swing.JLabel
 import javax.swing.JPanel

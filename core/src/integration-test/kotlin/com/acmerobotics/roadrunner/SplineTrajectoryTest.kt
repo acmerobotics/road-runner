@@ -3,9 +3,9 @@ package com.acmerobotics.roadrunner
 import com.acmerobotics.roadrunner.path.LineSegment
 import com.acmerobotics.roadrunner.path.Path
 import com.acmerobotics.roadrunner.path.QuinticSplineSegment
-import com.acmerobotics.roadrunner.trajectory.DriveConstraints
+import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import com.acmerobotics.roadrunner.trajectory.PathTrajectorySegment
-import com.acmerobotics.roadrunner.trajectory.TankConstraints
+import com.acmerobotics.roadrunner.trajectory.constraints.TankConstraints
 import com.acmerobotics.roadrunner.trajectory.Trajectory
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
