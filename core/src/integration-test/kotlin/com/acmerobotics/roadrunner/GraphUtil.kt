@@ -6,6 +6,7 @@ import com.acmerobotics.roadrunner.trajectory.Trajectory
 import org.knowm.xchart.BitmapEncoder
 import org.knowm.xchart.QuickChart
 import org.knowm.xchart.XYChart
+import org.knowm.xchart.style.MatlabTheme
 import java.io.File
 import java.nio.file.Paths
 
@@ -35,14 +36,17 @@ object GraphUtil {
             data.add(accelerationData)
         }
 
-        saveGraph(name, QuickChart.getChart(
-            name,
-            "time (sec)",
-            "",
-            labels.toTypedArray(),
-            timeData,
-            data.toTypedArray()
-        ))
+        val graph = QuickChart.getChart(
+                name,
+                "time (sec)",
+                "",
+                labels.toTypedArray(),
+                timeData,
+                data.toTypedArray()
+        )
+        graph.styler.theme = MatlabTheme()
+
+        saveGraph(name, graph)
     }
 
     fun saveParametricCurve(name: String, parametricCurve: ParametricCurve, resolution: Int = 1000) {
@@ -53,6 +57,7 @@ object GraphUtil {
 
         val graph = QuickChart.getChart(name, "x", "y", name, xData, yData)
         graph.styler.isLegendVisible = false
+        graph.styler.theme = MatlabTheme()
         saveGraph(name, graph)
     }
 
@@ -66,13 +71,16 @@ object GraphUtil {
         val labels = listOf("vx(t)", "vy(t)", "ω(t)")
         val data = listOf(xVelocityData, yVelocityData, omegaData)
 
-        saveGraph(name, QuickChart.getChart(
-            name,
-            "time (sec)",
-            "",
-            labels.toTypedArray(),
-            timeData,
-            data.toTypedArray()
-        ))
+        val graph = QuickChart.getChart(
+                name,
+                "time (sec)",
+                "",
+                labels.toTypedArray(),
+                timeData,
+                data.toTypedArray()
+        )
+        graph.styler.theme = MatlabTheme()
+
+        saveGraph(name, graph)
     }
 }

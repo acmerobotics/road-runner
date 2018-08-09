@@ -11,6 +11,7 @@ import org.apache.commons.math3.distribution.NormalDistribution
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.knowm.xchart.XYChart
+import org.knowm.xchart.style.MatlabTheme
 import org.knowm.xchart.style.markers.None
 import kotlin.math.ceil
 
@@ -93,6 +94,7 @@ class MecanumFollowerTest {
                 actualPositions.map { it.x }.toDoubleArray(),
                 actualPositions.map { it.y }.toDoubleArray())
         graph.seriesMap.values.forEach { it.marker = None() }
+        graph.styler.theme = MatlabTheme()
         GraphUtil.saveGraph("mecanumSim", graph)
     }
 }
