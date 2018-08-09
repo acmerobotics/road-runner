@@ -2,6 +2,7 @@ apply plugin: "idea"
 
 buildscript {
     ext.kotlin_version = '1.2.51'
+    ext.road_runner_version = '0.1.0'
 
     repositories {
         mavenCentral()
@@ -16,8 +17,4 @@ allprojects {
     repositories {
         jcenter() 
     }
-}
-
-subprojects {
-    version = '0.1-SNAPSHOT'
 }

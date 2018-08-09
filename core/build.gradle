@@ -129,7 +129,7 @@ publishing {
             artifact dokkaJar
             groupId = 'com.acmerobotics.roadrunner'
             artifactId = 'core'
-            version version
+            version road_runner_version
             pom.withXml {
                 def root = asNode()
                 root.appendNode('description', '2D mobile robot motion planning library written in Kotlin')
@@ -151,7 +151,7 @@ bintray {
         licenses = ['MIT']
         vcsUrl = 'https://github.com/acmerobotics/road-runner.git'
         version {
-            name = version
+            name = road_runner_version
             released  = new Date()
         }
         publications = ['maven']

@@ -25,7 +25,7 @@ dependencies {
 
 intellij {
     version '2018.1.5'
-    pluginName 'spline-plugin'
+    pluginName 'road-runner-plugin'
     plugins 'android'
     updateSinceUntilBuild false
     if (Os.isFamily(Os.FAMILY_WINDOWS)) {
@@ -36,7 +36,7 @@ intellij {
 }
 
 group 'com.acmerobotics'
-version '0.1-SNAPSHOT'
+version road_runner_version
 
 patchPluginXml {
     changeNotes """
