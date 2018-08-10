@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.drive.TankDrive
 import com.acmerobotics.roadrunner.drive.TankKinematics
 import com.acmerobotics.roadrunner.path.Path
 import com.acmerobotics.roadrunner.profile.SimpleMotionConstraints
+import com.acmerobotics.roadrunner.util.Angle
 import com.acmerobotics.roadrunner.util.NanoClock
 import kotlin.math.abs
 import kotlin.math.sign
@@ -67,7 +68,7 @@ class GVFFollower @JvmOverloads constructor(
         }
 
         val desiredHeading = Math.atan2(gvfResult.vector.y, gvfResult.vector.x)
-        val headingError = currentPose.heading - desiredHeading
+        val headingError = Angle.norm(currentPose.heading - desiredHeading)
 
         // TODO: implement this or nah? ref eqs. (18), (23), and (24)
         val desiredOmega = 0.0

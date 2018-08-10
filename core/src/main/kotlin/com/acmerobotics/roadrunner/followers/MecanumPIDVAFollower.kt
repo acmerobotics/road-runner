@@ -37,6 +37,10 @@ class MecanumPIDVAFollower @JvmOverloads constructor(
     private val lateralController = PIDFController(translationalCoeffs)
     private val headingController = PIDFController(headingCoeffs)
 
+    init {
+        headingController.setInputBounds(-Math.PI, Math.PI)
+    }
+
     override fun update(currentPose: Pose2d) {
         if (!isFollowing()) {
             drive.setMotorPowers(0.0, 0.0, 0.0, 0.0)

@@ -38,7 +38,7 @@ abstract class MecanumDrive @JvmOverloads constructor(
     }
 
     /**
-     * Sets the following motor powers (normalized voltages). All arguments are on the interval `[0.0, 1.0]`.
+     * Sets the following motor powers (normalized voltages). All arguments are on the interval `[-1.0, 1.0]`.
      */
     abstract fun setMotorPowers(frontLeft: Double, rearLeft: Double, rearRight: Double, frontRight: Double)
 
