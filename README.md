@@ -91,8 +91,6 @@ val profile = MotionProfileGenerator.generateSimpleMotionProfile(
 
 The `profile` object can then be used to find the motion state at any point in time.
 
-<!-- TODO: feedforward -->
-
 ### Paths
 
 While one-dimensional profiles are useful for mechanisms with one degree of freedom (for example, elevators, arms, and turrets), they aren't super useful by themselves for drive movement. To take full advantage of your drivetrain's capabilities, you must also define a 2D path for it to follow.
@@ -188,6 +186,31 @@ val trajectory = Trajectory(listOf(
 
 Multiple path and trajectory segments can be composed into a single trajectory. Keep in mind that each trajectory segment has its own profile. Additionally, when combining multiple paths into the same `PathTrajectorySegment`, make sure that the heading interpolators don't violate the continuity (see `HeadingInterpolator.respectsDerivativeContinuity()`).
 
-<!-- TODO: TrajectoryBuilder -->
+Finally, `TrajectoryBuilder` can be used to create trajectories in a more concise manner:
 
-<!-- TODO: follower >
+```java
+Trajectory trajectory = new TrajectoryBuilder(new Pose2d(0, 0, 0), constraints)
+    .splineTo(new Pose2d(30, 30, 0))
+    .turnTo(Math.toRadians(90))
+    .build()
+```
+
+or 
+
+```kotlin
+val trajectory = TrajectoryBuilder(Pose2d(0.0, 0.0, 0.0), constraints)
+    .splineTo(Pose2d(30.0, 30.0, 0.0))
+    .turnTo(Math.toRadians(90.0))
+    .build()
+```
+
+### Followers
+
+Finally, we're ready to select a follower. The role of the follower is to ensure the robot accurately tracks the trajectory/path with feedback. For mecanum, it's easy: there's only one follower, `MecanumPIDVAFollower`. For tank, there are a few more options:
+
+* `TankPIDVAFollower`: PID-based controller that minimizes displacement and cross track error. Suitable for most applications.
+
+* `RamseteFollower`: Non-linear, time-varying controller with better performance characteristics than the PIDVA follower. Unfortunately, it's more difficult to tune.
+
+* `GVFFollower`: State-of-the-art guiding vector field controller with very good performance characteristics. However, unlike the others, it tracks paths directly instead of trajectories (and therefore doesn't respect constraints as well as the others). Additionally, it's moderately more computationally intensive (thanks to some nonlinear projection).
+
