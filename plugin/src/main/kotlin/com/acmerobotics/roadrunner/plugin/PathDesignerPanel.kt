@@ -64,7 +64,9 @@ class PathDesignerPanel(private val project: Project) : JPanel() {
 
         val addButton = JButton("Add")
         addButton.addActionListener {
-            addTrajectory()
+            if (!dirty || savePrompt()) {
+                addTrajectory()
+            }
         }
 
         trajectoryNameField.addKeyListener(object : KeyListener {
@@ -150,7 +152,7 @@ class PathDesignerPanel(private val project: Project) : JPanel() {
             val trajectories = listTrajectoryAssets(comboBoxModule)
                     .map { if (it == comboBoxTrajectory) newTrajectory else it }
             trajectoryComboBox.model = DefaultComboBoxModel(trajectories.toTypedArray())
-            trajectoryComboBox.selectedItem = newTrajectory
+            trajectoryComboBox.selectedIndex = trajectories.indexOf(newTrajectory)
         }
         updateTrajectorySelection()
     }
@@ -172,6 +174,7 @@ class PathDesignerPanel(private val project: Project) : JPanel() {
 
     private fun addTrajectory(nameArg: String? = null) {
         val comboBoxModule = comboBoxModule ?: return
+        mainPanel.clearTrajectory()
         val trajectories = listTrajectoryAssets(comboBoxModule).toMutableList()
         val name = nameArg ?: nextUntitledName()
         trajectories.add(name)
@@ -181,8 +184,10 @@ class PathDesignerPanel(private val project: Project) : JPanel() {
         Files.createDirectories(dir.toPath())
         mainPanel.save(File(dir, "$name.yaml"))
 
+        markClean()
+
         trajectoryComboBox.model = DefaultComboBoxModel(trajectories.toTypedArray())
-        trajectoryComboBox.selectedItem = name
+        trajectoryComboBox.selectedIndex = trajectories.indexOf(name)
         updateTrajectorySelection()
     }
 
