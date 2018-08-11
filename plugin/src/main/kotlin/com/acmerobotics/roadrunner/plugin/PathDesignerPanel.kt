@@ -1,11 +1,8 @@
 package com.acmerobotics.roadrunner.plugin
 
 import com.acmerobotics.roadrunner.gui.MainPanel
-import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.project.Project
-import java.awt.event.FocusEvent
-import java.awt.event.FocusListener
 import java.awt.event.KeyEvent
 import java.awt.event.KeyListener
 import java.io.File
@@ -14,21 +11,27 @@ import javax.swing.*
 
 
 class PathDesignerPanel(private val project: Project) : JPanel() {
-    private val logger = Logger.getInstance(this::class.java)
     private val moduleManager = ModuleManager.getInstance(project)
 
     private val moduleComboBox = JComboBox<String>()
     private val trajectoryComboBox = JComboBox<String>()
 
-    private val nameTextField = JTextField()
+    private val trajectoryNameField = JTextField()
 
     private val mainPanel = MainPanel()
 
-    private val currentModule: String
-        get() = moduleComboBox.selectedItem as String
+    private var currentModule: String? = null
+    private var currentTrajectory: String? = null
 
-    private val currentTrajectory: String
-        get() = trajectoryComboBox.selectedItem as String
+    private val comboBoxModule: String?
+        get() = moduleComboBox.selectedItem as String?
+
+    private val comboBoxTrajectory: String?
+        get() = trajectoryComboBox.selectedItem as String?
+
+    private var dirty: Boolean = false
+
+    private val saveButton = JButton("Save")
 
     init {
         val groupLayout = GroupLayout(this)
@@ -44,38 +47,27 @@ class PathDesignerPanel(private val project: Project) : JPanel() {
         val moduleLabel = JLabel("Module", SwingConstants.RIGHT)
         moduleComboBox.model = DefaultComboBoxModel(modules.toTypedArray())
         moduleComboBox.addActionListener {
-            selectModule(currentModule)
+            if (currentModule != comboBoxModule && (!dirty || savePrompt())) {
+                updateModuleSelection()
+            }
         }
-        if (modules.isNotEmpty()) {
-            selectModule(modules.first())
-        }
+        updateModuleSelection()
         val phantomLabel = JLabel()
 
         val trajectoryLabel = JLabel("Trajectory", SwingConstants.RIGHT)
         trajectoryComboBox.addActionListener {
-            if (currentTrajectory.isNotBlank()) {
-                selectTrajectory(currentTrajectory)
+            if (currentTrajectory != comboBoxTrajectory && (!dirty || savePrompt())) {
+                updateTrajectorySelection()
             }
         }
+        updateTrajectorySelection()
 
         val addButton = JButton("Add")
         addButton.addActionListener {
             addTrajectory()
         }
 
-        nameTextField.addFocusListener(object : FocusListener {
-            override fun focusLost(e: FocusEvent?) {
-                if (nameTextField.text != currentTrajectory) {
-                    renameTrajectory(currentTrajectory, nameTextField.text)
-                }
-            }
-
-            override fun focusGained(e: FocusEvent?) {
-                // do nothing
-            }
-
-        })
-        nameTextField.addKeyListener(object : KeyListener {
+        trajectoryNameField.addKeyListener(object : KeyListener {
             override fun keyTyped(e: KeyEvent?) {
                 // do nothing
             }
@@ -85,23 +77,20 @@ class PathDesignerPanel(private val project: Project) : JPanel() {
             }
 
             override fun keyReleased(e: KeyEvent?) {
-                if (e?.keyCode == KeyEvent.VK_ENTER) {
-                    if (nameTextField.text != currentTrajectory) {
-                        renameTrajectory(currentTrajectory, nameTextField.text)
-                    }
-                }
+                markDirty()
             }
         })
 
-        val saveButton = JButton("Save")
         saveButton.addActionListener {
-            saveTrajectory(currentModule, currentTrajectory)
+            saveCurrentTrajectory()
         }
 
         val deleteButton = JButton("Delete")
         deleteButton.addActionListener {
-            deleteTrajectory(currentTrajectory)
+            deleteCurrentTrajectory()
         }
+
+        mainPanel.onTrajectoryUpdateListener = { markDirty() }
 
         groupLayout.autoCreateGaps = true
         groupLayout.autoCreateContainerGaps = true
@@ -116,7 +105,7 @@ class PathDesignerPanel(private val project: Project) : JPanel() {
                         .addComponent(trajectoryComboBox)
                         .addComponent(addButton))
                 .addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
-                        .addComponent(nameTextField)
+                        .addComponent(trajectoryNameField)
                         .addComponent(saveButton)
                         .addComponent(deleteButton))
                 .addComponent(mainPanel))
@@ -131,24 +120,44 @@ class PathDesignerPanel(private val project: Project) : JPanel() {
                         .addComponent(trajectoryComboBox)
                         .addComponent(addButton))
                 .addGroup(groupLayout.createSequentialGroup()
-                        .addComponent(nameTextField)
+                        .addComponent(trajectoryNameField)
                         .addComponent(saveButton)
                         .addComponent(deleteButton))
                 .addComponent(mainPanel))
 
         groupLayout.linkSize(moduleLabel, trajectoryLabel)
-        groupLayout.linkSize(moduleComboBox, trajectoryComboBox, nameTextField)
+        groupLayout.linkSize(moduleComboBox, trajectoryComboBox, trajectoryNameField)
         groupLayout.linkSize(phantomLabel, addButton)
     }
 
-    private fun saveTrajectory(module:String, trajectory: String) {
-        val dir = getTrajectoryAssetsDir(module) ?: return
-        Files.createDirectories(dir.toPath())
-        mainPanel.save(File(dir, "$trajectory.yaml"))
+    private fun saveCurrentTrajectory() {
+        val comboBoxModule = comboBoxModule ?: return
+        val comboBoxTrajectory = comboBoxTrajectory ?: return
+        val dir = getTrajectoryAssetsDir(comboBoxModule) ?: return
+        if (trajectoryNameField.text.isEmpty() || trajectoryNameField.text == comboBoxTrajectory) {
+            Files.createDirectories(dir.toPath())
+            mainPanel.save(File(dir, "$comboBoxTrajectory.yaml"))
+        } else {
+            val newTrajectory = trajectoryNameField.text
+            Files.createDirectories(dir.toPath())
+            val oldFile = File(dir, "$comboBoxTrajectory.yaml")
+            val newFile = File(dir, "$newTrajectory.yaml")
+            oldFile.delete()
+            mainPanel.save(newFile)
+
+            markClean()
+
+            val trajectories = listTrajectoryAssets(comboBoxModule)
+                    .map { if (it == comboBoxTrajectory) newTrajectory else it }
+            trajectoryComboBox.model = DefaultComboBoxModel(trajectories.toTypedArray())
+            trajectoryComboBox.selectedItem = newTrajectory
+        }
+        updateTrajectorySelection()
     }
 
     private fun nextUntitledName(): String {
-        val trajectories = listTrajectoryAssets(currentModule).toMutableList()
+        val comboBoxModule = comboBoxModule ?: return "untitled"
+        val trajectories = listTrajectoryAssets(comboBoxModule).toMutableList()
         val prefix = "untitled"
         var name = prefix
         var i = 1
@@ -162,57 +171,53 @@ class PathDesignerPanel(private val project: Project) : JPanel() {
     }
 
     private fun addTrajectory(nameArg: String? = null) {
-        // TODO: should we save the old one?
-        // we'll go ahead and overwrite if necessary
-        val trajectories = listTrajectoryAssets(currentModule).toMutableList()
+        val comboBoxModule = comboBoxModule ?: return
+        val trajectories = listTrajectoryAssets(comboBoxModule).toMutableList()
         val name = nameArg ?: nextUntitledName()
         trajectories.add(name)
         trajectories.sort()
-        mainPanel.clearTrajectory()
-        saveTrajectory(currentModule, name)
+
+        val dir = getTrajectoryAssetsDir(comboBoxModule) ?: return
+        Files.createDirectories(dir.toPath())
+        mainPanel.save(File(dir, "$name.yaml"))
+
         trajectoryComboBox.model = DefaultComboBoxModel(trajectories.toTypedArray())
         trajectoryComboBox.selectedItem = name
-        selectTrajectory(name)
+        updateTrajectorySelection()
     }
 
-    private fun deleteTrajectory(trajectory: String) {
-        val trajectoryFile = File(getTrajectoryAssetsDir(currentModule), "$trajectory.yaml")
+    private fun deleteCurrentTrajectory() {
+        val comboBoxModule = comboBoxModule ?: return
+        val comboBoxTrajectory = comboBoxTrajectory ?: return
+        val trajectoryFile = File(getTrajectoryAssetsDir(comboBoxModule), "$comboBoxTrajectory.yaml")
         trajectoryFile.delete()
-        val trajectories = listTrajectoryAssets(currentModule).filter { it != trajectory }
+        val trajectories = listTrajectoryAssets(comboBoxModule).filter { it != comboBoxTrajectory }
         trajectoryComboBox.model = DefaultComboBoxModel(trajectories.toTypedArray())
-        if (trajectories.isNotEmpty()) {
-            selectTrajectory(currentTrajectory)
+        updateTrajectorySelection()
+    }
+
+    private fun updateModuleSelection() {
+        if (currentModule == comboBoxModule) return
+        val comboBoxModule = comboBoxModule ?: return
+        val trajectories = listTrajectoryAssets(comboBoxModule)
+        trajectoryComboBox.model = DefaultComboBoxModel(trajectories.toTypedArray())
+        updateTrajectorySelection()
+        currentModule = comboBoxModule
+    }
+
+    private fun updateTrajectorySelection() {
+        if (currentTrajectory == comboBoxTrajectory) return
+        val comboBoxModule = comboBoxModule ?: return
+        val comboBoxTrajectory = comboBoxTrajectory
+        if (comboBoxTrajectory == null) {
+            mainPanel.clearTrajectory()
+            trajectoryNameField.text = ""
         } else {
-            clearSelectedTrajectory()
+            mainPanel.load(File(getTrajectoryAssetsDir(comboBoxModule), "$comboBoxTrajectory.yaml"))
+            trajectoryNameField.text = comboBoxTrajectory
         }
-    }
-
-    private fun renameTrajectory(oldTrajectory: String, newTrajectory: String) {
-        saveTrajectory(currentModule, oldTrajectory)
-        val assetsDir = getTrajectoryAssetsDir(currentModule)
-        val oldTrajectoryFile = File(assetsDir, "$oldTrajectory.yaml")
-        val newTrajectoryFile = File(assetsDir, "$newTrajectory.yaml")
-        oldTrajectoryFile.copyTo(newTrajectoryFile)
-        oldTrajectoryFile.delete()
-        val trajectories = listTrajectoryAssets(currentModule).map { if (it == oldTrajectory) newTrajectory else it }
-        trajectoryComboBox.model = DefaultComboBoxModel(trajectories.toTypedArray())
-        trajectoryComboBox.selectedItem = newTrajectory
-        selectTrajectory(newTrajectory)
-    }
-
-    private fun selectModule(module: String) {
-        val trajectories = listTrajectoryAssets(module)
-        trajectoryComboBox.model = DefaultComboBoxModel(trajectories.toTypedArray())
-        if (trajectories.isNotEmpty()) {
-            selectTrajectory(trajectories.first())
-        } else {
-            clearSelectedTrajectory()
-        }
-    }
-
-    private fun selectTrajectory(trajectory: String) {
-        mainPanel.load(File(getTrajectoryAssetsDir(currentModule), "$trajectory.yaml"))
-        nameTextField.text = trajectory
+        markClean()
+        currentTrajectory = comboBoxTrajectory
     }
 
     private fun listTrajectoryAssets(moduleString: String): List<String> {
@@ -232,8 +237,28 @@ class PathDesignerPanel(private val project: Project) : JPanel() {
         return File(moduleFile.parent, "src/main/assets/trajectory")
     }
 
-    private fun clearSelectedTrajectory() {
-        nameTextField.text = ""
-        mainPanel.clearTrajectory()
+    private fun markDirty() {
+        dirty = true
+        saveButton.isEnabled = true
+    }
+
+    private fun markClean() {
+        dirty = false
+        saveButton.isEnabled = false
+    }
+
+    private fun savePrompt(): Boolean {
+        val response = JOptionPane.showConfirmDialog(
+                this,
+                "Save the current trajectory?",
+                "Unsaved Changes",
+                JOptionPane.YES_NO_OPTION)
+        return when (response) {
+            JOptionPane.YES_OPTION -> {
+                saveCurrentTrajectory()
+                true
+            }
+            else -> false
+        }
     }
 }

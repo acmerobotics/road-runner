@@ -38,8 +38,6 @@ class PoseEditorPanel : JPanel() {
         addButton.addActionListener { addPose(poses.lastOrNull()?.immutable() ?: Pose2d(0.0, 0.0, 0.0)) }
         headerPanel.add(addButton)
 
-        addPose(Pose2d(0.0, 0.0, 0.0))
-
         layout = BoxLayout(this, BoxLayout.PAGE_AXIS)
 
         val scrollPane = JScrollPane(ScrollPanelHost(scrollPanel))

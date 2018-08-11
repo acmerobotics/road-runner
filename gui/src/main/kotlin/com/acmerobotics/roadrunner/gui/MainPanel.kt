@@ -1,9 +1,9 @@
 package com.acmerobotics.roadrunner.gui
 
 import com.acmerobotics.roadrunner.Pose2d
-import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import com.acmerobotics.roadrunner.trajectory.TrajectoryConfig
 import com.acmerobotics.roadrunner.trajectory.TrajectoryLoader
+import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import java.io.File
 import javax.swing.BoxLayout
 import javax.swing.JPanel
@@ -12,6 +12,8 @@ import javax.swing.JTabbedPane
 private val DEFAULT_CONSTRAINTS = DriveConstraints(25.0, 40.0, Math.toRadians(180.0), Math.toRadians(360.0))
 
 class MainPanel : JPanel() {
+
+    var onTrajectoryUpdateListener: (() -> Unit)? = null
 
     private val fieldPanel = FieldPanel()
     private val trajectoryGraphPanel = TrajectoryGraphPanel()
@@ -53,6 +55,8 @@ class MainPanel : JPanel() {
         fieldPanel.updateTrajectoryAndPoses(trajectory, poses)
         trajectoryInfoPanel.updateTrajectory(trajectory)
         trajectoryGraphPanel.updateTrajectory(trajectory)
+
+        onTrajectoryUpdateListener?.invoke()
     }
 
     fun clearTrajectory() {
