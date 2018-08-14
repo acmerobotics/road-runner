@@ -1,7 +1,8 @@
 package com.acmerobotics.roadrunner.control
 
-import com.sun.javafx.util.Utils.clamp
 import kotlin.math.abs
+import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.sign
 
 private const val EPSILON = 1e-2
@@ -107,7 +108,7 @@ class PIDFController @JvmOverloads constructor(
             val output = if (abs(baseOutput) > EPSILON) baseOutput + sign(baseOutput) * kStatic else 0.0
 
             if (outputBounded) {
-                clamp(minOutput, output, maxOutput)
+                max(minOutput, min(output, maxOutput))
             } else {
                 output
             }

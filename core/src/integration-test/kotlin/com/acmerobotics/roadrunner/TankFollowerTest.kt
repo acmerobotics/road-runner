@@ -11,7 +11,6 @@ import com.acmerobotics.roadrunner.profile.SimpleMotionConstraints
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import com.acmerobotics.roadrunner.trajectory.constraints.TankConstraints
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
-import com.sun.javafx.util.Utils.clamp
 import org.apache.commons.math3.distribution.NormalDistribution
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -20,6 +19,8 @@ import org.knowm.xchart.style.MatlabTheme
 import org.knowm.xchart.style.markers.None
 import kotlin.math.atan
 import kotlin.math.ceil
+import kotlin.math.max
+import kotlin.math.min
 
 private const val kV = 1.0 / 60.0
 private const val SIMULATION_HZ = 25
@@ -44,7 +45,7 @@ class TankFollowerTest {
         override fun setMotorPowers(left: Double, right: Double) {
             powers = listOf(left, right)
                     .map { it * VOLTAGE_NOISE_DIST.sample() }
-                    .map { clamp(0.0, it, 1.0) }
+                    .map { max(0.0, min(it, 1.0)) }
         }
 
         override fun getWheelPositions(): List<Double> = positions
