@@ -8,7 +8,9 @@ import kotlin.math.sqrt
 private const val LENGTH_SAMPLES = 1000
 
 /**
- * Combination of two quintic polynomials into a 2D quintic spline.
+ * Combination of two quintic polynomials into a 2D quintic spline. See
+ * [this short paper](https://github.com/acmerobotics/road-runner/blob/master/doc/pdf/Quintic_Splines_for_FTC.pdf) for
+ * some motivation and implementation details.
  *
  * @param start start waypoint
  * @param end end waypoint
