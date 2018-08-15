@@ -54,7 +54,7 @@ Road Runner also includes a simple Android Studio plugin based upon the GUI. Her
 
 ## Documentation
 
-Run `./gradlew dokka` to generate documentation. This will make javadocs in `core/build/javadoc` and Kotlin docs in `core/build/kdoc`.
+The documentation for all releases are available online in the [KDoc format](https://acmerobotics.github.io/road-runner/core/0.1.0/kdoc/) (more accurately reflects the Kotlin source) and in the more traditional [Javadoc format](https://acmerobotics.github.io/road-runner/core/0.1.0/javadoc/).
 
 ## Getting Started
 
@@ -195,7 +195,7 @@ Trajectory trajectory = new TrajectoryBuilder(new Pose2d(0, 0, 0), constraints)
     .build()
 ```
 
-or 
+or
 
 ```kotlin
 val trajectory = TrajectoryBuilder(Pose2d(0.0, 0.0, 0.0), constraints)
@@ -213,4 +213,3 @@ Finally, we're ready to select a follower. The role of the follower is to ensure
 * `RamseteFollower`: Non-linear, time-varying controller with better performance characteristics than the PIDVA follower. Unfortunately, it's more difficult to tune.
 
 * `GVFFollower`: State-of-the-art guiding vector field controller with very good performance characteristics. However, unlike the others, it tracks paths directly instead of trajectories (and therefore doesn't respect constraints as well as the others). Additionally, it's moderately more computationally intensive (thanks to some nonlinear projection).
-
