@@ -1,0 +1,378 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>alltypes - core</title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<p>
+Core functionality and API of Road Runner.
+</p>
+<h3>All Types</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner.util/-angle/index.html">com.acmerobotics.roadrunner.util.Angle</a></td>
+<td>
+<p>Various utilities for working with angles.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner.path.heading/-constant-interpolator/index.html">com.acmerobotics.roadrunner.path.heading.ConstantInterpolator</a></td>
+<td>
+<p>Constant heading interpolator used for arbitrary holonomic translations.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner/kotlin.-double/index.html">kotlin.Double</a> (extensions in package com.acmerobotics.roadrunner)</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner.drive/-drive/index.html">com.acmerobotics.roadrunner.drive.Drive</a></td>
+<td>
+<p>Abstraction for generic drivetrain motion and localization.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner.trajectory.constraints/-drive-constraints/index.html">com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints</a></td>
+<td>
+<p>This class describes general robot trajectory constraints. More specifically, for paths, the robot velocity,
+robot acceleration, and robot angular velocity are limited.  For point turns, the angular velocity and angular
+acceleration are limited.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner.followers/-g-v-f-follower/index.html">com.acmerobotics.roadrunner.followers.GVFFollower</a></td>
+<td>
+<p>State-of-the-art path follower based on the <a href="../com.acmerobotics.roadrunner.followers/-guiding-vector-field/index.html">GuidingVectorField</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner.followers/-guiding-vector-field/index.html">com.acmerobotics.roadrunner.followers.GuidingVectorField</a></td>
+<td>
+<p>Guiding vector field for effective path following described in section III, eq. (9) of
+<a href="https://arxiv.org/pdf/1610.04391.pdf">1610.04391.pdf</a>. Implementation note: 2D parametric curves are used to
+describe paths instead of implicit curves of the form f(x,y) = 0 as described in the paper (which dramatically
+affects the cross track error calculation).</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner.path.heading/-heading-interpolator/index.html">com.acmerobotics.roadrunner.path.heading.HeadingInterpolator</a></td>
+<td>
+<p>Interpolator for specifying the heading for holonomic paths.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner.util/-interpolating-tree-map/index.html">com.acmerobotics.roadrunner.util.InterpolatingTreeMap</a></td>
+<td>
+<p>Interpolating Tree Maps are used to get values at points that are not defined by making a guess from points that are
+defined. This uses linear interpolation.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner.path/-line-segment/index.html">com.acmerobotics.roadrunner.path.LineSegment</a></td>
+<td>
+<p>Parametric representation of a line.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner.path.heading/-linear-interpolator/index.html">com.acmerobotics.roadrunner.path.heading.LinearInterpolator</a></td>
+<td>
+<p>Linear heading interpolator for time-optimal transitions between poses.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner.trajectory.constraints/-mecanum-constraints/index.html">com.acmerobotics.roadrunner.trajectory.constraints.MecanumConstraints</a></td>
+<td>
+<p>Mecanum-specific drive constraints that also limit maximum wheel velocities.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner.drive/-mecanum-drive/index.html">com.acmerobotics.roadrunner.drive.MecanumDrive</a></td>
+<td>
+<p>This class provides basic functionality of a mecanum drive using on <a href="../com.acmerobotics.roadrunner.drive/-mecanum-kinematics/index.html">MecanumKinematics</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner.drive/-mecanum-kinematics/index.html">com.acmerobotics.roadrunner.drive.MecanumKinematics</a></td>
+<td>
+<p>Mecanum drive kinematic equations. <a href="http://www.chiefdelphi.com/media/papers/download/2722">Ether's paper</a> provides a
+derivation.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner.followers/-mecanum-p-i-d-v-a-follower/index.html">com.acmerobotics.roadrunner.followers.MecanumPIDVAFollower</a></td>
+<td>
+<p>Traditional PID controller with feedforward velocity and acceleration components to follow a trajectory. More
+specifically, the feedback is applied to the components of the robot's pose (x position, y position, and heading) to
+determine the velocity correction. The feedforward components are instead applied at the wheel level.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner.profile/-motion-constraints/index.html">com.acmerobotics.roadrunner.profile.MotionConstraints</a></td>
+<td>
+<p>Motion profile motion constraints.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner.profile/-motion-profile/index.html">com.acmerobotics.roadrunner.profile.MotionProfile</a></td>
+<td>
+<p>Trapezoidal motion profile composed of motion segments.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner.profile/-motion-profile-generator/index.html">com.acmerobotics.roadrunner.profile.MotionProfileGenerator</a></td>
+<td>
+<p>Trapezoidal motion profile generator with dynamic constraint support and arbitrary start and end motion states.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner.profile/-motion-segment/index.html">com.acmerobotics.roadrunner.profile.MotionSegment</a></td>
+<td>
+<p>Segment of a motion profile with constant acceleration.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner.profile/-motion-state/index.html">com.acmerobotics.roadrunner.profile.MotionState</a></td>
+<td>
+<p>Kinematic state of a motion profile at any given time.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner.util/-nano-clock/index.html">com.acmerobotics.roadrunner.util.NanoClock</a></td>
+<td>
+<p>Clock interface with nanosecond precision and no guarantee about its origin (that is, this is only suited for
+measuring relative/elapsed time).</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner.control/-p-i-d-coefficients/index.html">com.acmerobotics.roadrunner.control.PIDCoefficients</a></td>
+<td>
+<p>This class stores the proportional, integral, and derivative gains used by <a href="../com.acmerobotics.roadrunner.control/-p-i-d-f-controller/index.html">PIDFController</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner.control/-p-i-d-f-controller/index.html">com.acmerobotics.roadrunner.control.PIDFController</a></td>
+<td>
+<p>PID controller with various feedforward components. <a href="../com.acmerobotics.roadrunner.control/-p-i-d-f-controller/k-v.html">kV</a>, <a href="../com.acmerobotics.roadrunner.control/-p-i-d-f-controller/k-a.html">kA</a>, and <a href="../com.acmerobotics.roadrunner.control/-p-i-d-f-controller/k-static.html">kStatic</a> are designed for DC motor feedforward
+control (the most common kind of feedforward in FTC). <a href="../com.acmerobotics.roadrunner.control/-p-i-d-f-controller/k-f.html">kF</a> provides a custom feedforward term for other plants.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner.path/-parametric-curve/index.html">com.acmerobotics.roadrunner.path.ParametricCurve</a></td>
+<td>
+<p>Parametric curve with two components (x and y).</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner.path/-path/index.html">com.acmerobotics.roadrunner.path.Path</a></td>
+<td>
+<p>Path composed of a parametric curve and a heading interpolator.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner.followers/-path-follower/index.html">com.acmerobotics.roadrunner.followers.PathFollower</a></td>
+<td>
+<p>Generic <a href="../com.acmerobotics.roadrunner.path/-path/index.html">Path</a> follower for time-independent pose reference tracking.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner.trajectory/-path-trajectory-segment/index.html">com.acmerobotics.roadrunner.trajectory.PathTrajectorySegment</a></td>
+<td>
+<p>Trajectory segment backed by a list of <a href="../com.acmerobotics.roadrunner.path/-path/index.html">Path</a> objects.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner.trajectory/-point-turn/index.html">com.acmerobotics.roadrunner.trajectory.PointTurn</a></td>
+<td>
+<p>Point turn trajectory segment.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner/-pose2d/index.html">com.acmerobotics.roadrunner.Pose2d</a></td>
+<td>
+<p>Class for representing 2D robot poses (x, y, and heading) and their derivatives.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner.path/-quintic-polynomial/index.html">com.acmerobotics.roadrunner.path.QuinticPolynomial</a></td>
+<td>
+<p>Quintic polynomial interpolated according to the provided derivatives.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner.path/-quintic-spline-segment/index.html">com.acmerobotics.roadrunner.path.QuinticSplineSegment</a></td>
+<td>
+<p>Combination of two quintic polynomials into a 2D quintic spline.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner.followers/-ramsete-follower/index.html">com.acmerobotics.roadrunner.followers.RamseteFollower</a></td>
+<td>
+<p>Time-varying, non-linear feedback controller for nonholonomic drives. See equation 5.12 of
+<a href="https://www.dis.uniroma1.it/~labrob/pub/papers/Ramsete01.pdf">Ramsete01.pdf</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner.profile/-simple-motion-constraints/index.html">com.acmerobotics.roadrunner.profile.SimpleMotionConstraints</a></td>
+<td>
+<p>Constant velocity and acceleration constraints used by <a href="../com.acmerobotics.roadrunner.profile/-motion-profile-generator/generate-simple-motion-profile.html">MotionProfileGenerator.generateSimpleMotionProfile</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner.path.heading/-spline-interpolator/index.html">com.acmerobotics.roadrunner.path.heading.SplineInterpolator</a></td>
+<td>
+<p>Spline heading interpolator for transitioning smoothly between headings without violating continuity (and hence
+allowing for integration into longer profiles).</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner.path.heading/-tangent-interpolator/index.html">com.acmerobotics.roadrunner.path.heading.TangentInterpolator</a></td>
+<td>
+<p>Tangent (system) interpolator for tank/differential and other nonholonomic drives.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner.trajectory.constraints/-tank-constraints/index.html">com.acmerobotics.roadrunner.trajectory.constraints.TankConstraints</a></td>
+<td>
+<p>Tank-specific drive constraints that also limit maximum wheel velocities.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner.drive/-tank-drive/index.html">com.acmerobotics.roadrunner.drive.TankDrive</a></td>
+<td>
+<p>This class provides basic functionality of a tank/differential drive using on <a href="../com.acmerobotics.roadrunner.drive/-tank-kinematics/index.html">TankKinematics</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner.drive/-tank-kinematics/index.html">com.acmerobotics.roadrunner.drive.TankKinematics</a></td>
+<td>
+<p>Tank drive kinematic equations based upon the unicycle model.
+<a href="http://rossum.sourceforge.net/papers/DiffSteer/">This page</a> gives a motivated derivation.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner.followers/-tank-p-i-d-v-a-follower/index.html">com.acmerobotics.roadrunner.followers.TankPIDVAFollower</a></td>
+<td>
+<p>Traditional PID controller with feedforward velocity and acceleration components to follow a trajectory. More
+specifically, one feedback loop controls the path displacement (that is, x in the robot reference frame), and
+another feedback loop to minimize cross track (lateral) error via heading correction (overall, very similar to
+<a href="../com.acmerobotics.roadrunner.followers/-mecanum-p-i-d-v-a-follower/index.html">MecanumPIDVAFollower</a> except adjusted for the nonholonomic constraint). Feedforward is applied at the wheel level.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner.trajectory/-trajectory/index.html">com.acmerobotics.roadrunner.trajectory.Trajectory</a></td>
+<td>
+<p>Time-parametrized trajectory of poses.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner.trajectory/-trajectory-builder/index.html">com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder</a></td>
+<td>
+<p>Easy-to-use builder for creating <a href="../com.acmerobotics.roadrunner.trajectory/-trajectory/index.html">Trajectory</a> instances.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner.trajectory/-trajectory-config/index.html">com.acmerobotics.roadrunner.trajectory.TrajectoryConfig</a></td>
+<td>
+<p>Basic trajectory configuration intended for serialization. Intentionally more simplistic and less flexible than
+<a href="../com.acmerobotics.roadrunner.trajectory/-trajectory-builder/index.html">TrajectoryBuilder</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner.trajectory.constraints/-trajectory-constraints/index.html">com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryConstraints</a></td>
+<td>
+<p>Trajectory-specific constraints for motion profile generation.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner.followers/-trajectory-follower/index.html">com.acmerobotics.roadrunner.followers.TrajectoryFollower</a></td>
+<td>
+<p>Generic <a href="../com.acmerobotics.roadrunner.trajectory/-trajectory/index.html">Trajectory</a> follower for time-based pose reference tracking.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner.trajectory/-trajectory-loader/index.html">com.acmerobotics.roadrunner.trajectory.TrajectoryLoader</a></td>
+<td>
+<p>Class containing methods for saving and loading <a href="../com.acmerobotics.roadrunner.trajectory/-trajectory-config/index.html">TrajectoryConfig</a> instances to YAML files.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner.trajectory/-trajectory-segment/index.html">com.acmerobotics.roadrunner.trajectory.TrajectorySegment</a></td>
+<td>
+<p>Generic trajectory segment.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner/-vector2d/index.html">com.acmerobotics.roadrunner.Vector2d</a></td>
+<td>
+<p>Class for representing 2D vectors (x and y).</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner.trajectory/-wait-segment/index.html">com.acmerobotics.roadrunner.trajectory.WaitSegment</a></td>
+<td>
+<p>Static trajectory segment that holds a constant pose. Used for giving trajectories extra time to settle.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../com.acmerobotics.roadrunner.path.heading/-wiggle-interpolator/index.html">com.acmerobotics.roadrunner.path.heading.WiggleInterpolator</a></td>
+<td>
+<p>Heading interpolator that wraps another interpolator and adds sinusoidal oscillations ("wiggles") while preserving
+continuity. More specifically, the wiggle function is composed of a sine wave with a quintic spline on either end.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

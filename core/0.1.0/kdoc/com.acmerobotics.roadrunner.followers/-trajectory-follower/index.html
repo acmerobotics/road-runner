@@ -1,0 +1,131 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>TrajectoryFollower - core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">core</a>&nbsp;/&nbsp;<a href="../index.html">com.acmerobotics.roadrunner.followers</a>&nbsp;/&nbsp;<a href="./index.html">TrajectoryFollower</a><br/>
+<br/>
+<h1>TrajectoryFollower</h1>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">TrajectoryFollower</span></code>
+<p>Generic <a href="../../com.acmerobotics.roadrunner.trajectory/-trajectory/index.html">Trajectory</a> follower for time-based pose reference tracking.</p>
+<h3>Parameters</h3>
+<p><a name="clock"></a>
+<code>clock</code> - clock</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">TrajectoryFollower</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.followers.TrajectoryFollower$<init>(com.acmerobotics.roadrunner.util.NanoClock)/clock">clock</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.util/-nano-clock/index.html"><span class="identifier">NanoClock</span></a>&nbsp;<span class="symbol">=</span>&nbsp;NanoClock.system()<span class="symbol">)</span></code>
+<p>Generic <a href="../../com.acmerobotics.roadrunner.trajectory/-trajectory/index.html">Trajectory</a> follower for time-based pose reference tracking.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="clock.html">clock</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">clock</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.util/-nano-clock/index.html"><span class="identifier">NanoClock</span></a></code>
+<p>clock</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="trajectory.html">trajectory</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">trajectory</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.trajectory/-trajectory/index.html"><span class="identifier">Trajectory</span></a></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="elapsed-time.html">elapsedTime</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">elapsedTime</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code>
+<p>Returns the elapsed time since the last <a href="follow-trajectory.html">followTrajectory</a> calls.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="follow-trajectory.html">followTrajectory</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">followTrajectory</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.followers.TrajectoryFollower$followTrajectory(com.acmerobotics.roadrunner.trajectory.Trajectory)/trajectory">trajectory</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.trajectory/-trajectory/index.html"><span class="identifier">Trajectory</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Follow the given <a href="follow-trajectory.html#com.acmerobotics.roadrunner.followers.TrajectoryFollower$followTrajectory(com.acmerobotics.roadrunner.trajectory.Trajectory)/trajectory">trajectory</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="is-following.html">isFollowing</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">isFollowing</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Returns true if the current trajectory has finished executing.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="update.html">update</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">update</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.followers.TrajectoryFollower$update(com.acmerobotics.roadrunner.Pose2d)/currentPose">currentPose</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner/-pose2d/index.html"><span class="identifier">Pose2d</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Run a single iteration of the trajectory follower.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Inheritors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../-mecanum-p-i-d-v-a-follower/index.html">MecanumPIDVAFollower</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">MecanumPIDVAFollower</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">TrajectoryFollower</span></a></code>
+<p>Traditional PID controller with feedforward velocity and acceleration components to follow a trajectory. More
+specifically, the feedback is applied to the components of the robot's pose (x position, y position, and heading) to
+determine the velocity correction. The feedforward components are instead applied at the wheel level.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-ramsete-follower/index.html">RamseteFollower</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">RamseteFollower</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">TrajectoryFollower</span></a></code>
+<p>Time-varying, non-linear feedback controller for nonholonomic drives. See equation 5.12 of
+<a href="https://www.dis.uniroma1.it/~labrob/pub/papers/Ramsete01.pdf">Ramsete01.pdf</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-tank-p-i-d-v-a-follower/index.html">TankPIDVAFollower</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">TankPIDVAFollower</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">TrajectoryFollower</span></a></code>
+<p>Traditional PID controller with feedforward velocity and acceleration components to follow a trajectory. More
+specifically, one feedback loop controls the path displacement (that is, x in the robot reference frame), and
+another feedback loop to minimize cross track (lateral) error via heading correction (overall, very similar to
+<a href="../-mecanum-p-i-d-v-a-follower/index.html">MecanumPIDVAFollower</a> except adjusted for the nonholonomic constraint). Feedforward is applied at the wheel level.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

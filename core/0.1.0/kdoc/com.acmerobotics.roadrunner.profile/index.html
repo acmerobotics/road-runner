@@ -1,0 +1,74 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>com.acmerobotics.roadrunner.profile - core</title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">core</a>&nbsp;/&nbsp;<a href="./index.html">com.acmerobotics.roadrunner.profile</a><br/>
+<br/>
+<h2>Package com.acmerobotics.roadrunner.profile</h2>
+<p>
+Generic, dynamic-constraint-capable trapezoidal motion profiling.
+</p>
+<h3>Types</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-motion-constraints/index.html">MotionConstraints</a></p>
+</td>
+<td>
+<code><span class="keyword">interface </span><span class="identifier">MotionConstraints</span></code>
+<p>Motion profile motion constraints.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-motion-profile/index.html">MotionProfile</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">MotionProfile</span></code>
+<p>Trapezoidal motion profile composed of motion segments.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-motion-profile-generator/index.html">MotionProfileGenerator</a></p>
+</td>
+<td>
+<code><span class="keyword">object </span><span class="identifier">MotionProfileGenerator</span></code>
+<p>Trapezoidal motion profile generator with dynamic constraint support and arbitrary start and end motion states.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-motion-segment/index.html">MotionSegment</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">MotionSegment</span></code>
+<p>Segment of a motion profile with constant acceleration.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-motion-state/index.html">MotionState</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">MotionState</span></code>
+<p>Kinematic state of a motion profile at any given time.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-simple-motion-constraints/index.html">SimpleMotionConstraints</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">SimpleMotionConstraints</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-motion-constraints/index.html"><span class="identifier">MotionConstraints</span></a></code>
+<p>Constant velocity and acceleration constraints used by <a href="-motion-profile-generator/generate-simple-motion-profile.html">MotionProfileGenerator.generateSimpleMotionProfile</a>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>
