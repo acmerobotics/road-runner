@@ -1,0 +1,16 @@
+$dokka.format:html
+$dokka.linkExtension:html
+$dokka.location:com.acmerobotics.roadrunner$div(kotlin.Double, com.acmerobotics.roadrunner.Pose2d)com.acmerobotics.roadrunner/kotlin.-double/div.html
+$dokka.location:com.acmerobotics.roadrunner$div(kotlin.Double, com.acmerobotics.roadrunner.Vector2d)com.acmerobotics.roadrunner/kotlin.-double/div.html
+$dokka.location:com.acmerobotics.roadrunner$times(kotlin.Double, com.acmerobotics.roadrunner.Pose2d)com.acmerobotics.roadrunner/kotlin.-double/times.html
+$dokka.location:com.acmerobotics.roadrunner$times(kotlin.Double, com.acmerobotics.roadrunner.Vector2d)com.acmerobotics.roadrunner/kotlin.-double/times.html
+com.acmerobotics.roadrunner
+com.acmerobotics.roadrunner.control
+com.acmerobotics.roadrunner.drive
+com.acmerobotics.roadrunner.followers
+com.acmerobotics.roadrunner.path
+com.acmerobotics.roadrunner.path.heading
+com.acmerobotics.roadrunner.profile
+com.acmerobotics.roadrunner.trajectory
+com.acmerobotics.roadrunner.trajectory.constraints
+com.acmerobotics.roadrunner.util
