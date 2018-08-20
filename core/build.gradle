@@ -153,6 +153,7 @@ publishing {
 bintray {
     user = System.getenv('BINTRAY_USER')
     key = System.getenv('BINTRAY_KEY')
+    publish = true
     pkg {
         repo = 'maven'
         name = 'road-runner'
