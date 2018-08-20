@@ -147,13 +147,12 @@ class PathDesignerPanel(private val project: Project) : JPanel() {
             oldFile.delete()
             mainPanel.save(newFile)
 
-            markClean()
-
             val trajectories = listTrajectoryAssets(comboBoxModule)
                     .map { if (it == comboBoxTrajectory) newTrajectory else it }
             trajectoryComboBox.model = DefaultComboBoxModel(trajectories.toTypedArray())
             trajectoryComboBox.selectedIndex = trajectories.indexOf(newTrajectory)
         }
+        markClean()
         updateTrajectorySelection()
     }
 
