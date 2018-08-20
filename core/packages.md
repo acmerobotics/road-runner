@@ -35,6 +35,10 @@ Generic, dynamic-constraint-capable trapezoidal motion profiling.
 
 Types for representing 2D robot trajectories, including time parametrizations of paths.
 
+# Package com.acmerobotics.roadrunner.trajectory.constraints
+
+Specific constraints for trajectories and different drive types.
+
 # Package com.acmerobotics.roadrunner.util
 
 Miscellaneous utilities.
