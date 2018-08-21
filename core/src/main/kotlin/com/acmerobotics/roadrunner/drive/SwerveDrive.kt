@@ -29,16 +29,17 @@ abstract class SwerveDrive @JvmOverloads constructor(
     // TODO: move to base class? note: could get tricky with the inherited properties
     override fun updatePoseEstimate() {
         // TODO!!!
-//        val wheelPositions = getWheelPositions()
-//        if (lastWheelPositions.isNotEmpty()) {
-//            val positionDeltas = wheelPositions
-//                    .zip(lastWheelPositions)
-//                    .map { it.first - it.second }
-//            val robotPoseDelta = MecanumKinematics.wheelToRobotVelocities(positionDeltas, wheelBase, trackWidth)
-//            val newHeading = poseEstimate.heading + robotPoseDelta.heading
-//            poseEstimate += Pose2d(robotPoseDelta.pos().rotated(newHeading), robotPoseDelta.heading)
-//        }
-//        lastWheelPositions = wheelPositions
+        val wheelPositions = getWheelPositions()
+        val moduleOrientations = getModuleOrientations()
+        if (lastWheelPositions.isNotEmpty()) {
+            val positionDeltas = wheelPositions
+                    .zip(lastWheelPositions)
+                    .map { it.first - it.second }
+            val robotPoseDelta = SwerveKinematics.wheelToRobotVelocities(positionDeltas, moduleOrientations, wheelBase, trackWidth)
+            val newHeading = poseEstimate.heading + robotPoseDelta.heading
+            poseEstimate += Pose2d(robotPoseDelta.pos().rotated(newHeading), robotPoseDelta.heading)
+        }
+        lastWheelPositions = wheelPositions
     }
 
     /**
