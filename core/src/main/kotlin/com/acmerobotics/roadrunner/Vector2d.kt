@@ -1,5 +1,6 @@
 package com.acmerobotics.roadrunner
 
+import kotlin.math.atan2
 import kotlin.math.sqrt
 
 /**
@@ -10,6 +11,8 @@ class Vector2d @JvmOverloads constructor(
         val y: Double = 0.0
 ) {
     fun norm() = sqrt(x*x + y*y)
+
+    fun angle() = atan2(y, x)
 
     operator fun plus(other: Vector2d) = Vector2d(x + other.x, y + other.y)
 
