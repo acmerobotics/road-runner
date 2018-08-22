@@ -1,5 +1,6 @@
 package com.acmerobotics.roadrunner
 
+import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.sqrt
 
@@ -35,6 +36,14 @@ class Vector2d @JvmOverloads constructor(
     }
 
     override fun toString() = String.format("(%.3f, %.3f)", x, y)
+
+    override fun equals(other: Any?): Boolean {
+        return if (other is Vector2d) {
+            abs(x - other.x) < 1e-4 && abs(y - other.y) < 1e-4
+        } else {
+            false
+        }
+    }
 }
 
 operator fun Double.times(vector: Vector2d) = vector.times(this)

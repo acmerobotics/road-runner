@@ -8,9 +8,9 @@ import com.acmerobotics.roadrunner.followers.TankPIDVAFollower
 import com.acmerobotics.roadrunner.path.Path
 import com.acmerobotics.roadrunner.path.QuinticSplineSegment
 import com.acmerobotics.roadrunner.profile.SimpleMotionConstraints
+import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import com.acmerobotics.roadrunner.trajectory.constraints.TankConstraints
-import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
 import org.apache.commons.math3.distribution.NormalDistribution
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -42,19 +42,19 @@ class TankFollowerTest {
         var powers = listOf(0.0, 0.0)
         var positions = listOf(0.0, 0.0)
 
+        override fun updatePoseEstimate() {
+            positions = positions.zip(powers)
+                    .map { it.first + it.second / kV * dt }
+            super.updatePoseEstimate()
+        }
+
         override fun setMotorPowers(left: Double, right: Double) {
             powers = listOf(left, right)
                     .map { it * VOLTAGE_NOISE_DIST.sample() }
                     .map { max(0.0, min(it, 1.0)) }
         }
 
-        override fun getWheelPositions(): List<Double> = positions
-
-        override fun updatePoseEstimate() {
-            positions = positions.zip(powers)
-                    .map { it.first + it.second / kV * dt }
-            super.updatePoseEstimate()
-        }
+        override fun getWheelPositions() = positions
     }
 
     @Test

@@ -1,6 +1,7 @@
 package com.acmerobotics.roadrunner.drive
 
 import com.acmerobotics.roadrunner.Pose2d
+import com.acmerobotics.roadrunner.util.NanoClock
 
 /**
  * This class provides basic functionality of a mecanum drive using on [MecanumKinematics].
@@ -10,14 +11,17 @@ import com.acmerobotics.roadrunner.Pose2d
  */
 abstract class MecanumDrive @JvmOverloads constructor(
         val trackWidth: Double,
-        val wheelBase: Double = trackWidth
+        val wheelBase: Double = trackWidth,
+        private val clock: NanoClock = NanoClock.system()
 ) : Drive() {
     override var poseEstimate: Pose2d = Pose2d()
         set(value) {
             lastWheelPositions = emptyList()
+            lastUpdateTimestamp = Double.NaN
             field = value
         }
     private var lastWheelPositions = emptyList<Double>()
+    private var lastUpdateTimestamp = Double.NaN
 
     override fun setVelocity(poseVelocity: Pose2d) {
         val powers = MecanumKinematics.robotToWheelVelocities(poseVelocity, trackWidth, wheelBase)
@@ -26,15 +30,18 @@ abstract class MecanumDrive @JvmOverloads constructor(
 
     override fun updatePoseEstimate() {
         val wheelPositions = getWheelPositions()
+        val timestamp = clock.seconds()
         if (lastWheelPositions.isNotEmpty()) {
-            val positionDeltas = wheelPositions
+            val dt = timestamp - lastUpdateTimestamp
+            val wheelVelocities = wheelPositions
                     .zip(lastWheelPositions)
-                    .map { it.first - it.second }
-            val robotPoseDelta = MecanumKinematics.wheelToRobotVelocities(positionDeltas, wheelBase, trackWidth)
+                    .map { (it.first - it.second) / dt }
+            val robotPoseDelta = MecanumKinematics.wheelToRobotVelocities(wheelVelocities, wheelBase, trackWidth) * dt
             val newHeading = poseEstimate.heading + robotPoseDelta.heading
             poseEstimate += Pose2d(robotPoseDelta.pos().rotated(newHeading), robotPoseDelta.heading)
         }
         lastWheelPositions = wheelPositions
+        lastUpdateTimestamp = timestamp
     }
 
     /**

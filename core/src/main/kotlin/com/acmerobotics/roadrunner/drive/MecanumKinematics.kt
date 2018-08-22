@@ -9,6 +9,7 @@ import org.apache.commons.math3.linear.MatrixUtils
  */
 // TODO: does unrolling mecanum kinematic matrix multiplies obscure intent?
 // the answer seems to be no for tank/differential
+// there is a non-negligible performance difference
 object MecanumKinematics {
 
     /**
