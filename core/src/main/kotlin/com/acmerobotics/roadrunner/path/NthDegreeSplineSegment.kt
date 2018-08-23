@@ -7,6 +7,13 @@ import kotlin.math.sqrt
 
 private const val LENGTH_SAMPLES = 1000
 
+/**
+ * Combination of two quintic polynomials into a 2D spline.
+ *
+ * @param start start derivatives starting with the 0th derivative
+ * @param end end derivatives starting with the 0th derivative
+ */
+// TODO: generic base class for numerical arc length parametrization
 class NthDegreeSplineSegment(start: List<Vector2d>, end: List<Vector2d>) : ParametricCurve() {
     val x: NthDegreePolynomial = NthDegreePolynomial(start.map(Vector2d::x), end.map(Vector2d::x))
     val y: NthDegreePolynomial = NthDegreePolynomial(start.map(Vector2d::y), end.map(Vector2d::y))

@@ -49,6 +49,7 @@ class TankPIDVAFollower @JvmOverloads constructor(
         val targetPoseVelocity = trajectory.velocity(t)
         val targetPoseAcceleration = trajectory.acceleration(t)
 
+        // TODO: utility class for robot-field reference frame conversions
         val targetRobotPose = Pose2d(targetPose.pos().rotated(-targetPose.heading), 0.0)
         val targetRobotPoseVelocity = Pose2d(targetPoseVelocity.pos().rotated(-targetPose.heading), targetPoseVelocity.heading)
         val targetRobotPoseAcceleration = Pose2d(targetPoseAcceleration.pos().rotated(-targetPose.heading), targetPoseAcceleration.heading) +

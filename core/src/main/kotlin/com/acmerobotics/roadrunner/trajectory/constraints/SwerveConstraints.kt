@@ -2,6 +2,7 @@ package com.acmerobotics.roadrunner.trajectory.constraints
 
 import com.acmerobotics.roadrunner.Pose2d
 import com.acmerobotics.roadrunner.drive.MecanumKinematics
+import com.acmerobotics.roadrunner.drive.SwerveKinematics
 import com.acmerobotics.roadrunner.drive.TankKinematics
 import kotlin.math.abs
 import kotlin.math.min
@@ -13,7 +14,7 @@ import kotlin.math.min
  * @param trackWidth track width
  * @param wheelBase wheel base
  */
-class MecanumConstraints @JvmOverloads constructor(
+class SwerveConstraints @JvmOverloads constructor(
         baseConstraints: DriveConstraints,
         private val trackWidth: Double,
         private val wheelBase: Double = trackWidth
@@ -26,7 +27,7 @@ class MecanumConstraints @JvmOverloads constructor(
     override fun maximumVelocity(pose: Pose2d, poseDeriv: Pose2d, poseSecondDeriv: Pose2d): Double {
         val robotPositionDeriv = poseDeriv.pos().rotated(-pose.heading)
 
-        val wheelVelocities = MecanumKinematics.robotToWheelVelocities(Pose2d(robotPositionDeriv, poseDeriv.heading), trackWidth, wheelBase)
+        val wheelVelocities = SwerveKinematics.robotToWheelVelocities(Pose2d(robotPositionDeriv, poseDeriv.heading), trackWidth, wheelBase)
         val maxTrajectoryVelocity = wheelVelocities.map { maximumVelocity / it }.map(::abs).min() ?: 0.0
 
         return min(super.maximumVelocity(pose, poseDeriv, poseSecondDeriv), maxTrajectoryVelocity)

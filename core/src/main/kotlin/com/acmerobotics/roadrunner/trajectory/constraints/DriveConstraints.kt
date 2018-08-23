@@ -21,8 +21,6 @@ open class DriveConstraints(
         val maximumAngularVelocity: Double,
         val maximumAngularAcceleration: Double
 ) : TrajectoryConstraints {
-
-    // TODO: should lateral/axial robot velocities be explicitly constrained?
     override fun maximumVelocity(pose: Pose2d, poseDeriv: Pose2d, poseSecondDeriv: Pose2d): Double {
         val maximumVelocities = mutableListOf(maximumVelocity)
 

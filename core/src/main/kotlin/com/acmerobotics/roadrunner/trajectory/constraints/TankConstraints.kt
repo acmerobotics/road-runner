@@ -1,7 +1,7 @@
 package com.acmerobotics.roadrunner.trajectory.constraints
 
 import com.acmerobotics.roadrunner.Pose2d
-import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
+import com.acmerobotics.roadrunner.drive.TankKinematics
 import kotlin.math.abs
 import kotlin.math.min
 
@@ -23,9 +23,10 @@ class TankConstraints(
     override fun maximumVelocity(pose: Pose2d, poseDeriv: Pose2d, poseSecondDeriv: Pose2d): Double {
         val robotPositionDeriv = poseDeriv.pos().rotated(-pose.heading)
 
-        val maxWheelVel = maximumVelocity / (robotPositionDeriv.x + abs(poseDeriv.heading * trackWidth / 2))
+        val wheelVelocities = TankKinematics.robotToWheelVelocities(Pose2d(robotPositionDeriv, poseDeriv.heading), trackWidth)
+        val maxTrajectoryVelocity = wheelVelocities.map { maximumVelocity / it }.map(::abs).min() ?: 0.0
 
-        return min(super.maximumVelocity(pose, poseDeriv, poseSecondDeriv), maxWheelVel)
+        return min(super.maximumVelocity(pose, poseDeriv, poseSecondDeriv), maxTrajectoryVelocity)
     }
 
 }

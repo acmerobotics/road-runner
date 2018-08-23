@@ -5,11 +5,22 @@ import org.apache.commons.math3.linear.MatrixUtils
 import org.apache.commons.math3.linear.RealMatrix
 import kotlin.math.max
 
+/**
+ * Nth-degree polynomial interpolated according to the provided derivatives. Note that this implementation is less
+ * performant than [QuinticPolynomial] as it uses general matrix operations for derivative computations.
+ *
+ * @param start start derivatives starting with the 0th derivative
+ * @param end end derivatives starting with the 0th derivative
+ */
 class NthDegreePolynomial(start: List<Double>, end: List<Double>) {
     private val size = 2 * start.size
     private val coeff: RealMatrix
 
     init {
+        if (start.size != end.size) {
+            throw RuntimeException("Unequal number of start and end derivatives")
+        }
+
         val coeffMatrix = MatrixUtils.createRealMatrix(size, size)
         coeffMatrix.setEntry(0, size - 1, 1.0)
         coeffMatrix.setRow(size / 2, (1..size).map { 1.0 }.toDoubleArray())
