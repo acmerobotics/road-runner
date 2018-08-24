@@ -2,13 +2,10 @@ package com.acmerobotics.roadrunner.followers
 
 import com.acmerobotics.roadrunner.Pose2d
 import com.acmerobotics.roadrunner.control.PIDCoefficients
+import com.acmerobotics.roadrunner.drive.Kinematics
 import com.acmerobotics.roadrunner.drive.MecanumDrive
 import com.acmerobotics.roadrunner.drive.MecanumKinematics
 import com.acmerobotics.roadrunner.util.NanoClock
-import kotlin.math.abs
-import kotlin.math.sign
-
-private const val EPSILON = 1e-2
 
 /**
  * Traditional PID controller with feedforward velocity and acceleration components to follow a trajectory. More
@@ -36,10 +33,8 @@ class MecanumPIDVAFollower @JvmOverloads constructor(
         val wheelVelocities = MecanumKinematics.robotToWheelVelocities(poseVelocity, drive.trackWidth, drive.wheelBase)
         val wheelAccelerations = MecanumKinematics.robotToWheelAccelerations(poseAcceleration, drive.trackWidth, drive.wheelBase)
 
-        val motorPowers = wheelVelocities
-                .zip(wheelAccelerations)
-                .map { it.first * kV + it.second * kA }
-                .map { if (abs(it) > EPSILON) it + sign(it) * kStatic else 0.0 }
+        val motorPowers = Kinematics.calculateMotorFeedforward(wheelVelocities, wheelAccelerations, kV, kA, kStatic)
+
         drive.setMotorPowers(motorPowers[0], motorPowers[1], motorPowers[2], motorPowers[3])
     }
 }

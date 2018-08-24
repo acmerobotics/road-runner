@@ -4,8 +4,6 @@ import com.acmerobotics.roadrunner.Pose2d
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import kotlin.math.abs
 
-private const val EPSILON = 1e-2
-
 /**
  * Basic trajectory configuration intended for serialization. Intentionally more simplistic and less flexible than
  * [TrajectoryBuilder].
@@ -26,7 +24,7 @@ class TrajectoryConfig(val poses: List<Pose2d>, val constraints: DriveConstraint
                 for (i in 1 until poses.size) {
                     val startPose = poses[i - 1]
                     val endPose = poses[i]
-                    if (abs(startPose.x - endPose.x) < EPSILON && abs(startPose.y - endPose.y) < EPSILON) {
+                    if (abs(startPose.x - endPose.x) < 1e-2 && abs(startPose.y - endPose.y) < 1e-2) {
                         // this is probably a turn
                         builder.turnTo(endPose.heading)
                     } else {
@@ -36,7 +34,7 @@ class TrajectoryConfig(val poses: List<Pose2d>, val constraints: DriveConstraint
 
                         builder.setReversed(cosAngle < 0)
 
-                        if (abs(startPose.heading - endPose.heading) < EPSILON && abs(1 - abs(cosAngle)) < EPSILON) {
+                        if (abs(startPose.heading - endPose.heading) < 1e-2 && abs(1 - abs(cosAngle)) < 1e-2) {
                             // this is probably a line
                             builder.lineTo(endPose.pos())
                         } else {

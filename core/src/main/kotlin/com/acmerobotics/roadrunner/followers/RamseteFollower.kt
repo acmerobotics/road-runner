@@ -1,12 +1,13 @@
 package com.acmerobotics.roadrunner.followers
 
 import com.acmerobotics.roadrunner.Pose2d
+import com.acmerobotics.roadrunner.drive.Kinematics
 import com.acmerobotics.roadrunner.drive.TankDrive
 import com.acmerobotics.roadrunner.drive.TankKinematics
 import com.acmerobotics.roadrunner.util.NanoClock
-import kotlin.math.*
-
-private const val EPSILON = 1e-2
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.sqrt
 
 /**
  * Time-varying, non-linear feedback controller for nonholonomic drives. See equation 5.12 of
@@ -42,6 +43,7 @@ class RamseteFollower @JvmOverloads constructor(
 
         val targetRobotPose = Pose2d(targetPose.pos().rotated(-targetPose.heading), 0.0)
         val targetRobotPoseVelocity = Pose2d(targetPoseVelocity.pos().rotated(-targetPose.heading), targetPoseVelocity.heading)
+
         val currentRobotPose = Pose2d(currentPose.pos().rotated(-targetPose.heading), currentPose.heading - targetPose.heading)
 
         val targetV = targetRobotPoseVelocity.x
@@ -64,9 +66,8 @@ class RamseteFollower @JvmOverloads constructor(
         val wheelVelocities = TankKinematics.robotToWheelVelocities(Pose2d(v, 0.0, omega), drive.trackWidth)
         val wheelAccelerations = TankKinematics.robotToWheelAccelerations(targetRobotPoseAcceleration, drive.trackWidth)
 
-        val motorPowers = wheelVelocities
-                .zip(wheelAccelerations)
-                .map { it.first * kV + it.second * kA }
-                .map { if (abs(it) > EPSILON) it + sign(it) * kStatic else 0.0 }
-        drive.setMotorPowers(motorPowers[0], motorPowers[1])    }
+        val motorPowers = Kinematics.calculateMotorFeedforward(wheelVelocities, wheelAccelerations, kV, kA, kStatic)
+
+        drive.setMotorPowers(motorPowers[0], motorPowers[1])
+    }
 }

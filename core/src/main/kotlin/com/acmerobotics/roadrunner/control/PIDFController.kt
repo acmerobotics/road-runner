@@ -5,8 +5,6 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sign
 
-private const val EPSILON = 1e-2
-
 /**
  * PID controller with various feedforward components. [kV], [kA], and [kStatic] are designed for DC motor feedforward
  * control (the most common kind of feedforward in FTC). [kF] provides a custom feedforward term for other plants.
@@ -104,8 +102,10 @@ class PIDFController @JvmOverloads constructor(
             lastError = error
             lastUpdateTimestamp = currentTimestamp
 
+            // note: we'd like to refactor this with Kinematics.calculateMotorFeedforward() but kF complicates the
+            // determination of the sign of kStatic
             val baseOutput = pid.kP * error + pid.kI * errorSum + pid.kD * (errorDeriv - velocity) + kV * velocity + kA * acceleration + kF(position)
-            val output = if (abs(baseOutput) > EPSILON) baseOutput + sign(baseOutput) * kStatic else 0.0
+            val output = if (abs(baseOutput) > 1e-4) baseOutput + sign(baseOutput) * kStatic else 0.0
 
             if (outputBounded) {
                 max(minOutput, min(output, maxOutput))

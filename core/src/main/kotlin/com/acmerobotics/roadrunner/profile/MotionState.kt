@@ -19,7 +19,7 @@ class MotionState(val x: Double, val v: Double, val a: Double) {
      */
     fun afterDisplacement(dx: Double): MotionState {
         val discriminant = v * v + 2 * a * dx
-        return if (abs(discriminant) < MotionProfileGenerator.EPSILON) {
+        return if (abs(discriminant) < 1e-6) {
             MotionState(x + dx, 0.0, a)
         } else {
             MotionState(x + dx, sqrt(discriminant), a)

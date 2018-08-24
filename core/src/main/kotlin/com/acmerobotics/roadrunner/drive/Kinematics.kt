@@ -1,6 +1,8 @@
 package com.acmerobotics.roadrunner.drive
 
 import com.acmerobotics.roadrunner.Pose2d
+import kotlin.math.abs
+import kotlin.math.sign
 
 object Kinematics {
     @JvmStatic
@@ -17,4 +19,10 @@ object Kinematics {
                             -fieldPoseVelocity.x * Math.cos(fieldPose.heading) - fieldPoseVelocity.y * Math.sin(fieldPose.heading),
                             0.0
                     ) * fieldPoseVelocity.heading
+
+    @JvmStatic
+    fun calculateMotorFeedforward(velocities: List<Double>, accelerations: List<Double>, kV: Double, kA: Double, kStatic: Double) =
+        velocities.zip(accelerations)
+                .map { it.first * kV + it.second * kA }
+                .map { if (abs(it) > 1e-4) it + sign(it) * kStatic else 0.0 }
 }

@@ -7,10 +7,6 @@ import com.acmerobotics.roadrunner.drive.Kinematics
 import com.acmerobotics.roadrunner.drive.TankDrive
 import com.acmerobotics.roadrunner.drive.TankKinematics
 import com.acmerobotics.roadrunner.util.NanoClock
-import kotlin.math.abs
-import kotlin.math.sign
-
-private const val EPSILON = 1e-2
 
 /**
  * Traditional PID controller with feedforward velocity and acceleration components to follow a trajectory. More
@@ -67,10 +63,8 @@ class TankPIDVAFollower @JvmOverloads constructor(
         val wheelVelocities = TankKinematics.robotToWheelVelocities(correctedVelocity, drive.trackWidth)
         val wheelAccelerations = TankKinematics.robotToWheelAccelerations(targetRobotPoseAcceleration, drive.trackWidth)
 
-        val motorPowers = wheelVelocities
-                .zip(wheelAccelerations)
-                .map { it.first * kV + it.second * kA }
-                .map { if (abs(it) > EPSILON) it + sign(it) * kStatic else 0.0 }
+        val motorPowers = Kinematics.calculateMotorFeedforward(wheelVelocities, wheelAccelerations, kV, kA, kStatic)
+
         drive.setMotorPowers(motorPowers[0], motorPowers[1])
     }
 }

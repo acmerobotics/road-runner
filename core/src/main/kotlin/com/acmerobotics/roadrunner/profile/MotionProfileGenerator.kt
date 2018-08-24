@@ -7,8 +7,6 @@ import kotlin.math.sqrt
  * Trapezoidal motion profile generator with dynamic constraint support and arbitrary start and end motion states.
  */
 object MotionProfileGenerator {
-    internal const val EPSILON = 1e-6
-
     /**
      * Generate a simple motion profile with constant [maximumVelocity] and [maximumAcceleration]
      *
@@ -97,7 +95,7 @@ object MotionProfileGenerator {
             var (forwardStartState, forwardDx) = forwardStates[i]
             var (backwardStartState, backwardDx) = backwardStates[j]
 
-            if (abs(forwardDx - backwardDx) > EPSILON) {
+            if (abs(forwardDx - backwardDx) > 1e-6) {
                 if (forwardDx < backwardDx) {
                     backwardStates.add(
                         j + 1,
@@ -155,9 +153,9 @@ object MotionProfileGenerator {
 
         val motionSegments = mutableListOf<MotionSegment>()
         for ((state, stateDx) in finalStates) {
-            val dt = if (abs(state.a) > EPSILON) {
+            val dt = if (abs(state.a) > 1e-6) {
                 val discriminant = state.v * state.v + 2 * state.a * stateDx
-                ((if (abs(discriminant) < EPSILON) 0.0 else sqrt(discriminant)) - state.v) / state.a
+                ((if (abs(discriminant) < 1e-6) 0.0 else sqrt(discriminant)) - state.v) / state.a
             } else {
                 stateDx / state.v
             }

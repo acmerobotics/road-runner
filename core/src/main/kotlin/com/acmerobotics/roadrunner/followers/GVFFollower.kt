@@ -1,17 +1,14 @@
 package com.acmerobotics.roadrunner.followers
 
 import com.acmerobotics.roadrunner.Pose2d
+import com.acmerobotics.roadrunner.drive.Kinematics
 import com.acmerobotics.roadrunner.drive.TankDrive
 import com.acmerobotics.roadrunner.drive.TankKinematics
 import com.acmerobotics.roadrunner.path.Path
 import com.acmerobotics.roadrunner.profile.SimpleMotionConstraints
 import com.acmerobotics.roadrunner.util.Angle
 import com.acmerobotics.roadrunner.util.NanoClock
-import kotlin.math.abs
-import kotlin.math.sign
 import kotlin.math.sqrt
-
-private const val EPSILON = 1e-2
 
 /**
  * State-of-the-art path follower based on the [GuidingVectorField].
@@ -83,9 +80,8 @@ class GVFFollower @JvmOverloads constructor(
 
         val wheelVelocities = TankKinematics.robotToWheelVelocities(Pose2d(velocity, 0.0, omega), drive.trackWidth)
 
-        val motorPowers = wheelVelocities
-                .map { it * kV }
-                .map { if (abs(it) > EPSILON) it + sign(it) * kStatic else 0.0 }
+        val motorPowers = Kinematics.calculateMotorFeedforward(wheelVelocities, wheelVelocities.map { 0.0 }, kV, kA, kStatic)
+
         drive.setMotorPowers(motorPowers[0], motorPowers[1])
 
         lastUpdateTimestamp = timestamp
