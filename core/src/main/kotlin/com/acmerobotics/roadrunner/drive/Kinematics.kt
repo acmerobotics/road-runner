@@ -2,7 +2,9 @@ package com.acmerobotics.roadrunner.drive
 
 import com.acmerobotics.roadrunner.Pose2d
 import kotlin.math.abs
+import kotlin.math.cos
 import kotlin.math.sign
+import kotlin.math.sin
 
 object Kinematics {
     @JvmStatic
@@ -25,4 +27,26 @@ object Kinematics {
         velocities.zip(accelerations)
                 .map { it.first * kV + it.second * kA }
                 .map { if (abs(it) > 1e-4) it + sign(it) * kStatic else 0.0 }
+
+    @JvmStatic
+    fun relativeOdometryUpdate(fieldPose: Pose2d, robotPoseDelta: Pose2d): Pose2d {
+        val fieldPoseDelta = if (abs(robotPoseDelta.heading) > 1e-6) {
+            val finalHeading = fieldPose.heading + robotPoseDelta.heading
+            val cosTerm = cos(finalHeading) - cos(fieldPose.heading)
+            val sinTerm = sin(finalHeading) - sin(fieldPose.heading)
+
+            Pose2d(
+                    (robotPoseDelta.x * sinTerm + robotPoseDelta.y * cosTerm) / robotPoseDelta.heading,
+                    (-robotPoseDelta.x * cosTerm + robotPoseDelta.y * sinTerm) / robotPoseDelta.heading,
+                    robotPoseDelta.heading
+            )
+        } else {
+            Pose2d(
+                    robotPoseDelta.pos().rotated(fieldPose.heading + robotPoseDelta.heading / 2),
+                    robotPoseDelta.heading
+            )
+        }
+
+        return fieldPose + fieldPoseDelta
+    }
 }

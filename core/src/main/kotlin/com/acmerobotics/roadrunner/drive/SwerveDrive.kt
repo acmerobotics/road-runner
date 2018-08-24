@@ -42,8 +42,7 @@ abstract class SwerveDrive @JvmOverloads constructor(
                     .map { (it.first - it.second) / dt }
             val robotPoseDelta = SwerveKinematics.wheelToRobotVelocities(
                     wheelVelocities, moduleOrientations, wheelBase, trackWidth) * dt
-            val newHeading = poseEstimate.heading + robotPoseDelta.heading
-            poseEstimate += Pose2d(robotPoseDelta.pos().rotated(newHeading), robotPoseDelta.heading)
+            poseEstimate = Kinematics.relativeOdometryUpdate(poseEstimate, robotPoseDelta)
         }
         lastWheelPositions = wheelPositions
         lastUpdateTimestamp = timestamp

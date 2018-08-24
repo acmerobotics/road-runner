@@ -23,8 +23,8 @@ class DriveWheelConstraintsTest {
     fun testTankWheelVelocityLimiting() {
         val constraints = TankConstraints(BASE_CONSTRAINTS, 10.0)
         val trajectory = TrajectoryBuilder(Pose2d(0.0, 0.0, 0.0), constraints)
-                .splineTo(Pose2d(15.0, 15.0, Math.PI), interpolator = SplineInterpolator(0.0, Math.PI / 2))
-                .splineTo(Pose2d(5.0, 35.0, Math.PI / 3), interpolator = TangentInterpolator())
+                .splineTo(Pose2d(15.0, 15.0, Math.PI))
+                .splineTo(Pose2d(5.0, 35.0, Math.PI / 3))
                 .build()
 
         val dt = trajectory.duration() / 10000.0

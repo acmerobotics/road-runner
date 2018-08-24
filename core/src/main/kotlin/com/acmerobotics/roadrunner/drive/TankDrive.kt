@@ -32,8 +32,7 @@ abstract class TankDrive(val trackWidth: Double, private val clock: NanoClock = 
                     .zip(lastWheelPositions)
                     .map { (it.first - it.second) / dt }
             val robotPoseDelta = TankKinematics.wheelToRobotVelocities(wheelVelocities, trackWidth) * dt
-            val newHeading = poseEstimate.heading + robotPoseDelta.heading
-            poseEstimate += Pose2d(robotPoseDelta.pos().rotated(newHeading), robotPoseDelta.heading)
+            poseEstimate = Kinematics.relativeOdometryUpdate(poseEstimate, robotPoseDelta)
         }
         lastWheelPositions = wheelPositions
         lastUpdateTimestamp = timestamp

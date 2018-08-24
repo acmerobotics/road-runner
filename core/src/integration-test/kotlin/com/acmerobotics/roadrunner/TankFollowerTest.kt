@@ -11,6 +11,7 @@ import com.acmerobotics.roadrunner.profile.SimpleMotionConstraints
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import com.acmerobotics.roadrunner.trajectory.constraints.TankConstraints
+import com.acmerobotics.roadrunner.util.NanoClock
 import org.apache.commons.math3.distribution.NormalDistribution
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -37,8 +38,9 @@ class TankFollowerTest {
     private class SimulatedTankDrive(
             private val dt: Double,
             private val kV: Double,
-            trackWidth: Double
-    ) : TankDrive(trackWidth) {
+            trackWidth: Double,
+            clock: NanoClock
+    ) : TankDrive(trackWidth, clock) {
         var powers = listOf(0.0, 0.0)
         var positions = listOf(0.0, 0.0)
 
@@ -69,8 +71,8 @@ class TankFollowerTest {
                 .waitFor(0.5)
                 .build()
 
-        val drive = SimulatedTankDrive(dt, kV, TRACK_WIDTH)
         val clock = SimulatedClock()
+        val drive = SimulatedTankDrive(dt, kV, TRACK_WIDTH, clock)
         val follower = TankPIDVAFollower(drive, PIDCoefficients(1.0), PIDCoefficients(kP = 1.0), kV, 0.0, 0.0, clock)
         follower.followTrajectory(trajectory)
 
@@ -116,8 +118,8 @@ class TankFollowerTest {
                 .waitFor(0.5)
                 .build()
 
-        val drive = SimulatedTankDrive(dt, kV, TRACK_WIDTH)
         val clock = SimulatedClock()
+        val drive = SimulatedTankDrive(dt, kV, TRACK_WIDTH, clock)
         val follower = RamseteFollower(drive, 0.0008, 0.5, kV, 0.0, 0.0, clock)
         follower.followTrajectory(trajectory)
 
@@ -160,8 +162,8 @@ class TankFollowerTest {
                 QuinticSplineSegment.Waypoint(15.0, 15.0, 20.0, 0.0)
         ))
 
-        val drive = SimulatedTankDrive(dt, kV, TRACK_WIDTH)
         val clock = SimulatedClock()
+        val drive = SimulatedTankDrive(dt, kV, TRACK_WIDTH, clock)
         val follower = GVFFollower(
                 drive,
                 SimpleMotionConstraints(5.0, 25.0),
