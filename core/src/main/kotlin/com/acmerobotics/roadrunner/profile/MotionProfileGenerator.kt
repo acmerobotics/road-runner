@@ -167,7 +167,6 @@ object MotionProfileGenerator {
         return MotionProfile(motionSegments)
     }
 
-    // TODO: consider using MotionConstraints instead of maxVel and maxAccel to match the public interface
     private fun forwardPass(
         start: MotionState,
         maximumVelocity: (displacement: Double) -> Double,

@@ -18,7 +18,7 @@ class NthDegreePolynomial(start: List<Double>, end: List<Double>) {
 
     init {
         if (start.size != end.size) {
-            throw RuntimeException("Unequal number of start and end derivatives")
+            throw IllegalArgumentException("Unequal number of start and end derivatives")
         }
 
         val coeffMatrix = MatrixUtils.createRealMatrix(size, size)

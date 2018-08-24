@@ -1,6 +1,7 @@
 package com.acmerobotics.roadrunner.drive
 
 import com.acmerobotics.roadrunner.Pose2d
+import kotlin.math.abs
 
 /**
  * Tank drive kinematic equations based upon the unicycle model.
@@ -14,11 +15,15 @@ object TankKinematics {
      * @param robotPoseVelocity velocity of the robot in its reference frame
      * @param trackWidth lateral distance between pairs of wheels on different sides of the robot
      */
-    // TODO: warn about nonzero lateral velocity?
     @JvmStatic
-    fun robotToWheelVelocities(robotPoseVelocity: Pose2d, trackWidth: Double) =
-            listOf(robotPoseVelocity.x - trackWidth / 2 * robotPoseVelocity.heading,
-                    robotPoseVelocity.x + trackWidth / 2 * robotPoseVelocity.heading)
+    fun robotToWheelVelocities(robotPoseVelocity: Pose2d, trackWidth: Double): List<Double> {
+        if (abs(robotPoseVelocity.y) > 1e-2) {
+            throw IllegalArgumentException("Lateral (robot y) velocity must be zero for tank drives")
+        }
+
+        return listOf(robotPoseVelocity.x - trackWidth / 2 * robotPoseVelocity.heading,
+                robotPoseVelocity.x + trackWidth / 2 * robotPoseVelocity.heading)
+    }
 
     /**
      * Computes the wheel accelerations corresponding to [robotPoseAcceleration] given [trackWidth].

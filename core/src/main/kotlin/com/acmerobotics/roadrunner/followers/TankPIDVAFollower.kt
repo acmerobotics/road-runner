@@ -3,6 +3,7 @@ package com.acmerobotics.roadrunner.followers
 import com.acmerobotics.roadrunner.Pose2d
 import com.acmerobotics.roadrunner.control.PIDCoefficients
 import com.acmerobotics.roadrunner.control.PIDFController
+import com.acmerobotics.roadrunner.drive.Kinematics
 import com.acmerobotics.roadrunner.drive.TankDrive
 import com.acmerobotics.roadrunner.drive.TankKinematics
 import com.acmerobotics.roadrunner.util.NanoClock
@@ -49,14 +50,10 @@ class TankPIDVAFollower @JvmOverloads constructor(
         val targetPoseVelocity = trajectory.velocity(t)
         val targetPoseAcceleration = trajectory.acceleration(t)
 
-        // TODO: utility class for robot-field reference frame conversions
-        val targetRobotPose = Pose2d(targetPose.pos().rotated(-targetPose.heading), 0.0)
-        val targetRobotPoseVelocity = Pose2d(targetPoseVelocity.pos().rotated(-targetPose.heading), targetPoseVelocity.heading)
-        val targetRobotPoseAcceleration = Pose2d(targetPoseAcceleration.pos().rotated(-targetPose.heading), targetPoseAcceleration.heading) +
-                Pose2d(-targetPoseVelocity.x * Math.sin(targetPose.heading) + targetPoseVelocity.y * Math.cos(targetPose.heading),
-                        -targetPoseVelocity.x * Math.cos(targetPose.heading) - targetPoseVelocity.y * Math.sin(targetPose.heading),
-                        0.0
-                ) * targetPoseVelocity.heading
+        val targetRobotPose = Kinematics.fieldToRobotPose(targetPose)
+        val targetRobotPoseVelocity = Kinematics.fieldToRobotPoseVelocity(targetPose, targetPoseVelocity)
+        val targetRobotPoseAcceleration = Kinematics.fieldToRobotPoseAcceleration(targetPose, targetPoseVelocity, targetPoseAcceleration)
+
         val currentRobotPose = Pose2d(currentPose.pos().rotated(-targetPose.heading), currentPose.heading - targetPose.heading)
 
         displacementController.targetPosition = targetRobotPose.x
