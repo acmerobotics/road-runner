@@ -8,7 +8,20 @@ import kotlin.math.min
  *
  * @param segments profile motion segments
  */
-class MotionProfile(private val segments: List<MotionSegment>) {
+class MotionProfile(segments: List<MotionSegment>) {
+    private val segments: MutableList<MotionSegment> = segments.toMutableList()
+    private val start: MotionState = segments.firstOrNull()?.start ?: MotionState(0.0, 0.0, 0.0)
+
+    // TODO: is there a better way to do this?
+    // I like the public interface this presents but it's quite ugly internally
+    // maybe put the secondary constructor and append control stuff in a builder
+    init {
+        if (segments.size == 1 && segments[0].dt == 0.0) {
+            this.segments.clear()
+        }
+    }
+
+    constructor(start: MotionState) : this(listOf(MotionSegment(start, 0.0)))
 
     /**
      * Returns the [MotionState] at time [t].
@@ -21,8 +34,10 @@ class MotionProfile(private val segments: List<MotionSegment>) {
             }
             remainingTime -= segment.dt
         }
-        return segments.last().end()
+        return segments.lastOrNull()?.end() ?: start
     }
+
+    fun getSegment(i: Int) = segments[i]
 
     /**
      * Returns the duration of the motion profile.
@@ -38,4 +53,9 @@ class MotionProfile(private val segments: List<MotionSegment>) {
      * Returns the end [MotionState].
      */
     fun end() = get(duration())
+
+    fun appendJerkControl(jerk: Double, dt: Double) {
+        val endState = end()
+        segments.add(MotionSegment(MotionState(endState.x, endState.v, endState.a, jerk), dt))
+    }
 }

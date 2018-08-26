@@ -26,4 +26,6 @@ class MotionSegment(val start: MotionState, val dt: Double) {
         val state = MotionState(end.x, -end.v, end.a)
         return MotionSegment(state, dt)
     }
+
+    override fun toString() = "($start, $dt)"
 }

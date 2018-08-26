@@ -120,4 +120,18 @@ class MotionProfileGeneratorTest {
             )
         )
     }
+
+    @Test
+    fun testJerkLimited() {
+        GraphUtil.saveMotionProfile(
+                "profiles/jerkLimited",
+                MotionProfileGenerator.generateSimpleMotionProfile(
+                        MotionState(10.0, 15.0, -4.0),
+                        MotionState(40.0, 10.0, 0.0),
+                        30.0,
+                        10.0,
+                        30.0
+                )
+        )
+    }
 }
