@@ -249,7 +249,7 @@ object MotionProfileGenerator {
             { constraints.maximumAcceleration(goal.x - it) },
             resolution,
             dx
-        ).map { (motionState, dx) -> Pair(motionState.afterDisplacement(dx), dx) }.map { (motionState, dx) ->
+        ).map { (motionState, dx) -> Pair(afterDisplacement(motionState, dx), dx) }.map { (motionState, dx) ->
             Pair(
                 MotionState(
                     goal.x - motionState.x,
@@ -271,20 +271,20 @@ object MotionProfileGenerator {
                 if (forwardDx < backwardDx) {
                     backwardStates.add(
                         j + 1,
-                        Pair(backwardStartState.afterDisplacement(forwardDx), backwardDx - forwardDx)
+                        Pair(afterDisplacement(backwardStartState, forwardDx), backwardDx - forwardDx)
                     )
                     backwardDx = forwardDx
                 } else {
                     forwardStates.add(
                         i + 1,
-                        Pair(forwardStartState.afterDisplacement(backwardDx), forwardDx - backwardDx)
+                        Pair(afterDisplacement(forwardStartState, backwardDx), forwardDx - backwardDx)
                     )
                     forwardDx = backwardDx
                 }
             }
 
-            val forwardEndState = forwardStartState.afterDisplacement(forwardDx)
-            val backwardEndState = backwardStartState.afterDisplacement(backwardDx)
+            val forwardEndState = afterDisplacement(forwardStartState, forwardDx)
+            val backwardEndState = afterDisplacement(backwardStartState, backwardDx)
 
             if (forwardStartState.v <= backwardStartState.v) {
                 if (forwardEndState.v <= backwardEndState.v) {
@@ -297,7 +297,7 @@ object MotionProfileGenerator {
                     finalStates.add(Pair(forwardStartState, intersection))
                     finalStates.add(
                         Pair(
-                            backwardStartState.afterDisplacement(intersection),
+                            afterDisplacement(backwardStartState, intersection),
                             backwardDx - intersection
                         )
                     )
@@ -313,7 +313,7 @@ object MotionProfileGenerator {
                     finalStates.add(Pair(backwardStartState, intersection))
                     finalStates.add(
                         Pair(
-                            forwardStartState.afterDisplacement(intersection),
+                            afterDisplacement(forwardStartState, intersection),
                             forwardDx - intersection
                         )
                     )
@@ -356,13 +356,13 @@ object MotionProfileGenerator {
             lastState = if (lastState.v >= maxVel) {
                 val state = MotionState(displacement, maxVel, 0.0)
                 forwardStates.add(Pair(state, dx))
-                state.afterDisplacement(dx)
+                afterDisplacement(state, dx)
             } else {
                 val desiredVelocity = sqrt(lastState.v * lastState.v + 2 * maxAccel * dx)
                 if (desiredVelocity <= maxVel) {
                     val state = MotionState(displacement, lastState.v, maxAccel)
                     forwardStates.add(Pair(state, dx))
-                    state.afterDisplacement(dx)
+                    afterDisplacement(state, dx)
                 } else {
                     val accelDx =
                         (maxVel * maxVel - lastState.v * lastState.v) / (2 * maxAccel)
@@ -370,12 +370,21 @@ object MotionProfileGenerator {
                     val coastState = MotionState(displacement + accelDx, maxVel, 0.0)
                     forwardStates.add(Pair(accelState, accelDx))
                     forwardStates.add(Pair(coastState, dx - accelDx))
-                    coastState.afterDisplacement(dx - accelDx)
+                    afterDisplacement(coastState, dx - accelDx)
                 }
             }
         }
 
         return forwardStates
+    }
+
+    private fun afterDisplacement(state: MotionState, dx: Double): MotionState {
+        val discriminant = state.v * state.v + 2 * state.a * dx
+        return if (abs(discriminant) < 1e-6) {
+            MotionState(state.x + dx, 0.0, state.a)
+        } else {
+            MotionState(state.x + dx, sqrt(discriminant), state.a)
+        }
     }
 
     private fun intersection(state1: MotionState, state2: MotionState): Double {
