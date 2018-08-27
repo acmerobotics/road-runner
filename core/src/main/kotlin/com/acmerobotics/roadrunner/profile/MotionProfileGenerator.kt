@@ -10,6 +10,9 @@ import kotlin.math.sqrt
 object MotionProfileGenerator {
     /**
      * Generates a simple motion profile with constant [maximumVelocity], [maximumAcceleration], and [maximumJerk].
+     * Warning: Trapezoidal profiles (max jerk is 0) may be generated incorrectly if the endpoint velocity/acceleration
+     * values preclude the obedience of the motion constraints. S-curve profile (max jerk is nonzero) generation will
+     * fail with an exception if constraints can not be obeyed (based on the endpoint velocities/accelerations).
      *
      * @param start start motion state
      * @param goal goal motion state
@@ -33,6 +36,16 @@ object MotionProfileGenerator {
                     SimpleMotionConstraints(maximumVelocity, maximumAcceleration),
                     1
             )
+        }
+
+        if (goal.x < start.x) {
+            return generateSimpleMotionProfile(
+                    goal,
+                    start,
+                    maximumVelocity,
+                    maximumAcceleration,
+                    maximumJerk
+            ).reversed()
         }
 
         val noCoastProfile = generateNoCoastProfile(start, goal, maximumVelocity, maximumAcceleration, maximumJerk)
@@ -62,7 +75,8 @@ object MotionProfileGenerator {
             // less code, and is overall significantly more comprehensible
             var upperBound = maximumVelocity
             var lowerBound = 0.0
-            while (true) {
+            var iterations = 0
+            while (iterations < 1000) {
                 val peakVel = (upperBound + lowerBound) / 2
 
                 val profile = generateNoCoastProfile(start, goal, peakVel, maximumAcceleration, maximumJerk)
@@ -79,7 +93,11 @@ object MotionProfileGenerator {
                     // we overshot so shift the upper bound down
                     upperBound = peakVel
                 }
+
+                iterations++
             }
+
+            throw RuntimeException("Unable to respect constraints")
         }
     }
 
@@ -90,16 +108,33 @@ object MotionProfileGenerator {
             maximumAcceleration: Double,
             maximumJerk: Double
     ): MotionProfile {
-        val accelTimeDeltas = generateAccelProfileTimeDeltas(start, maximumVelocity, maximumAcceleration, maximumJerk)
-        val decelTimeDeltas = generateAccelProfileTimeDeltas(goal, maximumVelocity, maximumAcceleration, maximumJerk).reversed()
-
         val noCoastProfile = MotionProfile(start)
-        noCoastProfile.appendJerkControl(maximumJerk, accelTimeDeltas[0])
-        noCoastProfile.appendJerkControl(0.0, accelTimeDeltas[1])
-        noCoastProfile.appendJerkControl(-maximumJerk, accelTimeDeltas[2])
-        noCoastProfile.appendJerkControl(-maximumJerk, decelTimeDeltas[0])
-        noCoastProfile.appendJerkControl(0.0, decelTimeDeltas[1])
-        noCoastProfile.appendJerkControl(maximumJerk, decelTimeDeltas[2])
+
+        val accelTimeDeltas1 = generateAccelProfileTimeDeltas(start, maximumVelocity, maximumAcceleration, maximumJerk)
+        if (accelTimeDeltas1 == null) {
+            val decelTimeDeltas1 = generateDecelProfileTimeDeltas(start, maximumVelocity, maximumAcceleration, maximumJerk)!!
+
+            noCoastProfile.appendJerkControl(-maximumJerk, decelTimeDeltas1[0])
+            noCoastProfile.appendJerkControl(0.0, decelTimeDeltas1[1])
+            noCoastProfile.appendJerkControl(maximumJerk, decelTimeDeltas1[2])
+        } else {
+            noCoastProfile.appendJerkControl(maximumJerk, accelTimeDeltas1[0])
+            noCoastProfile.appendJerkControl(0.0, accelTimeDeltas1[1])
+            noCoastProfile.appendJerkControl(-maximumJerk, accelTimeDeltas1[2])
+        }
+
+        val accelTimeDeltas2 = generateAccelProfileTimeDeltas(goal, maximumVelocity, maximumAcceleration, maximumJerk)?.reversed()
+        if (accelTimeDeltas2 == null) {
+            val decelTimeDeltas2 = generateDecelProfileTimeDeltas(goal, maximumVelocity, maximumAcceleration, maximumJerk)!!.reversed()
+
+            noCoastProfile.appendJerkControl(-maximumJerk, decelTimeDeltas2[0])
+            noCoastProfile.appendJerkControl(0.0, decelTimeDeltas2[1])
+            noCoastProfile.appendJerkControl(maximumJerk, decelTimeDeltas2[2])
+        } else {
+            noCoastProfile.appendJerkControl(maximumJerk, accelTimeDeltas2[0])
+            noCoastProfile.appendJerkControl(0.0, accelTimeDeltas2[1])
+            noCoastProfile.appendJerkControl(-maximumJerk, accelTimeDeltas2[2])
+        }
 
         return noCoastProfile
     }
@@ -109,7 +144,7 @@ object MotionProfileGenerator {
             maxVel: Double,
             maxAccel: Double,
             maxJerk: Double
-    ): List<Double> {
+    ): List<Double>? {
         // compute the duration of the first and last acceleration profile segments
         val deltaT1 = (maxAccel - start.a) / maxJerk
         val deltaT3 = maxAccel / maxJerk
@@ -122,8 +157,7 @@ object MotionProfileGenerator {
         return if (deltaV2 < 0.0) {
             // there is no constant acceleration phase
             val roots = MathUtil.solveQuadratic(maxJerk, 2 * start.a, start.v - maxVel + start.a * start.a / (2 * maxJerk))
-            // TODO: handle this degenerate case instead of throwing an exception
-            val newDeltaT1 = roots.firstOrNull { it >= 0.0 } ?: throw RuntimeException("Invalid profile start state")
+            val newDeltaT1 = roots.filter { it >= 0.0 }.min() ?: return null
             val newDeltaT3 = newDeltaT1 + start.a / maxJerk
 
             listOf(newDeltaT1, 0.0, newDeltaT3)
@@ -135,9 +169,41 @@ object MotionProfileGenerator {
         }
     }
 
+    private fun generateDecelProfileTimeDeltas(
+            start: MotionState,
+            maxVel: Double,
+            maxAccel: Double,
+            maxJerk: Double
+    ): List<Double>? {
+        // compute the duration of the first and last deceleration profile segments
+        val deltaT1 = (maxAccel + start.a) / maxJerk
+        val deltaT3 = maxAccel / maxJerk
+
+        // use these durations to find the changes in velocity
+        val deltaV1 = start.a * deltaT1 - 0.5 * maxJerk * deltaT1 * deltaT1
+        val deltaV3 = -maxAccel * deltaT3 + 0.5 * maxJerk * deltaT3 * deltaT3
+        val deltaV2 = maxVel - start.v - deltaV1 - deltaV3
+
+        return if (deltaV2 < 0.0) {
+            // there is no constant deceleration phase
+            val roots = MathUtil.solveQuadratic(-maxJerk, 2 * start.a, start.v - maxVel - start.a * start.a / (2 * maxJerk))
+            val newDeltaT1 = roots.filter { it >= 0.0 }.min() ?: return null
+            val newDeltaT3 = newDeltaT1 - start.a / maxJerk
+
+            listOf(newDeltaT1, 0.0, newDeltaT3)
+        } else {
+            // there is a constant deceleration phase
+            val deltaT2 = deltaV2 / maxAccel
+
+            listOf(deltaT1, deltaT2, deltaT3)
+        }
+    }
+
     /**
      * Generates a motion profile with dynamic maximum velocity and acceleration. Uses the algorithm described in section
-     * 3.2 of [Sprunk2008.pdf](http://www2.informatik.uni-freiburg.de/~lau/students/Sprunk2008.pdf).
+     * 3.2 of [Sprunk2008.pdf](http://www2.informatik.uni-freiburg.de/~lau/students/Sprunk2008.pdf). Warning: Profiles
+     * may be generated incorrectly if the endpoint velocity/acceleration values preclude the obedience of the motion
+     * constraints.
      *
      * @param start start motion state
      * @param end end motion state
