@@ -4,6 +4,7 @@ import kotlin.math.abs
 import kotlin.math.sqrt
 
 object MathUtil {
+    @JvmStatic
     fun solveQuadratic(a: Double, b: Double, c: Double): List<Double> {
         val disc = b * b - 4 * a * c
         return when {

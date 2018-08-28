@@ -126,8 +126,8 @@ class MotionProfileGeneratorTest {
         GraphUtil.saveMotionProfile(
                 "profiles/jerkLimited",
                 MotionProfileGenerator.generateSimpleMotionProfile(
-                        MotionState(10.0, 40.0, 20.0),
-                        MotionState(-120.0, 10.0, 0.0),
+                        MotionState(10.0, 20.0, 20.0),
+                        MotionState(200.0, 10.0, 10.0),
                         30.0,
                         10.0,
                         30.0

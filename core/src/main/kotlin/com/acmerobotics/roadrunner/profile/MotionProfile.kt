@@ -9,19 +9,8 @@ import kotlin.math.min
  * @param segments profile motion segments
  */
 class MotionProfile(segments: List<MotionSegment>) {
-    private val segments: MutableList<MotionSegment> = segments.toMutableList()
-    private val start: MotionState = segments.firstOrNull()?.start ?: MotionState(0.0, 0.0, 0.0)
-
-    // TODO: is there a better way to do this?
-    // I like the public interface this presents but it's quite ugly internally
-    // maybe put the secondary constructor and append control stuff in a builder
-    init {
-        if (segments.size == 1 && segments[0].dt == 0.0) {
-            this.segments.clear()
-        }
-    }
-
-    constructor(start: MotionState) : this(listOf(MotionSegment(start, 0.0)))
+    // TODO: is internal acceptable here?
+    internal val segments: MutableList<MotionSegment> = segments.toMutableList()
 
     /**
      * Returns the [MotionState] at time [t].
@@ -34,10 +23,8 @@ class MotionProfile(segments: List<MotionSegment>) {
             }
             remainingTime -= segment.dt
         }
-        return segments.lastOrNull()?.end() ?: start
+        return segments.last().end()
     }
-
-    fun getSegment(i: Int) = segments[i]
 
     /**
      * Returns the duration of the motion profile.
@@ -50,12 +37,19 @@ class MotionProfile(segments: List<MotionSegment>) {
     fun reversed() = MotionProfile(segments.map { it.reversed() }.reversed())
 
     /**
+     * Returns the start [MotionState].
+     */
+    fun start() = get(0.0)
+
+    /**
      * Returns the end [MotionState].
      */
     fun end() = get(duration())
 
-    fun appendJerkControl(jerk: Double, dt: Double) {
-        val endState = end()
-        segments.add(MotionSegment(MotionState(endState.x, endState.v, endState.a, jerk), dt))
+    operator fun plus(other: MotionProfile): MotionProfile {
+        val builder = MotionProfileBuilder(start())
+        builder.appendProfile(this)
+        builder.appendProfile(other)
+        return builder.build()
     }
 }
