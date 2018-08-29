@@ -14,7 +14,38 @@ abstract class SwerveDrive @JvmOverloads constructor(
         val wheelBase: Double = trackWidth,
         clock: NanoClock = NanoClock.system()
 ) : Drive() {
-    override var localizer: Localizer = SwerveDriveEncoderLocalizer(this, clock)
+    class SwerveLocalizer @JvmOverloads constructor(
+            private val drive: SwerveDrive,
+            private val clock: NanoClock = NanoClock.system()
+    ) : Localizer {
+        override var poseEstimate: Pose2d = Pose2d()
+            set(value) {
+                lastWheelPositions = emptyList()
+                lastUpdateTimestamp = Double.NaN
+                field = value
+            }
+        private var lastWheelPositions = emptyList<Double>()
+        private var lastUpdateTimestamp = Double.NaN
+
+        override fun update() {
+            val wheelPositions = drive.getWheelPositions()
+            val moduleOrientations = drive.getModuleOrientations()
+            val timestamp = clock.seconds()
+            if (lastWheelPositions.isNotEmpty()) {
+                val dt = timestamp - lastUpdateTimestamp
+                val wheelVelocities = wheelPositions
+                        .zip(lastWheelPositions)
+                        .map { (it.first - it.second) / dt }
+                val robotPoseDelta = SwerveKinematics.wheelToRobotVelocities(
+                        wheelVelocities, moduleOrientations, drive.wheelBase, drive.trackWidth) * dt
+                poseEstimate = Kinematics.relativeOdometryUpdate(poseEstimate, robotPoseDelta)
+            }
+            lastWheelPositions = wheelPositions
+            lastUpdateTimestamp = timestamp
+        }
+    }
+
+    override var localizer: Localizer = SwerveLocalizer(this, clock)
 
     override fun setVelocity(poseVelocity: Pose2d) {
         val motorPowers = SwerveKinematics.robotToWheelVelocities(poseVelocity, trackWidth, wheelBase)

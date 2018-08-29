@@ -8,8 +8,40 @@ import com.acmerobotics.roadrunner.util.NanoClock
  *
  * @param trackWidth lateral distance between pairs of wheels on different sides of the robot
  */
-abstract class TankDrive(val trackWidth: Double, clock: NanoClock = NanoClock.system()) : Drive() {
-    override var localizer: Localizer = TankDriveEncoderLocalizer(this, clock)
+abstract class TankDrive @JvmOverloads constructor(
+        val trackWidth: Double,
+        clock: NanoClock = NanoClock.system()
+) : Drive() {
+    class TankLocalizer @JvmOverloads constructor(
+            private val drive: TankDrive,
+            private val clock: NanoClock = NanoClock.system()
+    ) : Localizer {
+        override var poseEstimate: Pose2d = Pose2d()
+            set(value) {
+                lastWheelPositions = emptyList()
+                lastUpdateTimestamp = Double.NaN
+                field = value
+            }
+        private var lastWheelPositions = emptyList<Double>()
+        private var lastUpdateTimestamp = Double.NaN
+
+        override fun update() {
+            val wheelPositions = drive.getWheelPositions()
+            val timestamp = clock.seconds()
+            if (lastWheelPositions.isNotEmpty()) {
+                val dt = timestamp - lastUpdateTimestamp
+                val wheelVelocities = wheelPositions
+                        .zip(lastWheelPositions)
+                        .map { (it.first - it.second) / dt }
+                val robotPoseDelta = TankKinematics.wheelToRobotVelocities(wheelVelocities, drive.trackWidth) * dt
+                poseEstimate = Kinematics.relativeOdometryUpdate(poseEstimate, robotPoseDelta)
+            }
+            lastWheelPositions = wheelPositions
+            lastUpdateTimestamp = timestamp
+        }
+    }
+
+    override var localizer: Localizer = TankLocalizer(this, clock)
 
     override fun setVelocity(poseVelocity: Pose2d) {
         val powers = TankKinematics.robotToWheelVelocities(poseVelocity, trackWidth)

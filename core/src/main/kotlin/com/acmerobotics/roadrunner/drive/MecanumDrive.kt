@@ -14,7 +14,37 @@ abstract class MecanumDrive @JvmOverloads constructor(
         val wheelBase: Double = trackWidth,
         clock: NanoClock = NanoClock.system()
 ) : Drive() {
-    override var localizer: Localizer = MecanumDriveEncoderLocalizer(this, clock)
+    // TODO: add heading support to the localizer
+    class MecanumLocalizer @JvmOverloads constructor(
+            private val drive: MecanumDrive,
+            private val clock: NanoClock = NanoClock.system()
+    ) : Localizer {
+        override var poseEstimate: Pose2d = Pose2d()
+            set(value) {
+                lastWheelPositions = emptyList()
+                lastUpdateTimestamp = Double.NaN
+                field = value
+            }
+        private var lastWheelPositions = emptyList<Double>()
+        private var lastUpdateTimestamp = Double.NaN
+
+        override fun update() {
+            val wheelPositions = drive.getWheelPositions()
+            val timestamp = clock.seconds()
+            if (lastWheelPositions.isNotEmpty()) {
+                val dt = timestamp - lastUpdateTimestamp
+                val wheelVelocities = wheelPositions
+                        .zip(lastWheelPositions)
+                        .map { (it.first - it.second) / dt }
+                val robotPoseDelta = MecanumKinematics.wheelToRobotVelocities(wheelVelocities, drive.wheelBase, drive.trackWidth) * dt
+                poseEstimate = Kinematics.relativeOdometryUpdate(poseEstimate, robotPoseDelta)
+            }
+            lastWheelPositions = wheelPositions
+            lastUpdateTimestamp = timestamp
+        }
+    }
+
+    override var localizer: Localizer = MecanumLocalizer(this, clock)
 
     override fun setVelocity(poseVelocity: Pose2d) {
         val powers = MecanumKinematics.robotToWheelVelocities(poseVelocity, trackWidth, wheelBase)
