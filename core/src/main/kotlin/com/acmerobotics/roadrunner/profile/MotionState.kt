@@ -24,5 +24,10 @@ class MotionState(val x: Double, val v: Double, val a: Double, val j: Double = D
             )
         }
 
+    /**
+     * Returns a flipped (negated) version of the state.
+     */
+    fun flipped() = MotionState(-x, -v, -a, -j)
+
     override fun toString() = String.format("(x=%.3f, v=%.3f, a=%.3f, j=%.3f)", x, v, a, j)
 }

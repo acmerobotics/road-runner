@@ -40,18 +40,17 @@ object MotionProfileGenerator {
 
         if (goal.x < start.x) {
             return generateSimpleMotionProfile(
-                    MotionState(goal.x, -goal.v, goal.a),
-                    MotionState(start.x, -start.v, start.a),
+                    start.flipped(),
+                    goal.flipped(),
                     maximumVelocity,
                     maximumAcceleration,
                     maximumJerk
-            ).reversed()
+            ).flipped()
         }
 
         val accelerationProfile = generateAccelProfile(start, maximumVelocity, maximumAcceleration, maximumJerk)
         // we leverage symmetry here; deceleration profiles are just reversed acceleration ones
-        val decelerationProfile = generateAccelProfile(
-                MotionState(goal.x, goal.v, -goal.a, goal.j), maximumVelocity, maximumAcceleration, maximumJerk)
+        val decelerationProfile = generateAccelProfile(goal, maximumVelocity, maximumAcceleration, maximumJerk)
                 .reversed()
 
         val noCoastProfile = accelerationProfile + decelerationProfile
@@ -81,8 +80,7 @@ object MotionProfileGenerator {
                 val peakVel = (upperBound + lowerBound) / 2
 
                 val searchAccelProfile = generateAccelProfile(start, maximumVelocity, maximumAcceleration, maximumJerk)
-                val searchDecelProfile = generateAccelProfile(
-                        MotionState(goal.x, goal.v, -goal.a, goal.j), maximumVelocity, maximumAcceleration, maximumJerk)
+                val searchDecelProfile = generateAccelProfile(goal, maximumVelocity, maximumAcceleration, maximumJerk)
                         .reversed()
 
                 val searchProfile = searchAccelProfile + searchDecelProfile
@@ -213,11 +211,11 @@ object MotionProfileGenerator {
     ): MotionProfile {
         if (goal.x < start.x) {
             return generateMotionProfile(
-                goal,
-                start,
+                start.flipped(),
+                goal.flipped(),
                 constraints,
                 resolution
-            ).reversed()
+            ).flipped()
         }
 
         val length = goal.x - start.x

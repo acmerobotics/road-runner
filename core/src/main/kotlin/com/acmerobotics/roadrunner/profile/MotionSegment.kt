@@ -19,13 +19,9 @@ class MotionSegment(val start: MotionState, val dt: Double) {
     fun end() = start[dt]
 
     /**
-     * Returns a reversed version of the profile.
+     * Returns a flipped (negated) version of the segment.
      */
-    fun reversed(): MotionSegment {
-        val end = end()
-        val state = MotionState(end.x, -end.v, end.a, end.j)
-        return MotionSegment(state, dt)
-    }
+    fun flipped() = MotionSegment(start.flipped(), dt)
 
     override fun toString() = "($start, $dt)"
 }
