@@ -106,7 +106,6 @@ object MotionProfileGenerator {
         }
     }
 
-    // TODO: is the null return case a sane result? i.e., reachable with acceptable inputs (no infs, nans, etc.)
     private fun generateAccelProfile(
             start: MotionState,
             maxVel: Double,

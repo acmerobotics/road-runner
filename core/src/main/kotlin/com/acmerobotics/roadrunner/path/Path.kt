@@ -20,28 +20,83 @@ import org.apache.commons.math3.linear.RealVector
  * @param interpolator heading interpolator
  * @param reversed whether or not to travel along the path in reverse
  */
-// TODO: support composite paths?
-// or find another way for gvf to follow composite curves
 class Path @JvmOverloads constructor(
-        val parametricCurve: ParametricCurve,
-        val interpolator: HeadingInterpolator = TangentInterpolator(),
-        val reversed: Boolean = false
+        val parametricCurves: List<ParametricCurve>,
+        val interpolators: List<HeadingInterpolator> = parametricCurves.map { TangentInterpolator() },
+        val reversed: List<Boolean> = parametricCurves.map { false }
 ) {
+    constructor(
+            parametricCurve: ParametricCurve,
+            interpolator: HeadingInterpolator = TangentInterpolator(),
+            reversed: Boolean = false
+    ) : this(listOf(parametricCurve), listOf(interpolator), listOf(reversed))
+
     class ProjectionResult(val displacement: Double, val distance: Double)
 
     init {
-        interpolator.init(parametricCurve)
+        interpolators.zip(parametricCurves).forEach { it.first.init(it.second) }
     }
 
     /**
      * Returns the length of the path.
      */
-    fun length() = parametricCurve.length()
+    fun length() = parametricCurves.sumByDouble { it.length() }
 
     /**
      * Returns the pose [displacement] units along the path.
      */
     operator fun get(displacement: Double): Pose2d {
+        var remainingDisplacement = displacement
+        for (i in parametricCurves.indices) {
+            val parametricCurve = parametricCurves[i]
+            if (remainingDisplacement <= parametricCurve.length()) {
+                return segmentGet(i, remainingDisplacement)
+            }
+            remainingDisplacement -= parametricCurve.length()
+        }
+        val finalVector = parametricCurves.lastOrNull()?.end() ?: return Pose2d()
+        return Pose2d(finalVector, interpolators.last().end())
+    }
+
+    /**
+     * Returns the pose derivative [displacement] units along the path.
+     */
+    fun deriv(displacement: Double): Pose2d {
+        var remainingDisplacement = displacement
+        for (i in parametricCurves.indices) {
+            val parametricCurve = parametricCurves[i]
+            if (remainingDisplacement <= parametricCurve.length()) {
+                return segmentDeriv(i, remainingDisplacement)
+            }
+            remainingDisplacement -= parametricCurve.length()
+        }
+        val finalVector = parametricCurves.lastOrNull()?.end() ?: return Pose2d()
+        return Pose2d(finalVector, interpolators.last().end())
+    }
+
+    /**
+     * Returns the pose second derivative [displacement] units along the path.
+     */
+    fun secondDeriv(displacement: Double): Pose2d {
+        var remainingDisplacement = displacement
+        for (i in parametricCurves.indices) {
+            val parametricCurve = parametricCurves[i]
+            if (remainingDisplacement <= parametricCurve.length()) {
+                return segmentSecondDeriv(i, remainingDisplacement)
+            }
+            remainingDisplacement -= parametricCurve.length()
+        }
+        val finalVector = parametricCurves.lastOrNull()?.end() ?: return Pose2d()
+        return Pose2d(finalVector, interpolators.last().end())
+    }
+
+    /**
+     * Returns the pose [displacement] units along the path.
+     */
+    private fun segmentGet(i: Int, displacement: Double): Pose2d {
+        val parametricCurve = parametricCurves[i]
+        val interpolator = interpolators[i]
+        val reversed = reversed[i]
         val point = if (reversed) {
             parametricCurve[length() - displacement]
         } else {
@@ -58,7 +113,10 @@ class Path @JvmOverloads constructor(
     /**
      * Returns the pose derivative [displacement] units along the path.
      */
-    fun deriv(displacement: Double): Pose2d {
+    private fun segmentDeriv(i: Int, displacement: Double): Pose2d {
+        val parametricCurve = parametricCurves[i]
+        val interpolator = interpolators[i]
+        val reversed = reversed[i]
         val deriv = if (reversed) {
             -parametricCurve.deriv(length() - displacement)
         } else {
@@ -75,7 +133,10 @@ class Path @JvmOverloads constructor(
     /**
      * Returns the pose second derivative [displacement] units along the path.
      */
-    fun secondDeriv(displacement: Double): Pose2d {
+    private fun segmentSecondDeriv(i: Int, displacement: Double): Pose2d {
+        val parametricCurve = parametricCurves[i]
+        val interpolator = interpolators[i]
+        val reversed = reversed[i]
         val secondDeriv = if (reversed) {
             parametricCurve.secondDeriv(length() - displacement)
         } else {
