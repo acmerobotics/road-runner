@@ -135,14 +135,15 @@ object MotionProfileGenerator {
 
         return if (deltaV2 < 0.0) {
             // there is no constant acceleration phase
-            if (start.a > maxAccel) {
+            // the second case checks if we're going to exceed max vel
+            if (start.a > maxAccel || (start.v - maxVel) > (start.a * start.a) / (2 * maxJerk)) {
                 // problem: we need to cut down on our acceleration but we can't cut our initial decel
                 // solution: we'll lengthen our initial decel to -max accel and similarly with our final accel
                 // if this results in an over correction, decel instead to a good accel
                 val newDeltaT1 = (start.a + maxAccel) / maxJerk
                 val newDeltaV1 = start.a * newDeltaT1 - 0.5 * maxJerk * newDeltaT1 * newDeltaT1
 
-                val newDeltaV2 = maxVel - start.v - newDeltaV1 - deltaV3
+                val newDeltaV2 = maxVel - start.v - newDeltaV1 + deltaV3
 
                 if (newDeltaV2 > 0.0) {
                     // we decelerated too much
@@ -156,11 +157,11 @@ object MotionProfileGenerator {
                             .build()
                 } else {
                     // we're almost good
-                    val deltaT2 = deltaV2 / -maxAccel
+                    val newDeltaT2 = newDeltaV2 / -maxAccel
 
                     MotionProfileBuilder(start)
                             .appendJerkControl(-maxJerk, newDeltaT1)
-                            .appendJerkControl(0.0, deltaT2)
+                            .appendJerkControl(0.0, newDeltaT2)
                             .appendJerkControl(maxJerk, deltaT3)
                             .build()
                 }
