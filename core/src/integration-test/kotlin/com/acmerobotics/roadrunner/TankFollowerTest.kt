@@ -5,9 +5,7 @@ import com.acmerobotics.roadrunner.drive.TankDrive
 import com.acmerobotics.roadrunner.followers.GVFFollower
 import com.acmerobotics.roadrunner.followers.RamseteFollower
 import com.acmerobotics.roadrunner.followers.TankPIDVAFollower
-import com.acmerobotics.roadrunner.path.LineSegment
-import com.acmerobotics.roadrunner.path.Path
-import com.acmerobotics.roadrunner.path.QuinticSplineSegment
+import com.acmerobotics.roadrunner.path.PathBuilder
 import com.acmerobotics.roadrunner.profile.SimpleMotionConstraints
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
@@ -154,10 +152,10 @@ class TankFollowerTest {
     fun simulateGVFFollower() {
         val dt = 1.0 / SIMULATION_HZ
 
-        val path = Path(listOf(QuinticSplineSegment(
-                QuinticSplineSegment.Waypoint(0.0, 0.0, 20.0, 0.0),
-                QuinticSplineSegment.Waypoint(15.0, 15.0, 20.0, 0.0)
-        ), LineSegment(Vector2d(15.0, 15.0), Vector2d(30.0, 15.0))))
+        val path = PathBuilder(Pose2d(0.0, 0.0, 0.0))
+                .splineTo(Pose2d(15.0, 15.0, 0.0))
+                .lineTo(Vector2d(30.0, 15.0))
+                .build()
 
         val clock = SimulatedClock()
         val drive = SimulatedTankDrive(dt, kV, TRACK_WIDTH, clock)

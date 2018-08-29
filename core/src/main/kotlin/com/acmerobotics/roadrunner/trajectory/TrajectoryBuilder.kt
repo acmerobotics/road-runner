@@ -1,6 +1,5 @@
 package com.acmerobotics.roadrunner.trajectory
 
-import com.acmerobotics.roadrunner.util.Angle
 import com.acmerobotics.roadrunner.Pose2d
 import com.acmerobotics.roadrunner.Vector2d
 import com.acmerobotics.roadrunner.path.LineSegment
@@ -10,6 +9,7 @@ import com.acmerobotics.roadrunner.path.heading.HeadingInterpolator
 import com.acmerobotics.roadrunner.path.heading.TangentInterpolator
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryConstraints
+import com.acmerobotics.roadrunner.util.Angle
 
 /**
  * Easy-to-use builder for creating [Trajectory] instances.
@@ -104,7 +104,7 @@ class TrajectoryBuilder(startPose: Pose2d, private val globalConstraints: DriveC
         }
         val pointTurn = PointTurn(currentPose, heading, constraintsOverride ?: globalConstraints)
         trajectorySegments.add(pointTurn)
-        currentPose = Pose2d(currentPose.x, currentPose.y, heading)
+        currentPose = Pose2d(currentPose.pos(), heading)
         return this
     }
 
