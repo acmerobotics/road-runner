@@ -12,35 +12,13 @@ import com.acmerobotics.roadrunner.util.NanoClock
 abstract class MecanumDrive @JvmOverloads constructor(
         val trackWidth: Double,
         val wheelBase: Double = trackWidth,
-        private val clock: NanoClock = NanoClock.system()
+        clock: NanoClock = NanoClock.system()
 ) : Drive() {
-    override var poseEstimate: Pose2d = Pose2d()
-        set(value) {
-            lastWheelPositions = emptyList()
-            lastUpdateTimestamp = Double.NaN
-            field = value
-        }
-    private var lastWheelPositions = emptyList<Double>()
-    private var lastUpdateTimestamp = Double.NaN
+    override var localizer: Localizer = MecanumDriveEncoderLocalizer(this, clock)
 
     override fun setVelocity(poseVelocity: Pose2d) {
         val powers = MecanumKinematics.robotToWheelVelocities(poseVelocity, trackWidth, wheelBase)
         setMotorPowers(powers[0], powers[1], powers[2], powers[3])
-    }
-
-    override fun updatePoseEstimate() {
-        val wheelPositions = getWheelPositions()
-        val timestamp = clock.seconds()
-        if (lastWheelPositions.isNotEmpty()) {
-            val dt = timestamp - lastUpdateTimestamp
-            val wheelVelocities = wheelPositions
-                    .zip(lastWheelPositions)
-                    .map { (it.first - it.second) / dt }
-            val robotPoseDelta = MecanumKinematics.wheelToRobotVelocities(wheelVelocities, wheelBase, trackWidth) * dt
-            poseEstimate = Kinematics.relativeOdometryUpdate(poseEstimate, robotPoseDelta)
-        }
-        lastWheelPositions = wheelPositions
-        lastUpdateTimestamp = timestamp
     }
 
     /**

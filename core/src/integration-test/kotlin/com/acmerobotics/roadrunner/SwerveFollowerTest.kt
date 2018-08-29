@@ -38,16 +38,12 @@ class SwerveFollowerTest {
         var positions = listOf(0.0, 0.0, 0.0, 0.0)
         var orientations = listOf(0.0, 0.0, 0.0, 0.0)
 
-        override fun updatePoseEstimate() {
-            positions = positions.zip(powers)
-                    .map { it.first + it.second / kV * dt }
-            super.updatePoseEstimate()
-        }
-
         override fun setMotorPowers(frontLeft: Double, rearLeft: Double, rearRight: Double, frontRight: Double) {
             powers = listOf(frontLeft, rearLeft, rearRight, frontRight)
                     .map { it * VOLTAGE_NOISE_DIST.sample() }
                     .map { max(0.0, min(it, 1.0)) }
+            positions = positions.zip(powers)
+                    .map { it.first + it.second / kV * dt }
         }
 
         override fun getWheelPositions() = positions

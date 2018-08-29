@@ -12,40 +12,15 @@ import com.acmerobotics.roadrunner.util.NanoClock
 abstract class SwerveDrive @JvmOverloads constructor(
         val trackWidth: Double,
         val wheelBase: Double = trackWidth,
-        private val clock: NanoClock = NanoClock.system()
+        clock: NanoClock = NanoClock.system()
 ) : Drive() {
-    override var poseEstimate: Pose2d = Pose2d()
-        set(value) {
-            lastWheelPositions = emptyList()
-            lastUpdateTimestamp = Double.NaN
-            field = value
-        }
-    private var lastWheelPositions = emptyList<Double>()
-    private var lastUpdateTimestamp = Double.NaN
+    override var localizer: Localizer = SwerveDriveEncoderLocalizer(this, clock)
 
     override fun setVelocity(poseVelocity: Pose2d) {
         val motorPowers = SwerveKinematics.robotToWheelVelocities(poseVelocity, trackWidth, wheelBase)
         val moduleOrientations = SwerveKinematics.robotToModuleOrientations(poseVelocity, trackWidth, wheelBase)
         setMotorPowers(motorPowers[0], motorPowers[1], motorPowers[2], motorPowers[3])
         setModuleOrientations(moduleOrientations[0], moduleOrientations[1], moduleOrientations[2], moduleOrientations[3])
-    }
-
-    // TODO: move to base class? note: could get tricky with the inherited properties
-    override fun updatePoseEstimate() {
-        val wheelPositions = getWheelPositions()
-        val moduleOrientations = getModuleOrientations()
-        val timestamp = clock.seconds()
-        if (lastWheelPositions.isNotEmpty()) {
-            val dt = timestamp - lastUpdateTimestamp
-            val wheelVelocities = wheelPositions
-                    .zip(lastWheelPositions)
-                    .map { (it.first - it.second) / dt }
-            val robotPoseDelta = SwerveKinematics.wheelToRobotVelocities(
-                    wheelVelocities, moduleOrientations, wheelBase, trackWidth) * dt
-            poseEstimate = Kinematics.relativeOdometryUpdate(poseEstimate, robotPoseDelta)
-        }
-        lastWheelPositions = wheelPositions
-        lastUpdateTimestamp = timestamp
     }
 
     /**
