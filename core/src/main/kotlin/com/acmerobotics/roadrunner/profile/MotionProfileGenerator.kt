@@ -29,15 +29,7 @@ object MotionProfileGenerator {
         maximumAcceleration: Double,
         maximumJerk: Double = Double.NaN
     ): MotionProfile {
-        if (maximumJerk.isNaN()) {
-            return generateMotionProfile(
-                    start,
-                    goal,
-                    SimpleMotionConstraints(maximumVelocity, maximumAcceleration),
-                    1
-            )
-        }
-
+        // ensure the goal is always after the start; plan the flipped profile otherwise
         if (goal.x < start.x) {
             return generateSimpleMotionProfile(
                     start.flipped(),
@@ -48,61 +40,108 @@ object MotionProfileGenerator {
             ).flipped()
         }
 
-        val accelerationProfile = generateAccelProfile(start, maximumVelocity, maximumAcceleration, maximumJerk)
-        // we leverage symmetry here; deceleration profiles are just reversed acceleration ones
-        val decelerationProfile = generateAccelProfile(goal, maximumVelocity, maximumAcceleration, maximumJerk)
-                .reversed()
+        if (maximumJerk.isNaN()) {
+            // acceleration-limited profile (trapezoidal)
+            val accelProfile = generateAccelProfile(start, maximumVelocity, maximumAcceleration)
+            val decelProfile = generateAccelProfile(goal, maximumVelocity, maximumAcceleration)
+                    .reversed()
 
-        val noCoastProfile = accelerationProfile + decelerationProfile
-        val remainingDistance = goal.x - noCoastProfile.end().x
+            val noCoastProfile = accelProfile + decelProfile
+            val remainingDistance = goal.x - noCoastProfile.end().x
 
-        if (remainingDistance >= 0.0) {
-            // we just need to add a coast segment of appropriate duration
-            val deltaT4 = remainingDistance / maximumVelocity
+            if (remainingDistance >= 0.0) {
+                val deltaT2 = remainingDistance / maximumVelocity
 
-            return MotionProfileBuilder(start)
-                    .appendProfile(accelerationProfile)
-                    .appendJerkControl(0.0, deltaT4)
-                    .appendProfile(decelerationProfile)
-                    .build()
-        } else {
-            // the profile never reaches maxV
-            // thus, we need to compute the peak velocity (0 < peak vel < max vel)
-            // we *could* construct a large polynomial expression (i.e., a nasty cubic) and solve it using Cardano's
-            // method, some kind of inclusion method like modified Anderson-Bjorck-King, or a host of other methods
-            // (see https://link.springer.com/content/pdf/bbm%3A978-3-642-05175-3%2F1.pdf for modified ABK)
-            // instead, however, we conduct a binary search as it's sufficiently performant for this use case, requires
-            // less code, and is overall significantly more comprehensible
-            var upperBound = maximumVelocity
-            var lowerBound = 0.0
-            var iterations = 0
-            while (iterations < 1000) {
-                val peakVel = (upperBound + lowerBound) / 2
+                return MotionProfileBuilder(start)
+                        .appendProfile(accelProfile)
+                        .appendAccelerationControl(0.0, deltaT2)
+                        .appendProfile(decelProfile)
+                        .build()
+            } else if (start.v > maximumVelocity && goal.v > maximumVelocity) {
+                // decel, accel
+                val roots = solveQuadratic(-maximumAcceleration, 2 * start.v, (goal.v * goal.v - start.v * start.v) / (2 * maximumAcceleration))
+                val deltaT1 = roots.filter { it >= 0.0 }.min()!!
+                val deltaT3 = abs(start.v - goal.v) / maximumAcceleration + deltaT1
 
-                val searchAccelProfile = generateAccelProfile(start, maximumVelocity, maximumAcceleration, maximumJerk)
-                val searchDecelProfile = generateAccelProfile(goal, maximumVelocity, maximumAcceleration, maximumJerk)
-                        .reversed()
+                return MotionProfileBuilder(start)
+                        .appendAccelerationControl(-maximumAcceleration, deltaT1)
+                        .appendAccelerationControl(maximumAcceleration, deltaT3)
+                        .build()
+            } else if (start.v <= maximumVelocity && goal.v <= maximumVelocity) {
+                // accel, decel
+                val roots = solveQuadratic(maximumAcceleration, 2 * start.v, (start.v * start.v - goal.v * goal.v) / (2 * maximumAcceleration))
+                val deltaT1 = roots.filter { it >= 0.0 }.min()!!
+                val deltaT3 = abs(start.v - goal.v) / maximumAcceleration + deltaT1
 
-                val searchProfile = searchAccelProfile + searchDecelProfile
+                return MotionProfileBuilder(start)
+                        .appendAccelerationControl(maximumAcceleration, deltaT1)
+                        .appendAccelerationControl(-maximumAcceleration, deltaT3)
+                        .build()
+            } else {
+                // constraints are not satisfiable
 
-                val error = goal.x - searchProfile.end().x
-
-                if (abs(error) < 1e-10) {
-                    return searchProfile
-                }
-
-                if (error > 0.0) {
-                    // we undershot so shift the lower bound up
-                    lowerBound = peakVel
-                } else {
-                    // we overshot so shift the upper bound down
-                    upperBound = peakVel
-                }
-
-                iterations++
+                TODO("unable to generate a constraint-obeying profile")
             }
+        } else {
+            // jerk-limited profile (S-curve)
+            val accelerationProfile = generateAccelProfile(start, maximumVelocity, maximumAcceleration, maximumJerk)
+            // we leverage symmetry here; deceleration profiles are just reversed acceleration ones
+            val decelerationProfile = generateAccelProfile(goal, maximumVelocity, maximumAcceleration, maximumJerk)
+                    .reversed()
 
-            throw RuntimeException("Unable to respect constraints")
+            val noCoastProfile = accelerationProfile + decelerationProfile
+            val remainingDistance = goal.x - noCoastProfile.end().x
+
+            if (remainingDistance >= 0.0) {
+                // we just need to add a coast segment of appropriate duration
+                val deltaT4 = remainingDistance / maximumVelocity
+
+                return MotionProfileBuilder(start)
+                        .appendProfile(accelerationProfile)
+                        .appendJerkControl(0.0, deltaT4)
+                        .appendProfile(decelerationProfile)
+                        .build()
+            } else {
+                // the profile never reaches maxV
+                // thus, we need to compute the peak velocity (0 < peak vel < max vel)
+                // we *could* construct a large polynomial expression (i.e., a nasty cubic) and solve it using Cardano's
+                // method, some kind of inclusion method like modified Anderson-Bjorck-King, or a host of other methods
+                // (see https://link.springer.com/content/pdf/bbm%3A978-3-642-05175-3%2F1.pdf for modified ABK)
+                // instead, however, we conduct a binary search as it's sufficiently performant for this use case, requires
+                // less code, and is overall significantly more comprehensible
+                var upperBound = maximumVelocity
+                var lowerBound = 0.0
+                var iterations = 0
+                while (iterations < 1000) {
+                    val peakVel = (upperBound + lowerBound) / 2
+
+                    val searchAccelProfile = generateAccelProfile(start, maximumVelocity, maximumAcceleration, maximumJerk)
+                    val searchDecelProfile = generateAccelProfile(goal, maximumVelocity, maximumAcceleration, maximumJerk)
+                            .reversed()
+
+                    val searchProfile = searchAccelProfile + searchDecelProfile
+
+                    val error = goal.x - searchProfile.end().x
+
+                    if (abs(error) < 1e-10) {
+                        return searchProfile
+                    }
+
+                    if (error > 0.0) {
+                        // we undershot so shift the lower bound up
+                        lowerBound = peakVel
+                    } else {
+                        // we overshot so shift the upper bound down
+                        upperBound = peakVel
+                    }
+
+                    iterations++
+                }
+
+                // constraints are not satisfiable
+
+                TODO("unable to generate a constraint-obeying profile")
+            }
         }
     }
 
@@ -110,86 +149,99 @@ object MotionProfileGenerator {
             start: MotionState,
             maxVel: Double,
             maxAccel: Double,
-            maxJerk: Double
-    ): MotionProfile {
-        // compute the duration and velocity of the first segment
-        val (deltaT1, deltaV1) = if (start.a > maxAccel) {
-            // slow down and see where we are
-            val deltaT1 = (start.a - maxAccel) / maxJerk
-            val deltaV1 = start.a * deltaT1 - 0.5 * maxJerk * deltaT1 * deltaT1
-            Pair(deltaT1, deltaV1)
+            maxJerk: Double = Double.NaN
+    ): MotionProfile =
+        if (maxJerk.isNaN()) {
+            // acceleration-limited
+            val deltaT1 = abs(start.v - maxVel) / maxAccel
+            val builder = MotionProfileBuilder(start)
+            if (start.v > maxVel) {
+                // we need to decelerate
+                builder.appendAccelerationControl(-maxAccel, deltaT1)
+            } else {
+                builder.appendAccelerationControl(maxAccel, deltaT1)
+            }
+            builder.build()
         } else {
-            // otherwise accelerate
-            val deltaT1 = (maxAccel - start.a) / maxJerk
-            val deltaV1 = start.a * deltaT1 + 0.5 * maxJerk * deltaT1 * deltaT1
-            Pair(deltaT1, deltaV1)
-        }
+            // jerk-limited
+            // compute the duration and velocity of the first segment
+            val (deltaT1, deltaV1) = if (start.a > maxAccel) {
+                // slow down and see where we are
+                val deltaT1 = (start.a - maxAccel) / maxJerk
+                val deltaV1 = start.a * deltaT1 - 0.5 * maxJerk * deltaT1 * deltaT1
+                Pair(deltaT1, deltaV1)
+            } else {
+                // otherwise accelerate
+                val deltaT1 = (maxAccel - start.a) / maxJerk
+                val deltaV1 = start.a * deltaT1 + 0.5 * maxJerk * deltaT1 * deltaT1
+                Pair(deltaT1, deltaV1)
+            }
 
-        // compute the duration and velocity of the third segment
-        val deltaT3 = maxAccel / maxJerk
-        val deltaV3 = maxAccel * deltaT3 - 0.5 * maxJerk * deltaT3 * deltaT3
+            // compute the duration and velocity of the third segment
+            val deltaT3 = maxAccel / maxJerk
+            val deltaV3 = maxAccel * deltaT3 - 0.5 * maxJerk * deltaT3 * deltaT3
 
-        // compute the velocity change required in the second segment
-        val deltaV2 = maxVel - start.v - deltaV1 - deltaV3
+            // compute the velocity change required in the second segment
+            val deltaV2 = maxVel - start.v - deltaV1 - deltaV3
 
-        return if (deltaV2 < 0.0) {
-            // there is no constant acceleration phase
-            // the second case checks if we're going to exceed max vel
-            if (start.a > maxAccel || (start.v - maxVel) > (start.a * start.a) / (2 * maxJerk)) {
-                // problem: we need to cut down on our acceleration but we can't cut our initial decel
-                // solution: we'll lengthen our initial decel to -max accel and similarly with our final accel
-                // if this results in an over correction, decel instead to a good accel
-                val newDeltaT1 = (start.a + maxAccel) / maxJerk
-                val newDeltaV1 = start.a * newDeltaT1 - 0.5 * maxJerk * newDeltaT1 * newDeltaT1
+            if (deltaV2 < 0.0) {
+                // there is no constant acceleration phase
+                // the second case checks if we're going to exceed max vel
+                if (start.a > maxAccel || (start.v - maxVel) > (start.a * start.a) / (2 * maxJerk)) {
+                    // problem: we need to cut down on our acceleration but we can't cut our initial decel
+                    // solution: we'll lengthen our initial decel to -max accel and similarly with our final accel
+                    // if this results in an over correction, decel instead to a good accel
+                    val newDeltaT1 = (start.a + maxAccel) / maxJerk
+                    val newDeltaV1 = start.a * newDeltaT1 - 0.5 * maxJerk * newDeltaT1 * newDeltaT1
 
-                val newDeltaV2 = maxVel - start.v - newDeltaV1 + deltaV3
+                    val newDeltaV2 = maxVel - start.v - newDeltaV1 + deltaV3
 
-                if (newDeltaV2 > 0.0) {
-                    // we decelerated too much
-                    val roots = solveQuadratic(-maxJerk, 2 * start.a, start.v - maxVel - start.a * start.a / (2 * maxJerk))
-                    val finalDeltaT1 = roots.filter { it >= 0.0 }.min()!!
-                    val finalDeltaT3 = finalDeltaT1 - start.a / maxJerk
+                    if (newDeltaV2 > 0.0) {
+                        // we decelerated too much
+                        val roots = solveQuadratic(-maxJerk, 2 * start.a, start.v - maxVel - start.a * start.a / (2 * maxJerk))
+                        val finalDeltaT1 = roots.filter { it >= 0.0 }.min()!!
+                        val finalDeltaT3 = finalDeltaT1 - start.a / maxJerk
 
-                    MotionProfileBuilder(start)
-                            .appendJerkControl(-maxJerk, finalDeltaT1)
-                            .appendJerkControl(maxJerk, finalDeltaT3)
-                            .build()
+                        MotionProfileBuilder(start)
+                                .appendJerkControl(-maxJerk, finalDeltaT1)
+                                .appendJerkControl(maxJerk, finalDeltaT3)
+                                .build()
+                    } else {
+                        // we're almost good
+                        val newDeltaT2 = newDeltaV2 / -maxAccel
+
+                        MotionProfileBuilder(start)
+                                .appendJerkControl(-maxJerk, newDeltaT1)
+                                .appendJerkControl(0.0, newDeltaT2)
+                                .appendJerkControl(maxJerk, deltaT3)
+                                .build()
+                    }
                 } else {
-                    // we're almost good
-                    val newDeltaT2 = newDeltaV2 / -maxAccel
+                    // cut out the constant accel phase and find a shorter delta t1 and delta t3
+                    val roots = solveQuadratic(maxJerk, 2 * start.a, start.v - maxVel + start.a * start.a / (2 * maxJerk))
+                    val newDeltaT1 = roots.filter { it >= 0.0 }.min()!!
+                    val newDeltaT3 = newDeltaT1 + start.a / maxJerk
 
                     MotionProfileBuilder(start)
-                            .appendJerkControl(-maxJerk, newDeltaT1)
-                            .appendJerkControl(0.0, newDeltaT2)
-                            .appendJerkControl(maxJerk, deltaT3)
+                            .appendJerkControl(maxJerk, newDeltaT1)
+                            .appendJerkControl(-maxJerk, newDeltaT3)
                             .build()
                 }
             } else {
-                // cut out the constant accel phase and find a shorter delta t1 and delta t3
-                val roots = solveQuadratic(maxJerk, 2 * start.a, start.v - maxVel + start.a * start.a / (2 * maxJerk))
-                val newDeltaT1 = roots.filter { it >= 0.0 }.min()!!
-                val newDeltaT3 = newDeltaT1 + start.a / maxJerk
+                // there is a constant acceleration phase
+                val deltaT2 = deltaV2 / maxAccel
 
-                MotionProfileBuilder(start)
-                        .appendJerkControl(maxJerk, newDeltaT1)
-                        .appendJerkControl(-maxJerk, newDeltaT3)
+                val builder = MotionProfileBuilder(start)
+                if (start.a > maxAccel) {
+                    builder.appendJerkControl(-maxJerk, deltaT1)
+                } else {
+                    builder.appendJerkControl(maxJerk, deltaT1)
+                }
+                builder.appendJerkControl(0.0, deltaT2)
+                        .appendJerkControl(-maxJerk, deltaT3)
                         .build()
             }
-        } else {
-            // there is a constant acceleration phase
-            val deltaT2 = deltaV2 / maxAccel
-
-            val builder = MotionProfileBuilder(start)
-            if (start.a > maxAccel) {
-                builder.appendJerkControl(-maxJerk, deltaT1)
-            } else {
-                builder.appendJerkControl(maxJerk, deltaT1)
-            }
-            builder.appendJerkControl(0.0, deltaT2)
-                    .appendJerkControl(-maxJerk, deltaT3)
-                    .build()
         }
-    }
 
     /**
      * Generates a motion profile with dynamic maximum velocity and acceleration. Uses the algorithm described in section

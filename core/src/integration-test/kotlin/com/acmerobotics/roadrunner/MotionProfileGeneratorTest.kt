@@ -135,4 +135,17 @@ class MotionProfileGeneratorTest {
                 )
         )
     }
+
+    @Test
+    fun test() {
+        GraphUtil.saveMotionProfile(
+                "profiles/test",
+                MotionProfileGenerator.generateSimpleMotionProfile(
+                        MotionState(0.0, 50.0),
+                        MotionState(10.0, -20.0),
+                        15.0,
+                        30.0
+                )
+        )
+    }
 }

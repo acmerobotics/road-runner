@@ -38,7 +38,7 @@ class MotionProfile(segments: List<MotionSegment>) {
         val builder = MotionProfileBuilder(end().flipped())
         for (segment in segments.reversed()) {
             if (segment.start.j.isNaN()) {
-                builder.appendAccelerationControl(segment.start.a, segment.dt)
+                builder.appendAccelerationControl(-segment.start.a, segment.dt)
             } else {
                 builder.appendJerkControl(segment.start.j, segment.dt)
             }
