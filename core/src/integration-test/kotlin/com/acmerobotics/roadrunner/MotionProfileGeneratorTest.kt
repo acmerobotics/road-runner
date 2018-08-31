@@ -137,12 +137,12 @@ class MotionProfileGeneratorTest {
     }
 
     @Test
-    fun test() {
+    fun testConstraintViolations() {
         GraphUtil.saveMotionProfile(
-                "profiles/test",
+                "profiles/constraintViolations",
                 MotionProfileGenerator.generateSimpleMotionProfile(
-                        MotionState(0.0, 50.0),
-                        MotionState(10.0, -20.0),
+                        MotionState(0.0, 10.0),
+                        MotionState(1.0, 0.0),
                         15.0,
                         30.0
                 )

@@ -34,17 +34,7 @@ class MotionProfile(segments: List<MotionSegment>) {
     /**
      * Returns a reversed version of the motion profile.
      */
-    fun reversed(): MotionProfile {
-        val builder = MotionProfileBuilder(end().flipped())
-        for (segment in segments.reversed()) {
-            if (segment.start.j.isNaN()) {
-                builder.appendAccelerationControl(-segment.start.a, segment.dt)
-            } else {
-                builder.appendJerkControl(segment.start.j, segment.dt)
-            }
-        }
-        return builder.build()
-    }
+    fun reversed() = MotionProfile(segments.map { it.reversed() }.reversed())
 
     /**
      * Returns a flipped version of the motion profile.
