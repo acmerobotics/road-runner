@@ -8,17 +8,20 @@ import kotlin.math.sqrt
  * Motion profile generator with arbitrary start and end motion states and either dynamic constraints or jerk limiting.
  */
 object MotionProfileGenerator {
+
     /**
-     * Generates a simple motion profile with constant [maximumVelocity], [maximumAcceleration], and [maximumJerk].
-     * Warning: Trapezoidal profiles (max jerk is 0) may be generated incorrectly if the endpoint velocity/acceleration
-     * values preclude the obedience of the motion constraints. S-curve profile (max jerk is nonzero) generation will
-     * fail with an exception if constraints can not be obeyed (based on the endpoint velocities/accelerations).
+     * Generates a simple motion profile with constant [maximumVelocity], [maximumAcceleration], and [maximumJerk]. If
+     * constraints can't be obeyed, there are two possible fallbacks. If [overshoot] is true, then two profiles will be
+     * concatenated (the first one overshoots the goal and the second one reverses back to reach the goal). Otherwise,
+     * The highest order constraint (e.g., max jerk for jerk-limited profiles) is repeatedly violated until the goal is
+     * satisfiable.
      *
      * @param start start motion state
      * @param goal goal motion state
      * @param maximumVelocity maximum velocity
      * @param maximumAcceleration maximum acceleration
-     * @param maximumJerk maximum jerk (optional)
+     * @param maximumJerk maximum jerk
+     * @param overshoot
      */
     @JvmStatic
     @JvmOverloads
@@ -46,7 +49,9 @@ object MotionProfileGenerator {
             val requiredAccel = (goal.v * goal.v - start.v * start.v) / (2 * (goal.x - start.x))
 
             val accelProfile = generateAccelProfile(start, maximumVelocity, maximumAcceleration)
-            val decelProfile = generateAccelProfile(goal, maximumVelocity, maximumAcceleration)
+            val decelProfile = generateAccelProfile(
+                    MotionState(goal.x, goal.v, -goal.a, goal.j
+                    ), maximumVelocity, maximumAcceleration, maximumJerk)
                     .reversed()
 
             val noCoastProfile = accelProfile + decelProfile
@@ -104,8 +109,11 @@ object MotionProfileGenerator {
         } else {
             // jerk-limited profile (S-curve)
             val accelerationProfile = generateAccelProfile(start, maximumVelocity, maximumAcceleration, maximumJerk)
-            // we leverage symmetry here; deceleration profiles are just reversed acceleration ones
-            val decelerationProfile = generateAccelProfile(goal, maximumVelocity, maximumAcceleration, maximumJerk)
+            // we leverage symmetry here; deceleration profiles are just reversed acceleration ones with the goal
+            // acceleration flipped
+            val decelerationProfile = generateAccelProfile(
+                    MotionState(goal.x, goal.v, -goal.a, goal.j
+                ), maximumVelocity, maximumAcceleration, maximumJerk)
                     .reversed()
 
             val noCoastProfile = accelerationProfile + decelerationProfile
@@ -158,8 +166,25 @@ object MotionProfileGenerator {
                 }
 
                 // constraints are not satisfiable
-
-                TODO("unable to generate a constraint-obeying profile")
+                return if (overshoot) {
+                    noCoastProfile + generateSimpleMotionProfile(
+                            noCoastProfile.end(),
+                            goal,
+                            maximumVelocity,
+                            maximumAcceleration,
+                            maximumJerk,
+                            overshoot = true
+                    )
+                } else {
+                    // violate max jerk first
+                    generateSimpleMotionProfile(
+                            start,
+                            goal,
+                            maximumVelocity,
+                            maximumAcceleration,
+                            overshoot = false
+                    )
+                }
             }
         }
     }
@@ -265,10 +290,11 @@ object MotionProfileGenerator {
         }
 
     /**
-     * Generates a motion profile with dynamic maximum velocity and acceleration. Uses the algorithm described in section
-     * 3.2 of [Sprunk2008.pdf](http://www2.informatik.uni-freiburg.de/~lau/students/Sprunk2008.pdf). Warning: Profiles
-     * may be generated incorrectly if the endpoint velocity/acceleration values preclude the obedience of the motion
-     * constraints.
+     * Generates a motion profile with dynamic maximum velocity and acceleration. Uses the algorithm described in
+     * section 3.2 of [Sprunk2008.pdf](http://www2.informatik.uni-freiburg.de/~lau/students/Sprunk2008.pdf). Warning:
+     * Profiles may be generated incorrectly if the endpoint velocity/acceleration values preclude the obedience of the
+     * motion constraints. To protect against this, verify the continuity of the generated profile or keep the start and
+     * goal velocities at 0.
      *
      * @param start start motion state
      * @param goal goal motion state

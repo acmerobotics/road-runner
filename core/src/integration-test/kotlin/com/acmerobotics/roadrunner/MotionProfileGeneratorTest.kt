@@ -144,7 +144,8 @@ class MotionProfileGeneratorTest {
                         MotionState(0.0, 10.0),
                         MotionState(1.0, 0.0),
                         15.0,
-                        30.0
+                        30.0,
+                        40.0
                 )
         )
     }
