@@ -61,10 +61,10 @@ class QuinticSplineSegmentTest {
                 QuinticSplineSegment.Waypoint(45.0, 35.0, 60.0, 10.0)
         )
 
-        assertEquals(splineSegment[0.0].x, 0.0, 0.001)
-        assertEquals(splineSegment[0.0].y, 0.0, 0.001)
-        assertEquals(splineSegment[splineSegment.length()].x, 45.0, 0.001)
-        assertEquals(splineSegment[splineSegment.length()].y, 35.0, 0.001)
+        assertEquals(0.0, splineSegment[0.0].x, 0.001)
+        assertEquals(0.0, splineSegment[0.0].y, 0.001)
+        assertEquals(45.0, splineSegment[splineSegment.length()].x, 0.001)
+        assertEquals(35.0, splineSegment[splineSegment.length()].y, 0.001)
     }
 
     @Test
