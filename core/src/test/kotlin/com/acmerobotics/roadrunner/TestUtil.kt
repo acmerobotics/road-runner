@@ -5,7 +5,7 @@ import kotlin.math.abs
 object TestUtil {
     // TODO: is padding the derivative acceptable?
     fun numericalDerivative(x: List<Double>, ds: Double): List<Double> {
-        val deriv = (0 until x.size - 2).map { (x[it+2] - x[it]) / (2 * ds) }.toMutableList()
+        val deriv = (0 until x.size - 2).map { (x[it + 2] - x[it]) / (2 * ds) }.toMutableList()
         deriv.add(0, deriv[0])
         deriv.add(deriv.last())
         return deriv
@@ -20,4 +20,10 @@ object TestUtil {
         val freq = count.toDouble() / x.size
         return freq < errorFreq
     }
+
+    fun testContinuity(values: List<Double>, epsilon: Double) =
+            values.drop(1)
+                .zip(values.dropLast(1))
+                .filter { abs(it.first - it.second) > epsilon }
+                .count() == 0
 }
