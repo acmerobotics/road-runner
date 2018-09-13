@@ -1,0 +1,91 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>com.acmerobotics.roadrunner.trajectory - core</title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">core</a>&nbsp;/&nbsp;<a href="./index.html">com.acmerobotics.roadrunner.trajectory</a><br/>
+<br/>
+<h2>Package com.acmerobotics.roadrunner.trajectory</h2>
+<p>Types for representing 2D robot trajectories, including time parametrizations of paths.</p>
+<h3>Types</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-path-trajectory-segment/index.html">PathTrajectorySegment</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">PathTrajectorySegment</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-trajectory-segment/index.html"><span class="identifier">TrajectorySegment</span></a></code>
+<p>Trajectory segment backed by a list of <a href="../com.acmerobotics.roadrunner.path/-path/index.html">Path</a> objects.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-point-turn/index.html">PointTurn</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">PointTurn</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-trajectory-segment/index.html"><span class="identifier">TrajectorySegment</span></a></code>
+<p>Point turn trajectory segment.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-trajectory/index.html">Trajectory</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">Trajectory</span></code>
+<p>Time-parametrized trajectory of poses.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-trajectory-builder/index.html">TrajectoryBuilder</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">TrajectoryBuilder</span></code>
+<p>Easy-to-use builder for creating <a href="-trajectory/index.html">Trajectory</a> instances.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-trajectory-config/index.html">TrajectoryConfig</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">TrajectoryConfig</span></code>
+<p>Basic trajectory configuration intended for serialization. Intentionally more simplistic and less flexible than
+<a href="-trajectory-builder/index.html">TrajectoryBuilder</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-trajectory-loader/index.html">TrajectoryLoader</a></p>
+</td>
+<td>
+<code><span class="keyword">object </span><span class="identifier">TrajectoryLoader</span></code>
+<p>Class containing methods for saving and loading <a href="-trajectory-config/index.html">TrajectoryConfig</a> instances to YAML files.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-trajectory-segment/index.html">TrajectorySegment</a></p>
+</td>
+<td>
+<code><span class="keyword">interface </span><span class="identifier">TrajectorySegment</span></code>
+<p>Generic trajectory segment.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-wait-segment/index.html">WaitSegment</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">WaitSegment</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-trajectory-segment/index.html"><span class="identifier">TrajectorySegment</span></a></code>
+<p>Static trajectory segment that holds a constant pose. Used for giving trajectories extra time to settle.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

@@ -1,0 +1,28 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>MotionProfileGenerator.generateMotionProfile - core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">core</a>&nbsp;/&nbsp;<a href="../index.html">com.acmerobotics.roadrunner.profile</a>&nbsp;/&nbsp;<a href="index.html">MotionProfileGenerator</a>&nbsp;/&nbsp;<a href="./generate-motion-profile.html">generateMotionProfile</a><br/>
+<br/>
+<h1>generateMotionProfile</h1>
+<a name="com.acmerobotics.roadrunner.profile.MotionProfileGenerator$generateMotionProfile(com.acmerobotics.roadrunner.profile.MotionState, com.acmerobotics.roadrunner.profile.MotionState, com.acmerobotics.roadrunner.profile.MotionConstraints, kotlin.Int)"></a>
+<code><span class="identifier">@JvmStatic</span> <span class="keyword">fun </span><span class="identifier">generateMotionProfile</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.profile.MotionProfileGenerator$generateMotionProfile(com.acmerobotics.roadrunner.profile.MotionState, com.acmerobotics.roadrunner.profile.MotionState, com.acmerobotics.roadrunner.profile.MotionConstraints, kotlin.Int)/start">start</span><span class="symbol">:</span>&nbsp;<a href="../-motion-state/index.html"><span class="identifier">MotionState</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.profile.MotionProfileGenerator$generateMotionProfile(com.acmerobotics.roadrunner.profile.MotionState, com.acmerobotics.roadrunner.profile.MotionState, com.acmerobotics.roadrunner.profile.MotionConstraints, kotlin.Int)/goal">goal</span><span class="symbol">:</span>&nbsp;<a href="../-motion-state/index.html"><span class="identifier">MotionState</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.profile.MotionProfileGenerator$generateMotionProfile(com.acmerobotics.roadrunner.profile.MotionState, com.acmerobotics.roadrunner.profile.MotionState, com.acmerobotics.roadrunner.profile.MotionConstraints, kotlin.Int)/constraints">constraints</span><span class="symbol">:</span>&nbsp;<a href="../-motion-constraints/index.html"><span class="identifier">MotionConstraints</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.profile.MotionProfileGenerator$generateMotionProfile(com.acmerobotics.roadrunner.profile.MotionState, com.acmerobotics.roadrunner.profile.MotionState, com.acmerobotics.roadrunner.profile.MotionConstraints, kotlin.Int)/resolution">resolution</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a>&nbsp;<span class="symbol">=</span>&nbsp;250<span class="symbol">)</span><span class="symbol">: </span><a href="../-motion-profile/index.html"><span class="identifier">MotionProfile</span></a></code>
+<p>Generates a motion profile with dynamic maximum velocity and acceleration. Uses the algorithm described in
+section 3.2 of <a href="http://www2.informatik.uni-freiburg.de/~lau/students/Sprunk2008.pdf">Sprunk2008.pdf</a>. Warning:
+Profiles may be generated incorrectly if the endpoint velocity/acceleration values preclude the obedience of the
+motion constraints. To protect against this, verify the continuity of the generated profile or keep the start and
+goal velocities at 0.</p>
+<h3>Parameters</h3>
+<p><a name="start"></a>
+<code>start</code> - start motion state</p>
+<p><a name="goal"></a>
+<code>goal</code> - goal motion state</p>
+<p><a name="constraints"></a>
+<code>constraints</code> - motion constraints</p>
+<p><a name="resolution"></a>
+<code>resolution</code> - number of constraint samples</p>
+</BODY>
+</HTML>

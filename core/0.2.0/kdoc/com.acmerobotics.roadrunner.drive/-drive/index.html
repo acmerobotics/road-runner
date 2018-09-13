@@ -1,0 +1,104 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>Drive - core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">core</a>&nbsp;/&nbsp;<a href="../index.html">com.acmerobotics.roadrunner.drive</a>&nbsp;/&nbsp;<a href="./index.html">Drive</a><br/>
+<br/>
+<h1>Drive</h1>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">Drive</span></code>
+<p>Abstraction for generic drivetrain motion and localization.</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">Drive</span><span class="symbol">(</span><span class="symbol">)</span></code>
+<p>Abstraction for generic drivetrain motion and localization.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="localizer.html">localizer</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">var </span><span class="identifier">localizer</span><span class="symbol">: </span><a href="../-localizer/index.html"><span class="identifier">Localizer</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="pose-estimate.html">poseEstimate</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">poseEstimate</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner/-pose2d/index.html"><span class="identifier">Pose2d</span></a></code>
+<p>The robot's current pose estimate.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="set-velocity.html">setVelocity</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">setVelocity</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.drive.Drive$setVelocity(com.acmerobotics.roadrunner.Pose2d)/poseVelocity">poseVelocity</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner/-pose2d/index.html"><span class="identifier">Pose2d</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Sets the <a href="set-velocity.html#com.acmerobotics.roadrunner.drive.Drive$setVelocity(com.acmerobotics.roadrunner.Pose2d)/poseVelocity">poseVelocity</a> of the robot.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="update-pose-estimate.html">updatePoseEstimate</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">updatePoseEstimate</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Updates <a href="pose-estimate.html">poseEstimate</a> with the most recent positional change.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Inheritors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../-mecanum-drive/index.html">MecanumDrive</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">MecanumDrive</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">Drive</span></a></code>
+<p>This class provides basic functionality of a mecanum drive using on <a href="../-mecanum-kinematics/index.html">MecanumKinematics</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-swerve-drive/index.html">SwerveDrive</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">SwerveDrive</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">Drive</span></a></code>
+<p>This class provides basic functionality of a mecanum drive using on <a href="../-mecanum-kinematics/index.html">MecanumKinematics</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-tank-drive/index.html">TankDrive</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">TankDrive</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">Drive</span></a></code>
+<p>This class provides basic functionality of a tank/differential drive using on <a href="../-tank-kinematics/index.html">TankKinematics</a>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>
