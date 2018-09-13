@@ -29,7 +29,7 @@ A set of interpolators that describe how the robot's heading changes along a pat
 
 # Package com.acmerobotics.roadrunner.profile
 
-Generic, dynamic-constraint-capable trapezoidal motion profiling.
+Generic motion profiling featuring either dynamic constraints or jerk limiting.
 
 # Package com.acmerobotics.roadrunner.trajectory
 

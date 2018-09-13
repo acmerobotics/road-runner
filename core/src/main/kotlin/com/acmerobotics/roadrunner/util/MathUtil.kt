@@ -3,7 +3,14 @@ package com.acmerobotics.roadrunner.util
 import kotlin.math.abs
 import kotlin.math.sqrt
 
+/**
+ * Various math utilities.
+ */
 object MathUtil {
+
+    /**
+     * Returns the real solutions to the quadratic ax^2 + bx + c.
+     */
     @JvmStatic
     fun solveQuadratic(a: Double, b: Double, c: Double): List<Double> {
         val disc = b * b - 4 * a * c

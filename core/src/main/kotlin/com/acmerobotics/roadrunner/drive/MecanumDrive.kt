@@ -14,6 +14,13 @@ abstract class MecanumDrive @JvmOverloads constructor(
         val wheelBase: Double = trackWidth,
         clock: NanoClock = NanoClock.system()
 ) : Drive() {
+
+    /**
+     * Default localizer for mecanum drivetrains based on the drive encoders.
+     *
+     * @param drive drive
+     * @param clock clock
+     */
     // TODO: add heading support to the localizer
     class MecanumLocalizer @JvmOverloads constructor(
             private val drive: MecanumDrive,

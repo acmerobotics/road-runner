@@ -14,6 +14,13 @@ abstract class SwerveDrive @JvmOverloads constructor(
         val wheelBase: Double = trackWidth,
         clock: NanoClock = NanoClock.system()
 ) : Drive() {
+
+    /**
+     * Default localizer for swerve drivetrains based on the drive encoder positions and module orientations.
+     *
+     * @param drive drive
+     * @param clock clock
+     */
     class SwerveLocalizer @JvmOverloads constructor(
             private val drive: SwerveDrive,
             private val clock: NanoClock = NanoClock.system()
@@ -59,6 +66,9 @@ abstract class SwerveDrive @JvmOverloads constructor(
      */
     abstract fun setMotorPowers(frontLeft: Double, rearLeft: Double, rearRight: Double, frontRight: Double)
 
+    /**
+     * Sets the module orientations. All values are in radians.
+     */
     abstract fun setModuleOrientations(frontLeft: Double, rearLeft: Double, rearRight: Double, frontRight: Double)
 
     /**
@@ -66,5 +76,8 @@ abstract class SwerveDrive @JvmOverloads constructor(
      */
     abstract fun getWheelPositions(): List<Double>
 
+    /**
+     * Returns the current module orientations in radians.
+     */
     abstract fun getModuleOrientations(): List<Double>
 }

@@ -10,6 +10,13 @@ import org.apache.commons.math3.linear.MatrixUtils
 import kotlin.math.cos
 import kotlin.math.sin
 
+/**
+ * Localizer based on three unpowered tracking omni wheels.
+ *
+ * @param wheelPositions wheel positions relative to the center of the robot (positive X points forward on the robot)
+ * @param wheelOrientations angular orientations of the wheels measured counterclockwise from positive X in radians
+ * @param clock clock
+ */
 abstract class ThreeTrackingWheelLocalizer @JvmOverloads constructor(
         wheelPositions: List<Vector2d>,
         wheelOrientations: List<Double>,
@@ -70,5 +77,8 @@ abstract class ThreeTrackingWheelLocalizer @JvmOverloads constructor(
         lastUpdateTimestamp = timestamp
     }
 
+    /**
+     * Returns the positions of the tracking wheels in the desired distance units (not encoder counts!)
+     */
     abstract fun getWheelPositions(): List<Double>
 }

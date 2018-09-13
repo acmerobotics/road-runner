@@ -12,6 +12,13 @@ abstract class TankDrive @JvmOverloads constructor(
         val trackWidth: Double,
         clock: NanoClock = NanoClock.system()
 ) : Drive() {
+
+    /**
+     * Default localizer for tank drivetrains based on the drive encoders.
+     *
+     * @param drive drive
+     * @param clock clock
+     */
     class TankLocalizer @JvmOverloads constructor(
             private val drive: TankDrive,
             private val clock: NanoClock = NanoClock.system()
