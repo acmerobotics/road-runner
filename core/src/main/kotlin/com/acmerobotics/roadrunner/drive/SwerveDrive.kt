@@ -4,7 +4,7 @@ import com.acmerobotics.roadrunner.Pose2d
 import com.acmerobotics.roadrunner.util.NanoClock
 
 /**
- * This class provides basic functionality of a mecanum drive using on [MecanumKinematics].
+ * This class provides basic functionality of a swerve drive using on [SwerveKinematics].
  *
  * @param trackWidth lateral distance between pairs of wheels on different sides of the robot
  * @param wheelBase distance between pairs of wheels on the same side of the robot
