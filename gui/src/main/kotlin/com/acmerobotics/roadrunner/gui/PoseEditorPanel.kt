@@ -28,9 +28,10 @@ class PoseEditorPanel : JPanel() {
     private val poseComponents = mutableListOf<List<JComponent>>()
 
     init {
-        headerPanel.layout = GridLayout(1, 4, 5, 0)
-        scrollPanel.layout = GridLayout(0, 4, 5, 0)
+        headerPanel.layout = GridLayout(1, 5, 5, 0)
+        scrollPanel.layout = GridLayout(0, 5, 5, 0)
 
+        headerPanel.add(JLabel("Step", SwingConstants.CENTER))
         headerPanel.add(JLabel("X", SwingConstants.CENTER))
         headerPanel.add(JLabel("Y", SwingConstants.CENTER))
         headerPanel.add(JLabel("Heading", SwingConstants.CENTER))
@@ -60,6 +61,9 @@ class PoseEditorPanel : JPanel() {
     private fun addPose(pose: Pose2d) {
         val mutablePose = MutablePose2d(pose)
 
+        val stepNumber = JLabel((poseComponents.size + 1).toString())
+        stepNumber.horizontalAlignment = SwingConstants.CENTER
+
         val xField = makeNumField(pose.x)
         val yField = makeNumField(pose.y)
         val headingField = makeNumField(pose.heading.toDegrees())
@@ -79,7 +83,7 @@ class PoseEditorPanel : JPanel() {
 
         val removeButton = JButton("Remove")
 
-        val uiComponents = listOf<JComponent>(xField, yField, headingField, removeButton)
+        val uiComponents = listOf<JComponent>(stepNumber, xField, yField, headingField, removeButton)
         for (comp in uiComponents) {
             scrollPanel.add(comp)
         }
@@ -104,6 +108,11 @@ class PoseEditorPanel : JPanel() {
         }
         poses.removeAt(index)
         poseComponents.removeAt(index)
+
+        for (i in index until poseComponents.size) {
+            val step = poseComponents[i][0] as JLabel
+            step.text = (i + 1).toString()
+        }
 
         revalidate()
 
