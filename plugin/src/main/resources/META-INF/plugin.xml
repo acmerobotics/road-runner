@@ -10,7 +10,7 @@
 
     <vendor email="goacmerobotics@gmail.com" url="https://goacmerobotics.com">ACME Robotics</vendor>
 
-    <depends>com.intellij.modules.androidstudio</depends>
+    <depends>com.intellij.modules.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <toolWindow id="Path Designer" anchor="right" factoryClass="com.acmerobotics.roadrunner.plugin.PathDesignerToolWindowFactory"/>
