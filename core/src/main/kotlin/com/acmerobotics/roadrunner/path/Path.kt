@@ -4,13 +4,6 @@ import com.acmerobotics.roadrunner.Pose2d
 import com.acmerobotics.roadrunner.Vector2d
 import com.acmerobotics.roadrunner.path.heading.HeadingInterpolator
 import com.acmerobotics.roadrunner.path.heading.TangentInterpolator
-import org.apache.commons.math3.exception.ConvergenceException
-import org.apache.commons.math3.fitting.leastsquares.LeastSquaresBuilder
-import org.apache.commons.math3.fitting.leastsquares.LevenbergMarquardtOptimizer
-import org.apache.commons.math3.linear.ArrayRealVector
-import org.apache.commons.math3.linear.MatrixUtils
-import org.apache.commons.math3.linear.RealMatrix
-import org.apache.commons.math3.linear.RealVector
 
 
 /**
@@ -148,46 +141,6 @@ class Path @JvmOverloads constructor(
             interpolator.secondDeriv(displacement)
         }
         return Pose2d(secondDeriv.x, secondDeriv.y, headingSecondDeriv)
-    }
-
-    /**
-     * Project [point] onto the current path.
-     *
-     * @param point query point
-     * @param projectGuess guess for the projected point's displacement along the path
-     */
-    fun project(point: Vector2d, projectGuess: Double = length() / 2.0): ProjectionResult {
-        val problem = LeastSquaresBuilder()
-                .start(doubleArrayOf(projectGuess))
-                .model {
-                    val pathPoint = this[it.getEntry(0)].pos()
-                    val pathDerivative = deriv(it.getEntry(0)).pos()
-
-                    val diff = pathPoint - point
-                    val distance = diff.norm()
-
-                    val value = ArrayRealVector(doubleArrayOf(distance))
-
-                    val derivative = (diff.x * pathDerivative.x + diff.y * pathDerivative.y) / distance
-                    val jacobian = MatrixUtils.createRealMatrix(arrayOf(doubleArrayOf(derivative)))
-
-                    org.apache.commons.math3.util.Pair<RealVector, RealMatrix>(value, jacobian)
-                }
-                .target(doubleArrayOf(0.0))
-                .lazyEvaluation(false)
-                .maxEvaluations(1000)
-                .maxIterations(1000)
-                .build()
-
-        val displacement = try {
-            val optimum = LevenbergMarquardtOptimizer().optimize(problem)
-            optimum.point.getEntry(0)
-        } catch (e: ConvergenceException) {
-            0.0
-        }
-        val optimumPoint = this[displacement].pos()
-
-        return ProjectionResult(displacement, point distanceTo optimumPoint)
     }
 
     /**

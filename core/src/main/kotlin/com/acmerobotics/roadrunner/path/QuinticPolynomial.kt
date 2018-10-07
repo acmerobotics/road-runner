@@ -1,18 +1,14 @@
 package com.acmerobotics.roadrunner.path
 
-import org.apache.commons.math3.linear.LUDecomposition
-import org.apache.commons.math3.linear.MatrixUtils
-
-private val COEFF_MATRIX = MatrixUtils.createRealMatrix(
-        arrayOf(
-                doubleArrayOf(0.0, 0.0, 0.0, 0.0, 0.0, 1.0),
-                doubleArrayOf(0.0, 0.0, 0.0, 0.0, 1.0, 0.0),
-                doubleArrayOf(0.0, 0.0, 0.0, 2.0, 0.0, 0.0),
-                doubleArrayOf(1.0, 1.0, 1.0, 1.0, 1.0, 1.0),
-                doubleArrayOf(5.0, 4.0, 3.0, 2.0, 1.0, 0.0),
-                doubleArrayOf(20.0, 12.0, 6.0, 2.0, 0.0, 0.0)
-        )
-)
+/*
+	B1	B2	B3	B4	B5	B6
+1	-6	-3	-1/2	6	-3	1/2
+2	15	8	3/2	-15	7	-1
+3	-10	-6	-3/2	10	-4	1/2
+4	0	0	1/2	0	0	0
+5	0	1	0	0	0	0
+6	1	0	0	0	0	0
+ */
 
 /**
  * Quintic polynomial interpolated according to the provided derivatives.
@@ -26,29 +22,12 @@ private val COEFF_MATRIX = MatrixUtils.createRealMatrix(
  */
 class QuinticPolynomial(start: Double, startDeriv: Double, startSecondDeriv: Double,
                         end: Double, endDeriv: Double, endSecondDeriv: Double) {
-    val a: Double
-    val b: Double
-    val c: Double
-    val d: Double
-    val e: Double
-    val f: Double
-
-    init {
-        val target =
-            MatrixUtils.createRealMatrix(arrayOf(doubleArrayOf(
-                start, startDeriv, startSecondDeriv, end, endDeriv, endSecondDeriv
-            ))).transpose()
-
-        val solver = LUDecomposition(COEFF_MATRIX).solver
-        val coeff = solver.solve(target)
-
-        a = coeff.getEntry(0, 0)
-        b = coeff.getEntry(1, 0)
-        c = coeff.getEntry(2, 0)
-        d = coeff.getEntry(3, 0)
-        e = coeff.getEntry(4, 0)
-        f = coeff.getEntry(5, 0)
-    }
+    val a: Double = -6 * start - 3 * startDeriv - 0.5 * startSecondDeriv + 6 * end - 3 * endDeriv + 0.5 * endSecondDeriv
+    val b: Double = 15 * start + 8 * startDeriv + 1.5 * startSecondDeriv - 15 * end + 7 * endDeriv - endSecondDeriv
+    val c: Double = -10 * start - 6 * startDeriv - 1.5 * startSecondDeriv + 10 * end - 4 * endDeriv + 0.5 * endSecondDeriv
+    val d: Double = 0.5 * startSecondDeriv
+    val e: Double = startDeriv
+    val f: Double = start
 
     /**
      * Returns the value of the polynomial at [t].
