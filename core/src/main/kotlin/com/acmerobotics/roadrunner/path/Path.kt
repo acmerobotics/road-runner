@@ -25,7 +25,7 @@ class Path @JvmOverloads constructor(
         val interpolators: List<HeadingInterpolator> = parametricCurves.map { TangentInterpolator() },
         val reversed: List<Boolean> = parametricCurves.map { false }
 ) {
-    constructor(
+    @JvmOverloads constructor(
             parametricCurve: ParametricCurve,
             interpolator: HeadingInterpolator = TangentInterpolator(),
             reversed: Boolean = false
