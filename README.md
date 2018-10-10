@@ -12,7 +12,7 @@ A simple Kotlin library for planning 2D mobile robot paths and trajectories desi
 
 1. Open up the `build.gradle` file in the module you'd like to install in (usually `TeamCode`).
 
-1. At the bottom of the file, add a `repositories` block with `jcenter()`. Next add a `dependencies` block with `compile 'com.acmerobotics.roadrunner:core:0.2.0'`. After you're finished, your `build.gradle` should look like this:
+1. At the bottom of the file, add a `repositories` block with `jcenter()`. Next add a `dependencies` block with `implementation 'com.acmerobotics.roadrunner:core:0.2.0'`. After you're finished, your `build.gradle` should look like this:
 
     ```groovy
     // beginning of the file
@@ -24,7 +24,7 @@ A simple Kotlin library for planning 2D mobile robot paths and trajectories desi
 
     dependencies {
         // other dependencies
-        compile 'com.acmerobotics.roadrunner:core:0.2.0'
+        implementation 'com.acmerobotics.roadrunner:core:0.2.0'
     }
     ```
 
@@ -32,7 +32,7 @@ A simple Kotlin library for planning 2D mobile robot paths and trajectories desi
 
 1. You're finished!
 
-1. In some cases, Road Runner's dependencies may exceed the limit of method references. To fix it, add `compile 'com.android.support:multidex:1.0.3'` to your dependencies (for more information, see [this article](https://developer.android.com/studio/build/multidex)) and add `multiDexEnabled true` to the `defaultConfig` closure (for FTC, this is located inside `build.common.gradle`).
+1. In some cases, Road Runner's dependencies may exceed the limit of method references. To fix it, add `implementation 'com.android.support:multidex:1.0.3'` to your dependencies (for more information, see [this article](https://developer.android.com/studio/build/multidex)) and add `multiDexEnabled true` to the `defaultConfig` closure (for FTC, this is located inside `build.common.gradle`).
 
 ### GUI
 
