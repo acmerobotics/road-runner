@@ -28,11 +28,25 @@ A simple Kotlin library for planning 2D mobile robot paths and trajectories desi
     }
     ```
 
+1. Although Road Runner only has a few dependencies, these may exceed the method reference limit imposed by some version of Android. Fortunately, there are a few ways to address this restriction as described below. For more information, see [this article](https://developer.android.com/studio/build/multidex).
+
+    1. **If you do not need to target API level 19** (i.e., in FTC, you don't need to use ZTE speeds), then just add `multiDexEnabled true` to the `defaultConfig` closure (for FTC, this is located inside `build.common.gradle`).
+
+    1. Otherwise, the next best solution is to enable Proguard (the pre Android 5.0 solution in the article is difficult to implement with the FTC SDK). To accomplish this, add the following lines to the `debug` and `release` closures inside `buildTypes` (this is also located in `build.common.gradle` for FTC):
+
+        ```groovy
+        minifyEnabled true
+        proguardFiles getDefaultProguardFile('proguard-android.txt'),
+                'proguard-rules.pro'
+        ```
+
+        Now download the `proguard-rules.pro` file from [this gist](https://gist.github.com/rbrott/b921749525bacb8e97ad2cd8bbaceeba) and save it to your module folder (`TeamCode` in the case of FTC).
+
+    1. Finally, if the other solutions prove unworkable, you can download a slim jar from Releases. It lacks some of the features of the normal distribution, but it has fewer dependencies.
+
 1. Sync the project (Android Studio should prompt you to do this).
 
-1. You're finished!
-
-1. In some cases, Road Runner's dependencies may exceed the limit of method references. To fix it, add `implementation 'com.android.support:multidex:1.0.3'` to your dependencies (for more information, see [this article](https://developer.android.com/studio/build/multidex)) and add `multiDexEnabled true` to the `defaultConfig` closure (for FTC, this is located inside `build.common.gradle`).
+1. You're finished.
 
 ### GUI
 
