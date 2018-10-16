@@ -19,24 +19,29 @@ abstract class SwerveDrive @JvmOverloads constructor(
      * Default localizer for swerve drivetrains based on the drive encoder positions and module orientations.
      *
      * @param drive drive
+     * @param headingSensor optional heading sensor (e.g., IMU) for additional accuracy
      * @param clock clock
      */
     class SwerveLocalizer @JvmOverloads constructor(
             private val drive: SwerveDrive,
+            private val headingSensor: (() -> Double)? = null,
             private val clock: NanoClock = NanoClock.system()
     ) : Localizer {
         override var poseEstimate: Pose2d = Pose2d()
             set(value) {
                 lastWheelPositions = emptyList()
+                lastHeading = Double.NaN
                 lastUpdateTimestamp = Double.NaN
                 field = value
             }
         private var lastWheelPositions = emptyList<Double>()
+        private var lastHeading = Double.NaN
         private var lastUpdateTimestamp = Double.NaN
 
         override fun update() {
             val wheelPositions = drive.getWheelPositions()
             val moduleOrientations = drive.getModuleOrientations()
+            val extHeading = headingSensor?.invoke()
             val timestamp = clock.seconds()
             if (lastWheelPositions.isNotEmpty()) {
                 val dt = timestamp - lastUpdateTimestamp
@@ -45,14 +50,16 @@ abstract class SwerveDrive @JvmOverloads constructor(
                         .map { (it.first - it.second) / dt }
                 val robotPoseDelta = SwerveKinematics.wheelToRobotVelocities(
                         wheelVelocities, moduleOrientations, drive.wheelBase, drive.trackWidth) * dt
-                poseEstimate = Kinematics.relativeOdometryUpdate(poseEstimate, robotPoseDelta)
+                val finalHeadingDelta = (extHeading?.minus(lastHeading)) ?: robotPoseDelta.heading
+                poseEstimate = Kinematics.relativeOdometryUpdate(poseEstimate, Pose2d(robotPoseDelta.pos(), finalHeadingDelta))
             }
             lastWheelPositions = wheelPositions
+            lastHeading = extHeading ?: Double.NaN
             lastUpdateTimestamp = timestamp
         }
     }
 
-    override var localizer: Localizer = SwerveLocalizer(this, clock)
+    override var localizer: Localizer = SwerveLocalizer(this, clock = clock)
 
     override fun setVelocity(poseVelocity: Pose2d) {
         val motorPowers = SwerveKinematics.robotToWheelVelocities(poseVelocity, trackWidth, wheelBase)
