@@ -1,7 +1,7 @@
 package com.acmerobotics.roadrunner.control
 
 /**
- * This class stores the proportional, integral, and derivative gains used by [PIDFController].
+ * Proportional, integral, and derivative (PID) gains used by [PIDFController].
  *
  * @param kP proportional gain
  * @param kI integral gain

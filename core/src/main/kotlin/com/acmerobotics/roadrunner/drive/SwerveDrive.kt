@@ -4,7 +4,7 @@ import com.acmerobotics.roadrunner.Pose2d
 import com.acmerobotics.roadrunner.util.NanoClock
 
 /**
- * This class provides basic functionality of a swerve drive using on [SwerveKinematics].
+ * This class provides the basic functionality of a swerve drive using [SwerveKinematics].
  *
  * @param trackWidth lateral distance between pairs of wheels on different sides of the robot
  * @param wheelBase distance between pairs of wheels on the same side of the robot
@@ -16,15 +16,14 @@ abstract class SwerveDrive @JvmOverloads constructor(
 ) : Drive() {
 
     /**
-     * Default localizer for swerve drivetrains based on the drive encoder positions and module orientations.
+     * Default localizer for swerve drivetrains based on the drive encoder positions, module orientations, and
+     * (optionally) a heading sensor.
      *
      * @param drive drive
-     * @param headingSensor optional heading sensor (e.g., IMU) for additional accuracy
      * @param clock clock
      */
     class SwerveLocalizer @JvmOverloads constructor(
             private val drive: SwerveDrive,
-            private val headingSensor: (() -> Double)? = null,
             private val clock: NanoClock = NanoClock.system()
     ) : Localizer {
         override var poseEstimate: Pose2d = Pose2d()
@@ -41,7 +40,7 @@ abstract class SwerveDrive @JvmOverloads constructor(
         override fun update() {
             val wheelPositions = drive.getWheelPositions()
             val moduleOrientations = drive.getModuleOrientations()
-            val extHeading = headingSensor?.invoke()
+            val extHeading = drive.getHeading()
             val timestamp = clock.seconds()
             if (lastWheelPositions.isNotEmpty()) {
                 val dt = timestamp - lastUpdateTimestamp
@@ -79,12 +78,17 @@ abstract class SwerveDrive @JvmOverloads constructor(
     abstract fun setModuleOrientations(frontLeft: Double, rearLeft: Double, rearRight: Double, frontRight: Double)
 
     /**
-     * Returns the positions of the wheels in linear distance units.
+     * Returns the positions of the wheels in linear distance units. Note: this should return exactly four values.
      */
     abstract fun getWheelPositions(): List<Double>
 
     /**
-     * Returns the current module orientations in radians.
+     * Returns the current module orientations in radians. Note: this should return exactly four values.
      */
     abstract fun getModuleOrientations(): List<Double>
+
+    /**
+     * Returns the robot's heading or null if no sensor is available.
+     */
+    open fun getHeading(): Double? = null
 }

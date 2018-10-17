@@ -36,7 +36,7 @@ object Kinematics {
                     ) * fieldPoseVelocity.heading
 
     /**
-     * Computes the motor feed forwards (i.e., open loop powers) for the given set of coefficients.
+     * Computes the motor feedforwards (i.e., open loop powers) for the given set of coefficients.
      */
     @JvmStatic
     fun calculateMotorFeedforward(velocities: List<Double>, accelerations: List<Double>, kV: Double, kA: Double, kStatic: Double) =

@@ -3,7 +3,7 @@ package com.acmerobotics.roadrunner.drive
 import com.acmerobotics.roadrunner.Pose2d
 
 /**
- * Generic abstraction for estimating robot pose over time.
+ * Generic interface for estimating robot pose over time.
  */
 interface Localizer {
 

@@ -6,6 +6,9 @@ import com.acmerobotics.roadrunner.Pose2d
  * Abstraction for generic drivetrain motion and localization.
  */
 abstract class Drive {
+    /**
+     * Localizer used to determine the evolution of [poseEstimate].
+     */
     abstract var localizer: Localizer
 
     /**

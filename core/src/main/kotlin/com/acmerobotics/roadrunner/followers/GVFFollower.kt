@@ -14,7 +14,7 @@ import kotlin.math.sqrt
  * State-of-the-art path follower based on the [GuidingVectorField].
  *
  * @param drive tank drive
- * @param constraints robot x velocity constraints
+ * @param constraints robot motion constraints
  * @param kN normal vector weight (see [GuidingVectorField])
  * @param kOmega proportional heading gain
  * @param kV feedforward velocity gain

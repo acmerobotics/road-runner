@@ -4,7 +4,7 @@ import com.acmerobotics.roadrunner.Pose2d
 
 /**
  * Mecanum drive kinematic equations. [Ether's paper](http://www.chiefdelphi.com/media/papers/download/2722) provides a
- * derivation.
+ * motivated derivation.
  */
 object MecanumKinematics {
 
