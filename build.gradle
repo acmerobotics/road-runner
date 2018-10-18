@@ -2,7 +2,7 @@ apply plugin: "idea"
 
 buildscript {
     ext.kotlin_version = '1.2.71'
-    ext.road_runner_version = '0.2.0'
+    ext.road_runner_version = '0.2.1'
 
     repositories {
         mavenCentral()

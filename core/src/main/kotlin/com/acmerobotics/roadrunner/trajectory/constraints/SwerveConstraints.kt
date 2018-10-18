@@ -14,7 +14,7 @@ import kotlin.math.min
  * @param trackWidth track width
  * @param wheelBase wheel base
  */
-class SwerveConstraints @JvmOverloads constructor(
+open class SwerveConstraints @JvmOverloads constructor(
         baseConstraints: DriveConstraints,
         private val trackWidth: Double,
         private val wheelBase: Double = trackWidth

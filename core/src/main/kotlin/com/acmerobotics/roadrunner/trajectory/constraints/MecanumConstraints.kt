@@ -13,7 +13,7 @@ import kotlin.math.min
  * @param trackWidth track width
  * @param wheelBase wheel base
  */
-class MecanumConstraints @JvmOverloads constructor(
+open class MecanumConstraints @JvmOverloads constructor(
         baseConstraints: DriveConstraints,
         private val trackWidth: Double,
         private val wheelBase: Double = trackWidth

@@ -11,7 +11,7 @@ import kotlin.math.min
  * @param baseConstraints base drive constraints
  * @param trackWidth track width
  */
-class TankConstraints(
+open class TankConstraints(
         baseConstraints: DriveConstraints,
         val trackWidth: Double
 ) : DriveConstraints(

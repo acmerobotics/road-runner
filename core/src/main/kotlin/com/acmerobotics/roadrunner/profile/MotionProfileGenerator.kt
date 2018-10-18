@@ -302,6 +302,7 @@ object MotionProfileGenerator {
      * @param resolution number of constraint samples
      */
     @JvmStatic
+    @JvmOverloads
     fun generateMotionProfile(
         start: MotionState,
         goal: MotionState,
