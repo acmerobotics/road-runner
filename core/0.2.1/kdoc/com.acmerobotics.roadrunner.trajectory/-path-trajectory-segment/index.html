@@ -1,0 +1,106 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>PathTrajectorySegment - core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">core</a>&nbsp;/&nbsp;<a href="../index.html">com.acmerobotics.roadrunner.trajectory</a>&nbsp;/&nbsp;<a href="./index.html">PathTrajectorySegment</a><br/>
+<br/>
+<h1>PathTrajectorySegment</h1>
+<code><span class="keyword">class </span><span class="identifier">PathTrajectorySegment</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-trajectory-segment/index.html"><span class="identifier">TrajectorySegment</span></a></code>
+<p>Trajectory segment backed by a list of <a href="../../com.acmerobotics.roadrunner.path/-path/index.html">Path</a> objects.</p>
+<h3>Parameters</h3>
+<p><a name="paths"></a>
+<code>paths</code> - paths</p>
+<p><a name="trajectoryConstraintsList"></a>
+<code>trajectoryConstraintsList</code> - motion constraints for each respective path</p>
+<p><a name="resolution"></a>
+<code>resolution</code> - resolution used for the motion profile (see <a href="../../com.acmerobotics.roadrunner.profile/-motion-profile-generator/generate-motion-profile.html">MotionProfileGenerator.generateMotionProfile</a>)</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">PathTrajectorySegment</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.PathTrajectorySegment$<init>(com.acmerobotics.roadrunner.path.Path, com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryConstraints, kotlin.Int)/path">path</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.path/-path/index.html"><span class="identifier">Path</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.PathTrajectorySegment$<init>(com.acmerobotics.roadrunner.path.Path, com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryConstraints, kotlin.Int)/trajectoryConstraints">trajectoryConstraints</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.trajectory.constraints/-trajectory-constraints/index.html"><span class="identifier">TrajectoryConstraints</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.PathTrajectorySegment$<init>(com.acmerobotics.roadrunner.path.Path, com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryConstraints, kotlin.Int)/resolution">resolution</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a>&nbsp;<span class="symbol">=</span>&nbsp;250<span class="symbol">)</span></code><code><span class="identifier">PathTrajectorySegment</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.PathTrajectorySegment$<init>(kotlin.collections.List((com.acmerobotics.roadrunner.path.Path)), kotlin.collections.List((com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryConstraints)), kotlin.Int)/paths">paths</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../../com.acmerobotics.roadrunner.path/-path/index.html"><span class="identifier">Path</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;listOf()<span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.PathTrajectorySegment$<init>(kotlin.collections.List((com.acmerobotics.roadrunner.path.Path)), kotlin.collections.List((com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryConstraints)), kotlin.Int)/trajectoryConstraintsList">trajectoryConstraintsList</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../../com.acmerobotics.roadrunner.trajectory.constraints/-trajectory-constraints/index.html"><span class="identifier">TrajectoryConstraints</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;listOf()<span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.PathTrajectorySegment$<init>(kotlin.collections.List((com.acmerobotics.roadrunner.path.Path)), kotlin.collections.List((com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryConstraints)), kotlin.Int)/resolution">resolution</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a>&nbsp;<span class="symbol">=</span>&nbsp;250<span class="symbol">)</span></code>
+<p>Trajectory segment backed by a list of <a href="../../com.acmerobotics.roadrunner.path/-path/index.html">Path</a> objects.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="paths.html">paths</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">paths</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../../com.acmerobotics.roadrunner.path/-path/index.html"><span class="identifier">Path</span></a><span class="symbol">&gt;</span></code>
+<p>paths</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="profile.html">profile</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">profile</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.profile/-motion-profile/index.html"><span class="identifier">MotionProfile</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="trajectory-constraints-list.html">trajectoryConstraintsList</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">trajectoryConstraintsList</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../../com.acmerobotics.roadrunner.trajectory.constraints/-trajectory-constraints/index.html"><span class="identifier">TrajectoryConstraints</span></a><span class="symbol">&gt;</span></code>
+<p>motion constraints for each respective path</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="acceleration.html">acceleration</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">acceleration</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.PathTrajectorySegment$acceleration(kotlin.Double)/time">time</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner/-pose2d/index.html"><span class="identifier">Pose2d</span></a></code>
+<p>Returns the pose acceleration at the given <a href="../-trajectory-segment/acceleration.html#com.acmerobotics.roadrunner.trajectory.TrajectorySegment$acceleration(kotlin.Double)/time">time</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="duration.html">duration</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">duration</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code>
+<p>Returns the duration of the segment.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="get.html">get</a></p>
+</td>
+<td>
+<code><span class="keyword">operator</span> <span class="keyword">fun </span><span class="identifier">get</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.PathTrajectorySegment$get(kotlin.Double)/time">time</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner/-pose2d/index.html"><span class="identifier">Pose2d</span></a></code>
+<p>Returns the pose at the given <a href="../-trajectory-segment/get.html#com.acmerobotics.roadrunner.trajectory.TrajectorySegment$get(kotlin.Double)/time">time</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="velocity.html">velocity</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">velocity</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.PathTrajectorySegment$velocity(kotlin.Double)/time">time</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner/-pose2d/index.html"><span class="identifier">Pose2d</span></a></code>
+<p>Returns the pose velocity at the given <a href="../-trajectory-segment/velocity.html#com.acmerobotics.roadrunner.trajectory.TrajectorySegment$velocity(kotlin.Double)/time">time</a>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

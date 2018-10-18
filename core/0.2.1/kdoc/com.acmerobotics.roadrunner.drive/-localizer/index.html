@@ -1,0 +1,93 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>Localizer - core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">core</a>&nbsp;/&nbsp;<a href="../index.html">com.acmerobotics.roadrunner.drive</a>&nbsp;/&nbsp;<a href="./index.html">Localizer</a><br/>
+<br/>
+<h1>Localizer</h1>
+<code><span class="keyword">interface </span><span class="identifier">Localizer</span></code>
+<p>Generic interface for estimating robot pose over time.</p>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="pose-estimate.html">poseEstimate</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">var </span><span class="identifier">poseEstimate</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner/-pose2d/index.html"><span class="identifier">Pose2d</span></a></code>
+<p>Current robot pose estimate.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="update.html">update</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">update</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Completes a single localization update.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Inheritors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../-mecanum-drive/-mecanum-localizer/index.html">MecanumLocalizer</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">MecanumLocalizer</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">Localizer</span></a></code>
+<p>Default localizer for mecanum drivetrains based on the drive encoders and (optionally) a heading sensor.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-swerve-drive/-swerve-localizer/index.html">SwerveLocalizer</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">SwerveLocalizer</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">Localizer</span></a></code>
+<p>Default localizer for swerve drivetrains based on the drive encoder positions, module orientations, and
+(optionally) a heading sensor.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-tank-drive/-tank-localizer/index.html">TankLocalizer</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">TankLocalizer</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">Localizer</span></a></code>
+<p>Default localizer for tank drivetrains based on the drive encoders and (optionally) a heading sensor.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-three-tracking-wheel-localizer/index.html">ThreeTrackingWheelLocalizer</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">ThreeTrackingWheelLocalizer</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">Localizer</span></a></code>
+<p>Localizer based on three unpowered tracking omni wheels.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-two-tracking-wheel-localizer/index.html">TwoTrackingWheelLocalizer</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">TwoTrackingWheelLocalizer</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">Localizer</span></a></code>
+<p>Localizer based on two unpowered tracking omni wheels and an orientation sensor.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

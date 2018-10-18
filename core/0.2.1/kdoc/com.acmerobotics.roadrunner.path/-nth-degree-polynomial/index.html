@@ -1,0 +1,76 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>NthDegreePolynomial - core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">core</a>&nbsp;/&nbsp;<a href="../index.html">com.acmerobotics.roadrunner.path</a>&nbsp;/&nbsp;<a href="./index.html">NthDegreePolynomial</a><br/>
+<br/>
+<h1>NthDegreePolynomial</h1>
+<code><span class="keyword">class </span><span class="identifier">NthDegreePolynomial</span></code>
+<p>Nth-degree polynomial interpolated according to the provided derivatives. Note that this implementation is less
+performant than <a href="../-quintic-polynomial/index.html">QuinticPolynomial</a> as it uses general matrix operations for derivative computations.</p>
+<h3>Parameters</h3>
+<p><a name="start"></a>
+<code>start</code> - start derivatives starting with the 0th derivative</p>
+<p><a name="end"></a>
+<code>end</code> - end derivatives starting with the 0th derivative</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">NthDegreePolynomial</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.path.NthDegreePolynomial$<init>(kotlin.collections.List((kotlin.Double)), kotlin.collections.List((kotlin.Double)))/start">start</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.path.NthDegreePolynomial$<init>(kotlin.collections.List((kotlin.Double)), kotlin.collections.List((kotlin.Double)))/end">end</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">&gt;</span><span class="symbol">)</span></code>
+<p>Nth-degree polynomial interpolated according to the provided derivatives. Note that this implementation is less
+performant than <a href="../-quintic-polynomial/index.html">QuinticPolynomial</a> as it uses general matrix operations for derivative computations.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="deriv.html">deriv</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">deriv</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.path.NthDegreePolynomial$deriv(kotlin.Double)/t">t</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code>
+<p>Returns the derivative of the polynomial at <a href="deriv.html#com.acmerobotics.roadrunner.path.NthDegreePolynomial$deriv(kotlin.Double)/t">t</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="get.html">get</a></p>
+</td>
+<td>
+<code><span class="keyword">operator</span> <span class="keyword">fun </span><span class="identifier">get</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.path.NthDegreePolynomial$get(kotlin.Double)/t">t</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code>
+<p>Returns the value of the polynomial at <a href="get.html#com.acmerobotics.roadrunner.path.NthDegreePolynomial$get(kotlin.Double)/t">t</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="second-deriv.html">secondDeriv</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">secondDeriv</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.path.NthDegreePolynomial$secondDeriv(kotlin.Double)/t">t</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code>
+<p>Returns the second derivative of the polynomial at <a href="second-deriv.html#com.acmerobotics.roadrunner.path.NthDegreePolynomial$secondDeriv(kotlin.Double)/t">t</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="third-deriv.html">thirdDeriv</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">thirdDeriv</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.path.NthDegreePolynomial$thirdDeriv(kotlin.Double)/t">t</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code>
+<p>Returns the third derivative of the polynomial at <a href="third-deriv.html#com.acmerobotics.roadrunner.path.NthDegreePolynomial$thirdDeriv(kotlin.Double)/t">t</a>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

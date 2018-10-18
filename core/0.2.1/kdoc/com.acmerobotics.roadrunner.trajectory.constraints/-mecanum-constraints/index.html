@@ -1,0 +1,104 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>MecanumConstraints - core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">core</a>&nbsp;/&nbsp;<a href="../index.html">com.acmerobotics.roadrunner.trajectory.constraints</a>&nbsp;/&nbsp;<a href="./index.html">MecanumConstraints</a><br/>
+<br/>
+<h1>MecanumConstraints</h1>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">MecanumConstraints</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-drive-constraints/index.html"><span class="identifier">DriveConstraints</span></a></code>
+<p>Mecanum-specific drive constraints that also limit maximum wheel velocities.</p>
+<h3>Parameters</h3>
+<p><a name="baseConstraints"></a>
+<code>baseConstraints</code> - base drive constraints</p>
+<p><a name="trackWidth"></a>
+<code>trackWidth</code> - track width</p>
+<p><a name="wheelBase"></a>
+<code>wheelBase</code> - wheel base</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">MecanumConstraints</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.constraints.MecanumConstraints$<init>(com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints, kotlin.Double, kotlin.Double)/baseConstraints">baseConstraints</span><span class="symbol">:</span>&nbsp;<a href="../-drive-constraints/index.html"><span class="identifier">DriveConstraints</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.constraints.MecanumConstraints$<init>(com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints, kotlin.Double, kotlin.Double)/trackWidth">trackWidth</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.constraints.MecanumConstraints$<init>(com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints, kotlin.Double, kotlin.Double)/wheelBase">wheelBase</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a>&nbsp;<span class="symbol">=</span>&nbsp;trackWidth<span class="symbol">)</span></code>
+<p>Mecanum-specific drive constraints that also limit maximum wheel velocities.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Inherited Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../-drive-constraints/maximum-acceleration.html">maximumAcceleration</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">maximumAcceleration</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code>
+<p>maximum robot acceleration</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-drive-constraints/maximum-angular-acceleration.html">maximumAngularAcceleration</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">maximumAngularAcceleration</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code>
+<p>maximum angular acceleration (ignored by path-based trajectories)</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-drive-constraints/maximum-angular-velocity.html">maximumAngularVelocity</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">maximumAngularVelocity</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code>
+<p>maximum angular velocity</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-drive-constraints/maximum-velocity.html">maximumVelocity</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">maximumVelocity</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code>
+<p>maximum robot velocity</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="maximum-velocity.html">maximumVelocity</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">maximumVelocity</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.constraints.MecanumConstraints$maximumVelocity(com.acmerobotics.roadrunner.Pose2d, com.acmerobotics.roadrunner.Pose2d, com.acmerobotics.roadrunner.Pose2d)/pose">pose</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner/-pose2d/index.html"><span class="identifier">Pose2d</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.constraints.MecanumConstraints$maximumVelocity(com.acmerobotics.roadrunner.Pose2d, com.acmerobotics.roadrunner.Pose2d, com.acmerobotics.roadrunner.Pose2d)/poseDeriv">poseDeriv</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner/-pose2d/index.html"><span class="identifier">Pose2d</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.constraints.MecanumConstraints$maximumVelocity(com.acmerobotics.roadrunner.Pose2d, com.acmerobotics.roadrunner.Pose2d, com.acmerobotics.roadrunner.Pose2d)/poseSecondDeriv">poseSecondDeriv</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner/-pose2d/index.html"><span class="identifier">Pose2d</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code>
+<p>Returns the maximum velocity for the given pose derivatives.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Inherited Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../-drive-constraints/maximum-acceleration.html">maximumAcceleration</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">maximumAcceleration</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints$maximumAcceleration(com.acmerobotics.roadrunner.Pose2d, com.acmerobotics.roadrunner.Pose2d, com.acmerobotics.roadrunner.Pose2d)/pose">pose</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner/-pose2d/index.html"><span class="identifier">Pose2d</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints$maximumAcceleration(com.acmerobotics.roadrunner.Pose2d, com.acmerobotics.roadrunner.Pose2d, com.acmerobotics.roadrunner.Pose2d)/poseDeriv">poseDeriv</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner/-pose2d/index.html"><span class="identifier">Pose2d</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints$maximumAcceleration(com.acmerobotics.roadrunner.Pose2d, com.acmerobotics.roadrunner.Pose2d, com.acmerobotics.roadrunner.Pose2d)/poseSecondDeriv">poseSecondDeriv</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner/-pose2d/index.html"><span class="identifier">Pose2d</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code>
+<p>Returns the maximum acceleration for the given pose derivatives.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

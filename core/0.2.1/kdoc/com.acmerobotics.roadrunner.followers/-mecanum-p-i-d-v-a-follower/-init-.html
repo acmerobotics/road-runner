@@ -1,0 +1,32 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>MecanumPIDVAFollower.<init> - core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">core</a>&nbsp;/&nbsp;<a href="../index.html">com.acmerobotics.roadrunner.followers</a>&nbsp;/&nbsp;<a href="index.html">MecanumPIDVAFollower</a>&nbsp;/&nbsp;<a href="./-init-.html">&lt;init&gt;</a><br/>
+<br/>
+<h1>&lt;init&gt;</h1>
+<a name="com.acmerobotics.roadrunner.followers.MecanumPIDVAFollower$&lt;init&gt;(com.acmerobotics.roadrunner.drive.MecanumDrive, com.acmerobotics.roadrunner.control.PIDCoefficients, com.acmerobotics.roadrunner.control.PIDCoefficients, kotlin.Double, kotlin.Double, kotlin.Double, com.acmerobotics.roadrunner.util.NanoClock)"></a>
+<code><span class="identifier">MecanumPIDVAFollower</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.followers.MecanumPIDVAFollower$<init>(com.acmerobotics.roadrunner.drive.MecanumDrive, com.acmerobotics.roadrunner.control.PIDCoefficients, com.acmerobotics.roadrunner.control.PIDCoefficients, kotlin.Double, kotlin.Double, kotlin.Double, com.acmerobotics.roadrunner.util.NanoClock)/drive">drive</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.drive/-mecanum-drive/index.html"><span class="identifier">MecanumDrive</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.followers.MecanumPIDVAFollower$<init>(com.acmerobotics.roadrunner.drive.MecanumDrive, com.acmerobotics.roadrunner.control.PIDCoefficients, com.acmerobotics.roadrunner.control.PIDCoefficients, kotlin.Double, kotlin.Double, kotlin.Double, com.acmerobotics.roadrunner.util.NanoClock)/translationalCoeffs">translationalCoeffs</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.control/-p-i-d-coefficients/index.html"><span class="identifier">PIDCoefficients</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.followers.MecanumPIDVAFollower$<init>(com.acmerobotics.roadrunner.drive.MecanumDrive, com.acmerobotics.roadrunner.control.PIDCoefficients, com.acmerobotics.roadrunner.control.PIDCoefficients, kotlin.Double, kotlin.Double, kotlin.Double, com.acmerobotics.roadrunner.util.NanoClock)/headingCoeffs">headingCoeffs</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.control/-p-i-d-coefficients/index.html"><span class="identifier">PIDCoefficients</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.followers.MecanumPIDVAFollower$<init>(com.acmerobotics.roadrunner.drive.MecanumDrive, com.acmerobotics.roadrunner.control.PIDCoefficients, com.acmerobotics.roadrunner.control.PIDCoefficients, kotlin.Double, kotlin.Double, kotlin.Double, com.acmerobotics.roadrunner.util.NanoClock)/kV">kV</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.followers.MecanumPIDVAFollower$<init>(com.acmerobotics.roadrunner.drive.MecanumDrive, com.acmerobotics.roadrunner.control.PIDCoefficients, com.acmerobotics.roadrunner.control.PIDCoefficients, kotlin.Double, kotlin.Double, kotlin.Double, com.acmerobotics.roadrunner.util.NanoClock)/kA">kA</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.followers.MecanumPIDVAFollower$<init>(com.acmerobotics.roadrunner.drive.MecanumDrive, com.acmerobotics.roadrunner.control.PIDCoefficients, com.acmerobotics.roadrunner.control.PIDCoefficients, kotlin.Double, kotlin.Double, kotlin.Double, com.acmerobotics.roadrunner.util.NanoClock)/kStatic">kStatic</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.followers.MecanumPIDVAFollower$<init>(com.acmerobotics.roadrunner.drive.MecanumDrive, com.acmerobotics.roadrunner.control.PIDCoefficients, com.acmerobotics.roadrunner.control.PIDCoefficients, kotlin.Double, kotlin.Double, kotlin.Double, com.acmerobotics.roadrunner.util.NanoClock)/clock">clock</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.util/-nano-clock/index.html"><span class="identifier">NanoClock</span></a>&nbsp;<span class="symbol">=</span>&nbsp;NanoClock.system()<span class="symbol">)</span></code>
+<p>Traditional PID controller with feedforward velocity and acceleration components to follow a trajectory. More
+specifically, the feedback is applied to the components of the robot's pose (x position, y position, and heading) to
+determine the velocity correction. The feedforward components are instead applied at the wheel level.</p>
+<h3>Parameters</h3>
+<p><a name="drive"></a>
+<code>drive</code> - mecanum drive instance</p>
+<p><a name="translationalCoeffs"></a>
+<code>translationalCoeffs</code> - PID coefficients for the robot axial and lateral (x and y, respectively) controllers</p>
+<p><a name="headingCoeffs"></a>
+<code>headingCoeffs</code> - PID coefficients for the robot heading controller</p>
+<p><a name="kV"></a>
+<code>kV</code> - feedforward velocity gain</p>
+<p><a name="kA"></a>
+<code>kA</code> - feedforward acceleration gain</p>
+<p><a name="kStatic"></a>
+<code>kStatic</code> - signed, additive feedforward constant (used to overcome static friction)</p>
+<p><a name="clock"></a>
+<code>clock</code> - clock</p>
+</BODY>
+</HTML>
