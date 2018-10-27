@@ -9,11 +9,11 @@ import kotlin.math.min
  *
  * @param segments trajectory segments
  */
-class Trajectory(val segments: List<TrajectorySegment> = listOf()) {
+class Trajectory(val segments: List<TrajectorySegment> = emptyList()) {
     /**
      * Returns the trajectory duration.
      */
-    fun duration() = segments.map { it.duration() }.sum()
+    fun duration() = segments.sumByDouble { it.duration() }
 
     /**
      * Returns the pose at the specified [time].

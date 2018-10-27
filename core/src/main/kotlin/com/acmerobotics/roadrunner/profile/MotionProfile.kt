@@ -8,7 +8,7 @@ import kotlin.math.min
  *
  * @param segments profile motion segments
  */
-class MotionProfile(segments: List<MotionSegment>) {
+class MotionProfile @JvmOverloads constructor(segments: List<MotionSegment> = emptyList()) {
     // TODO: is internal acceptable here?
     internal val segments: MutableList<MotionSegment> = segments.toMutableList()
 
@@ -29,7 +29,7 @@ class MotionProfile(segments: List<MotionSegment>) {
     /**
      * Returns the duration of the motion profile.
      */
-    fun duration() = segments.map { it.dt }.sum()
+    fun duration() = segments.sumByDouble { it.dt }
 
     /**
      * Returns a reversed version of the motion profile.
@@ -51,6 +51,9 @@ class MotionProfile(segments: List<MotionSegment>) {
      */
     fun end() = get(duration())
 
+    /**
+     * Returns a new motion profile with [other] concatenated.
+     */
     operator fun plus(other: MotionProfile): MotionProfile {
         val builder = MotionProfileBuilder(start())
         builder.appendProfile(this)
