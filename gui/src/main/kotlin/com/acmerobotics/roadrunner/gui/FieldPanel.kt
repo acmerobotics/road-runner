@@ -52,7 +52,7 @@ class FieldPanel : JPanel() {
         val fieldImage = ImageIO.read(javaClass.getResource("/field.png"));
         g2d.drawImage(fieldImage, offsetX.roundToInt(), offsetY.roundToInt(), fieldSize, fieldSize, null)
 
-        g2d.color = Color(76, 175, 80)
+        g2d.color = SERIES_COLORS[2]
 
         // draw poses
         for (pose in poses) {
