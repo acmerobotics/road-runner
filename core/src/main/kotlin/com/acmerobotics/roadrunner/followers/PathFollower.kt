@@ -16,6 +16,12 @@ abstract class PathFollower @JvmOverloads constructor(protected val clock: NanoC
     protected var path: Path = Path(LineSegment(Vector2d(), Vector2d()))
 
     /**
+     * Robot pose error computed in the last [update] call.
+     */
+    abstract var lastError: Pose2d
+        protected set
+
+    /**
      * Follow the given [path].
      */
     open fun followPath(path: Path) {

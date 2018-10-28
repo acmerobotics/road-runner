@@ -23,7 +23,8 @@ class PIDFController @JvmOverloads constructor(
         val kF: (Double) -> Double = { 0.0 }
 ) {
     private var errorSum: Double = 0.0
-    private var lastError: Double = 0.0
+    var lastError: Double = 0.0
+        private set
     private var lastUpdateTimestamp: Double = Double.NaN
 
     private var inputBounded: Boolean = false

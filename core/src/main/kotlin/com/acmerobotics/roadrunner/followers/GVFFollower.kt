@@ -40,6 +40,8 @@ class GVFFollower @JvmOverloads constructor(
     private var lastVelocity: Double = 0.0
     private var lastProjectionDisplacement: Double = 0.0
 
+    override var lastError: Pose2d = Pose2d()
+
     override fun followPath(path: Path) {
         gvf = GuidingVectorField(path, kN, errorMapFunc)
         following = true
@@ -87,6 +89,9 @@ class GVFFollower @JvmOverloads constructor(
         lastUpdateTimestamp = timestamp
         lastVelocity = velocity
         lastProjectionDisplacement = gvfResult.displacement
+
+        val targetPose = path[gvfResult.displacement]
+        lastError = Kinematics.calculatePoseError(targetPose, currentPose)
     }
 
 }

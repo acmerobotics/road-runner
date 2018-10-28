@@ -34,6 +34,8 @@ class TankPIDVAFollower @JvmOverloads constructor(
     private val displacementController = PIDFController(displacementCoeffs)
     private val crossTrackController = PIDFController(crossTrackCoeffs)
 
+    override var lastError: Pose2d = Pose2d()
+
     override fun update(currentPose: Pose2d) {
         if (!isFollowing()) {
             drive.setMotorPowers(0.0, 0.0)
@@ -66,5 +68,7 @@ class TankPIDVAFollower @JvmOverloads constructor(
         val motorPowers = Kinematics.calculateMotorFeedforward(wheelVelocities, wheelAccelerations, kV, kA, kStatic)
 
         drive.setMotorPowers(motorPowers[0], motorPowers[1])
+
+        lastError = Kinematics.calculatePoseError(targetPose, currentPose)
     }
 }

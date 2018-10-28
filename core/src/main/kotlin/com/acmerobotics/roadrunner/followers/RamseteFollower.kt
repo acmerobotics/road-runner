@@ -30,6 +30,8 @@ class RamseteFollower @JvmOverloads constructor(
         private val kStatic: Double,
         clock: NanoClock = NanoClock.system()
 ) : TrajectoryFollower(clock) {
+    override var lastError: Pose2d = Pose2d()
+
     override fun update(currentPose: Pose2d) {
         if (!isFollowing()) {
             drive.setMotorPowers(0.0, 0.0)
@@ -69,5 +71,7 @@ class RamseteFollower @JvmOverloads constructor(
         val motorPowers = Kinematics.calculateMotorFeedforward(wheelVelocities, wheelAccelerations, kV, kA, kStatic)
 
         drive.setMotorPowers(motorPowers[0], motorPowers[1])
+
+        lastError = Kinematics.calculatePoseError(targetPose, currentPose)
     }
 }

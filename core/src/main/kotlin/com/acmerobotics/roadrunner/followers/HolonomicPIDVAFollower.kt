@@ -33,6 +33,8 @@ abstract class HolonomicPIDVAFollower @JvmOverloads constructor(
     private val lateralController = PIDFController(translationalCoeffs)
     private val headingController = PIDFController(headingCoeffs)
 
+    override var lastError: Pose2d = Pose2d()
+
     init {
         headingController.setInputBounds(-Math.PI, Math.PI)
     }
@@ -66,6 +68,8 @@ abstract class HolonomicPIDVAFollower @JvmOverloads constructor(
         val correctedVelocity = targetRobotPoseVelocity + Pose2d(axialCorrection, lateralCorrection, headingCorrection)
 
         updateDrive(correctedVelocity, targetRobotPoseAcceleration)
+
+        lastError = Kinematics.calculatePoseError(targetPose, currentPose)
     }
 
     abstract fun updateDrive(poseVelocity: Pose2d, poseAcceleration: Pose2d)

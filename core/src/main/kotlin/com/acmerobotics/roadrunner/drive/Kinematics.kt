@@ -36,6 +36,13 @@ object Kinematics {
                     ) * fieldPoseVelocity.heading
 
     /**
+     * Returns the error between [targetFieldPose] and [actualFieldPose].
+     */
+    @JvmStatic
+    fun calculatePoseError(targetFieldPose: Pose2d, actualFieldPose: Pose2d) =
+            fieldToRobotPose(targetFieldPose) - fieldToRobotPose(actualFieldPose)
+
+    /**
      * Computes the motor feedforwards (i.e., open loop powers) for the given set of coefficients.
      */
     @JvmStatic

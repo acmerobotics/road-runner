@@ -14,6 +14,12 @@ abstract class TrajectoryFollower @JvmOverloads constructor(protected val clock:
     protected var trajectory: Trajectory = Trajectory()
 
     /**
+     * Robot pose error computed in the last [update] call.
+     */
+    abstract var lastError: Pose2d
+        protected set
+
+    /**
      * Follow the given [trajectory].
      */
     fun followTrajectory(trajectory: Trajectory) {
