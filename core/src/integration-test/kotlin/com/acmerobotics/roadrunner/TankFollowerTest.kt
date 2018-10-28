@@ -43,6 +43,10 @@ class TankFollowerTest {
         var powers = listOf(0.0, 0.0)
         var positions = listOf(0.0, 0.0)
 
+        init {
+            localizer = TankLocalizer(this, false)
+        }
+
         override fun setMotorPowers(left: Double, right: Double) {
             powers = listOf(left, right)
                     .map { it * VOLTAGE_NOISE_DIST.sample() }
@@ -52,6 +56,8 @@ class TankFollowerTest {
         }
 
         override fun getWheelPositions() = positions
+
+        override fun getExternalHeading() = Double.NaN
     }
 
     @Test

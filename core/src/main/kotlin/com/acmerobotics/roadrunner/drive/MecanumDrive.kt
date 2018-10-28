@@ -17,7 +17,7 @@ abstract class MecanumDrive @JvmOverloads constructor(
 ) : Drive() {
 
     /**
-     * Default localizer for mecanum drivetrains based on the drive encoders and (optionally) a heading sensor.
+     * Default localizer for mecanum drives based on the drive encoders and (optionally) a heading sensor.
      *
      * @param drive drive
      * @param useExternalHeading use external heading provided by an external sensor (e.g., IMU, gyroscope)
@@ -41,7 +41,7 @@ abstract class MecanumDrive @JvmOverloads constructor(
 
         override fun update() {
             val wheelPositions = drive.getWheelPositions()
-            val extHeading = drive.getExternalHeading()
+            val extHeading = if (useExternalHeading) drive.getExternalHeading() else Double.NaN
             val timestamp = clock.seconds()
             if (lastWheelPositions.isNotEmpty()) {
                 val dt = timestamp - lastUpdateTimestamp
@@ -49,7 +49,7 @@ abstract class MecanumDrive @JvmOverloads constructor(
                         .zip(lastWheelPositions)
                         .map { (it.first - it.second) / dt }
                 val robotPoseDelta = MecanumKinematics.wheelToRobotVelocities(wheelVelocities, drive.wheelBase, drive.trackWidth) * dt
-                val finalHeadingDelta = Angle.norm(extHeading - lastExtHeading)
+                val finalHeadingDelta = if (useExternalHeading) Angle.norm(extHeading - lastExtHeading) else robotPoseDelta.heading
                 poseEstimate = Kinematics.relativeOdometryUpdate(poseEstimate, Pose2d(robotPoseDelta.pos(), finalHeadingDelta))
             }
             lastWheelPositions = wheelPositions

@@ -45,6 +45,13 @@ object Kinematics {
                 .map { if (abs(it) > 1e-4) it + sign(it) * kStatic else 0.0 }
 
     /**
+     * Computes the motor feedforward (i.e., open loop power) for the given set of coefficients.
+     */
+    @JvmStatic
+    fun calculateMotorFeedforward(velocity: Double, acceleration: Double, kV: Double, kA: Double, kStatic: Double) =
+            calculateMotorFeedforward(listOf(velocity), listOf(acceleration), kV, kA, kStatic)[0]
+
+    /**
      * Performs a relative odometry update. Note: this assumes that the robot moves with constant velocity over the
      * measurement interval.
      */

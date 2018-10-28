@@ -38,6 +38,10 @@ class SwerveFollowerTest {
         var positions = listOf(0.0, 0.0, 0.0, 0.0)
         var orientations = listOf(0.0, 0.0, 0.0, 0.0)
 
+        init {
+            localizer = SwerveLocalizer(this, false)
+        }
+
         override fun setMotorPowers(frontLeft: Double, rearLeft: Double, rearRight: Double, frontRight: Double) {
             powers = listOf(frontLeft, rearLeft, rearRight, frontRight)
                     .map { it * VOLTAGE_NOISE_DIST.sample() }
@@ -53,6 +57,8 @@ class SwerveFollowerTest {
         }
 
         override fun getModuleOrientations() = orientations
+
+        override fun getExternalHeading() = Double.NaN
     }
 
     @Test

@@ -109,7 +109,7 @@ The `profile` object can then be used to find the motion state at any point in t
 
 ### Paths
 
-While one-dimensional profiles are useful for mechanisms with one degree of freedom (for example, elevators, arms, and turrets), they aren't super useful by themselves for drive movement. To take full advantage of your drivetrain's capabilities, you must also define a 2D path for it to follow.
+While one-dimensional profiles are useful for mechanisms with one degree of freedom (for example, elevators, arms, and turrets), they aren't super useful by themselves for drive movement. To take full advantage of your drive's capabilities, you must also define a 2D path for it to follow.
 
 For now, lines and quintic splines are the two built-in path constructs. However, any sufficiently continuous parametric curve can work. Here's the syntax for creating a line:
 

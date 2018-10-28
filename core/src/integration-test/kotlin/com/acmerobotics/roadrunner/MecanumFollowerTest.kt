@@ -37,6 +37,10 @@ class MecanumFollowerTest {
         var powers = listOf(0.0, 0.0, 0.0, 0.0)
         var positions = listOf(0.0, 0.0, 0.0, 0.0)
 
+        init {
+            localizer = MecanumLocalizer(this, false)
+        }
+
         override fun setMotorPowers(frontLeft: Double, rearLeft: Double, rearRight: Double, frontRight: Double) {
             powers = listOf(frontLeft, rearLeft, rearRight, frontRight)
                     .map { it * VOLTAGE_NOISE_DIST.sample() }
@@ -45,7 +49,9 @@ class MecanumFollowerTest {
                     .map { it.first + it.second / kV * dt }
         }
 
-        override fun getWheelPositions(): List<Double> = positions
+        override fun getWheelPositions() = positions
+
+        override fun getExternalHeading() = Double.NaN
     }
 
     @Test

@@ -3,7 +3,7 @@ package com.acmerobotics.roadrunner.drive
 import com.acmerobotics.roadrunner.Pose2d
 
 /**
- * Abstraction for generic drivetrain motion and localization.
+ * Abstraction for generic robot drive motion and localization.
  */
 abstract class Drive {
     /**

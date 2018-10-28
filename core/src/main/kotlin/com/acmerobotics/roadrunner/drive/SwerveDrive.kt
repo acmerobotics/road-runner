@@ -17,8 +17,8 @@ abstract class SwerveDrive @JvmOverloads constructor(
 ) : Drive() {
 
     /**
-     * Default localizer for swerve drivetrains based on the drive encoder positions, module orientations, and
-     * (optionally) a heading sensor.
+     * Default localizer for swerve drives based on the drive encoder positions, module orientations, and (optionally) a
+     * heading sensor.
      *
      * @param drive drive
      * @param useExternalHeading use external heading provided by an external sensor (e.g., IMU, gyroscope)
@@ -43,7 +43,7 @@ abstract class SwerveDrive @JvmOverloads constructor(
         override fun update() {
             val wheelPositions = drive.getWheelPositions()
             val moduleOrientations = drive.getModuleOrientations()
-            val extHeading = drive.getExternalHeading()
+            val extHeading = if (useExternalHeading) drive.getExternalHeading() else Double.NaN
             val timestamp = clock.seconds()
             if (lastWheelPositions.isNotEmpty()) {
                 val dt = timestamp - lastUpdateTimestamp
@@ -52,7 +52,7 @@ abstract class SwerveDrive @JvmOverloads constructor(
                         .map { (it.first - it.second) / dt }
                 val robotPoseDelta = SwerveKinematics.wheelToRobotVelocities(
                         wheelVelocities, moduleOrientations, drive.wheelBase, drive.trackWidth) * dt
-                val finalHeadingDelta = Angle.norm(extHeading - lastExtHeading)
+                val finalHeadingDelta = if (useExternalHeading) Angle.norm(extHeading - lastExtHeading) else robotPoseDelta.heading
                 poseEstimate = Kinematics.relativeOdometryUpdate(poseEstimate, Pose2d(robotPoseDelta.pos(), finalHeadingDelta))
             }
             lastWheelPositions = wheelPositions
