@@ -1,6 +1,7 @@
 package com.acmerobotics.roadrunner.drive
 
 import com.acmerobotics.roadrunner.Pose2d
+import com.acmerobotics.roadrunner.util.Angle
 import com.acmerobotics.roadrunner.util.NanoClock
 
 /**
@@ -17,26 +18,28 @@ abstract class TankDrive @JvmOverloads constructor(
      * Default localizer for tank drivetrains based on the drive encoders and (optionally) a heading sensor.
      *
      * @param drive drive
+     * @param useExternalHeading use external heading provided by an external sensor (e.g., IMU, gyroscope)
      * @param clock clock
      */
     class TankLocalizer @JvmOverloads constructor(
             private val drive: TankDrive,
+            private val useExternalHeading: Boolean = true,
             private val clock: NanoClock = NanoClock.system()
     ) : Localizer {
         override var poseEstimate: Pose2d = Pose2d()
             set(value) {
                 lastWheelPositions = emptyList()
-                lastHeading = Double.NaN
+                lastExtHeading = Double.NaN
                 lastUpdateTimestamp = Double.NaN
                 field = value
             }
         private var lastWheelPositions = emptyList<Double>()
-        private var lastHeading = Double.NaN
+        private var lastExtHeading = Double.NaN
         private var lastUpdateTimestamp = Double.NaN
 
         override fun update() {
             val wheelPositions = drive.getWheelPositions()
-            val extHeading = drive.getHeading()
+            val extHeading = drive.getExternalHeading()
             val timestamp = clock.seconds()
             if (lastWheelPositions.isNotEmpty()) {
                 val dt = timestamp - lastUpdateTimestamp
@@ -44,11 +47,11 @@ abstract class TankDrive @JvmOverloads constructor(
                         .zip(lastWheelPositions)
                         .map { (it.first - it.second) / dt }
                 val robotPoseDelta = TankKinematics.wheelToRobotVelocities(wheelVelocities, drive.trackWidth) * dt
-                val finalHeadingDelta = (extHeading?.minus(lastHeading)) ?: robotPoseDelta.heading
+                val finalHeadingDelta = Angle.norm(extHeading - lastExtHeading)
                 poseEstimate = Kinematics.relativeOdometryUpdate(poseEstimate, Pose2d(robotPoseDelta.pos(), finalHeadingDelta))
             }
             lastWheelPositions = wheelPositions
-            lastHeading = extHeading ?: Double.NaN
+            lastExtHeading = extHeading
             lastUpdateTimestamp = timestamp
         }
     }
@@ -72,7 +75,8 @@ abstract class TankDrive @JvmOverloads constructor(
     abstract fun getWheelPositions(): List<Double>
 
     /**
-     * Returns the robot's heading or null if no sensor is available.
+     * Returns the robot's heading in radians as measured by an external sensor (e.g., IMU, gyroscope). For consistency,
+     * we take counter-clockwise rotation to be positive.
      */
-    open fun getHeading(): Double? = null
+    abstract fun getExternalHeading(): Double
 }
