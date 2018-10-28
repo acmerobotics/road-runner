@@ -8,8 +8,13 @@ import java.io.File
 import javax.swing.BoxLayout
 import javax.swing.JPanel
 import javax.swing.JTabbedPane
+import kotlin.math.max
+import kotlin.math.min
 
 private val DEFAULT_CONSTRAINTS = DriveConstraints(25.0, 40.0, Math.toRadians(180.0), Math.toRadians(360.0))
+private const val DEFAULT_RESOLUTION = 250
+private const val MIN_RESOLUTION = 50
+private const val MAX_RESOLUTION = 250000
 
 class MainPanel : JPanel() {
 
@@ -23,12 +28,15 @@ class MainPanel : JPanel() {
 
     private var poses = listOf<Pose2d>()
     private var constraints = DEFAULT_CONSTRAINTS
+    private var resolution = DEFAULT_RESOLUTION
 
     init {
-        poseEditorPanel.onPosesUpdateListener = { updateTrajectory(it, constraints) }
-        constraintsPanel.onConstraintsUpdateListener = { updateTrajectory(poses, it) }
+        poseEditorPanel.onPosesUpdateListener = { updateTrajectory(it, constraints, resolution) }
+        constraintsPanel.onConstraintsUpdateListener = { updateTrajectory(poses, it, resolution) }
+        trajectoryInfoPanel.onResolutionUpdateListener = { updateTrajectory(poses, constraints, it) }
 
         constraintsPanel.updateConstraints(DEFAULT_CONSTRAINTS)
+        trajectoryInfoPanel.updateResolution(DEFAULT_RESOLUTION)
 
         val upperTabbedPane = JTabbedPane()
         upperTabbedPane.addTab("Field", fieldPanel)
@@ -46,11 +54,12 @@ class MainPanel : JPanel() {
         add(lowerTabbedPane)
     }
 
-    fun updateTrajectory(poses: List<Pose2d>, constraints: DriveConstraints) {
+    private fun updateTrajectory(poses: List<Pose2d>, constraints: DriveConstraints, resolution: Int) {
         this.poses = poses
         this.constraints = constraints
+        this.resolution = max(MIN_RESOLUTION, min(MAX_RESOLUTION, resolution))
 
-        val trajectory = TrajectoryConfig(poses, constraints).toTrajectory()
+        val trajectory = TrajectoryConfig(this.poses, this.constraints, this.resolution).toTrajectory()
 
         fieldPanel.updateTrajectoryAndPoses(trajectory, poses)
         trajectoryInfoPanel.updateTrajectory(trajectory)
@@ -60,17 +69,18 @@ class MainPanel : JPanel() {
     }
 
     fun clearTrajectory() {
-        updateTrajectory(listOf(), DEFAULT_CONSTRAINTS)
+        updateTrajectory(listOf(), DEFAULT_CONSTRAINTS, DEFAULT_RESOLUTION)
     }
 
     fun save(file: File) {
-        TrajectoryLoader.saveConfig(TrajectoryConfig(poses, constraints), file)
+        TrajectoryLoader.saveConfig(TrajectoryConfig(poses, constraints, resolution), file)
     }
 
     fun load(file: File) {
         val trajectoryConfig = TrajectoryLoader.loadConfig(file)
-        updateTrajectory(trajectoryConfig.poses, trajectoryConfig.constraints)
+        updateTrajectory(trajectoryConfig.poses, trajectoryConfig.constraints, trajectoryConfig.resolution)
         poseEditorPanel.updatePoses(poses)
         constraintsPanel.updateConstraints(constraints)
+        trajectoryInfoPanel.updateResolution(resolution)
     }
 }

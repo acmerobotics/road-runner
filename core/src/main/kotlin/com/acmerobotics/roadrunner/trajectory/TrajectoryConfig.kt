@@ -10,8 +10,13 @@ import kotlin.math.abs
  *
  * @param poses poses
  * @param constraints constraints
+ * @param resolution resolution used for path-based segments (see [PathTrajectorySegment])
  */
-class TrajectoryConfig(val poses: List<Pose2d>, val constraints: DriveConstraints) {
+class TrajectoryConfig @JvmOverloads constructor(
+        val poses: List<Pose2d>,
+        val constraints: DriveConstraints,
+        val resolution: Int = 250
+) {
 
     /**
      * Converts the configuration into a real [Trajectory].
@@ -20,7 +25,7 @@ class TrajectoryConfig(val poses: List<Pose2d>, val constraints: DriveConstraint
             if (poses.isEmpty()) {
                 Trajectory()
             } else {
-                val builder = TrajectoryBuilder(poses.first(), constraints)
+                val builder = TrajectoryBuilder(poses.first(), constraints, resolution)
                 for (i in 1 until poses.size) {
                     val startPose = poses[i - 1]
                     val endPose = poses[i]

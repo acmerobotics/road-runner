@@ -16,8 +16,14 @@ import com.acmerobotics.roadrunner.util.Angle
  *
  * @param startPose start pose
  * @param globalConstraints global drive constraints (overridable for specific segments)
+ * @param resolution resolution used for path-based segments (see [PathTrajectorySegment])
  */
-class TrajectoryBuilder(startPose: Pose2d, private val globalConstraints: DriveConstraints) {
+
+class TrajectoryBuilder @JvmOverloads constructor(
+        startPose: Pose2d,
+        private val globalConstraints: DriveConstraints,
+        private val resolution: Int = 250
+) {
     private var currentPose: Pose2d = startPose
     private val trajectorySegments = mutableListOf<TrajectorySegment>()
     private var paths = mutableListOf<Path>()
@@ -69,7 +75,7 @@ class TrajectoryBuilder(startPose: Pose2d, private val globalConstraints: DriveC
             paths.add(line)
             constraintsList.add(constraints)
         } else {
-            trajectorySegments.add(PathTrajectorySegment(listOf(line), listOf(constraints)))
+            trajectorySegments.add(PathTrajectorySegment(listOf(line), listOf(constraints), resolution))
         }
         currentPose = Pose2d(pos, currentPose.heading)
 
@@ -191,7 +197,7 @@ class TrajectoryBuilder(startPose: Pose2d, private val globalConstraints: DriveC
             paths.add(spline)
             constraintsList.add(constraints)
         } else {
-            trajectorySegments.add(PathTrajectorySegment(listOf(spline), listOf(constraints)))
+            trajectorySegments.add(PathTrajectorySegment(listOf(spline), listOf(constraints), resolution))
         }
         currentPose = pose
 
@@ -226,7 +232,7 @@ class TrajectoryBuilder(startPose: Pose2d, private val globalConstraints: DriveC
     fun closeComposite(): TrajectoryBuilder {
         composite = false
         if (paths.isNotEmpty() && constraintsList.isNotEmpty()) {
-            trajectorySegments.add(PathTrajectorySegment(paths, constraintsList))
+            trajectorySegments.add(PathTrajectorySegment(paths, constraintsList, resolution))
             paths = mutableListOf()
             constraintsList = mutableListOf()
         }
