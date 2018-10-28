@@ -16,11 +16,11 @@ import kotlin.math.sign
  * @param kF custom, position-dependent feedforward (e.g., a cosine term for arms)
  */
 class PIDFController @JvmOverloads constructor(
-        val pid: PIDCoefficients,
-        val kV: Double = 0.0,
-        val kA: Double = 0.0,
-        val kStatic: Double = 0.0,
-        val kF: (Double) -> Double = { 0.0 }
+        private val pid: PIDCoefficients,
+        private val kV: Double = 0.0,
+        private val kA: Double = 0.0,
+        private val kStatic: Double = 0.0,
+        private val kF: (Double) -> Double = { 0.0 }
 ) {
     private var errorSum: Double = 0.0
     var lastError: Double = 0.0
