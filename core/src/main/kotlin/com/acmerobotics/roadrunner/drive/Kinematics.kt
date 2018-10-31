@@ -7,7 +7,7 @@ import kotlin.math.sign
 import kotlin.math.sin
 
 /**
- * A collection of methods for various kinematics-related tasks
+ * A collection of methods for various kinematics-related tasks.
  */
 object Kinematics {
 

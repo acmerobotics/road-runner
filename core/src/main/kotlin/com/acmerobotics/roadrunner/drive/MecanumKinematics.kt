@@ -3,8 +3,12 @@ package com.acmerobotics.roadrunner.drive
 import com.acmerobotics.roadrunner.Pose2d
 
 /**
- * Mecanum drive kinematic equations. [Ether's paper](http://www.chiefdelphi.com/media/papers/download/2722) provides a
- * motivated derivation.
+ * Mecanum drive kinematic equations. All wheel positions and velocities are given starting with front left and
+ * proceeding counter-clockwise (i.e., front left, rear left, rear right, front right). Robot poses are specified in a
+ * coordinate system with positive x pointing forward, positive y pointing left, and positive heading measured
+ * counter-clockwise from the x-axis.
+ *
+ * [This paper](http://www.chiefdelphi.com/media/papers/download/2722) provides a motivated derivation.
  */
 object MecanumKinematics {
 

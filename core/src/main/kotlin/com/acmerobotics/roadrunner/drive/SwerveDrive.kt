@@ -81,18 +81,20 @@ abstract class SwerveDrive @JvmOverloads constructor(
     abstract fun setModuleOrientations(frontLeft: Double, rearLeft: Double, rearRight: Double, frontRight: Double)
 
     /**
-     * Returns the positions of the wheels in linear distance units. Note: this should return exactly four values.
+     * Returns the positions of the wheels in linear distance units. Positions should exactly match the ordering in
+     * [setMotorPowers].
      */
     abstract fun getWheelPositions(): List<Double>
 
     /**
-     * Returns the current module orientations in radians. Note: this should return exactly four values.
+     * Returns the current module orientations in radians. Orientations should exactly match the order in
+     * [setModuleOrientations].
      */
     abstract fun getModuleOrientations(): List<Double>
 
     /**
-     * Returns the robot's heading in radians as measured by an external sensor (e.g., IMU, gyroscope). For consistency,
-     * we take counter-clockwise rotation to be positive.
+     * Returns the robot's heading in radians as measured by an external sensor (e.g., IMU, gyroscope). Heading is
+     * measured counter-clockwise from the x-axis.
      */
     abstract fun getExternalHeading(): Double
 }

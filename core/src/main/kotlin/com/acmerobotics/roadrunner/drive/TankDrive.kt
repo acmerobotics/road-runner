@@ -69,14 +69,14 @@ abstract class TankDrive @JvmOverloads constructor(
     abstract fun setMotorPowers(left: Double, right: Double)
 
     /**
-     * Returns the positions of the wheels in linear distance units. Note: this must return exactly two values. If there
-     * are multiple wheels per side, simply average them together.
+     * Returns the positions of the wheels in linear distance units. Positions should exactly match the ordering in
+     * [setMotorPowers].
      */
     abstract fun getWheelPositions(): List<Double>
 
     /**
-     * Returns the robot's heading in radians as measured by an external sensor (e.g., IMU, gyroscope). For consistency,
-     * we take counter-clockwise rotation to be positive.
+     * Returns the robot's heading in radians as measured by an external sensor (e.g., IMU, gyroscope). Heading is
+     * measured counter-clockwise from the x-axis.
      */
     abstract fun getExternalHeading(): Double
 }

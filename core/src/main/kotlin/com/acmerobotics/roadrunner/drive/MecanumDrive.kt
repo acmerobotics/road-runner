@@ -71,14 +71,14 @@ abstract class MecanumDrive @JvmOverloads constructor(
     abstract fun setMotorPowers(frontLeft: Double, rearLeft: Double, rearRight: Double, frontRight: Double)
 
     /**
-     * Returns the positions of the wheels in linear distance units. Note: there should be exactly four values for a
-     * mecanum drive.
+     * Returns the positions of the wheels in linear distance units. Positions should exactly match the ordering in
+     * [setMotorPowers].
      */
     abstract fun getWheelPositions(): List<Double>
 
     /**
-     * Returns the robot's heading in radians as measured by an external sensor (e.g., IMU, gyroscope). For consistency,
-     * we take counter-clockwise rotation to be positive.
+     * Returns the robot's heading in radians as measured by an external sensor (e.g., IMU, gyroscope). Heading is
+     * measured counter-clockwise from the x-axis.
      */
     abstract fun getExternalHeading(): Double
 }

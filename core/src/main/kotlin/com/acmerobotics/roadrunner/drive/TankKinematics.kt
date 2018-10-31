@@ -4,7 +4,10 @@ import com.acmerobotics.roadrunner.Pose2d
 import kotlin.math.abs
 
 /**
- * Tank drive kinematic equations based upon the unicycle model.
+ * Tank drive kinematic equations based upon the unicycle model. All wheel positions and velocities are given in
+ * (left, right) tuples. Robot poses are specified in a coordinate system with positive x pointing forward, positive y
+ * pointing left, and positive heading measured counter-clockwise from the x-axis.
+ *
  * [This page](http://rossum.sourceforge.net/papers/DiffSteer/) gives a motivated derivation.
  */
 object TankKinematics {
