@@ -1,0 +1,166 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>TrajectoryBuilder - core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">core</a>&nbsp;/&nbsp;<a href="../index.html">com.acmerobotics.roadrunner.trajectory</a>&nbsp;/&nbsp;<a href="./index.html">TrajectoryBuilder</a><br/>
+<br/>
+<h1>TrajectoryBuilder</h1>
+<code><span class="keyword">class </span><span class="identifier">TrajectoryBuilder</span></code>
+<p>Easy-to-use builder for creating <a href="../-trajectory/index.html">Trajectory</a> instances.</p>
+<h3>Parameters</h3>
+<p><a name="startPose"></a>
+<code>startPose</code> - start pose</p>
+<p><a name="globalConstraints"></a>
+<code>globalConstraints</code> - global drive constraints (overridable for specific segments)</p>
+<p><a name="resolution"></a>
+<code>resolution</code> - resolution used for path-based segments (see <a href="../-path-trajectory-segment/index.html">PathTrajectorySegment</a>)</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">TrajectoryBuilder</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder$<init>(com.acmerobotics.roadrunner.Pose2d, com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints, kotlin.Int)/startPose">startPose</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner/-pose2d/index.html"><span class="identifier">Pose2d</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder$<init>(com.acmerobotics.roadrunner.Pose2d, com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints, kotlin.Int)/globalConstraints">globalConstraints</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.trajectory.constraints/-drive-constraints/index.html"><span class="identifier">DriveConstraints</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder$<init>(com.acmerobotics.roadrunner.Pose2d, com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints, kotlin.Int)/resolution">resolution</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a>&nbsp;<span class="symbol">=</span>&nbsp;250<span class="symbol">)</span></code>
+<p>Easy-to-use builder for creating <a href="../-trajectory/index.html">Trajectory</a> instances.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="back.html">back</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">back</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder$back(kotlin.Double)/distance">distance</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">TrajectoryBuilder</span></a></code>
+<p>Adds a line straight backward.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="begin-composite.html">beginComposite</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">beginComposite</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">TrajectoryBuilder</span></a></code>
+<p>Begins a composite path trajectory segment backed by a single continuous profile.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="build.html">build</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">build</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../-trajectory/index.html"><span class="identifier">Trajectory</span></a></code>
+<p>Constructs the <a href="../-trajectory/index.html">Trajectory</a> instance.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="close-composite.html">closeComposite</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">closeComposite</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">TrajectoryBuilder</span></a></code>
+<p>Closes a composite path trajectory segment (see <a href="begin-composite.html">beginComposite</a>).</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="forward.html">forward</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">forward</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder$forward(kotlin.Double)/distance">distance</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">TrajectoryBuilder</span></a></code>
+<p>Adds a line straight forward.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="line-to.html">lineTo</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">lineTo</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder$lineTo(com.acmerobotics.roadrunner.Vector2d, com.acmerobotics.roadrunner.path.heading.HeadingInterpolator, com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryConstraints)/pos">pos</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner/-vector2d/index.html"><span class="identifier">Vector2d</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder$lineTo(com.acmerobotics.roadrunner.Vector2d, com.acmerobotics.roadrunner.path.heading.HeadingInterpolator, com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryConstraints)/interpolator">interpolator</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.path.heading/-heading-interpolator/index.html"><span class="identifier">HeadingInterpolator</span></a>&nbsp;<span class="symbol">=</span>&nbsp;TangentInterpolator()<span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder$lineTo(com.acmerobotics.roadrunner.Vector2d, com.acmerobotics.roadrunner.path.heading.HeadingInterpolator, com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryConstraints)/constraintsOverride">constraintsOverride</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.trajectory.constraints/-trajectory-constraints/index.html"><span class="identifier">TrajectoryConstraints</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">TrajectoryBuilder</span></a></code>
+<p>Adds a line path segment.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="reverse.html">reverse</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">reverse</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">TrajectoryBuilder</span></a></code>
+<p>Reverse the direction of robot travel.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="set-reversed.html">setReversed</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">setReversed</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder$setReversed(kotlin.Boolean)/reversed">reversed</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">TrajectoryBuilder</span></a></code>
+<p>Sets the robot travel direction.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="spline-to.html">splineTo</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">splineTo</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder$splineTo(com.acmerobotics.roadrunner.Pose2d, com.acmerobotics.roadrunner.path.heading.HeadingInterpolator, com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryConstraints)/pose">pose</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner/-pose2d/index.html"><span class="identifier">Pose2d</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder$splineTo(com.acmerobotics.roadrunner.Pose2d, com.acmerobotics.roadrunner.path.heading.HeadingInterpolator, com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryConstraints)/interpolator">interpolator</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.path.heading/-heading-interpolator/index.html"><span class="identifier">HeadingInterpolator</span></a>&nbsp;<span class="symbol">=</span>&nbsp;TangentInterpolator()<span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder$splineTo(com.acmerobotics.roadrunner.Pose2d, com.acmerobotics.roadrunner.path.heading.HeadingInterpolator, com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryConstraints)/constraintsOverride">constraintsOverride</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.trajectory.constraints/-trajectory-constraints/index.html"><span class="identifier">TrajectoryConstraints</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">TrajectoryBuilder</span></a></code>
+<p>Adds a spline segment.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="strafe-left.html">strafeLeft</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">strafeLeft</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder$strafeLeft(kotlin.Double)/distance">distance</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">TrajectoryBuilder</span></a></code>
+<p>Adds a segment that strafes left in the robot reference frame.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="strafe-right.html">strafeRight</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">strafeRight</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder$strafeRight(kotlin.Double)/distance">distance</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">TrajectoryBuilder</span></a></code>
+<p>Adds a segment that strafes right in the robot reference frame.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="turn.html">turn</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">turn</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder$turn(kotlin.Double, com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints)/angle">angle</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder$turn(kotlin.Double, com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints)/constraintsOverride">constraintsOverride</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.trajectory.constraints/-drive-constraints/index.html"><span class="identifier">DriveConstraints</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">TrajectoryBuilder</span></a></code>
+<p>Adds a point turn.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="turn-to.html">turnTo</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">turnTo</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder$turnTo(kotlin.Double, com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints)/heading">heading</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder$turnTo(kotlin.Double, com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints)/constraintsOverride">constraintsOverride</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.trajectory.constraints/-drive-constraints/index.html"><span class="identifier">DriveConstraints</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">TrajectoryBuilder</span></a></code>
+<p>Adds a point turn.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="wait-for.html">waitFor</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">waitFor</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder$waitFor(kotlin.Double)/duration">duration</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">TrajectoryBuilder</span></a></code>
+<p>Adds a wait segment.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>
