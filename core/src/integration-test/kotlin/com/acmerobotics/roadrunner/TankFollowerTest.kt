@@ -50,7 +50,7 @@ class TankFollowerTest {
         override fun setMotorPowers(left: Double, right: Double) {
             powers = listOf(left, right)
                     .map { it * VOLTAGE_NOISE_DIST.sample() }
-                    .map { max(0.0, min(it, 1.0)) }
+                    .map { max(-1.0, min(it, 1.0)) }
             positions = positions.zip(powers)
                     .map { it.first + it.second / kV * dt }
         }

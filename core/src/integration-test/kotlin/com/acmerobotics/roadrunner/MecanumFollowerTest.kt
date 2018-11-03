@@ -44,7 +44,7 @@ class MecanumFollowerTest {
         override fun setMotorPowers(frontLeft: Double, rearLeft: Double, rearRight: Double, frontRight: Double) {
             powers = listOf(frontLeft, rearLeft, rearRight, frontRight)
                     .map { it * VOLTAGE_NOISE_DIST.sample() }
-                    .map { max(0.0, min(it, 1.0)) }
+                    .map { max(-1.0, min(it, 1.0)) }
             positions = positions.zip(powers)
                     .map { it.first + it.second / kV * dt }
         }

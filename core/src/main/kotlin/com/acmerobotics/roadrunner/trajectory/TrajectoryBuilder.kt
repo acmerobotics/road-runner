@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.Vector2d
 import com.acmerobotics.roadrunner.path.LineSegment
 import com.acmerobotics.roadrunner.path.Path
 import com.acmerobotics.roadrunner.path.QuinticSplineSegment
+import com.acmerobotics.roadrunner.path.heading.ConstantInterpolator
 import com.acmerobotics.roadrunner.path.heading.HeadingInterpolator
 import com.acmerobotics.roadrunner.path.heading.TangentInterpolator
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
@@ -132,7 +133,10 @@ class TrajectoryBuilder @JvmOverloads constructor(
      * @param distance distance to travel backward
      */
     fun back(distance: Double): TrajectoryBuilder {
-        return forward(-distance)
+        reverse()
+        forward(-distance)
+        reverse()
+        return this
     }
 
     /**
@@ -144,7 +148,7 @@ class TrajectoryBuilder @JvmOverloads constructor(
         return lineTo(currentPose.pos() + Vector2d(
                 distance * Math.cos(currentPose.heading + Math.PI / 2),
                 distance * Math.sin(currentPose.heading + Math.PI / 2)
-        ))
+        ), ConstantInterpolator(currentPose.heading))
     }
 
     /**
