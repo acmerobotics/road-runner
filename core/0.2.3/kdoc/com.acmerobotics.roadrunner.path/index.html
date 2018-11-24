@@ -1,0 +1,93 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>com.acmerobotics.roadrunner.path - core</title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">core</a>&nbsp;/&nbsp;<a href="./index.html">com.acmerobotics.roadrunner.path</a><br/>
+<br/>
+<h2>Package com.acmerobotics.roadrunner.path</h2>
+<p>Type hierarchy for representing 2D holonomic robot paths (x, y, and heading components). </p>
+<h3>Types</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-line-segment/index.html">LineSegment</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">LineSegment</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-parametric-curve/index.html"><span class="identifier">ParametricCurve</span></a></code>
+<p>Parametric representation of a line.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-nth-degree-polynomial/index.html">NthDegreePolynomial</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">NthDegreePolynomial</span></code>
+<p>Nth-degree polynomial interpolated according to the provided derivatives. Note that this implementation is less
+performant than <a href="-quintic-polynomial/index.html">QuinticPolynomial</a> as it uses general matrix operations for derivative computations.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-nth-degree-spline-segment/index.html">NthDegreeSplineSegment</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">NthDegreeSplineSegment</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-parametric-curve/index.html"><span class="identifier">ParametricCurve</span></a></code>
+<p>Combination of two quintic polynomials into a 2D spline.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-parametric-curve/index.html">ParametricCurve</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">ParametricCurve</span></code>
+<p>Parametric curve with two components (x and y).</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-path/index.html">Path</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">Path</span></code>
+<p>Path composed of a parametric curve and a heading interpolator.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-path-builder/index.html">PathBuilder</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">PathBuilder</span></code>
+<p>Easy-to-use builder for creating <a href="-path/index.html">Path</a> instances.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-quintic-polynomial/index.html">QuinticPolynomial</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">QuinticPolynomial</span></code>
+<p>Quintic polynomial interpolated according to the provided derivatives.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-quintic-spline-segment/index.html">QuinticSplineSegment</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">QuinticSplineSegment</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-parametric-curve/index.html"><span class="identifier">ParametricCurve</span></a></code>
+<p>Combination of two quintic polynomials into a 2D quintic spline. See
+<a href="https://github.com/acmerobotics/road-runner/blob/master/doc/pdf/Quintic_Splines_for_FTC.pdf">this short paper</a> for
+some motivation and implementation details.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>
