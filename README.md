@@ -8,27 +8,13 @@ A simple Kotlin library for planning 2D mobile robot paths and trajectories desi
 
 ### Core
 
-1. Load your `ftc_app` project into Android Studio.
+1. Open your `ftc_app` project in Android Studio.
 
-1. Open up the `build.gradle` file in the module you'd like to install in (usually `TeamCode`).
+1. Open up the Gradle file for the module you'd like to install in (probably `TeamCode/build.release.gradle`).
 
-1. At the bottom of the file, add a `repositories` block with `jcenter()`. Next add a `dependencies` block with `implementation 'com.acmerobotics.roadrunner:core:0.2.3'`. After you're finished, your `build.gradle` should look like this:
+1. Add `implementation 'com.acmerobotics.roadrunner:core:0.2.3'` to the end of the `dependencies` block.
 
-    ```groovy
-    // beginning of the file
-
-    repositories {
-        // other repositories
-        jcenter()
-    }
-
-    dependencies {
-        // other dependencies
-        implementation 'com.acmerobotics.roadrunner:core:0.2.3'
-    }
-    ```
-
-1. Although Road Runner only has a few dependencies, these may exceed the method reference limit imposed by some version of Android. Fortunately, there are a few ways to address this restriction as described below. For more information, see [this article](https://developer.android.com/studio/build/multidex).
+1. (Android only) Although Road Runner only has a few dependencies, these may exceed the method reference limit imposed by some versions of Android. Fortunately, there are a few ways around this. For more information, see [this article](https://developer.android.com/studio/build/multidex).
 
     1. **If you do not need to target API level 19** (i.e., in FTC, you don't need to use ZTE speeds), then just add `multiDexEnabled true` to the `defaultConfig` closure (for FTC, this is located inside `build.common.gradle`).
 
@@ -40,7 +26,7 @@ A simple Kotlin library for planning 2D mobile robot paths and trajectories desi
                 'proguard-rules.pro'
         ```
 
-        Now download the `proguard-rules.pro` file from [this gist](https://gist.github.com/rbrott/b921749525bacb8e97ad2cd8bbaceeba) and save it to your module folder (`TeamCode` in the case of FTC).
+        Now download the `proguard-rules.pro` file from [the quickstart](https://github.com/acmerobotics/road-runner-quickstart/blob/master/TeamCode/proguard-rules.pro) and save it to your module folder (`TeamCode` in the case of FTC).
 
     1. Finally, if the other solutions prove unworkable, you can download a slim jar from Releases. It lacks some of the features of the normal distribution, but it has fewer dependencies.
 
@@ -54,7 +40,7 @@ Road Runner includes a simple GUI for generating trajectories from pose waypoint
 
 ### Plugin
 
-Road Runner also includes a simple Android Studio plugin based upon the GUI. Here are some instructions for building and loading the plugin:
+Road Runner also includes a simple IDEA/Android Studio plugin based upon the GUI. Here are some instructions for building and loading the plugin:
 
 1. Download the latest plugin zip from Releases or build it with `./gradlew buildPlugin`.
 
@@ -80,7 +66,7 @@ For a complete example of using Road Runner in FTC, see the [quickstart](https:/
 
 Motion profiles are core to this library and effective control of robot actuators. The combination of feedforward and feedback control (for example, PID controllers) can greatly improve accuracy and reduce mechanical strain on your robot. For more information about motion profiles (and motion control in general), see [the canonical talk](https://www.youtube.com/watch?v=8319J1BEHwM) by mentors from FRC teams 254 and 971.
 
-Conceptually, motion profiles are time-based descriptions of your robot's kinematic state (in this case, its position, velocity, and acceleration) that obey your mechanism's constraints (maximum velocity and maximum acceleration for Road Runner). For example, here'a  pre-planned motion profile with a maximum acceleration of 5 in/s^2 and a maximum velocity of 5 in/s over 10in:
+Conceptually, motion profiles are time-based descriptions of your robot's kinematic state (in this case, its position, velocity, and acceleration) that obey your mechanism's constraints (maximum velocity and maximum acceleration for Road Runner). For example, here's a pre-planned motion profile with a maximum acceleration of 5 in/s^2 and a maximum velocity of 5 in/s over 10in:
 
 ![](doc/image/simpleTrap.png)
 
@@ -109,7 +95,7 @@ The `profile` object can then be used to find the motion state at any point in t
 
 ### Paths
 
-While one-dimensional profiles are useful for mechanisms with one degree of freedom (for example, elevators, arms, and turrets), they aren't super useful by themselves for drive movement. To take full advantage of your drive's capabilities, you must also define a 2D path for it to follow.
+While one-dimensional profiles are useful for mechanisms with one degree of freedom (for example, elevators, arms, and turrets), they aren't particularly useful by themselves for drive movement. To take full advantage of your drive's capabilities, you must also define a 2D path for it to follow.
 
 For now, lines and quintic splines are the two built-in path constructs. However, any sufficiently continuous parametric curve can work. Here's the syntax for creating a line:
 
@@ -126,7 +112,7 @@ or
 val line = Path(LineSegment(Vector2d(10.0, 10.0), Vector2d(20.0, 20.0)))
 ```
 
-Similarly, here's a sample spline declaration:
+Similarly, here's a spline declaration:
 
 ```java
 Path spline = new Path(new QuinticSplineSegment(
@@ -144,7 +130,7 @@ val spline = Path(QuinticSplineSegment(
 ))
 ```
 
-Paths also describe the robot's heading in addition to its XY position. For tank/differential drive robots (and other with nonholonomic constraints), the heading always points in the direction of the curve. However, for holonomic robots (for example, mecanum, X-drive, H-drive, or ball drive), the heading is fully controllable. To change the default heading behavior, simply pass a heading interpolator as the second argument to the `Path` constructor:
+Paths also describe the robot's heading in addition to its xy position. For tank/differential drive robots (and other with nonholonomic constraints), the heading always points in the direction of the curve. However, for holonomic robots (for example, mecanum, X-drive, H-drive, or ball drive), the heading is independent (and therefore controllable). To change the default heading behavior, simply pass a heading interpolator as the second argument to the `Path` constructor:
 
 ```java
 Path constantHeadingSpline = new Path(new QuinticSplineSegment(
@@ -162,9 +148,11 @@ val spline = Path(QuinticSplineSegment(
 ), ConstantInterpolator(Math.toRadians(45.0)))
 ```
 
+The `ConstantInterpolator` commands the robot to maintain the provided heading throughout the motion, regardless of the translational movement (this is most often used for strafing). Road runner also ships with a linear heading interpolator, a spline heading interpolator, and a "wiggle" heading interpolator. As with the path constructs, the user is free to create interpolators representing any function.
+
 ### Trajectories
 
-Now it's time to combine path and motion profiles. To distinguish them from normal motion profiles, Road Runner calls them trajectories.
+Now it's time to combine path and motion profiles. To distinguish these new entities from normal 1D motion profiles, Road Runner calls them trajectories.
 
 Here's an example of creating a `Trajectory` from a `Path`:
 
@@ -222,7 +210,7 @@ val trajectory = TrajectoryBuilder(Pose2d(0.0, 0.0, 0.0), constraints)
 
 ### Followers
 
-Finally, we're ready to select a follower. The role of the follower is to ensure the robot accurately tracks the trajectory/path with feedback. For mecanum, it's easy: there's only one follower, `MecanumPIDVAFollower`. For tank, there are a few more options:
+Finally, we're ready to select a follower. The role of the follower is to ensure the robot accurately tracks the trajectory/path with feedback. For mecanum and swerve, it's easy: there's only a PIDVA follower. However, for tank, there are a few more options:
 
 * `TankPIDVAFollower`: PID-based controller that minimizes displacement and cross track error. Suitable for most applications.
 
