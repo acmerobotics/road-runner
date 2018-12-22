@@ -1,0 +1,76 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>com.acmerobotics.roadrunner.path.heading - core</title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">core</a>&nbsp;/&nbsp;<a href="./index.html">com.acmerobotics.roadrunner.path.heading</a><br/>
+<br/>
+<h2>Package com.acmerobotics.roadrunner.path.heading</h2>
+<p>
+A set of interpolators that describe how the robot's heading changes along a path.
+</p>
+<h3>Types</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-constant-interpolator/index.html">ConstantInterpolator</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">ConstantInterpolator</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-heading-interpolator/index.html"><span class="identifier">HeadingInterpolator</span></a></code>
+<p>Constant heading interpolator used for arbitrary holonomic translations.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-heading-interpolator/index.html">HeadingInterpolator</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">HeadingInterpolator</span></code>
+<p>Interpolator for specifying the heading for holonomic paths.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-linear-interpolator/index.html">LinearInterpolator</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">LinearInterpolator</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-heading-interpolator/index.html"><span class="identifier">HeadingInterpolator</span></a></code>
+<p>Linear heading interpolator for time-optimal transitions between poses.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-spline-interpolator/index.html">SplineInterpolator</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">SplineInterpolator</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-heading-interpolator/index.html"><span class="identifier">HeadingInterpolator</span></a></code>
+<p>Spline heading interpolator for transitioning smoothly between headings without violating continuity (and hence
+allowing for integration into longer profiles).</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-tangent-interpolator/index.html">TangentInterpolator</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">TangentInterpolator</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-heading-interpolator/index.html"><span class="identifier">HeadingInterpolator</span></a></code>
+<p>Tangent (system) interpolator for tank/differential and other nonholonomic drives.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-wiggle-interpolator/index.html">WiggleInterpolator</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">WiggleInterpolator</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-heading-interpolator/index.html"><span class="identifier">HeadingInterpolator</span></a></code>
+<p>Heading interpolator that wraps another interpolator and adds sinusoidal oscillations ("wiggles") while preserving
+continuity. More specifically, the wiggle function is composed of a sine wave with a quintic spline on either end.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>
