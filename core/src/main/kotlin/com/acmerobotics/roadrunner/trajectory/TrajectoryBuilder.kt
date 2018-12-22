@@ -19,7 +19,6 @@ import com.acmerobotics.roadrunner.util.Angle
  * @param globalConstraints global drive constraints (overridable for specific segments)
  * @param resolution resolution used for path-based segments (see [PathTrajectorySegment])
  */
-
 class TrajectoryBuilder @JvmOverloads constructor(
         startPose: Pose2d,
         private val globalConstraints: DriveConstraints,
@@ -35,7 +34,6 @@ class TrajectoryBuilder @JvmOverloads constructor(
     /**
      * Reverse the direction of robot travel.
      */
-    // TODO: is there a better solution?
     fun reverse(): TrajectoryBuilder {
         reversed = !reversed
         return this
@@ -50,13 +48,44 @@ class TrajectoryBuilder @JvmOverloads constructor(
     }
 
     /**
+     * Adds a point turn.
+     *
+     * @param angle angle to turn by (relative to the current heading)
+     * @param constraintsOverride turn-specific drive constraints
+     */
+    // TODO: support turns that are greater than 180deg?
+    @JvmOverloads
+    fun turn(angle: Double, constraintsOverride: DriveConstraints? = null): TrajectoryBuilder {
+        return turnTo(Angle.norm(currentPose.heading + angle), constraintsOverride)
+    }
+
+    /**
+     * Adds a point turn.
+     *
+     * @param heading heading to turn to
+     * @param constraintsOverride turn-specific drive constraints
+     */
+    @JvmOverloads
+    fun turnTo(heading: Double, constraintsOverride: DriveConstraints? = null): TrajectoryBuilder {
+        if (composite) {
+            closeComposite()
+        }
+
+        val constraints = constraintsOverride ?: globalConstraints
+        val pointTurn = PointTurn(currentPose, heading, constraints)
+        trajectorySegments.add(pointTurn)
+        currentPose = Pose2d(currentPose.pos(), heading)
+
+        return this
+    }
+
+    /**
      * Adds a line path segment.
      *
      * @param pos end position
      * @param interpolator heading interpolator
      * @param constraintsOverride line-specific drive constraints
      */
-    // TODO: add lineToPose()?
     @JvmOverloads
     fun lineTo(pos: Vector2d, interpolator: HeadingInterpolator = TangentInterpolator(), constraintsOverride: TrajectoryConstraints? = null): TrajectoryBuilder {
         val postBeginComposite = if (!interpolator.respectsDerivativeContinuity() && composite) {
@@ -88,32 +117,11 @@ class TrajectoryBuilder @JvmOverloads constructor(
     }
 
     /**
-     * Adds a point turn.
+     * Adds a strafe path segment.
      *
-     * @param angle angle to turn by (relative to the current heading)
-     * @param constraintsOverride turn-specific drive constraints
+     * @param pos end position
      */
-    @JvmOverloads
-    fun turn(angle: Double, constraintsOverride: DriveConstraints? = null): TrajectoryBuilder {
-        return turnTo(Angle.norm(currentPose.heading + angle), constraintsOverride)
-    }
-
-    /**
-     * Adds a point turn.
-     *
-     * @param heading heading to turn to
-     * @param constraintsOverride turn-specific drive constraints
-     */
-    @JvmOverloads
-    fun turnTo(heading: Double, constraintsOverride: DriveConstraints? = null): TrajectoryBuilder {
-        if (composite) {
-            closeComposite()
-        }
-        val pointTurn = PointTurn(currentPose, heading, constraintsOverride ?: globalConstraints)
-        trajectorySegments.add(pointTurn)
-        currentPose = Pose2d(currentPose.pos(), heading)
-        return this
-    }
+    fun strafeTo(pos: Vector2d) = lineTo(pos, ConstantInterpolator(currentPose.heading))
 
     /**
      * Adds a line straight forward.
@@ -145,10 +153,10 @@ class TrajectoryBuilder @JvmOverloads constructor(
      * @param distance distance to strafe left
      */
     fun strafeLeft(distance: Double): TrajectoryBuilder {
-        return lineTo(currentPose.pos() + Vector2d(
+        return strafeTo(currentPose.pos() + Vector2d(
                 distance * Math.cos(currentPose.heading + Math.PI / 2),
                 distance * Math.sin(currentPose.heading + Math.PI / 2)
-        ), ConstantInterpolator(currentPose.heading))
+        ))
     }
 
     /**

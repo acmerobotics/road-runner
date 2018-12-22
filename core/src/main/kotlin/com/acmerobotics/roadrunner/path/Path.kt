@@ -14,11 +14,11 @@ import org.apache.commons.math3.linear.RealVector
 
 
 /**
- * Path composed of a parametric curve and a heading interpolator.
+ * Path composed of a list of parametric curves and heading interpolators.
  *
- * @param parametricCurve parametric curve
- * @param interpolator heading interpolator
- * @param reversed whether or not to travel along the path in reverse
+ * @param parametricCurves parametric curves
+ * @param interpolators heading interpolators
+ * @param reversed whether or not to travel along the path segment in reverse
  */
 class Path @JvmOverloads constructor(
         val parametricCurves: List<ParametricCurve>,
@@ -90,60 +90,51 @@ class Path @JvmOverloads constructor(
         return Pose2d(finalVector, interpolators.last().end())
     }
 
-    /**
-     * Returns the pose [displacement] units along the path.
-     */
     private fun segmentGet(i: Int, displacement: Double): Pose2d {
         val parametricCurve = parametricCurves[i]
         val interpolator = interpolators[i]
         val reversed = reversed[i]
         val point = if (reversed) {
-            parametricCurve[length() - displacement]
+            parametricCurve[parametricCurve.length() - displacement]
         } else {
             parametricCurve[displacement]
         }
         val heading = if (reversed) {
-            interpolator[length() - displacement]
+            interpolator[parametricCurve.length() - displacement]
         } else {
             interpolator[displacement]
         }
         return Pose2d(point.x, point.y, heading)
     }
 
-    /**
-     * Returns the pose derivative [displacement] units along the path.
-     */
     private fun segmentDeriv(i: Int, displacement: Double): Pose2d {
         val parametricCurve = parametricCurves[i]
         val interpolator = interpolators[i]
         val reversed = reversed[i]
         val deriv = if (reversed) {
-            -parametricCurve.deriv(length() - displacement)
+            -parametricCurve.deriv(parametricCurve.length() - displacement)
         } else {
             parametricCurve.deriv(displacement)
         }
         val headingDeriv = if (reversed) {
-            -interpolator.deriv(length() - displacement)
+            -interpolator.deriv(parametricCurve.length() - displacement)
         } else {
             interpolator.deriv(displacement)
         }
         return Pose2d(deriv.x, deriv.y, headingDeriv)
     }
 
-    /**
-     * Returns the pose second derivative [displacement] units along the path.
-     */
     private fun segmentSecondDeriv(i: Int, displacement: Double): Pose2d {
         val parametricCurve = parametricCurves[i]
         val interpolator = interpolators[i]
         val reversed = reversed[i]
         val secondDeriv = if (reversed) {
-            parametricCurve.secondDeriv(length() - displacement)
+            parametricCurve.secondDeriv(parametricCurve.length() - displacement)
         } else {
             parametricCurve.secondDeriv(displacement)
         }
         val headingSecondDeriv = if (reversed) {
-            interpolator.secondDeriv(length() - displacement)
+            interpolator.secondDeriv(parametricCurve.length() - displacement)
         } else {
             interpolator.secondDeriv(displacement)
         }

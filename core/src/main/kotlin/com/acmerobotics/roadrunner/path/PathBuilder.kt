@@ -2,6 +2,7 @@ package com.acmerobotics.roadrunner.path
 
 import com.acmerobotics.roadrunner.Pose2d
 import com.acmerobotics.roadrunner.Vector2d
+import com.acmerobotics.roadrunner.path.heading.ConstantInterpolator
 import com.acmerobotics.roadrunner.path.heading.HeadingInterpolator
 import com.acmerobotics.roadrunner.path.heading.TangentInterpolator
 
@@ -21,7 +22,6 @@ class PathBuilder(startPose: Pose2d) {
     /**
      * Reverse the direction of robot travel.
      */
-    // TODO: is there a better solution?
     fun reverse(): PathBuilder {
         currentReverse = !currentReverse
         return this
@@ -41,7 +41,6 @@ class PathBuilder(startPose: Pose2d) {
      * @param pos end position
      * @param interpolator heading interpolator
      */
-    // TODO: add lineToPose()?
     @JvmOverloads
     fun lineTo(pos: Vector2d, interpolator: HeadingInterpolator = TangentInterpolator()): PathBuilder {
         val line = if (currentReverse) {
@@ -58,6 +57,13 @@ class PathBuilder(startPose: Pose2d) {
 
         return this
     }
+
+    /**
+     * Adds a strafe path segment.
+     *
+     * @param pos end position
+     */
+    fun strafeTo(pos: Vector2d) = lineTo(pos, ConstantInterpolator(currentPose.heading))
 
     /**
      * Adds a line straight forward.
@@ -77,7 +83,10 @@ class PathBuilder(startPose: Pose2d) {
      * @param distance distance to travel backward
      */
     fun back(distance: Double): PathBuilder {
-        return forward(-distance)
+        reverse()
+        forward(-distance)
+        reverse()
+        return this
     }
 
     /**
@@ -86,7 +95,7 @@ class PathBuilder(startPose: Pose2d) {
      * @param distance distance to strafe left
      */
     fun strafeLeft(distance: Double): PathBuilder {
-        return lineTo(currentPose.pos() + Vector2d(
+        return strafeTo(currentPose.pos() + Vector2d(
                 distance * Math.cos(currentPose.heading + Math.PI / 2),
                 distance * Math.sin(currentPose.heading + Math.PI / 2)
         ))

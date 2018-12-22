@@ -21,7 +21,7 @@ class MotionProfileGeneratorTest {
      */
     private fun testProfile(name: String, start: MotionState, goal: MotionState, profile: MotionProfile, verifyAccel: Boolean = false) {
         // save it
-        GraphUtil.saveMotionProfile(name, profile)
+        GraphUtil.saveMotionProfile("profiles/$name", profile)
 
         // verify start state satisfaction
         assertEquals(start.x, profile.start().x, 1e-4)
@@ -51,7 +51,7 @@ class MotionProfileGeneratorTest {
     @Test
     fun testSimpleTriangle() {
         testProfile(
-            "profiles/simpleTriangle",
+            "simpleTriangle",
             MotionState(0.0, 0.0, 0.0),
             MotionState(10.0, 0.0, 0.0),
             MotionProfileGenerator.generateSimpleMotionProfile(
@@ -66,7 +66,7 @@ class MotionProfileGeneratorTest {
     @Test
     fun testSimpleTrap() {
         testProfile(
-            "profiles/simpleTrap",
+            "simpleTrap",
             MotionState(0.0, 0.0, 0.0),
             MotionState(10.0, 0.0, 0.0),
             MotionProfileGenerator.generateSimpleMotionProfile(
@@ -81,7 +81,7 @@ class MotionProfileGeneratorTest {
     @Test
     fun testSimpleTriangleStartingOffset() {
         testProfile(
-            "profiles/simpleTriangleStartingOffset",
+            "simpleTriangleStartingOffset",
             MotionState(5.0, 0.0, 0.0),
             MotionState(15.0, 0.0, 0.0),
             MotionProfileGenerator.generateSimpleMotionProfile(
@@ -96,7 +96,7 @@ class MotionProfileGeneratorTest {
     @Test
     fun testSimpleTriangleReversed() {
         testProfile(
-            "profiles/simpleTriangleReversed",
+            "simpleTriangleReversed",
             MotionState(10.0, 0.0, 0.0),
             MotionState(0.0, 0.0, 0.0),
             MotionProfileGenerator.generateSimpleMotionProfile(
@@ -111,7 +111,7 @@ class MotionProfileGeneratorTest {
     @Test
     fun testSimpleTriangleStartingOffsetReversed() {
         testProfile(
-            "profiles/simpleTriangleStartingOffsetReversed",
+            "simpleTriangleStartingOffsetReversed",
             MotionState(15.0, 0.0, 0.0),
             MotionState(5.0, 0.0, 0.0),
             MotionProfileGenerator.generateSimpleMotionProfile(
@@ -126,7 +126,7 @@ class MotionProfileGeneratorTest {
     @Test
     fun testSimpleConstraintViolation() {
         testProfile(
-                "profiles/simpleConstraintViolation",
+                "simpleConstraintViolation",
                 MotionState(0.0, 60.0, 0.0),
                 MotionState(10.0, 0.0, 0.0),
                 MotionProfileGenerator.generateSimpleMotionProfile(
@@ -143,7 +143,7 @@ class MotionProfileGeneratorTest {
     @Test
     fun testComplex() {
         testProfile(
-            "profiles/complex",
+            "complex",
             MotionState(0.0, 0.0, 0.0),
             MotionState(10.0, 0.0, 0.0),
             MotionProfileGenerator.generateMotionProfile(
@@ -160,7 +160,7 @@ class MotionProfileGeneratorTest {
     @Test
     fun testComplex2() {
         testProfile(
-            "profiles/complex2",
+            "complex2",
             MotionState(0.0, 0.0, 0.0),
             MotionState(10.0, 0.0, 0.0),
             MotionProfileGenerator.generateMotionProfile(
@@ -177,7 +177,7 @@ class MotionProfileGeneratorTest {
     @Test
     fun testComplex2Reversed() {
         testProfile(
-            "profiles/complex2Reversed",
+            "complex2Reversed",
             MotionState(10.0, 0.0, 0.0),
             MotionState(0.0, 0.0, 0.0),
             MotionProfileGenerator.generateMotionProfile(
@@ -196,7 +196,7 @@ class MotionProfileGeneratorTest {
     @Test
     fun testJerkLimited() {
         testProfile(
-                "profiles/jerkLimited",
+                "jerkLimited",
                 MotionState(0.0, 50.0, -25.0),
                 MotionState(100.0, -5.0, 20.0),
                 MotionProfileGenerator.generateSimpleMotionProfile(
@@ -213,7 +213,7 @@ class MotionProfileGeneratorTest {
     @Test
     fun testJLConstraintViolations() {
         testProfile(
-                "profiles/jlConstraintViolations",
+                "jlConstraintViolations",
                 MotionState(0.0, 10.0),
                 MotionState(1.0, 0.0),
                 MotionProfileGenerator.generateSimpleMotionProfile(
