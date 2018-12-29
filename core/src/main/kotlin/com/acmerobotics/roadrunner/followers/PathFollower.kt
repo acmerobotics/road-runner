@@ -13,7 +13,9 @@ import com.acmerobotics.roadrunner.util.NanoClock
  */
 abstract class PathFollower @JvmOverloads constructor(protected val clock: NanoClock = NanoClock.system()) {
     private var startTimestamp: Double = 0.0
-    protected var path: Path = Path(LineSegment(Vector2d(), Vector2d()))
+
+    var path: Path = Path(LineSegment(Vector2d(), Vector2d()))
+        protected set
 
     /**
      * Robot pose error computed in the last [update] call.

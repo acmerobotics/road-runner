@@ -11,7 +11,8 @@ import com.acmerobotics.roadrunner.util.NanoClock
  */
 abstract class TrajectoryFollower @JvmOverloads constructor(protected val clock: NanoClock = NanoClock.system()) {
     private var startTimestamp: Double = 0.0
-    protected var trajectory: Trajectory = Trajectory()
+    var trajectory: Trajectory = Trajectory()
+        protected set
 
     /**
      * Robot pose error computed in the last [update] call.
