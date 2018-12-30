@@ -1,7 +1,10 @@
 package com.acmerobotics.roadrunner
 
+import com.acmerobotics.roadrunner.TestUtil.assertDerivEquals
 import com.acmerobotics.roadrunner.path.Path
 import com.acmerobotics.roadrunner.path.QuinticSplineSegment
+import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
+import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 
@@ -29,14 +32,21 @@ class PathTest {
         val heading = s.map { splineSegment[it].heading }
         val headingDeriv = s.map { splineSegment.deriv(it).heading }
         val headingSecondDeriv = s.map { splineSegment.secondDeriv(it).heading }
+        
+        assertDerivEquals(x, dx, ds, 0.01)
+        assertDerivEquals(dx, d2x, ds, 0.01)
 
-        assert(TestUtil.compareDerivatives(x, dx, ds, 0.01))
-        assert(TestUtil.compareDerivatives(dx, d2x, ds, 0.01))
+        assertDerivEquals(y, dy, ds, 0.01)
+        assertDerivEquals(dy, d2y, ds, 0.01)
 
-        assert(TestUtil.compareDerivatives(y, dy, ds, 0.01))
-        assert(TestUtil.compareDerivatives(dy, d2y, ds, 0.01))
+        assertDerivEquals(heading, headingDeriv, ds, 0.01)
+        assertDerivEquals(headingDeriv, headingSecondDeriv, ds, 0.01)
+    }
 
-        assert(TestUtil.compareDerivatives(heading, headingDeriv, ds, 0.01))
-        assert(TestUtil.compareDerivatives(headingDeriv, headingSecondDeriv, ds, 0.01))
+    @Test
+    fun test() {
+        println(TrajectoryBuilder(Pose2d(10.0, 20.0, 0.0), DriveConstraints(10.0, 10.0, Math.PI / 2, Math.PI / 2))
+                .splineTo(Pose2d(0.0, 23.0, -Math.PI / 2))
+                .build()[0.0])
     }
 }

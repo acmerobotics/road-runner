@@ -1,5 +1,6 @@
 package com.acmerobotics.roadrunner
 
+import org.assertj.core.api.Assertions.assertThat
 import kotlin.math.abs
 
 object TestUtil {
@@ -11,19 +12,20 @@ object TestUtil {
         return deriv
     }
 
-    fun compareDerivatives(x: List<Double>, dx: List<Double>, ds: Double, epsilon: Double, errorFreq: Double = 0.01): Boolean {
+    fun assertDerivEquals(x: List<Double>, dx: List<Double>, ds: Double, epsilon: Double, errorFreq: Double = 0.01) {
         val numDx = numericalDerivative(x, ds)
         val count = dx.zip(numDx)
                 .map { abs(it.first - it.second) }
                 .filter { it > epsilon }
                 .count()
         val freq = count.toDouble() / x.size
-        return freq < errorFreq
+        assertThat(freq).isLessThanOrEqualTo(errorFreq)
     }
 
-    fun testContinuity(values: List<Double>, epsilon: Double) =
-            values.drop(1)
+    fun assertContinuous(values: List<Double>, epsilon: Double) {
+        assertThat(values.drop(1)
                 .zip(values.dropLast(1))
-                .filter { abs(it.first - it.second) > epsilon }
-                .count() == 0
+                .map { it.first - it.second }
+                .max() ?: 0.0).isLessThan(epsilon)
+    }
 }

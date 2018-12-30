@@ -1,11 +1,11 @@
 package com.acmerobotics.roadrunner
 
+import com.acmerobotics.roadrunner.TestUtil.assertContinuous
 import com.acmerobotics.roadrunner.profile.MotionConstraints
 import com.acmerobotics.roadrunner.profile.MotionProfile
 import com.acmerobotics.roadrunner.profile.MotionProfileGenerator
 import com.acmerobotics.roadrunner.profile.MotionState
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import java.lang.Math.min
@@ -17,7 +17,7 @@ const val RESOLUTION = 1000
 class MotionProfileGeneratorTest {
 
     /**
-     * Verifies the continuity and start/goal satisfaction and saves an image of the profile for manual inspection.
+     * Verifies continuity and start/goal satisfaction and saves an image of the profile for manual inspection.
      */
     private fun testProfile(name: String, start: MotionState, goal: MotionState, profile: MotionProfile, verifyAccel: Boolean = false) {
         // save it
@@ -39,10 +39,10 @@ class MotionProfileGeneratorTest {
 
         // verify continuity
         val t = (0..RESOLUTION).map { it * profile.duration() / RESOLUTION }
-        assertTrue(TestUtil.testContinuity(t.map { profile[it].x }, 1.0))
-        assertTrue(TestUtil.testContinuity(t.map { profile[it].v }, 1.0))
+        assertContinuous(t.map { profile[it].x }, 1.0)
+        assertContinuous(t.map { profile[it].v }, 1.0)
         if (verifyAccel) {
-            assertTrue(TestUtil.testContinuity(t.map { profile[it].a }, 1.0))
+            assertContinuous(t.map { profile[it].a }, 1.0)
         }
     }
 

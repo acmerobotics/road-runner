@@ -104,7 +104,7 @@ class TankFollowerTest {
                 actualPositions.map { it.y }.toDoubleArray())
         graph.seriesMap.values.forEach { it.marker = None() }
         graph.styler.theme = MatlabTheme()
-        GraphUtil.saveGraph("tankPIDVASim", graph)
+        GraphUtil.saveGraph("sim/tankPIDVA", graph)
     }
 
     @Test
@@ -151,7 +151,7 @@ class TankFollowerTest {
                 actualPositions.map { it.y }.toDoubleArray())
         graph.seriesMap.values.forEach { it.marker = None() }
         graph.styler.theme = MatlabTheme()
-        GraphUtil.saveGraph("tankRamseteSim", graph)
+        GraphUtil.saveGraph("sim/tankRamsete", graph)
     }
 
     @Test
@@ -205,6 +205,6 @@ class TankFollowerTest {
                 actualPositions.map { it.y }.toDoubleArray())
         graph.seriesMap.values.forEach { it.marker = None() }
         graph.styler.theme = MatlabTheme()
-        GraphUtil.saveGraph("tankGVFSim", graph)
+        GraphUtil.saveGraph("sim/tankGVF", graph)
     }
 }

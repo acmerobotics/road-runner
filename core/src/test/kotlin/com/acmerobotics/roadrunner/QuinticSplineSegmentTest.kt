@@ -1,6 +1,6 @@
 package com.acmerobotics.roadrunner
 
-import com.acmerobotics.roadrunner.TestUtil.compareDerivatives
+import com.acmerobotics.roadrunner.TestUtil.assertDerivEquals
 import com.acmerobotics.roadrunner.path.QuinticSplineSegment
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -38,20 +38,20 @@ class QuinticSplineSegmentTest {
         val d2t = s.map { splineSegment.parameterSecondDeriv(it) }
         val d3t = s.map { splineSegment.parameterThirdDeriv(it) }
 
-        assert(compareDerivatives(x, dx, ds, 0.0001))
-        assert(compareDerivatives(dx, d2x, ds, 0.0001))
-        assert(compareDerivatives(d2x, d3x, ds, 0.01))
+        assertDerivEquals(x, dx, ds, 0.0001)
+        assertDerivEquals(dx, d2x, ds, 0.0001)
+        assertDerivEquals(d2x, d3x, ds, 0.01)
 
-        assert(compareDerivatives(y, dy, ds, 0.0001))
-        assert(compareDerivatives(dy, d2y, ds, 0.0001))
-        assert(compareDerivatives(d2y, d3y, ds, 0.02))
+        assertDerivEquals(y, dy, ds, 0.0001)
+        assertDerivEquals(dy, d2y, ds, 0.0001)
+        assertDerivEquals(d2y, d3y, ds, 0.02)
 
-        assert(compareDerivatives(tangentAngle, tangentAngleDeriv, ds, 0.0001))
-        assert(compareDerivatives(tangentAngleDeriv, tangentAngleSecondDeriv, ds, 0.0001))
+        assertDerivEquals(tangentAngle, tangentAngleDeriv, ds, 0.0001)
+        assertDerivEquals(tangentAngleDeriv, tangentAngleSecondDeriv, ds, 0.0001)
 
-        assert(compareDerivatives(t, dt, ds, 0.03))
-        assert(compareDerivatives(dt, d2t, ds, 0.02))
-        assert(compareDerivatives(d2t, d3t, ds, 0.01))
+        assertDerivEquals(t, dt, ds, 0.03)
+        assertDerivEquals(dt, d2t, ds, 0.02)
+        assertDerivEquals(d2t, d3t, ds, 0.01)
     }
 
     @Test
@@ -61,10 +61,10 @@ class QuinticSplineSegmentTest {
                 QuinticSplineSegment.Waypoint(45.0, 35.0, 60.0, 10.0)
         )
 
-        assertEquals(0.0, splineSegment[0.0].x, 0.001)
-        assertEquals(0.0, splineSegment[0.0].y, 0.001)
-        assertEquals(45.0, splineSegment[splineSegment.length()].x, 0.001)
-        assertEquals(35.0, splineSegment[splineSegment.length()].y, 0.001)
+        assertEquals(0.0, splineSegment[0.0].x, 1e-3)
+        assertEquals(0.0, splineSegment[0.0].y, 1e-3)
+        assertEquals(45.0, splineSegment[splineSegment.length()].x, 1e-3)
+        assertEquals(35.0, splineSegment[splineSegment.length()].y, 1e-3)
     }
 
     @Test

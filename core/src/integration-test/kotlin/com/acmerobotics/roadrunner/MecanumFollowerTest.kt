@@ -3,9 +3,9 @@ package com.acmerobotics.roadrunner
 import com.acmerobotics.roadrunner.control.PIDCoefficients
 import com.acmerobotics.roadrunner.drive.MecanumDrive
 import com.acmerobotics.roadrunner.followers.MecanumPIDVAFollower
+import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import com.acmerobotics.roadrunner.trajectory.constraints.MecanumConstraints
-import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
 import org.apache.commons.math3.distribution.NormalDistribution
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -97,6 +97,6 @@ class MecanumFollowerTest {
                 actualPositions.map { it.y }.toDoubleArray())
         graph.seriesMap.values.forEach { it.marker = None() }
         graph.styler.theme = MatlabTheme()
-        GraphUtil.saveGraph("mecanumSim", graph)
+        GraphUtil.saveGraph("sim/mecanumPIDVA", graph)
     }
 }

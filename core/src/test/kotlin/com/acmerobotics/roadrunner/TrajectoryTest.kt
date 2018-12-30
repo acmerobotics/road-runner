@@ -1,9 +1,10 @@
 package com.acmerobotics.roadrunner
 
+import com.acmerobotics.roadrunner.TestUtil.assertDerivEquals
 import com.acmerobotics.roadrunner.path.heading.TangentInterpolator
 import com.acmerobotics.roadrunner.path.heading.WiggleInterpolator
-import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
+import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 
@@ -39,10 +40,10 @@ class TrajectoryTest {
         val velY = t.map { trajectory.velocity(it).y }
         val accelY = t.map { trajectory.acceleration(it).y }
 
-        assert(TestUtil.compareDerivatives(x, velX, dt, 0.01))
-        assert(TestUtil.compareDerivatives(velX, accelX, dt, 0.01))
+        assertDerivEquals(x, velX, dt, 0.01)
+        assertDerivEquals(velX, accelX, dt, 0.01)
 
-        assert(TestUtil.compareDerivatives(y, velY, dt, 0.01))
-        assert(TestUtil.compareDerivatives(velY, accelY, dt, 0.01))
+        assertDerivEquals(y, velY, dt, 0.01)
+        assertDerivEquals(velY, accelY, dt, 0.01)
     }
 }

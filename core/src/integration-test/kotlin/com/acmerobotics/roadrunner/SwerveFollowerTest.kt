@@ -104,6 +104,6 @@ class SwerveFollowerTest {
                 actualPositions.map { it.y }.toDoubleArray())
         graph.seriesMap.values.forEach { it.marker = None() }
         graph.styler.theme = MatlabTheme()
-        GraphUtil.saveGraph("swerveSim", graph)
+        GraphUtil.saveGraph("sim/swervePIDVA", graph)
     }
 }
