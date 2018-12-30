@@ -38,19 +38,19 @@ class QuinticSplineSegmentTest {
         val d2t = s.map { splineSegment.parameterSecondDeriv(it) }
         val d3t = s.map { splineSegment.parameterThirdDeriv(it) }
 
-        assert(compareDerivatives(x, dx, ds, 0.01))
-        assert(compareDerivatives(dx, d2x, ds, 0.01))
+        assert(compareDerivatives(x, dx, ds, 0.0001))
+        assert(compareDerivatives(dx, d2x, ds, 0.0001))
         assert(compareDerivatives(d2x, d3x, ds, 0.01))
 
-        assert(compareDerivatives(y, dy, ds, 0.01))
-        assert(compareDerivatives(dy, d2y, ds, 0.01))
+        assert(compareDerivatives(y, dy, ds, 0.0001))
+        assert(compareDerivatives(dy, d2y, ds, 0.0001))
         assert(compareDerivatives(d2y, d3y, ds, 0.02))
 
-        assert(compareDerivatives(tangentAngle, tangentAngleDeriv, ds, 0.01))
-        assert(compareDerivatives(tangentAngleDeriv, tangentAngleSecondDeriv, ds, 0.01))
+        assert(compareDerivatives(tangentAngle, tangentAngleDeriv, ds, 0.0001))
+        assert(compareDerivatives(tangentAngleDeriv, tangentAngleSecondDeriv, ds, 0.0001))
 
         assert(compareDerivatives(t, dt, ds, 0.03))
-        assert(compareDerivatives(dt, d2t, ds, 0.05))
+        assert(compareDerivatives(dt, d2t, ds, 0.02))
         assert(compareDerivatives(d2t, d3t, ds, 0.01))
     }
 

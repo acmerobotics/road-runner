@@ -1,11 +1,12 @@
 package com.acmerobotics.roadrunner
 
+import com.acmerobotics.roadrunner.TestUtil.compareDerivatives
 import com.acmerobotics.roadrunner.drive.MecanumKinematics
 import com.acmerobotics.roadrunner.path.heading.SplineInterpolator
 import com.acmerobotics.roadrunner.path.heading.TangentInterpolator
+import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import com.acmerobotics.roadrunner.trajectory.constraints.MecanumConstraints
-import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -45,7 +46,7 @@ class WheelVelocityTest {
             val vel = wheelVelocities.map { it[i] }
             val accel = wheelAccelerations.map { it[i] }
 
-            assertTrue(TestUtil.compareDerivatives(vel, accel, dt, 0.1, 0.02))
+            assertTrue(compareDerivatives(vel, accel, dt, 0.1, 0.05))
         }
     }
 }

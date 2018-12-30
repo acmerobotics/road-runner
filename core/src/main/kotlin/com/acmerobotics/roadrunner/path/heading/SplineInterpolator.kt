@@ -16,32 +16,30 @@ class SplineInterpolator(private val startHeading: Double, private val endHeadin
 
         tangentInterpolator.init(this.parametricCurve)
 
+        val len = parametricCurve.length()
+
         headingSpline = QuinticPolynomial(
                 startHeading,
-                this.parametricCurve.internalTangentAngleDeriv(0.0),
-                this.parametricCurve.internalTangentAngleSecondDeriv(0.0),
+                parametricCurve.tangentAngleDeriv(0.0) * len,
+                parametricCurve.tangentAngleSecondDeriv(0.0) * len * len,
                 endHeading,
-                this.parametricCurve.internalTangentAngleDeriv(1.0),
-                this.parametricCurve.internalTangentAngleSecondDeriv(1.0)
+                parametricCurve.tangentAngleDeriv(len) * len,
+                parametricCurve.tangentAngleSecondDeriv(len) * len * len
         )
     }
 
     override fun respectsDerivativeContinuity() = true
 
-    override operator fun get(displacement: Double): Double {
-        val t = parametricCurve.displacementToParameter(displacement)
-        return headingSpline[t]
-    }
+    override operator fun get(displacement: Double) = headingSpline[displacement / parametricCurve.length()]
 
     override fun deriv(displacement: Double): Double {
-        val t = parametricCurve.displacementToParameter(displacement)
-        return headingSpline.deriv(t) * parametricCurve.parameterDeriv(t)
+        val len = parametricCurve.length()
+        return headingSpline.deriv(displacement / len) / len
     }
 
     override fun secondDeriv(displacement: Double): Double {
-        val t = parametricCurve.displacementToParameter(displacement)
-        return headingSpline.secondDeriv(t) * parametricCurve.parameterDeriv(t) * parametricCurve.parameterDeriv(t) +
-                headingSpline.deriv(t) * parametricCurve.parameterSecondDeriv(t)
+        val len = parametricCurve.length()
+        return headingSpline.secondDeriv(displacement / len) / (len * len)
     }
 
 }
