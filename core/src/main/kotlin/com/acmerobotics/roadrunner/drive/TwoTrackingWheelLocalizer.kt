@@ -58,6 +58,8 @@ abstract class TwoTrackingWheelLocalizer @JvmOverloads constructor(
         forwardSolver = LUDecomposition(inverseMatrix).solver
     }
 
+    // TODO: for this and other localizers, is it safe to assume linearity? (and therefore remove the unnecessary
+    // position delta to velocity conversions
     override fun update() {
         val wheelPositions = getWheelPositions()
         val heading = getHeading()
@@ -68,14 +70,14 @@ abstract class TwoTrackingWheelLocalizer @JvmOverloads constructor(
                     .zip(lastWheelPositions)
                     .map { (it.first - it.second) / dt }
             val omega = (heading - lastHeading) / dt
-            val poseDeltaVector = forwardSolver.solve(MatrixUtils.createRealMatrix(
+            val robotVelocities = forwardSolver.solve(MatrixUtils.createRealMatrix(
                     arrayOf((wheelVelocities + omega).toDoubleArray())
             ).transpose())
             val robotPoseDelta = Pose2d(
-                    poseDeltaVector.getEntry(0,0),
-                    poseDeltaVector.getEntry(1,0),
-                    poseDeltaVector.getEntry(2,0)
-            )
+                    robotVelocities.getEntry(0,0),
+                    robotVelocities.getEntry(1,0),
+                    robotVelocities.getEntry(2,0)
+            ) * dt
             poseEstimate = Kinematics.relativeOdometryUpdate(poseEstimate, robotPoseDelta)
         }
         lastWheelPositions = wheelPositions
