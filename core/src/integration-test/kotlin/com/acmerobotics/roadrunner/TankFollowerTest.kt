@@ -10,7 +10,6 @@ import com.acmerobotics.roadrunner.profile.SimpleMotionConstraints
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import com.acmerobotics.roadrunner.trajectory.constraints.TankConstraints
-import com.acmerobotics.roadrunner.util.NanoClock
 import org.apache.commons.math3.distribution.NormalDistribution
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -37,9 +36,8 @@ class TankFollowerTest {
     private class SimulatedTankDrive(
             private val dt: Double,
             private val kV: Double,
-            trackWidth: Double,
-            clock: NanoClock
-    ) : TankDrive(trackWidth, clock) {
+            trackWidth: Double
+    ) : TankDrive(trackWidth) {
         var powers = listOf(0.0, 0.0)
         var positions = listOf(0.0, 0.0)
 
@@ -73,7 +71,7 @@ class TankFollowerTest {
                 .build()
 
         val clock = SimulatedClock()
-        val drive = SimulatedTankDrive(dt, kV, TRACK_WIDTH, clock)
+        val drive = SimulatedTankDrive(dt, kV, TRACK_WIDTH)
         val follower = TankPIDVAFollower(drive, PIDCoefficients(1.0), PIDCoefficients(kP = 1.0), kV, 0.0, 0.0, clock)
         follower.followTrajectory(trajectory)
 
@@ -120,7 +118,7 @@ class TankFollowerTest {
                 .build()
 
         val clock = SimulatedClock()
-        val drive = SimulatedTankDrive(dt, kV, TRACK_WIDTH, clock)
+        val drive = SimulatedTankDrive(dt, kV, TRACK_WIDTH)
         val follower = RamseteFollower(drive, 1.6, 0.9, kV, 0.0, 0.0, clock)
         follower.followTrajectory(trajectory)
 
@@ -164,7 +162,7 @@ class TankFollowerTest {
                 .build()
 
         val clock = SimulatedClock()
-        val drive = SimulatedTankDrive(dt, kV, TRACK_WIDTH, clock)
+        val drive = SimulatedTankDrive(dt, kV, TRACK_WIDTH)
         val follower = GVFFollower(
                 drive,
                 SimpleMotionConstraints(5.0, 25.0),

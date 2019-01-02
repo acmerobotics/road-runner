@@ -5,7 +5,6 @@ import com.acmerobotics.roadrunner.drive.SwerveDrive
 import com.acmerobotics.roadrunner.followers.SwervePIDVAFollower
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
-import com.acmerobotics.roadrunner.util.NanoClock
 import org.apache.commons.math3.distribution.NormalDistribution
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -31,9 +30,8 @@ class SwerveFollowerTest {
             private val dt: Double,
             private val kV: Double,
             trackWidth: Double,
-            wheelBase: Double = trackWidth,
-            clock: NanoClock
-    ) : SwerveDrive(trackWidth, wheelBase, clock) {
+            wheelBase: Double = trackWidth
+    ) : SwerveDrive(trackWidth, wheelBase) {
         var powers = listOf(0.0, 0.0, 0.0, 0.0)
         var positions = listOf(0.0, 0.0, 0.0, 0.0)
         var orientations = listOf(0.0, 0.0, 0.0, 0.0)
@@ -74,7 +72,7 @@ class SwerveFollowerTest {
                 .build()
 
         val clock = SimulatedClock()
-        val drive = SimulatedSwerveDrive(dt, kV, TRACK_WIDTH, TRACK_WIDTH, clock)
+        val drive = SimulatedSwerveDrive(dt, kV, TRACK_WIDTH, TRACK_WIDTH)
         val follower = SwervePIDVAFollower(drive, PIDCoefficients(1.0), PIDCoefficients(5.0), kV, 0.0, 0.0, clock)
         follower.followTrajectory(trajectory)
 

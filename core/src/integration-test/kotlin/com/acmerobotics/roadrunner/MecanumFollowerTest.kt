@@ -66,8 +66,8 @@ class MecanumFollowerTest {
                 .waitFor(0.5)
                 .build()
 
-        val drive = SimulatedMecanumDrive(dt, kV, TRACK_WIDTH)
         val clock = SimulatedClock()
+        val drive = SimulatedMecanumDrive(dt, kV, TRACK_WIDTH)
         val follower = MecanumPIDVAFollower(drive, PIDCoefficients(1.0), PIDCoefficients(5.0), kV, 0.0, 0.0, clock)
         follower.followTrajectory(trajectory)
 

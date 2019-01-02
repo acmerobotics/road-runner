@@ -2,7 +2,6 @@ package com.acmerobotics.roadrunner.drive
 
 import com.acmerobotics.roadrunner.Pose2d
 import com.acmerobotics.roadrunner.util.Angle
-import com.acmerobotics.roadrunner.util.NanoClock
 
 /**
  * This class provides the basic functionality of a swerve drive using [SwerveKinematics].
@@ -12,8 +11,7 @@ import com.acmerobotics.roadrunner.util.NanoClock
  */
 abstract class SwerveDrive @JvmOverloads constructor(
         val trackWidth: Double,
-        val wheelBase: Double = trackWidth,
-        clock: NanoClock = NanoClock.system()
+        val wheelBase: Double = trackWidth
 ) : Drive() {
 
     /**
@@ -22,46 +20,39 @@ abstract class SwerveDrive @JvmOverloads constructor(
      *
      * @param drive drive
      * @param useExternalHeading use external heading provided by an external sensor (e.g., IMU, gyroscope)
-     * @param clock clock
      */
     class SwerveLocalizer @JvmOverloads constructor(
             private val drive: SwerveDrive,
-            private val useExternalHeading: Boolean = true,
-            private val clock: NanoClock = NanoClock.system()
+            private val useExternalHeading: Boolean = true
     ) : Localizer {
         override var poseEstimate: Pose2d = Pose2d()
             set(value) {
                 lastWheelPositions = emptyList()
                 lastExtHeading = Double.NaN
-                lastUpdateTimestamp = Double.NaN
                 field = value
             }
         private var lastWheelPositions = emptyList<Double>()
         private var lastExtHeading = Double.NaN
-        private var lastUpdateTimestamp = Double.NaN
 
         override fun update() {
             val wheelPositions = drive.getWheelPositions()
             val moduleOrientations = drive.getModuleOrientations()
             val extHeading = if (useExternalHeading) drive.getExternalHeading() else Double.NaN
-            val timestamp = clock.seconds()
             if (lastWheelPositions.isNotEmpty()) {
-                val dt = timestamp - lastUpdateTimestamp
-                val wheelVelocities = wheelPositions
+                val wheelDeltas = wheelPositions
                         .zip(lastWheelPositions)
-                        .map { (it.first - it.second) / dt }
+                        .map { it.first - it.second }
                 val robotPoseDelta = SwerveKinematics.wheelToRobotVelocities(
-                        wheelVelocities, moduleOrientations, drive.wheelBase, drive.trackWidth) * dt
+                        wheelDeltas, moduleOrientations, drive.wheelBase, drive.trackWidth)
                 val finalHeadingDelta = if (useExternalHeading) Angle.norm(extHeading - lastExtHeading) else robotPoseDelta.heading
                 poseEstimate = Kinematics.relativeOdometryUpdate(poseEstimate, Pose2d(robotPoseDelta.pos(), finalHeadingDelta))
             }
             lastWheelPositions = wheelPositions
             lastExtHeading = extHeading
-            lastUpdateTimestamp = timestamp
         }
     }
 
-    override var localizer: Localizer = SwerveLocalizer(this, clock = clock)
+    override var localizer: Localizer = SwerveLocalizer(this)
 
     override fun setVelocity(poseVelocity: Pose2d) {
         val motorPowers = SwerveKinematics.robotToWheelVelocities(poseVelocity, trackWidth, wheelBase)

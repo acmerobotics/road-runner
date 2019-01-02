@@ -2,16 +2,14 @@ package com.acmerobotics.roadrunner.drive
 
 import com.acmerobotics.roadrunner.Pose2d
 import com.acmerobotics.roadrunner.util.Angle
-import com.acmerobotics.roadrunner.util.NanoClock
 
 /**
  * This class provides the basic functionality of a tank/differential drive using [TankKinematics].
  *
  * @param trackWidth lateral distance between pairs of wheels on different sides of the robot
  */
-abstract class TankDrive @JvmOverloads constructor(
-        val trackWidth: Double,
-        clock: NanoClock = NanoClock.system()
+abstract class TankDrive constructor(
+        val trackWidth: Double
 ) : Drive() {
 
     /**
@@ -19,44 +17,37 @@ abstract class TankDrive @JvmOverloads constructor(
      *
      * @param drive drive
      * @param useExternalHeading use external heading provided by an external sensor (e.g., IMU, gyroscope)
-     * @param clock clock
      */
     class TankLocalizer @JvmOverloads constructor(
             private val drive: TankDrive,
-            private val useExternalHeading: Boolean = true,
-            private val clock: NanoClock = NanoClock.system()
+            private val useExternalHeading: Boolean = true
     ) : Localizer {
         override var poseEstimate: Pose2d = Pose2d()
             set(value) {
                 lastWheelPositions = emptyList()
                 lastExtHeading = Double.NaN
-                lastUpdateTimestamp = Double.NaN
                 field = value
             }
         private var lastWheelPositions = emptyList<Double>()
         private var lastExtHeading = Double.NaN
-        private var lastUpdateTimestamp = Double.NaN
 
         override fun update() {
             val wheelPositions = drive.getWheelPositions()
             val extHeading = if (useExternalHeading) drive.getExternalHeading() else Double.NaN
-            val timestamp = clock.seconds()
             if (lastWheelPositions.isNotEmpty()) {
-                val dt = timestamp - lastUpdateTimestamp
-                val wheelVelocities = wheelPositions
+                val wheelDeltas = wheelPositions
                         .zip(lastWheelPositions)
-                        .map { (it.first - it.second) / dt }
-                val robotPoseDelta = TankKinematics.wheelToRobotVelocities(wheelVelocities, drive.trackWidth) * dt
+                        .map { it.first - it.second }
+                val robotPoseDelta = TankKinematics.wheelToRobotVelocities(wheelDeltas, drive.trackWidth)
                 val finalHeadingDelta = if (useExternalHeading) Angle.norm(extHeading - lastExtHeading) else robotPoseDelta.heading
                 poseEstimate = Kinematics.relativeOdometryUpdate(poseEstimate, Pose2d(robotPoseDelta.pos(), finalHeadingDelta))
             }
             lastWheelPositions = wheelPositions
             lastExtHeading = extHeading
-            lastUpdateTimestamp = timestamp
         }
     }
 
-    override var localizer: Localizer = TankLocalizer(this, clock = clock)
+    override var localizer: Localizer = TankLocalizer(this)
 
     override fun setVelocity(poseVelocity: Pose2d) {
         val powers = TankKinematics.robotToWheelVelocities(poseVelocity, trackWidth)
