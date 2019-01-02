@@ -51,25 +51,26 @@ abstract class HolonomicPIDVAFollower @JvmOverloads constructor(
         val targetPoseVelocity = trajectory.velocity(t)
         val targetPoseAcceleration = trajectory.acceleration(t)
 
-        val targetRobotPose = Kinematics.fieldToRobotPose(targetPose)
         val targetRobotPoseVelocity = Kinematics.fieldToRobotPoseVelocity(targetPose, targetPoseVelocity)
         val targetRobotPoseAcceleration = Kinematics.fieldToRobotPoseAcceleration(targetPose, targetPoseVelocity, targetPoseAcceleration)
 
-        val currentRobotPose = Pose2d(currentPose.pos().rotated(-targetPose.heading), currentPose.heading - targetPose.heading)
+        val poseError = Kinematics.calculatePoseError(targetPose, currentPose)
 
-        axialController.targetPosition = targetRobotPose.x
-        lateralController.targetPosition = targetRobotPose.y
-        headingController.targetPosition = targetRobotPose.heading
+        // you can pass the error directly to PIDFController by setting setpoint = error and position = 0
+        axialController.targetPosition = poseError.x
+        lateralController.targetPosition = poseError.y
+        headingController.targetPosition = poseError.heading
 
-        val axialCorrection = axialController.update(currentRobotPose.x, targetRobotPoseVelocity.x)
-        val lateralCorrection = lateralController.update(currentRobotPose.y, targetRobotPoseVelocity.y)
-        val headingCorrection = headingController.update(currentRobotPose.heading, targetRobotPoseVelocity.heading)
+        // note: feedforward is processed at the wheel level; velocity is only passed here to adjust the derivative term
+        val axialCorrection = axialController.update(0.0, targetRobotPoseVelocity.x)
+        val lateralCorrection = lateralController.update(0.0, targetRobotPoseVelocity.y)
+        val headingCorrection = headingController.update(0.0, targetRobotPoseVelocity.heading)
 
         val correctedVelocity = targetRobotPoseVelocity + Pose2d(axialCorrection, lateralCorrection, headingCorrection)
 
         updateDrive(correctedVelocity, targetRobotPoseAcceleration)
 
-        lastError = Kinematics.calculatePoseError(targetPose, currentPose)
+        lastError = poseError
     }
 
     abstract fun updateDrive(poseVelocity: Pose2d, poseAcceleration: Pose2d)

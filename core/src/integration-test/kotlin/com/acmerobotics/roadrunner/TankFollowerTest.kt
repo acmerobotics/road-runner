@@ -121,7 +121,7 @@ class TankFollowerTest {
 
         val clock = SimulatedClock()
         val drive = SimulatedTankDrive(dt, kV, TRACK_WIDTH, clock)
-        val follower = RamseteFollower(drive, 0.0008, 0.5, kV, 0.0, 0.0, clock)
+        val follower = RamseteFollower(drive, 1.6, 0.9, kV, 0.0, 0.0, clock)
         follower.followTrajectory(trajectory)
 
         val targetPositions = mutableListOf<Vector2d>()

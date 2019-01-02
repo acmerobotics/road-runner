@@ -43,14 +43,13 @@ class RamseteFollower @JvmOverloads constructor(
         val targetPose = trajectory[t]
         val targetPoseVelocity = trajectory.velocity(t)
 
-        val targetRobotPose = Pose2d(targetPose.pos().rotated(-targetPose.heading), 0.0)
-        val targetRobotPoseVelocity = Pose2d(targetPoseVelocity.pos().rotated(-targetPose.heading), targetPoseVelocity.heading)
-
-        val currentRobotPose = Pose2d(currentPose.pos().rotated(-targetPose.heading), currentPose.heading - targetPose.heading)
+        val targetRobotPoseVelocity = Kinematics.fieldToRobotPoseVelocity(targetPose, targetPoseVelocity)
 
         val targetV = targetRobotPoseVelocity.x
         val targetOmega = targetRobotPoseVelocity.heading
-        val error = targetRobotPose - currentRobotPose
+
+        // note: Ramsete operates on the "raw" field error, not the one returned by Kinematics.calculatePoseError()
+        val error = targetPose - currentPose
 
         val k1 = 2 * zeta * sqrt(targetOmega * targetOmega + b * targetV * targetV)
         val k3 = k1
@@ -72,6 +71,6 @@ class RamseteFollower @JvmOverloads constructor(
 
         drive.setMotorPowers(motorPowers[0], motorPowers[1])
 
-        lastError = Kinematics.calculatePoseError(targetPose, currentPose)
+        lastError = error
     }
 }

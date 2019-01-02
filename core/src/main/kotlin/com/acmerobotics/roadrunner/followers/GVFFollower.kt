@@ -73,6 +73,7 @@ class GVFFollower @JvmOverloads constructor(
         val desiredOmega = 0.0
         val omega = desiredOmega - kOmega * headingError
 
+        // basic online motion profiling
         val timestamp = clock.seconds()
         val dt = timestamp - lastUpdateTimestamp
         val remainingDistance = currentPose.pos() distanceTo path.end().pos()
@@ -91,6 +92,7 @@ class GVFFollower @JvmOverloads constructor(
         lastProjectionDisplacement = gvfResult.displacement
 
         val targetPose = path[gvfResult.displacement]
+
         lastError = Kinematics.calculatePoseError(targetPose, currentPose)
     }
 

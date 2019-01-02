@@ -48,17 +48,18 @@ class TankPIDVAFollower @JvmOverloads constructor(
         val targetPoseVelocity = trajectory.velocity(t)
         val targetPoseAcceleration = trajectory.acceleration(t)
 
-        val targetRobotPose = Kinematics.fieldToRobotPose(targetPose)
         val targetRobotPoseVelocity = Kinematics.fieldToRobotPoseVelocity(targetPose, targetPoseVelocity)
         val targetRobotPoseAcceleration = Kinematics.fieldToRobotPoseAcceleration(targetPose, targetPoseVelocity, targetPoseAcceleration)
 
-        val currentRobotPose = Pose2d(currentPose.pos().rotated(-targetPose.heading), currentPose.heading - targetPose.heading)
+        val poseError = Kinematics.calculatePoseError(targetPose, currentPose)
 
-        displacementController.targetPosition = targetRobotPose.x
-        crossTrackController.targetPosition = targetRobotPose.y
+        // you can pass the error directly to PIDFController by setting setpoint = error and position = 0
+        displacementController.targetPosition = poseError.x
+        crossTrackController.targetPosition = poseError.y
 
-        val axialCorrection = displacementController.update(currentRobotPose.x, targetRobotPoseVelocity.x)
-        val headingCorrection = crossTrackController.update(currentRobotPose.y, targetRobotPoseVelocity.heading)
+        // note: feedforward is processed at the wheel level; velocity is only passed here to adjust the derivative term
+        val axialCorrection = displacementController.update(0.0, targetRobotPoseVelocity.x)
+        val headingCorrection = crossTrackController.update(0.0, targetRobotPoseVelocity.y)
 
         val correctedVelocity = targetRobotPoseVelocity + Pose2d(axialCorrection, 0.0, headingCorrection)
 
@@ -69,6 +70,6 @@ class TankPIDVAFollower @JvmOverloads constructor(
 
         drive.setMotorPowers(motorPowers[0], motorPowers[1])
 
-        lastError = Kinematics.calculatePoseError(targetPose, currentPose)
+        lastError = poseError
     }
 }

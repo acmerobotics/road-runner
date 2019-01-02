@@ -12,12 +12,6 @@ import kotlin.math.sin
 object Kinematics {
 
     /**
-     * Returns the robot pose corresponding to [fieldPose].
-     */
-    @JvmStatic
-    fun fieldToRobotPose(fieldPose: Pose2d) = Pose2d(fieldPose.pos().rotated(-fieldPose.heading), 0.0)
-
-    /**
      * Returns the robot pose velocity corresponding to [fieldPose] and [fieldPoseVelocity].
      */
     @JvmStatic
@@ -36,14 +30,15 @@ object Kinematics {
                     ) * fieldPoseVelocity.heading
 
     /**
-     * Returns the error between [targetFieldPose] and [actualFieldPose].
+     * Returns the error between [targetFieldPose] and [currentFieldPose].
      */
     @JvmStatic
-    fun calculatePoseError(targetFieldPose: Pose2d, actualFieldPose: Pose2d) =
-            fieldToRobotPose(targetFieldPose) - fieldToRobotPose(actualFieldPose)
+    fun calculatePoseError(targetFieldPose: Pose2d, currentFieldPose: Pose2d) =
+            Pose2d((targetFieldPose - currentFieldPose).pos().rotated(-currentFieldPose.heading),
+                    targetFieldPose.heading - currentFieldPose.heading)
 
     /**
-     * Computes the motor feedforwards (i.e., open loop powers) for the given set of coefficients.
+     * Computes the motor feedforward (i.e., open loop powers) for the given set of coefficients.
      */
     @JvmStatic
     fun calculateMotorFeedforward(velocities: List<Double>, accelerations: List<Double>, kV: Double, kA: Double, kStatic: Double) =
