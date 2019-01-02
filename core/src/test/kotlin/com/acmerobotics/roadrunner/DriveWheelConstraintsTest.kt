@@ -1,5 +1,6 @@
 package com.acmerobotics.roadrunner
 
+import com.acmerobotics.roadrunner.drive.Kinematics
 import com.acmerobotics.roadrunner.drive.MecanumKinematics
 import com.acmerobotics.roadrunner.drive.SwerveKinematics
 import com.acmerobotics.roadrunner.drive.TankKinematics
@@ -10,7 +11,7 @@ import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import com.acmerobotics.roadrunner.trajectory.constraints.MecanumConstraints
 import com.acmerobotics.roadrunner.trajectory.constraints.SwerveConstraints
 import com.acmerobotics.roadrunner.trajectory.constraints.TankConstraints
-import org.junit.jupiter.api.Assertions.assertEquals
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import kotlin.math.abs
@@ -30,14 +31,14 @@ class DriveWheelConstraintsTest {
         val dt = trajectory.duration() / 10000.0
         val t = (0..10000).map { it * dt }
         val maxWheelVelocityMag = t.map {
-            val velocity = trajectory.velocity(it)
-            val heading = trajectory[it].heading
-            val robotVelocity = Pose2d(velocity.pos().rotated(-heading), velocity.heading)
+            val pose = trajectory[it]
+            val poseVel = trajectory.velocity(it)
+            val robotVelocity = Kinematics.fieldToRobotPoseVelocity(pose, poseVel)
             TankKinematics.robotToWheelVelocities(robotVelocity, 10.0)
                     .map(::abs)
                     .max() ?: 0.0
         }.max() ?: 0.0
-        assertEquals(BASE_CONSTRAINTS.maximumVelocity, maxWheelVelocityMag, 0.1)
+        assertThat(maxWheelVelocityMag).isLessThan(BASE_CONSTRAINTS.maximumVelocity + 0.1)
     }
 
     @Test
@@ -51,14 +52,14 @@ class DriveWheelConstraintsTest {
         val dt = trajectory.duration() / 10000.0
         val t = (0..10000).map { it * dt }
         val maxWheelVelocityMag = t.map {
-            val velocity = trajectory.velocity(it)
-            val heading = trajectory[it].heading
-            val robotVelocity = Pose2d(velocity.pos().rotated(-heading), velocity.heading)
+            val pose = trajectory[it]
+            val poseVel = trajectory.velocity(it)
+            val robotVelocity = Kinematics.fieldToRobotPoseVelocity(pose, poseVel)
             MecanumKinematics.robotToWheelVelocities(robotVelocity, 10.0, 5.0)
                     .map(::abs)
                     .max() ?: 0.0
         }.max() ?: 0.0
-        assertEquals(BASE_CONSTRAINTS.maximumVelocity, maxWheelVelocityMag, 0.1)
+        assertThat(maxWheelVelocityMag).isLessThan(BASE_CONSTRAINTS.maximumVelocity + 0.1)
     }
 
     @Test
@@ -72,13 +73,13 @@ class DriveWheelConstraintsTest {
         val dt = trajectory.duration() / 10000.0
         val t = (0..10000).map { it * dt }
         val maxWheelVelocityMag = t.map {
-            val velocity = trajectory.velocity(it)
-            val heading = trajectory[it].heading
-            val robotVelocity = Pose2d(velocity.pos().rotated(-heading), velocity.heading)
+            val pose = trajectory[it]
+            val poseVel = trajectory.velocity(it)
+            val robotVelocity = Kinematics.fieldToRobotPoseVelocity(pose, poseVel)
             SwerveKinematics.robotToWheelVelocities(robotVelocity, 10.0, 5.0)
                     .map(::abs)
                     .max() ?: 0.0
         }.max() ?: 0.0
-        assertEquals(BASE_CONSTRAINTS.maximumVelocity, maxWheelVelocityMag, 0.1)
+        assertThat(maxWheelVelocityMag).isLessThan(BASE_CONSTRAINTS.maximumVelocity + 0.1)
     }
 }

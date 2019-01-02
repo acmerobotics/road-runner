@@ -1,9 +1,8 @@
 package com.acmerobotics.roadrunner.trajectory.constraints
 
 import com.acmerobotics.roadrunner.Pose2d
-import com.acmerobotics.roadrunner.drive.MecanumKinematics
+import com.acmerobotics.roadrunner.drive.Kinematics
 import com.acmerobotics.roadrunner.drive.SwerveKinematics
-import com.acmerobotics.roadrunner.drive.TankKinematics
 import kotlin.math.abs
 import kotlin.math.min
 
@@ -25,12 +24,12 @@ open class SwerveConstraints @JvmOverloads constructor(
         baseConstraints.maximumAngularAcceleration
 ) {
     override fun maximumVelocity(pose: Pose2d, poseDeriv: Pose2d, poseSecondDeriv: Pose2d): Double {
-        val robotPositionDeriv = poseDeriv.pos().rotated(-pose.heading)
+        val robotPoseDeriv = Kinematics.fieldToRobotPoseVelocity(pose, poseDeriv)
 
-        val wheelVelocities = SwerveKinematics.robotToWheelVelocities(Pose2d(robotPositionDeriv, poseDeriv.heading), trackWidth, wheelBase)
-        val maxTrajectoryVelocity = wheelVelocities.map { maximumVelocity / it }.map(::abs).min() ?: 0.0
+        val wheelVelocities = SwerveKinematics.robotToWheelVelocities(robotPoseDeriv, trackWidth, wheelBase)
+        val maxTrajVel = wheelVelocities.map { maximumVelocity / it }.map(::abs).min() ?: 0.0
 
-        return min(super.maximumVelocity(pose, poseDeriv, poseSecondDeriv), maxTrajectoryVelocity)
+        return min(super.maximumVelocity(pose, poseDeriv, poseSecondDeriv), maxTrajVel)
     }
 
 }
