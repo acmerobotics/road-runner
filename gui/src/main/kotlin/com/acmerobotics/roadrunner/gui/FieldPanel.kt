@@ -49,7 +49,7 @@ class FieldPanel : JPanel() {
         transform.scale(-1.0, 1.0)
 
         // draw field
-        val fieldImage = ImageIO.read(javaClass.getResource("/field.png"));
+        val fieldImage = ImageIO.read(javaClass.getResource("/field.png"))
         g2d.drawImage(fieldImage, offsetX.roundToInt(), offsetY.roundToInt(), fieldSize, fieldSize, null)
 
         g2d.color = SERIES_COLORS[2]

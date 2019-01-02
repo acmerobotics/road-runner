@@ -70,9 +70,9 @@ class PIDFController @JvmOverloads constructor(
     }
 
     private fun getError(position: Double): Double {
-        var error = targetPosition - position;
+        var error = targetPosition - position
         if (inputBounded) {
-            val inputRange = maxInput - minInput;
+            val inputRange = maxInput - minInput
             while (abs(error) > inputRange / 2.0) {
                 error -= sign(error) * inputRange
             }
