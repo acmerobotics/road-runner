@@ -1,0 +1,128 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>com.acmerobotics.roadrunner.drive - core</title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">core</a>&nbsp;/&nbsp;<a href="./index.html">com.acmerobotics.roadrunner.drive</a><br/>
+<br/>
+<h2>Package com.acmerobotics.roadrunner.drive</h2>
+<p>Drive-specific interfaces that provide functionality for setting robot velocities and using positional feedback for 
+localization.</p>
+<h3>Types</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-drive/index.html">Drive</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">Drive</span></code>
+<p>Abstraction for generic robot drive motion and localization. Robot poses are specified in a coordinate system with
+positive x pointing forward, positive y pointing left, and positive heading measured counter-clockwise from the
+x-axis.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-kinematics/index.html">Kinematics</a></p>
+</td>
+<td>
+<code><span class="keyword">object </span><span class="identifier">Kinematics</span></code>
+<p>A collection of methods for various kinematics-related tasks.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-localizer/index.html">Localizer</a></p>
+</td>
+<td>
+<code><span class="keyword">interface </span><span class="identifier">Localizer</span></code>
+<p>Generic interface for estimating robot pose over time.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-mecanum-drive/index.html">MecanumDrive</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">MecanumDrive</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-drive/index.html"><span class="identifier">Drive</span></a></code>
+<p>This class provides the basic functionality of a mecanum drive using <a href="-mecanum-kinematics/index.html">MecanumKinematics</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-mecanum-kinematics/index.html">MecanumKinematics</a></p>
+</td>
+<td>
+<code><span class="keyword">object </span><span class="identifier">MecanumKinematics</span></code>
+<p>Mecanum drive kinematic equations. All wheel positions and velocities are given starting with front left and
+proceeding counter-clockwise (i.e., front left, rear left, rear right, front right). Robot poses are specified in a
+coordinate system with positive x pointing forward, positive y pointing left, and positive heading measured
+counter-clockwise from the x-axis.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-swerve-drive/index.html">SwerveDrive</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">SwerveDrive</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-drive/index.html"><span class="identifier">Drive</span></a></code>
+<p>This class provides the basic functionality of a swerve drive using <a href="-swerve-kinematics/index.html">SwerveKinematics</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-swerve-kinematics/index.html">SwerveKinematics</a></p>
+</td>
+<td>
+<code><span class="keyword">object </span><span class="identifier">SwerveKinematics</span></code>
+<p>Swerve drive kinematic equations. All wheel positions and velocities are given starting with front left and
+proceeding counter-clockwise (i.e., front left, rear left, rear right, front right). Robot poses are specified in a
+coordinate system with positive x pointing forward, positive y pointing left, and positive heading measured
+counter-clockwise from the x-axis.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-tank-drive/index.html">TankDrive</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">TankDrive</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-drive/index.html"><span class="identifier">Drive</span></a></code>
+<p>This class provides the basic functionality of a tank/differential drive using <a href="-tank-kinematics/index.html">TankKinematics</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-tank-kinematics/index.html">TankKinematics</a></p>
+</td>
+<td>
+<code><span class="keyword">object </span><span class="identifier">TankKinematics</span></code>
+<p>Tank drive kinematic equations based upon the unicycle model. All wheel positions and velocities are given in
+(left, right) tuples. Robot poses are specified in a coordinate system with positive x pointing forward, positive y
+pointing left, and positive heading measured counter-clockwise from the x-axis.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-three-tracking-wheel-localizer/index.html">ThreeTrackingWheelLocalizer</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">ThreeTrackingWheelLocalizer</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-localizer/index.html"><span class="identifier">Localizer</span></a></code>
+<p>Localizer based on three unpowered tracking omni wheels.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-two-tracking-wheel-localizer/index.html">TwoTrackingWheelLocalizer</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">TwoTrackingWheelLocalizer</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-localizer/index.html"><span class="identifier">Localizer</span></a></code>
+<p>Localizer based on two unpowered tracking omni wheels and an orientation sensor.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

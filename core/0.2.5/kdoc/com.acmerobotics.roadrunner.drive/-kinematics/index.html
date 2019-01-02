@@ -1,0 +1,67 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>Kinematics - core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">core</a>&nbsp;/&nbsp;<a href="../index.html">com.acmerobotics.roadrunner.drive</a>&nbsp;/&nbsp;<a href="./index.html">Kinematics</a><br/>
+<br/>
+<h1>Kinematics</h1>
+<code><span class="keyword">object </span><span class="identifier">Kinematics</span></code>
+<p>A collection of methods for various kinematics-related tasks.</p>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="calculate-motor-feedforward.html">calculateMotorFeedforward</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">calculateMotorFeedforward</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.drive.Kinematics$calculateMotorFeedforward(kotlin.collections.List((kotlin.Double)), kotlin.collections.List((kotlin.Double)), kotlin.Double, kotlin.Double, kotlin.Double)/velocities">velocities</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.drive.Kinematics$calculateMotorFeedforward(kotlin.collections.List((kotlin.Double)), kotlin.collections.List((kotlin.Double)), kotlin.Double, kotlin.Double, kotlin.Double)/accelerations">accelerations</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.drive.Kinematics$calculateMotorFeedforward(kotlin.collections.List((kotlin.Double)), kotlin.collections.List((kotlin.Double)), kotlin.Double, kotlin.Double, kotlin.Double)/kV">kV</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.drive.Kinematics$calculateMotorFeedforward(kotlin.collections.List((kotlin.Double)), kotlin.collections.List((kotlin.Double)), kotlin.Double, kotlin.Double, kotlin.Double)/kA">kA</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.drive.Kinematics$calculateMotorFeedforward(kotlin.collections.List((kotlin.Double)), kotlin.collections.List((kotlin.Double)), kotlin.Double, kotlin.Double, kotlin.Double)/kStatic">kStatic</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">&gt;</span></code>
+<p>Computes the motor feedforward (i.e., open loop powers) for the given set of coefficients.</p>
+<code><span class="keyword">fun </span><span class="identifier">calculateMotorFeedforward</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.drive.Kinematics$calculateMotorFeedforward(kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double)/velocity">velocity</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.drive.Kinematics$calculateMotorFeedforward(kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double)/acceleration">acceleration</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.drive.Kinematics$calculateMotorFeedforward(kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double)/kV">kV</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.drive.Kinematics$calculateMotorFeedforward(kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double)/kA">kA</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.drive.Kinematics$calculateMotorFeedforward(kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double)/kStatic">kStatic</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code>
+<p>Computes the motor feedforward (i.e., open loop power) for the given set of coefficients.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="calculate-pose-error.html">calculatePoseError</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">calculatePoseError</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.drive.Kinematics$calculatePoseError(com.acmerobotics.roadrunner.Pose2d, com.acmerobotics.roadrunner.Pose2d)/targetFieldPose">targetFieldPose</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner/-pose2d/index.html"><span class="identifier">Pose2d</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.drive.Kinematics$calculatePoseError(com.acmerobotics.roadrunner.Pose2d, com.acmerobotics.roadrunner.Pose2d)/currentFieldPose">currentFieldPose</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner/-pose2d/index.html"><span class="identifier">Pose2d</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner/-pose2d/index.html"><span class="identifier">Pose2d</span></a></code>
+<p>Returns the error between <a href="calculate-pose-error.html#com.acmerobotics.roadrunner.drive.Kinematics$calculatePoseError(com.acmerobotics.roadrunner.Pose2d, com.acmerobotics.roadrunner.Pose2d)/targetFieldPose">targetFieldPose</a> and <a href="calculate-pose-error.html#com.acmerobotics.roadrunner.drive.Kinematics$calculatePoseError(com.acmerobotics.roadrunner.Pose2d, com.acmerobotics.roadrunner.Pose2d)/currentFieldPose">currentFieldPose</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="field-to-robot-pose-acceleration.html">fieldToRobotPoseAcceleration</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">fieldToRobotPoseAcceleration</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.drive.Kinematics$fieldToRobotPoseAcceleration(com.acmerobotics.roadrunner.Pose2d, com.acmerobotics.roadrunner.Pose2d, com.acmerobotics.roadrunner.Pose2d)/fieldPose">fieldPose</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner/-pose2d/index.html"><span class="identifier">Pose2d</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.drive.Kinematics$fieldToRobotPoseAcceleration(com.acmerobotics.roadrunner.Pose2d, com.acmerobotics.roadrunner.Pose2d, com.acmerobotics.roadrunner.Pose2d)/fieldPoseVelocity">fieldPoseVelocity</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner/-pose2d/index.html"><span class="identifier">Pose2d</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.drive.Kinematics$fieldToRobotPoseAcceleration(com.acmerobotics.roadrunner.Pose2d, com.acmerobotics.roadrunner.Pose2d, com.acmerobotics.roadrunner.Pose2d)/fieldPoseAcceleration">fieldPoseAcceleration</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner/-pose2d/index.html"><span class="identifier">Pose2d</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner/-pose2d/index.html"><span class="identifier">Pose2d</span></a></code>
+<p>Returns the robot pose acceleration corresponding to <a href="field-to-robot-pose-acceleration.html#com.acmerobotics.roadrunner.drive.Kinematics$fieldToRobotPoseAcceleration(com.acmerobotics.roadrunner.Pose2d, com.acmerobotics.roadrunner.Pose2d, com.acmerobotics.roadrunner.Pose2d)/fieldPose">fieldPose</a>, <a href="field-to-robot-pose-acceleration.html#com.acmerobotics.roadrunner.drive.Kinematics$fieldToRobotPoseAcceleration(com.acmerobotics.roadrunner.Pose2d, com.acmerobotics.roadrunner.Pose2d, com.acmerobotics.roadrunner.Pose2d)/fieldPoseVelocity">fieldPoseVelocity</a>, and <a href="field-to-robot-pose-acceleration.html#com.acmerobotics.roadrunner.drive.Kinematics$fieldToRobotPoseAcceleration(com.acmerobotics.roadrunner.Pose2d, com.acmerobotics.roadrunner.Pose2d, com.acmerobotics.roadrunner.Pose2d)/fieldPoseAcceleration">fieldPoseAcceleration</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="field-to-robot-pose-velocity.html">fieldToRobotPoseVelocity</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">fieldToRobotPoseVelocity</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.drive.Kinematics$fieldToRobotPoseVelocity(com.acmerobotics.roadrunner.Pose2d, com.acmerobotics.roadrunner.Pose2d)/fieldPose">fieldPose</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner/-pose2d/index.html"><span class="identifier">Pose2d</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.drive.Kinematics$fieldToRobotPoseVelocity(com.acmerobotics.roadrunner.Pose2d, com.acmerobotics.roadrunner.Pose2d)/fieldPoseVelocity">fieldPoseVelocity</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner/-pose2d/index.html"><span class="identifier">Pose2d</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner/-pose2d/index.html"><span class="identifier">Pose2d</span></a></code>
+<p>Returns the robot pose velocity corresponding to <a href="field-to-robot-pose-velocity.html#com.acmerobotics.roadrunner.drive.Kinematics$fieldToRobotPoseVelocity(com.acmerobotics.roadrunner.Pose2d, com.acmerobotics.roadrunner.Pose2d)/fieldPose">fieldPose</a> and <a href="field-to-robot-pose-velocity.html#com.acmerobotics.roadrunner.drive.Kinematics$fieldToRobotPoseVelocity(com.acmerobotics.roadrunner.Pose2d, com.acmerobotics.roadrunner.Pose2d)/fieldPoseVelocity">fieldPoseVelocity</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="relative-odometry-update.html">relativeOdometryUpdate</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">relativeOdometryUpdate</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.drive.Kinematics$relativeOdometryUpdate(com.acmerobotics.roadrunner.Pose2d, com.acmerobotics.roadrunner.Pose2d)/fieldPose">fieldPose</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner/-pose2d/index.html"><span class="identifier">Pose2d</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.drive.Kinematics$relativeOdometryUpdate(com.acmerobotics.roadrunner.Pose2d, com.acmerobotics.roadrunner.Pose2d)/robotPoseDelta">robotPoseDelta</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner/-pose2d/index.html"><span class="identifier">Pose2d</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner/-pose2d/index.html"><span class="identifier">Pose2d</span></a></code>
+<p>Performs a relative odometry update. Note: this assumes that the robot moves with constant velocity over the
+measurement interval.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

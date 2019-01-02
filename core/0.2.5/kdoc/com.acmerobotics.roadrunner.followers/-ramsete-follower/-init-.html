@@ -1,0 +1,31 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>RamseteFollower.<init> - core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">core</a>&nbsp;/&nbsp;<a href="../index.html">com.acmerobotics.roadrunner.followers</a>&nbsp;/&nbsp;<a href="index.html">RamseteFollower</a>&nbsp;/&nbsp;<a href="./-init-.html">&lt;init&gt;</a><br/>
+<br/>
+<h1>&lt;init&gt;</h1>
+<a name="com.acmerobotics.roadrunner.followers.RamseteFollower$&lt;init&gt;(com.acmerobotics.roadrunner.drive.TankDrive, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, com.acmerobotics.roadrunner.util.NanoClock)"></a>
+<code><span class="identifier">RamseteFollower</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.followers.RamseteFollower$<init>(com.acmerobotics.roadrunner.drive.TankDrive, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, com.acmerobotics.roadrunner.util.NanoClock)/drive">drive</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.drive/-tank-drive/index.html"><span class="identifier">TankDrive</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.followers.RamseteFollower$<init>(com.acmerobotics.roadrunner.drive.TankDrive, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, com.acmerobotics.roadrunner.util.NanoClock)/b">b</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.followers.RamseteFollower$<init>(com.acmerobotics.roadrunner.drive.TankDrive, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, com.acmerobotics.roadrunner.util.NanoClock)/zeta">zeta</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.followers.RamseteFollower$<init>(com.acmerobotics.roadrunner.drive.TankDrive, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, com.acmerobotics.roadrunner.util.NanoClock)/kV">kV</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.followers.RamseteFollower$<init>(com.acmerobotics.roadrunner.drive.TankDrive, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, com.acmerobotics.roadrunner.util.NanoClock)/kA">kA</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.followers.RamseteFollower$<init>(com.acmerobotics.roadrunner.drive.TankDrive, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, com.acmerobotics.roadrunner.util.NanoClock)/kStatic">kStatic</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.followers.RamseteFollower$<init>(com.acmerobotics.roadrunner.drive.TankDrive, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, com.acmerobotics.roadrunner.util.NanoClock)/clock">clock</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.util/-nano-clock/index.html"><span class="identifier">NanoClock</span></a>&nbsp;<span class="symbol">=</span>&nbsp;NanoClock.system()<span class="symbol">)</span></code>
+<p>Time-varying, non-linear feedback controller for nonholonomic drives. See equation 5.12 of
+<a href="https://www.dis.uniroma1.it/~labrob/pub/papers/Ramsete01.pdf">Ramsete01.pdf</a>.</p>
+<h3>Parameters</h3>
+<p><a name="drive"></a>
+<code>drive</code> - tank drive</p>
+<p><a name="b"></a>
+<code>b</code> - b parameter (non-negative)</p>
+<p><a name="zeta"></a>
+<code>zeta</code> - zeta parameter (on (0, 1))</p>
+<p><a name="kV"></a>
+<code>kV</code> - feedforward velocity gain</p>
+<p><a name="kA"></a>
+<code>kA</code> - feedforward acceleration gain (currently unused)</p>
+<p><a name="kStatic"></a>
+<code>kStatic</code> - additive feedforward constant (used to overcome static friction)</p>
+<p><a name="clock"></a>
+<code>clock</code> - clock</p>
+</BODY>
+</HTML>
