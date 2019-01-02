@@ -25,11 +25,9 @@ abstract class ThreeTrackingWheelLocalizer @JvmOverloads constructor(
     override var poseEstimate: Pose2d = Pose2d()
         set(value) {
             lastWheelPositions = emptyList()
-            lastUpdateTimestamp = Double.NaN
             field = value
         }
     private var lastWheelPositions = emptyList<Double>()
-    private var lastUpdateTimestamp = Double.NaN
 
     private val forwardSolver: DecompositionSolver
 
@@ -53,28 +51,29 @@ abstract class ThreeTrackingWheelLocalizer @JvmOverloads constructor(
         }
 
         forwardSolver = LUDecomposition(inverseMatrix).solver
+
+        if (!forwardSolver.isNonSingular) {
+            throw IllegalArgumentException("The specified wheel positions and orientations are not sufficient for full localization")
+        }
     }
 
     override fun update() {
         val wheelPositions = getWheelPositions()
-        val timestamp = clock.seconds()
         if (lastWheelPositions.isNotEmpty()) {
-            val dt = timestamp - lastUpdateTimestamp
-            val wheelVelocities = wheelPositions
+            val wheelDeltas = wheelPositions
                     .zip(lastWheelPositions)
-                    .map { (it.first - it.second) / dt }
-            val robotVelocities = forwardSolver.solve(MatrixUtils.createRealMatrix(
-                    arrayOf(wheelVelocities.toDoubleArray())
+                    .map { it.first - it.second }
+            val rawPoseDelta = forwardSolver.solve(MatrixUtils.createRealMatrix(
+                    arrayOf(wheelDeltas.toDoubleArray())
             ).transpose())
             val robotPoseDelta = Pose2d(
-                    robotVelocities.getEntry(0,0),
-                    robotVelocities.getEntry(1,0),
-                    robotVelocities.getEntry(2,0)
-            ) * dt
+                    rawPoseDelta.getEntry(0,0),
+                    rawPoseDelta.getEntry(1,0),
+                    rawPoseDelta.getEntry(2,0)
+            )
             poseEstimate = Kinematics.relativeOdometryUpdate(poseEstimate, robotPoseDelta)
         }
         lastWheelPositions = wheelPositions
-        lastUpdateTimestamp = timestamp
     }
 
     /**

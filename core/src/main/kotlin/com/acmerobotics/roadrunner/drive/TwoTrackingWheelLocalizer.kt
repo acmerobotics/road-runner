@@ -26,12 +26,10 @@ abstract class TwoTrackingWheelLocalizer @JvmOverloads constructor(
         set(value) {
             lastWheelPositions = emptyList()
             lastHeading = Double.NaN
-            lastUpdateTimestamp = Double.NaN
             field = value
         }
     private var lastWheelPositions = emptyList<Double>()
     private var lastHeading = Double.NaN
-    private var lastUpdateTimestamp = Double.NaN
 
     private val forwardSolver: DecompositionSolver
 
@@ -56,33 +54,32 @@ abstract class TwoTrackingWheelLocalizer @JvmOverloads constructor(
         inverseMatrix.setEntry(2, 2, 1.0)
 
         forwardSolver = LUDecomposition(inverseMatrix).solver
+
+        if (!forwardSolver.isNonSingular) {
+            throw IllegalArgumentException("The specified wheel positions and orientations are not sufficient for full localization")
+        }
     }
 
-    // TODO: for this and other localizers, is it safe to assume linearity? (and therefore remove the unnecessary
-    // position delta to velocity conversions
     override fun update() {
         val wheelPositions = getWheelPositions()
         val heading = getHeading()
-        val timestamp = clock.seconds()
         if (lastWheelPositions.isNotEmpty()) {
-            val dt = timestamp - lastUpdateTimestamp
-            val wheelVelocities = wheelPositions
+            val wheelDeltas = wheelPositions
                     .zip(lastWheelPositions)
-                    .map { (it.first - it.second) / dt }
-            val omega = (heading - lastHeading) / dt
-            val robotVelocities = forwardSolver.solve(MatrixUtils.createRealMatrix(
-                    arrayOf((wheelVelocities + omega).toDoubleArray())
+                    .map { it.first - it.second }
+            val headingDelta = heading - lastHeading
+            val rawPoseDelta = forwardSolver.solve(MatrixUtils.createRealMatrix(
+                    arrayOf((wheelDeltas + headingDelta).toDoubleArray())
             ).transpose())
             val robotPoseDelta = Pose2d(
-                    robotVelocities.getEntry(0,0),
-                    robotVelocities.getEntry(1,0),
-                    robotVelocities.getEntry(2,0)
-            ) * dt
+                    rawPoseDelta.getEntry(0,0),
+                    rawPoseDelta.getEntry(1,0),
+                    rawPoseDelta.getEntry(2,0)
+            )
             poseEstimate = Kinematics.relativeOdometryUpdate(poseEstimate, robotPoseDelta)
         }
         lastWheelPositions = wheelPositions
         lastHeading = heading
-        lastUpdateTimestamp = timestamp
     }
 
     /**
