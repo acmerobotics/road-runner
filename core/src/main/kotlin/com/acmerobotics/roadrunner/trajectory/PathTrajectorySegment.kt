@@ -22,12 +22,20 @@ class PathTrajectorySegment @JvmOverloads constructor(
         val trajectoryConstraintsList: List<TrajectoryConstraints> = emptyList(),
         resolution: Int = 250
 ) : TrajectorySegment {
+    /**
+     * @param path path
+     * @param trajectoryConstraints trajectory constraints
+     * @param resolution resolution for the motion profile
+     */
     @JvmOverloads constructor(
             path: Path,
             trajectoryConstraints: TrajectoryConstraints,
             resolution: Int = 250
     ) : this(listOf(path), listOf(trajectoryConstraints), resolution)
 
+    /**
+     * Motion profile used for time parametrization of the paths.
+     */
     val profile: MotionProfile
 
     init {

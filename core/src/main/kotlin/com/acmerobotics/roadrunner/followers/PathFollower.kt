@@ -14,7 +14,10 @@ import com.acmerobotics.roadrunner.util.NanoClock
 abstract class PathFollower @JvmOverloads constructor(protected val clock: NanoClock = NanoClock.system()) {
     private var startTimestamp: Double = 0.0
 
-    var path: Path = Path(LineSegment(Vector2d(), Vector2d()))
+    /**
+     * Path being followed if [isFollowing] is true.
+     */
+    var path: Path = Path()
         protected set
 
     /**

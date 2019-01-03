@@ -6,6 +6,9 @@ import com.acmerobotics.roadrunner.path.ParametricCurve
  * Interpolator for specifying the heading for holonomic paths.
  */
 abstract class HeadingInterpolator {
+    /**
+     * Base parametric curve
+     */
     protected lateinit var parametricCurve: ParametricCurve
 
     /**

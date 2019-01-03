@@ -6,7 +6,11 @@ import com.acmerobotics.roadrunner.path.QuinticPolynomial
 /**
  * Spline heading interpolator for transitioning smoothly between headings without violating continuity (and hence
  * allowing for integration into longer profiles).
+ *
+ * @param startHeading start heading
+ * @param endHeading end heading
  */
+// note: the spline parameter is transformed linearly into a pseudo-arclength parameter
 class SplineInterpolator(private val startHeading: Double, private val endHeading: Double) : HeadingInterpolator() {
     private val tangentInterpolator = TangentInterpolator()
     private lateinit var headingSpline: QuinticPolynomial

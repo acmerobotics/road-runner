@@ -2,6 +2,9 @@ package com.acmerobotics.roadrunner.path.heading
 
 /**
  * Linear heading interpolator for time-optimal transitions between poses.
+ *
+ * @param startHeading start heading
+ * @param endHeading end heading
  */
 class LinearInterpolator(private val startHeading: Double, endHeading: Double) : HeadingInterpolator() {
     private val turnAngle: Double = if (endHeading >= startHeading) {

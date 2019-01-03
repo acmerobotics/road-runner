@@ -16,6 +16,9 @@ import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
  * @param constraints drive constraints
  */
 class PointTurn(val start: Pose2d, endHeading: Double, val constraints: DriveConstraints): TrajectorySegment {
+    /**
+     * Motion profile for the time parametrization of the turn.
+     */
     val profile: MotionProfile
 
     init {

@@ -4,6 +4,9 @@ import com.acmerobotics.roadrunner.Vector2d
 
 /**
  * Parametric representation of a line.
+ *
+ * @param start start vector
+ * @param end end vector
  */
 class LineSegment(private val start: Vector2d, end: Vector2d) : ParametricCurve() {
     private val diff = end - start

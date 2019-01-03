@@ -10,6 +10,10 @@ private const val K = 0.5  // fraction of a period replaced by a path on either 
 /**
  * Heading interpolator that wraps another interpolator and adds sinusoidal oscillations ("wiggles") while preserving
  * continuity. More specifically, the wiggle function is composed of a sine wave with a quintic spline on either end.
+ *
+ * @param amplitude amplitude of the wiggle oscillations
+ * @param desiredPeriod period fo the wiggle oscillations
+ * @param baseInterpolator base interpolator to add oscillations to (e.g., oscillations relative to the tangent)
  */
 class WiggleInterpolator(
         private val amplitude: Double,

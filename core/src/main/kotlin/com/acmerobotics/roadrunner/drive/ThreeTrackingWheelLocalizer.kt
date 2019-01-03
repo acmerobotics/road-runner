@@ -15,12 +15,10 @@ import kotlin.math.sin
  *
  * @param wheelPositions wheel positions relative to the center of the robot (positive X points forward on the robot)
  * @param wheelOrientations angular orientations of the wheels measured counterclockwise from positive X in radians
- * @param clock clock
  */
-abstract class ThreeTrackingWheelLocalizer @JvmOverloads constructor(
+abstract class ThreeTrackingWheelLocalizer(
         wheelPositions: List<Vector2d>,
-        wheelOrientations: List<Double>,
-        private val clock: NanoClock = NanoClock.system()
+        wheelOrientations: List<Double>
 ) : Localizer {
     override var poseEstimate: Pose2d = Pose2d()
         set(value) {

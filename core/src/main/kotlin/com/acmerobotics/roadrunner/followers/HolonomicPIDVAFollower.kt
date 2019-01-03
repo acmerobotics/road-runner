@@ -73,5 +73,11 @@ abstract class HolonomicPIDVAFollower @JvmOverloads constructor(
         lastError = poseError
     }
 
+    /**
+     * Update the drive powers.
+     *
+     * @param poseVelocity robot pose velocity
+     * @param poseAcceleration robot pose acceleration
+     */
     abstract fun updateDrive(poseVelocity: Pose2d, poseAcceleration: Pose2d)
 }

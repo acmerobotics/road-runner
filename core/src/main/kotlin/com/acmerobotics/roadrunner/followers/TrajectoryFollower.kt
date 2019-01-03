@@ -11,6 +11,10 @@ import com.acmerobotics.roadrunner.util.NanoClock
  */
 abstract class TrajectoryFollower @JvmOverloads constructor(protected val clock: NanoClock = NanoClock.system()) {
     private var startTimestamp: Double = 0.0
+
+    /**
+     * Trajectory being followed if [isFollowing] is true.
+     */
     var trajectory: Trajectory = Trajectory()
         protected set
 
@@ -31,7 +35,7 @@ abstract class TrajectoryFollower @JvmOverloads constructor(protected val clock:
     /**
      * Returns true if the current trajectory has finished executing.
      */
-    fun isFollowing(): Boolean {
+    open fun isFollowing(): Boolean {
         return elapsedTime() <= trajectory.duration()
     }
 

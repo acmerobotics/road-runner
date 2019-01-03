@@ -13,7 +13,7 @@ import kotlin.math.sign
  * @param kV feedforward velocity gain
  * @param kA feedforward acceleration gain
  * @param kStatic additive feedforward constant
- * @param kF custom, position-dependent feedforward (e.g., a cosine term for arms)
+ * @param kF custom, position-dependent feedforward (e.g., a gravity term for arms)
  */
 class PIDFController @JvmOverloads constructor(
         private val pid: PIDCoefficients,
@@ -23,8 +23,6 @@ class PIDFController @JvmOverloads constructor(
         private val kF: (Double) -> Double = { 0.0 }
 ) {
     private var errorSum: Double = 0.0
-    var lastError: Double = 0.0
-        private set
     private var lastUpdateTimestamp: Double = Double.NaN
 
     private var inputBounded: Boolean = false
@@ -36,9 +34,15 @@ class PIDFController @JvmOverloads constructor(
     private var maxOutput: Double = 0.0
 
     /**
-     * Target position (that is, the controller setpoint)
+     * Target position (that is, the controller setpoint).
      */
     var targetPosition: Double = 0.0
+
+    /**
+     * Error computed in the last call to [update].
+     */
+    var lastError: Double = 0.0
+        private set
 
     /**
      * Sets bound on the input of the controller. The min and max values are considered modularly-equivalent (that is,

@@ -21,17 +21,28 @@ import org.apache.commons.math3.linear.RealVector
  * @param reversed whether or not to travel along the path segment in reverse
  */
 class Path @JvmOverloads constructor(
-        val parametricCurves: List<ParametricCurve>,
+        val parametricCurves: List<ParametricCurve> = emptyList(),
         val interpolators: List<HeadingInterpolator> = parametricCurves.map { TangentInterpolator() },
         val reversed: List<Boolean> = parametricCurves.map { false }
 ) {
+    /**
+     * @param parametricCurve parametric curve
+     * @param interpolator heading interpolator
+     * @param reversed whether or not to travel in reverse
+     */
     @JvmOverloads constructor(
             parametricCurve: ParametricCurve,
             interpolator: HeadingInterpolator = TangentInterpolator(),
             reversed: Boolean = false
     ) : this(listOf(parametricCurve), listOf(interpolator), listOf(reversed))
 
-    class ProjectionResult(val displacement: Double, val distance: Double)
+    /**
+     * Simple container for the result of a projection (i.e., a [project] call).
+     *
+     * @param displacement displacement along the path
+     * @param distance Euclidean distance between the path and query points
+     */
+    data class ProjectionResult(val displacement: Double, val distance: Double)
 
     init {
         interpolators.zip(parametricCurves).forEach { it.first.init(it.second) }

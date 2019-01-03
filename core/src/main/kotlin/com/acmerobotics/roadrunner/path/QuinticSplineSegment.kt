@@ -16,11 +16,25 @@ private const val LENGTH_SAMPLES = 1000
  * @param end end waypoint
  */
 class QuinticSplineSegment(start: Waypoint, end: Waypoint) : ParametricCurve() {
+    /**
+     * X polynomial (i.e., x(t))
+     */
     val x: QuinticPolynomial = QuinticPolynomial(start.x, start.dx, start.d2x, end.x, end.dx, end.d2x)
+
+    /**
+     * Y polynomial (i.e., y(t))
+     */
     val y: QuinticPolynomial = QuinticPolynomial(start.y, start.dy, start.d2y, end.y, end.dy, end.d2y)
 
     /**
      * Class for representing the end points of interpolated quintic splines.
+     *
+     * @param x x position
+     * @param y y position
+     * @param dx x derivative
+     * @param dy y derivative
+     * @param d2x x second derivative
+     * @param d2y y second derivative
      */
     class Waypoint @JvmOverloads constructor(
             val x: Double,
