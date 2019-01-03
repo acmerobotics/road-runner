@@ -56,7 +56,7 @@ Road Runner also includes a simple IDEA/Android Studio plugin based upon the GUI
 
 ## Documentation
 
-The documentation for all releases are available online in the [KDoc format](https://acmerobotics.github.io/road-runner/core/0.2.5/kdoc/) (more accurately reflects the Kotlin source) and in the more traditional [Javadoc format](https://acmerobotics.github.io/road-runner/core/0.2.4/javadoc/).
+The documentation for all releases are available online in the [KDoc format](https://acmerobotics.github.io/road-runner/core/0.2.5/kdoc/) (more accurately reflects the Kotlin source) and in the more traditional [Javadoc format](https://acmerobotics.github.io/road-runner/core/0.2.5/javadoc/).
 
 ## Getting Started
 
