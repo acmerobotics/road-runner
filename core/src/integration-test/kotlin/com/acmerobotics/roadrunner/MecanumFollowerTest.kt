@@ -12,7 +12,6 @@ import org.junit.jupiter.api.TestInstance
 import org.knowm.xchart.XYChart
 import org.knowm.xchart.style.MatlabTheme
 import org.knowm.xchart.style.markers.None
-import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
 
@@ -68,15 +67,25 @@ class MecanumFollowerTest {
 
         val clock = SimulatedClock()
         val drive = SimulatedMecanumDrive(dt, kV, TRACK_WIDTH)
-        val follower = MecanumPIDVAFollower(drive, PIDCoefficients(1.0), PIDCoefficients(5.0), kV, 0.0, 0.0, clock)
+        val follower = MecanumPIDVAFollower(
+                drive,
+                PIDCoefficients(0.1),
+                PIDCoefficients(0.1),
+                kV,
+                0.0,
+                0.0,
+                Pose2d(0.5, 0.5, Math.toRadians(3.0)),
+                1.0,
+                clock
+        )
         follower.followTrajectory(trajectory)
 
         val targetPositions = mutableListOf<Vector2d>()
         val actualPositions = mutableListOf<Vector2d>()
 
-        val samples = ceil(trajectory.duration() / dt).toInt()
-        for (sample in 1..samples) {
-            val t = sample * dt
+        var t = 0.0
+        while (follower.isFollowing()) {
+            t += dt
             clock.time = t
             follower.update(drive.poseEstimate)
             drive.updatePoseEstimate()

@@ -1,6 +1,7 @@
 package com.acmerobotics.roadrunner.drive
 
 import com.acmerobotics.roadrunner.Pose2d
+import com.acmerobotics.roadrunner.util.Angle
 import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.sign
@@ -35,7 +36,7 @@ object Kinematics {
     @JvmStatic
     fun calculatePoseError(targetFieldPose: Pose2d, currentFieldPose: Pose2d) =
             Pose2d((targetFieldPose - currentFieldPose).pos().rotated(-currentFieldPose.heading),
-                    targetFieldPose.heading - currentFieldPose.heading)
+                    Angle.norm(targetFieldPose.heading - currentFieldPose.heading))
 
     /**
      * Computes the motor feedforward (i.e., open loop powers) for the given set of coefficients.

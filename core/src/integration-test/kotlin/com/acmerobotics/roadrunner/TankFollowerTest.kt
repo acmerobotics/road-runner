@@ -17,7 +17,6 @@ import org.knowm.xchart.XYChart
 import org.knowm.xchart.style.MatlabTheme
 import org.knowm.xchart.style.markers.None
 import kotlin.math.atan
-import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
 
@@ -72,16 +71,26 @@ class TankFollowerTest {
 
         val clock = SimulatedClock()
         val drive = SimulatedTankDrive(dt, kV, TRACK_WIDTH)
-        val follower = TankPIDVAFollower(drive, PIDCoefficients(1.0), PIDCoefficients(kP = 1.0), kV, 0.0, 0.0, clock)
+        val follower = TankPIDVAFollower(
+                drive,
+                PIDCoefficients(0.01),
+                PIDCoefficients(kP = 0.1, kD = 0.001),
+                kV,
+                0.0,
+                0.0,
+                Pose2d(0.5, 0.5, Math.toRadians(3.0)),
+                1.0,
+                clock
+        )
         follower.followTrajectory(trajectory)
 
         val targetPositions = mutableListOf<Vector2d>()
         val actualPositions = mutableListOf<Vector2d>()
 
         drive.poseEstimate = trajectory.start()
-        val samples = ceil(trajectory.duration() / dt).toInt()
-        for (sample in 1..samples) {
-            val t = sample * dt
+        var t = 0.0
+        while (follower.isFollowing()) {
+            t += dt
             clock.time = t
             follower.update(drive.poseEstimate)
             drive.updatePoseEstimate()
@@ -119,16 +128,26 @@ class TankFollowerTest {
 
         val clock = SimulatedClock()
         val drive = SimulatedTankDrive(dt, kV, TRACK_WIDTH)
-        val follower = RamseteFollower(drive, 1.6, 0.9, kV, 0.0, 0.0, clock)
+        val follower = RamseteFollower(
+                drive,
+                1.6,
+                0.9,
+                kV,
+                0.0,
+                0.0,
+                Pose2d(0.5, 0.5, Math.toRadians(3.0)),
+                1.0,
+                clock
+        )
         follower.followTrajectory(trajectory)
 
         val targetPositions = mutableListOf<Vector2d>()
         val actualPositions = mutableListOf<Vector2d>()
 
         drive.poseEstimate = trajectory.start()
-        val samples = ceil(trajectory.duration() / dt).toInt()
-        for (sample in 1..samples) {
-            val t = sample * dt
+        var t = 0.0
+        while (follower.isFollowing()) {
+            t += dt
             clock.time = t
             follower.update(drive.poseEstimate)
             drive.updatePoseEstimate()
@@ -166,6 +185,7 @@ class TankFollowerTest {
         val follower = GVFFollower(
                 drive,
                 SimpleMotionConstraints(5.0, 25.0),
+                Pose2d(0.5, 0.5, Math.toRadians(3.0)),
                 3.0,
                 5.0,
                 kV,

@@ -18,6 +18,8 @@ import com.acmerobotics.roadrunner.util.NanoClock
  * @param kV feedforward velocity gain
  * @param kA feedforward acceleration gain
  * @param kStatic signed, additive feedforward constant (used to overcome static friction)
+ * @param admissibleError admissible/satisfactory pose error at the end of each move
+ * @param timeout max time to wait for the error to be admissible
  * @param clock clock
  */
 abstract class HolonomicPIDVAFollower @JvmOverloads constructor(
@@ -27,8 +29,10 @@ abstract class HolonomicPIDVAFollower @JvmOverloads constructor(
         private val kV: Double,
         private val kA: Double,
         private val kStatic: Double,
+        admissibleError: Pose2d = Pose2d(),
+        timeout: Double = 0.0,
         clock: NanoClock = NanoClock.system()
-) : TrajectoryFollower(clock) {
+) : TrajectoryFollower(admissibleError, timeout, clock) {
     private val axialController = PIDFController(translationalCoeffs)
     private val lateralController = PIDFController(translationalCoeffs)
     private val headingController = PIDFController(headingCoeffs)
@@ -40,6 +44,8 @@ abstract class HolonomicPIDVAFollower @JvmOverloads constructor(
     }
 
     override fun update(currentPose: Pose2d) {
+        super.update(currentPose)
+
         if (!isFollowing()) {
             drive.setVelocity(Pose2d(0.0, 0.0, 0.0))
             return

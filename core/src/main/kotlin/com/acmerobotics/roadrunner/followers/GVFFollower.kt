@@ -15,6 +15,7 @@ import kotlin.math.sqrt
  *
  * @param drive tank drive
  * @param constraints robot motion constraints
+ * @param admissibleError admissible/satisfactory pose error at the end of each move
  * @param kN normal vector weight (see [GuidingVectorField])
  * @param kOmega proportional heading gain
  * @param kV feedforward velocity gain
@@ -26,6 +27,7 @@ import kotlin.math.sqrt
 class GVFFollower @JvmOverloads constructor(
         private val drive: TankDrive,
         private val constraints: SimpleMotionConstraints,
+        admissibleError: Pose2d,
         private val kN: Double,
         private val kOmega: Double,
         private val kV: Double,
@@ -33,9 +35,8 @@ class GVFFollower @JvmOverloads constructor(
         private val kStatic: Double,
         private val errorMapFunc: (Double) -> Double = { it },
         clock: NanoClock = NanoClock.system()
-) : PathFollower(clock) {
+) : PathFollower(admissibleError, clock) {
     private lateinit var gvf: GuidingVectorField
-    private var following: Boolean = false
     private var lastUpdateTimestamp: Double = 0.0
     private var lastVelocity: Double = 0.0
     private var lastProjectionDisplacement: Double = 0.0
@@ -44,27 +45,21 @@ class GVFFollower @JvmOverloads constructor(
 
     override fun followPath(path: Path) {
         gvf = GuidingVectorField(path, kN, errorMapFunc)
-        following = true
         lastUpdateTimestamp = clock.seconds()
         lastVelocity = 0.0
         lastProjectionDisplacement = 0.0
         super.followPath(path)
     }
 
-    override fun isFollowing() = following
-
     override fun update(currentPose: Pose2d) {
+        super.update(currentPose)
+
         if (!isFollowing()) {
             drive.setMotorPowers(0.0, 0.0)
             return
         }
 
         val gvfResult = gvf.getExtended(currentPose.x, currentPose.y, lastProjectionDisplacement)
-        if (gvfResult.displacement > path.length()) {
-            following = false
-            drive.setMotorPowers(0.0, 0.0)
-            return
-        }
 
         val desiredHeading = Math.atan2(gvfResult.vector.y, gvfResult.vector.x)
         val headingError = Angle.norm(currentPose.heading - desiredHeading)

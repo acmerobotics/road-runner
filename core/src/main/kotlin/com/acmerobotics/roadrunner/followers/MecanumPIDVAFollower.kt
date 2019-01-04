@@ -18,6 +18,8 @@ import com.acmerobotics.roadrunner.util.NanoClock
  * @param kV feedforward velocity gain
  * @param kA feedforward acceleration gain
  * @param kStatic signed, additive feedforward constant (used to overcome static friction)
+ * @param admissibleError admissible/satisfactory pose error at the end of each move
+ * @param timeout max time to wait for the error to be admissible
  * @param clock clock
  */
 class MecanumPIDVAFollower @JvmOverloads constructor(
@@ -27,8 +29,10 @@ class MecanumPIDVAFollower @JvmOverloads constructor(
         private val kV: Double,
         private val kA: Double,
         private val kStatic: Double,
+        admissibleError: Pose2d = Pose2d(),
+        timeout: Double = 0.0,
         clock: NanoClock = NanoClock.system()
-) : HolonomicPIDVAFollower(drive, translationalCoeffs, headingCoeffs, kV, kA, kStatic, clock) {
+) : HolonomicPIDVAFollower(drive, translationalCoeffs, headingCoeffs, kV, kA, kStatic, admissibleError, timeout, clock) {
     override fun updateDrive(poseVelocity: Pose2d, poseAcceleration: Pose2d) {
         val wheelVelocities = MecanumKinematics.robotToWheelVelocities(poseVelocity, drive.trackWidth, drive.wheelBase)
         val wheelAccelerations = MecanumKinematics.robotToWheelAccelerations(poseAcceleration, drive.trackWidth, drive.wheelBase)

@@ -19,6 +19,8 @@ import kotlin.math.sqrt
  * @param kV feedforward velocity gain
  * @param kA feedforward acceleration gain (currently unused)
  * @param kStatic additive feedforward constant (used to overcome static friction)
+ * @param admissibleError admissible/satisfactory pose error at the end of each move
+ * @param timeout max time to wait for the error to be admissible
  * @param clock clock
  */
 class RamseteFollower @JvmOverloads constructor(
@@ -28,11 +30,15 @@ class RamseteFollower @JvmOverloads constructor(
         private val kV: Double,
         private val kA: Double,
         private val kStatic: Double,
+        admissibleError: Pose2d = Pose2d(),
+        timeout: Double = 0.0,
         clock: NanoClock = NanoClock.system()
-) : TrajectoryFollower(clock) {
+) : TrajectoryFollower(admissibleError, timeout, clock) {
     override var lastError: Pose2d = Pose2d()
 
     override fun update(currentPose: Pose2d) {
+        super.update(currentPose)
+
         if (!isFollowing()) {
             drive.setMotorPowers(0.0, 0.0)
             return
