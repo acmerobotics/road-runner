@@ -142,8 +142,8 @@ object MotionProfileGenerator {
                 while (iterations < 1000) {
                     val peakVel = (upperBound + lowerBound) / 2
 
-                    val searchAccelProfile = generateAccelProfile(start, maximumVelocity, maximumAcceleration, maximumJerk)
-                    val searchDecelProfile = generateAccelProfile(goal, maximumVelocity, maximumAcceleration, maximumJerk)
+                    val searchAccelProfile = generateAccelProfile(start, peakVel, maximumAcceleration, maximumJerk)
+                    val searchDecelProfile = generateAccelProfile(goal, peakVel, maximumAcceleration, maximumJerk)
                             .reversed()
 
                     val searchProfile = searchAccelProfile + searchDecelProfile

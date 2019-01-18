@@ -211,6 +211,40 @@ class MotionProfileGeneratorTest {
     }
 
     @Test
+    fun testShortJerkLimited() {
+        testProfile(
+                "jlShort",
+                MotionState(0.0, 0.0, 0.0),
+                MotionState(10.0, 0.0, 0.0),
+                MotionProfileGenerator.generateSimpleMotionProfile(
+                        MotionState(0.0, 0.0, 0.0),
+                        MotionState(10.0, 0.0, 0.0),
+                        15.0,
+                        30.0,
+                        30.0
+                ),
+                true
+        )
+    }
+
+    @Test
+    fun testLongJerkLimited() {
+        testProfile(
+                "jlLong",
+                MotionState(0.0, 0.0, 0.0),
+                MotionState(100.0, 0.0, 0.0),
+                MotionProfileGenerator.generateSimpleMotionProfile(
+                        MotionState(0.0, 0.0, 0.0),
+                        MotionState(100.0, 0.0, 0.0),
+                        15.0,
+                        30.0,
+                        30.0
+                ),
+                true
+        )
+    }
+
+    @Test
     fun testJLConstraintViolations() {
         testProfile(
                 "jlConstraintViolations",
