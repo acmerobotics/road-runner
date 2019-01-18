@@ -139,7 +139,7 @@ object MotionProfileGenerator {
                 var upperBound = maximumVelocity
                 var lowerBound = 0.0
                 var iterations = 0
-                while (iterations < 1000) {
+                while (true) {
                     val peakVel = (upperBound + lowerBound) / 2
 
                     val searchAccelProfile = generateAccelProfile(start, maximumVelocity, maximumAcceleration, maximumJerk)
@@ -150,7 +150,7 @@ object MotionProfileGenerator {
 
                     val error = goal.x - searchProfile.end().x
 
-                    if (abs(error) < 1e-10) {
+                    if (iterations > 1000 || abs(error) < 1e-10) {
                         return searchProfile
                     }
 
