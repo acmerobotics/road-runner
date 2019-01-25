@@ -12,7 +12,7 @@ private val COMMAND_MASK = Toolkit.getDefaultToolkit().menuShortcutKeyMask
 class MainFrame : JFrame() {
 
     init {
-        title = "Spline Designer"
+        title = "Path Designer"
         size = Dimension(600, 800)
         defaultCloseOperation = JFrame.EXIT_ON_CLOSE
         isResizable = false
