@@ -54,100 +54,100 @@ class Path @JvmOverloads constructor(
     fun length() = parametricCurves.sumByDouble { it.length() }
 
     /**
-     * Returns the pose [displacement] units along the path.
+     * Returns the pose [s] units along the path.
      */
-    operator fun get(displacement: Double): Pose2d {
-        var remainingDisplacement = displacement
+    operator fun get(s: Double): Pose2d {
+        var remainings = s
         for (i in parametricCurves.indices) {
             val parametricCurve = parametricCurves[i]
-            if (remainingDisplacement <= parametricCurve.length()) {
-                return segmentGet(i, remainingDisplacement)
+            if (remainings <= parametricCurve.length()) {
+                return segmentGet(i, remainings)
             }
-            remainingDisplacement -= parametricCurve.length()
+            remainings -= parametricCurve.length()
         }
         val finalVector = parametricCurves.lastOrNull()?.end() ?: return Pose2d()
         return Pose2d(finalVector, interpolators.last().end())
     }
 
     /**
-     * Returns the pose derivative [displacement] units along the path.
+     * Returns the pose derivative [s] units along the path.
      */
-    fun deriv(displacement: Double): Pose2d {
-        var remainingDisplacement = displacement
+    fun deriv(s: Double): Pose2d {
+        var remainings = s
         for (i in parametricCurves.indices) {
             val parametricCurve = parametricCurves[i]
-            if (remainingDisplacement <= parametricCurve.length()) {
-                return segmentDeriv(i, remainingDisplacement)
+            if (remainings <= parametricCurve.length()) {
+                return segmentDeriv(i, remainings)
             }
-            remainingDisplacement -= parametricCurve.length()
+            remainings -= parametricCurve.length()
         }
         val finalVector = parametricCurves.lastOrNull()?.end() ?: return Pose2d()
         return Pose2d(finalVector, interpolators.last().end())
     }
 
     /**
-     * Returns the pose second derivative [displacement] units along the path.
+     * Returns the pose second derivative [s] units along the path.
      */
-    fun secondDeriv(displacement: Double): Pose2d {
-        var remainingDisplacement = displacement
+    fun secondDeriv(s: Double): Pose2d {
+        var remainings = s
         for (i in parametricCurves.indices) {
             val parametricCurve = parametricCurves[i]
-            if (remainingDisplacement <= parametricCurve.length()) {
-                return segmentSecondDeriv(i, remainingDisplacement)
+            if (remainings <= parametricCurve.length()) {
+                return segmentSecondDeriv(i, remainings)
             }
-            remainingDisplacement -= parametricCurve.length()
+            remainings -= parametricCurve.length()
         }
         val finalVector = parametricCurves.lastOrNull()?.end() ?: return Pose2d()
         return Pose2d(finalVector, interpolators.last().end())
     }
 
-    private fun segmentGet(i: Int, displacement: Double): Pose2d {
+    private fun segmentGet(i: Int, s: Double): Pose2d {
         val parametricCurve = parametricCurves[i]
         val interpolator = interpolators[i]
         val reversed = reversed[i]
         val point = if (reversed) {
-            parametricCurve[parametricCurve.length() - displacement]
+            parametricCurve[parametricCurve.length() - s]
         } else {
-            parametricCurve[displacement]
+            parametricCurve[s]
         }
         val heading = if (reversed) {
-            interpolator[parametricCurve.length() - displacement]
+            interpolator[parametricCurve.length() - s]
         } else {
-            interpolator[displacement]
+            interpolator[s]
         }
         return Pose2d(point.x, point.y, heading)
     }
 
-    private fun segmentDeriv(i: Int, displacement: Double): Pose2d {
+    private fun segmentDeriv(i: Int, s: Double): Pose2d {
         val parametricCurve = parametricCurves[i]
         val interpolator = interpolators[i]
         val reversed = reversed[i]
         val deriv = if (reversed) {
-            -parametricCurve.deriv(parametricCurve.length() - displacement)
+            -parametricCurve.deriv(parametricCurve.length() - s)
         } else {
-            parametricCurve.deriv(displacement)
+            parametricCurve.deriv(s)
         }
         val headingDeriv = if (reversed) {
-            -interpolator.deriv(parametricCurve.length() - displacement)
+            -interpolator.deriv(parametricCurve.length() - s)
         } else {
-            interpolator.deriv(displacement)
+            interpolator.deriv(s)
         }
         return Pose2d(deriv.x, deriv.y, headingDeriv)
     }
 
-    private fun segmentSecondDeriv(i: Int, displacement: Double): Pose2d {
+    private fun segmentSecondDeriv(i: Int, s: Double): Pose2d {
         val parametricCurve = parametricCurves[i]
         val interpolator = interpolators[i]
         val reversed = reversed[i]
         val secondDeriv = if (reversed) {
-            parametricCurve.secondDeriv(parametricCurve.length() - displacement)
+            parametricCurve.secondDeriv(parametricCurve.length() - s)
         } else {
-            parametricCurve.secondDeriv(displacement)
+            parametricCurve.secondDeriv(s)
         }
         val headingSecondDeriv = if (reversed) {
-            interpolator.secondDeriv(parametricCurve.length() - displacement)
+            interpolator.secondDeriv(parametricCurve.length() - s)
         } else {
-            interpolator.secondDeriv(displacement)
+            interpolator.secondDeriv(s)
         }
         return Pose2d(secondDeriv.x, secondDeriv.y, headingSecondDeriv)
     }
@@ -156,7 +156,7 @@ class Path @JvmOverloads constructor(
      * Project [point] onto the current path.
      *
      * @param point query point
-     * @param projectGuess guess for the projected point's displacement along the path
+     * @param projectGuess guess for the projected point's s along the path
      */
     fun project(point: Vector2d, projectGuess: Double = length() / 2.0): ProjectionResult {
         val problem = LeastSquaresBuilder()

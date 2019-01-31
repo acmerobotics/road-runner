@@ -21,13 +21,13 @@ class LineSegment(private val start: Vector2d, end: Vector2d) : ParametricCurve(
 
     override fun internalThirdDeriv(t: Double) = Vector2d(0.0, 0.0)
 
-    override fun displacementToParameter(displacement: Double) = displacement / length()
+    override fun reparam(s: Double) = s / length()
 
-    override fun parameterDeriv(t: Double) = 1.0 / length()
+    override fun paramDeriv(t: Double) = 1.0 / length()
 
-    override fun parameterSecondDeriv(t: Double) = 0.0
+    override fun paramSecondDeriv(t: Double) = 0.0
 
-    override fun parameterThirdDeriv(t: Double) = 0.0
+    override fun paramThirdDeriv(t: Double) = 0.0
 
     override fun toString() = "(${start.x}+${diff.x}*t,${start.y}+${diff.y}*t)"
 }

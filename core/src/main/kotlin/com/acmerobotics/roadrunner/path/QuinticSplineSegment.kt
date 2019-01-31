@@ -80,14 +80,14 @@ class QuinticSplineSegment(start: Waypoint, end: Waypoint) : ParametricCurve() {
 
     override fun internalThirdDeriv(t: Double) = Vector2d(x.thirdDeriv(t), y.thirdDeriv(t))
 
-    override fun displacementToParameter(displacement: Double) = arcLengthSamples.getInterpolated(displacement) ?: 0.0
+    override fun reparam(s: Double) = arcLengthSamples.getInterpolated(s) ?: 0.0
 
-    override fun parameterDeriv(t: Double): Double {
+    override fun paramDeriv(t: Double): Double {
         val deriv = internalDeriv(t)
         return 1.0 / sqrt(deriv.x * deriv.x + deriv.y * deriv.y)
     }
 
-    override fun parameterSecondDeriv(t: Double): Double {
+    override fun paramSecondDeriv(t: Double): Double {
         val deriv = internalDeriv(t)
         val secondDeriv = internalSecondDeriv(t)
         val numerator = -(deriv.x * secondDeriv.x + deriv.y * secondDeriv.y)
@@ -95,7 +95,7 @@ class QuinticSplineSegment(start: Waypoint, end: Waypoint) : ParametricCurve() {
         return numerator / (denominator * denominator)
     }
 
-    override fun parameterThirdDeriv(t: Double): Double {
+    override fun paramThirdDeriv(t: Double): Double {
         val deriv = internalDeriv(t)
         val secondDeriv = internalSecondDeriv(t)
         val thirdDeriv = internalThirdDeriv(t)

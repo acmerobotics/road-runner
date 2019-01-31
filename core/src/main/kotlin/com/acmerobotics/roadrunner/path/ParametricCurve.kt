@@ -8,42 +8,42 @@ import com.acmerobotics.roadrunner.Vector2d
 abstract class ParametricCurve {
 
     /**
-     * Returns the vector [displacement] units along the curve.
+     * Returns the vector [s] units along the curve.
      */
-    operator fun get(displacement: Double) = internalGet(displacementToParameter(displacement))
+    operator fun get(s: Double) = internalGet(reparam(s))
 
     /**
-     * Returns the derivative [displacement] units along the curve.
+     * Returns the derivative [s] units along the curve.
      */
-    fun deriv(displacement: Double): Vector2d {
-        val t = displacementToParameter(displacement)
-        return internalDeriv(t) * parameterDeriv(t)
+    fun deriv(s: Double): Vector2d {
+        val t = reparam(s)
+        return internalDeriv(t) * paramDeriv(t)
     }
 
     /**
-     * Returns the second derivative [displacement] units along the curve.
+     * Returns the second derivative [s] units along the curve.
      */
-    fun secondDeriv(displacement: Double): Vector2d {
-        val t = displacementToParameter(displacement)
+    fun secondDeriv(s: Double): Vector2d {
+        val t = reparam(s)
         val deriv = internalDeriv(t)
         val secondDeriv = internalSecondDeriv(t)
-        val splineParameterDeriv = parameterDeriv(t)
-        val splineParameterSecondDeriv = parameterSecondDeriv(t)
+        val splineParameterDeriv = paramDeriv(t)
+        val splineParameterSecondDeriv = paramSecondDeriv(t)
         return secondDeriv * splineParameterDeriv * splineParameterDeriv +
                 deriv * splineParameterSecondDeriv
     }
 
     /**
-     * Returns the third derivative [displacement] units along the curve.
+     * Returns the third derivative [s] units along the curve.
      */
-    fun thirdDeriv(displacement: Double): Vector2d {
-        val t = displacementToParameter(displacement)
+    fun thirdDeriv(s: Double): Vector2d {
+        val t = reparam(s)
         val deriv = internalDeriv(t)
         val secondDeriv = internalSecondDeriv(t)
         val thirdDeriv = internalThirdDeriv(t)
-        val splineParameterDeriv = parameterDeriv(t)
-        val splineParameterSecondDeriv = parameterSecondDeriv(t)
-        val splineParameterThirdDeriv = parameterThirdDeriv(t)
+        val splineParameterDeriv = paramDeriv(t)
+        val splineParameterSecondDeriv = paramSecondDeriv(t)
+        val splineParameterThirdDeriv = paramThirdDeriv(t)
         return thirdDeriv * splineParameterDeriv * splineParameterDeriv * splineParameterDeriv +
                 secondDeriv * splineParameterSecondDeriv * splineParameterDeriv * 3.0 +
                 deriv * splineParameterThirdDeriv
@@ -90,25 +90,25 @@ abstract class ParametricCurve {
     fun endThirdDeriv() = thirdDeriv(length())
 
     /**
-     * Returns the angle of the tangent line [displacement] units along the curve.
+     * Returns the angle of the tangent line [s] units along the curve.
      */
-    fun tangentAngle(displacement: Double) = deriv(displacement).angle()
+    fun tangentAngle(s: Double) = deriv(s).angle()
 
     /**
-     * Returns the derivative of the tangent angle [displacement] units along the curve.
+     * Returns the derivative of the tangent angle [s] units along the curve.
      */
-    fun tangentAngleDeriv(displacement: Double): Double {
-        val deriv = deriv(displacement)
-        val secondDeriv = secondDeriv(displacement)
+    fun tangentAngleDeriv(s: Double): Double {
+        val deriv = deriv(s)
+        val secondDeriv = secondDeriv(s)
         return deriv.x * secondDeriv.y - deriv.y * secondDeriv.x
     }
 
     /**
-     * Returns the second derivative of the tangent angle [displacement] units along the curve.
+     * Returns the second derivative of the tangent angle [s] units along the curve.
      */
-    fun tangentAngleSecondDeriv(displacement: Double): Double {
-        val deriv = deriv(displacement)
-        val thirdDeriv = thirdDeriv(displacement)
+    fun tangentAngleSecondDeriv(s: Double): Double {
+        val deriv = deriv(s)
+        val thirdDeriv = thirdDeriv(s)
         return deriv.x * thirdDeriv.y - deriv.y * thirdDeriv.x
     }
 
@@ -122,8 +122,8 @@ abstract class ParametricCurve {
     internal abstract fun internalSecondDeriv(t: Double): Vector2d
     internal abstract fun internalThirdDeriv(t: Double): Vector2d
 
-    internal abstract fun displacementToParameter(displacement: Double): Double
-    internal abstract fun parameterDeriv(t: Double): Double
-    internal abstract fun parameterSecondDeriv(t: Double): Double
-    internal abstract fun parameterThirdDeriv(t: Double): Double
+    internal abstract fun reparam(s: Double): Double
+    internal abstract fun paramDeriv(t: Double): Double
+    internal abstract fun paramSecondDeriv(t: Double): Double
+    internal abstract fun paramThirdDeriv(t: Double): Double
 }

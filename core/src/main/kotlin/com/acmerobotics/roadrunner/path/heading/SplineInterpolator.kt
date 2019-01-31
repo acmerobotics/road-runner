@@ -34,16 +34,16 @@ class SplineInterpolator(private val startHeading: Double, private val endHeadin
 
     override fun respectsDerivativeContinuity() = true
 
-    override operator fun get(displacement: Double) = headingSpline[displacement / parametricCurve.length()]
+    override operator fun get(s: Double) = headingSpline[s / parametricCurve.length()]
 
-    override fun deriv(displacement: Double): Double {
+    override fun deriv(s: Double): Double {
         val len = parametricCurve.length()
-        return headingSpline.deriv(displacement / len) / len
+        return headingSpline.deriv(s / len) / len
     }
 
-    override fun secondDeriv(displacement: Double): Double {
+    override fun secondDeriv(s: Double): Double {
         val len = parametricCurve.length()
-        return headingSpline.secondDeriv(displacement / len) / (len * len)
+        return headingSpline.secondDeriv(s / len) / (len * len)
     }
 
 }

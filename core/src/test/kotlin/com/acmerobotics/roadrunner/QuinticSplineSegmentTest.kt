@@ -33,10 +33,10 @@ class QuinticSplineSegmentTest {
         val tangentAngleDeriv = s.map { splineSegment.tangentAngleDeriv(it) }
         val tangentAngleSecondDeriv = s.map { splineSegment.tangentAngleSecondDeriv(it) }
 
-        val t = s.map { splineSegment.displacementToParameter(it) }
-        val dt = s.map { splineSegment.parameterDeriv(it) }
-        val d2t = s.map { splineSegment.parameterSecondDeriv(it) }
-        val d3t = s.map { splineSegment.parameterThirdDeriv(it) }
+        val t = s.map { splineSegment.reparam(it) }
+        val dt = s.map { splineSegment.paramDeriv(it) }
+        val d2t = s.map { splineSegment.paramSecondDeriv(it) }
+        val d3t = s.map { splineSegment.paramThirdDeriv(it) }
 
         assertDerivEquals(x, dx, ds, 0.0001)
         assertDerivEquals(dx, d2x, ds, 0.0001)

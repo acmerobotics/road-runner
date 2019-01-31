@@ -29,19 +29,19 @@ abstract class HeadingInterpolator {
     abstract fun respectsDerivativeContinuity(): Boolean
 
     /**
-     * Returns the heading at the specified [displacement].
+     * Returns the heading at the specified [s].
      */
-    abstract operator fun get(displacement: Double): Double
+    abstract operator fun get(s: Double): Double
 
     /**
-     * Returns the heading derivative at the specified [displacement].
+     * Returns the heading derivative at the specified [s].
      */
-    abstract fun deriv(displacement: Double): Double
+    abstract fun deriv(s: Double): Double
 
     /**
-     * Returns the heading second derivative at the specified [displacement].
+     * Returns the heading second derivative at the specified [s].
      */
-    abstract fun secondDeriv(displacement: Double): Double
+    abstract fun secondDeriv(s: Double): Double
 
     /**
      * Returns the start heading.

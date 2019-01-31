@@ -64,8 +64,8 @@ class WiggleInterpolator(
     private fun internalSecondDeriv(t: Double) = 4.0 * Math.PI * Math.PI * amplitude / (period * period) *
             sin(2.0 * Math.PI * t / period)
 
-    override operator fun get(displacement: Double): Double {
-        val t = parametricCurve.displacementToParameter(displacement)
+    override operator fun get(s: Double): Double {
+        val t = parametricCurve.reparam(s)
 
         val heading = when {
             t < K * period -> beginSpline[t / (K * period)]
@@ -73,11 +73,11 @@ class WiggleInterpolator(
             else -> internalGet(t)
         }
 
-        return heading + baseInterpolator[displacement]
+        return heading + baseInterpolator[s]
     }
 
-    override fun deriv(displacement: Double): Double {
-        val t = parametricCurve.displacementToParameter(displacement)
+    override fun deriv(s: Double): Double {
+        val t = parametricCurve.reparam(s)
 
         val headingDeriv = when {
             t < K * period -> beginSpline.deriv(t / (K * period)) / (K * period)
@@ -85,11 +85,11 @@ class WiggleInterpolator(
             else -> internalDeriv(t)
         }
 
-        return headingDeriv * parametricCurve.parameterDeriv(t) + baseInterpolator.deriv(displacement)
+        return headingDeriv * parametricCurve.paramDeriv(t) + baseInterpolator.deriv(s)
     }
 
-    override fun secondDeriv(displacement: Double): Double {
-        val t = parametricCurve.displacementToParameter(displacement)
+    override fun secondDeriv(s: Double): Double {
+        val t = parametricCurve.reparam(s)
 
         val headingDeriv = when {
             t < K * period -> beginSpline.deriv(t / (K * period)) / (K * period)
@@ -103,7 +103,7 @@ class WiggleInterpolator(
             else -> internalSecondDeriv(t)
         }
 
-        return headingSecondDeriv * parametricCurve.parameterDeriv(t) * parametricCurve.parameterDeriv(t) +
-                headingDeriv * parametricCurve.parameterSecondDeriv(t) + baseInterpolator.secondDeriv(displacement)
+        return headingSecondDeriv * parametricCurve.paramDeriv(t) * parametricCurve.paramDeriv(t) +
+                headingDeriv * parametricCurve.paramSecondDeriv(t) + baseInterpolator.secondDeriv(s)
     }
 }
