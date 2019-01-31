@@ -1,6 +1,7 @@
 package com.acmerobotics.roadrunner.path
 
 import com.acmerobotics.roadrunner.Vector2d
+import com.acmerobotics.roadrunner.util.DoubleProgression
 
 /**
  * Parametric curve with two components (x and y).
@@ -120,6 +121,7 @@ abstract class ParametricCurve {
     abstract fun length(): Double
 
     internal abstract fun reparam(s: Double): Double
+    internal fun reparam(s: DoubleProgression): DoubleArray = s.map(::reparam).toDoubleArray()
 
     internal abstract fun internalGet(t: Double): Vector2d
     internal abstract fun internalDeriv(t: Double): Vector2d

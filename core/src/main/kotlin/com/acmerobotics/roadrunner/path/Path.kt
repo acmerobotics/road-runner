@@ -4,6 +4,8 @@ import com.acmerobotics.roadrunner.Pose2d
 import com.acmerobotics.roadrunner.Vector2d
 import com.acmerobotics.roadrunner.path.heading.HeadingInterpolator
 import com.acmerobotics.roadrunner.path.heading.TangentInterpolator
+import com.acmerobotics.roadrunner.util.DoubleProgression
+import com.acmerobotics.roadrunner.util.minus
 import org.apache.commons.math3.exception.ConvergenceException
 import org.apache.commons.math3.fitting.leastsquares.LeastSquaresBuilder
 import org.apache.commons.math3.fitting.leastsquares.LevenbergMarquardtOptimizer
@@ -11,7 +13,6 @@ import org.apache.commons.math3.linear.ArrayRealVector
 import org.apache.commons.math3.linear.MatrixUtils
 import org.apache.commons.math3.linear.RealMatrix
 import org.apache.commons.math3.linear.RealVector
-
 
 /**
  * Path composed of a list of parametric curves and heading interpolators.
@@ -104,7 +105,7 @@ class Path @JvmOverloads constructor(
         return Pose2d(finalVector, interpolators.last().end())
     }
 
-    internal fun reparam(s: Double): Double {
+    fun reparam(s: Double): Double {
         var remainingDisplacement = s
         for (i in parametricCurves.indices) {
             val parametricCurve = parametricCurves[i]
@@ -114,6 +115,26 @@ class Path @JvmOverloads constructor(
             remainingDisplacement -= parametricCurve.length()
         }
         return 1.0
+    }
+
+    fun reparam(s: DoubleProgression): DoubleArray {
+        val t = mutableListOf<Double>()
+        var remainingDisplacement = s
+        for (i in parametricCurves.indices) {
+            val parametricCurve = parametricCurves[i]
+            val splitDisplacement =
+                remainingDisplacement.split(parametricCurve.length())
+            val segmentDisplacement = if (i == parametricCurves.lastIndex) {
+                remainingDisplacement
+            } else {
+                splitDisplacement.first
+            }
+            if (!segmentDisplacement.isEmpty()) {
+                t += segmentReparam(i, segmentDisplacement).toMutableList()
+            }
+            remainingDisplacement = splitDisplacement.second - parametricCurve.length()
+        }
+        return t.toDoubleArray()
     }
 
     private fun segmentGet(i: Int, s: Double, t: Double): Pose2d {
@@ -168,6 +189,16 @@ class Path @JvmOverloads constructor(
     }
 
     private fun segmentReparam(i: Int, s: Double): Double {
+        val parametricCurve = parametricCurves[i]
+        val reversed = reversed[i]
+        return if (reversed) {
+            parametricCurve.reparam(parametricCurve.length() - s)
+        } else {
+            parametricCurve.reparam(s)
+        }
+    }
+
+    private fun segmentReparam(i: Int, s: DoubleProgression): DoubleArray {
         val parametricCurve = parametricCurves[i]
         val reversed = reversed[i]
         return if (reversed) {

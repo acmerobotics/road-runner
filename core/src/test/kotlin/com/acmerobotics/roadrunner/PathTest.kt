@@ -3,8 +3,8 @@ package com.acmerobotics.roadrunner
 import com.acmerobotics.roadrunner.TestUtil.assertDerivEquals
 import com.acmerobotics.roadrunner.path.Path
 import com.acmerobotics.roadrunner.path.QuinticSplineSegment
-import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
-import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
+import com.acmerobotics.roadrunner.util.DoubleProgression
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 
@@ -44,9 +44,22 @@ class PathTest {
     }
 
     @Test
-    fun test() {
-        println(TrajectoryBuilder(Pose2d(10.0, 20.0, 0.0), DriveConstraints(10.0, 10.0, Math.PI / 2, Math.PI / 2))
-                .splineTo(Pose2d(0.0, 23.0, -Math.PI / 2))
-                .build()[0.0])
+    fun testProgressionParam() {
+        val path = Path(listOf(
+            QuinticSplineSegment(
+                QuinticSplineSegment.Waypoint(0.0, 0.0, 20.0, 40.0),
+                QuinticSplineSegment.Waypoint(45.0, 35.0, 60.0, 10.0)
+            ), QuinticSplineSegment(
+                QuinticSplineSegment.Waypoint(45.0, 35.0, 60.0, 10.0),
+                QuinticSplineSegment.Waypoint(55.0, 70.0, -20.0, 30.0)
+            )
+        ))
+
+        val dispProg = DoubleProgression(0.0, path.length(), 5.0)
+        val indiv = dispProg.map(path::reparam)
+        val seq = path.reparam(dispProg).toList()
+        indiv.zip(seq).forEach { (a, b) ->
+            assertEquals(a, b, 1e-6)
+        }
     }
 }
