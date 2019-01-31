@@ -56,14 +56,15 @@ class Path @JvmOverloads constructor(
     /**
      * Returns the pose [s] units along the path.
      */
-    operator fun get(s: Double): Pose2d {
-        var remainings = s
+    @JvmOverloads
+    operator fun get(s: Double, t: Double = reparam(s)): Pose2d {
+        var remainingDisplacement = s
         for (i in parametricCurves.indices) {
             val parametricCurve = parametricCurves[i]
-            if (remainings <= parametricCurve.length()) {
-                return segmentGet(i, remainings)
+            if (remainingDisplacement <= parametricCurve.length()) {
+                return segmentGet(i, remainingDisplacement, t)
             }
-            remainings -= parametricCurve.length()
+            remainingDisplacement -= parametricCurve.length()
         }
         val finalVector = parametricCurves.lastOrNull()?.end() ?: return Pose2d()
         return Pose2d(finalVector, interpolators.last().end())
@@ -72,14 +73,15 @@ class Path @JvmOverloads constructor(
     /**
      * Returns the pose derivative [s] units along the path.
      */
-    fun deriv(s: Double): Pose2d {
-        var remainings = s
+    @JvmOverloads
+    fun deriv(s: Double, t: Double = reparam(s)): Pose2d {
+        var remainingDisplacement = s
         for (i in parametricCurves.indices) {
             val parametricCurve = parametricCurves[i]
-            if (remainings <= parametricCurve.length()) {
-                return segmentDeriv(i, remainings)
+            if (remainingDisplacement <= parametricCurve.length()) {
+                return segmentDeriv(i, remainingDisplacement, t)
             }
-            remainings -= parametricCurve.length()
+            remainingDisplacement -= parametricCurve.length()
         }
         val finalVector = parametricCurves.lastOrNull()?.end() ?: return Pose2d()
         return Pose2d(finalVector, interpolators.last().end())
@@ -88,68 +90,91 @@ class Path @JvmOverloads constructor(
     /**
      * Returns the pose second derivative [s] units along the path.
      */
-    fun secondDeriv(s: Double): Pose2d {
-        var remainings = s
+    @JvmOverloads
+    fun secondDeriv(s: Double, t: Double = reparam(s)): Pose2d {
+        var remainingDisplacement = s
         for (i in parametricCurves.indices) {
             val parametricCurve = parametricCurves[i]
-            if (remainings <= parametricCurve.length()) {
-                return segmentSecondDeriv(i, remainings)
+            if (remainingDisplacement <= parametricCurve.length()) {
+                return segmentSecondDeriv(i, remainingDisplacement, t)
             }
-            remainings -= parametricCurve.length()
+            remainingDisplacement -= parametricCurve.length()
         }
         val finalVector = parametricCurves.lastOrNull()?.end() ?: return Pose2d()
         return Pose2d(finalVector, interpolators.last().end())
     }
 
-    private fun segmentGet(i: Int, s: Double): Pose2d {
+    internal fun reparam(s: Double): Double {
+        var remainingDisplacement = s
+        for (i in parametricCurves.indices) {
+            val parametricCurve = parametricCurves[i]
+            if (remainingDisplacement <= parametricCurve.length()) {
+                return segmentReparam(i, remainingDisplacement)
+            }
+            remainingDisplacement -= parametricCurve.length()
+        }
+        return 1.0
+    }
+
+    private fun segmentGet(i: Int, s: Double, t: Double): Pose2d {
         val parametricCurve = parametricCurves[i]
         val interpolator = interpolators[i]
         val reversed = reversed[i]
         val point = if (reversed) {
-            parametricCurve[parametricCurve.length() - s]
+            parametricCurve[parametricCurve.length() - s, t]
         } else {
-            parametricCurve[s]
+            parametricCurve[s, t]
         }
         val heading = if (reversed) {
-            interpolator[parametricCurve.length() - s]
+            interpolator[parametricCurve.length() - s, t]
         } else {
-            interpolator[s]
+            interpolator[s, t]
         }
         return Pose2d(point.x, point.y, heading)
     }
 
-    private fun segmentDeriv(i: Int, s: Double): Pose2d {
+    private fun segmentDeriv(i: Int, s: Double, t: Double): Pose2d {
         val parametricCurve = parametricCurves[i]
         val interpolator = interpolators[i]
         val reversed = reversed[i]
         val deriv = if (reversed) {
-            -parametricCurve.deriv(parametricCurve.length() - s)
+            -parametricCurve.deriv(parametricCurve.length() - s, t)
         } else {
-            parametricCurve.deriv(s)
+            parametricCurve.deriv(s, t)
         }
         val headingDeriv = if (reversed) {
-            -interpolator.deriv(parametricCurve.length() - s)
+            -interpolator.deriv(parametricCurve.length() - s, t)
         } else {
-            interpolator.deriv(s)
+            interpolator.deriv(s, t)
         }
         return Pose2d(deriv.x, deriv.y, headingDeriv)
     }
 
-    private fun segmentSecondDeriv(i: Int, s: Double): Pose2d {
+    private fun segmentSecondDeriv(i: Int, s: Double, t: Double): Pose2d {
         val parametricCurve = parametricCurves[i]
         val interpolator = interpolators[i]
         val reversed = reversed[i]
         val secondDeriv = if (reversed) {
-            parametricCurve.secondDeriv(parametricCurve.length() - s)
+            parametricCurve.secondDeriv(parametricCurve.length() - s, t)
         } else {
-            parametricCurve.secondDeriv(s)
+            parametricCurve.secondDeriv(s, t)
         }
         val headingSecondDeriv = if (reversed) {
-            interpolator.secondDeriv(parametricCurve.length() - s)
+            interpolator.secondDeriv(parametricCurve.length() - s, t)
         } else {
-            interpolator.secondDeriv(s)
+            interpolator.secondDeriv(s, t)
         }
         return Pose2d(secondDeriv.x, secondDeriv.y, headingSecondDeriv)
+    }
+
+    private fun segmentReparam(i: Int, s: Double): Double {
+        val parametricCurve = parametricCurves[i]
+        val reversed = reversed[i]
+        return if (reversed) {
+            parametricCurve.reparam(parametricCurve.length() - s)
+        } else {
+            parametricCurve.reparam(s)
+        }
     }
 
     /**
