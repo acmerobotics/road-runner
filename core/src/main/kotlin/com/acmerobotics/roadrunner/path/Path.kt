@@ -105,7 +105,7 @@ class Path @JvmOverloads constructor(
         return Pose2d(finalVector, interpolators.last().end())
     }
 
-    fun reparam(s: Double): Double {
+    internal fun reparam(s: Double): Double {
         var remainingDisplacement = s
         for (i in parametricCurves.indices) {
             val parametricCurve = parametricCurves[i]
@@ -117,8 +117,9 @@ class Path @JvmOverloads constructor(
         return 1.0
     }
 
-    fun reparam(s: DoubleProgression): DoubleArray {
-        val t = mutableListOf<Double>()
+    internal fun reparam(s: DoubleProgression): DoubleArray {
+        val t = DoubleArray(s.items())
+        var offset = 0
         var remainingDisplacement = s
         for (i in parametricCurves.indices) {
             val parametricCurve = parametricCurves[i]
@@ -130,11 +131,12 @@ class Path @JvmOverloads constructor(
                 splitDisplacement.first
             }
             if (!segmentDisplacement.isEmpty()) {
-                t += segmentReparam(i, segmentDisplacement).toMutableList()
+                segmentReparam(i, segmentDisplacement).copyInto(t, offset, 0)
+                offset += segmentDisplacement.items()
             }
             remainingDisplacement = splitDisplacement.second - parametricCurve.length()
         }
-        return t.toDoubleArray()
+        return t
     }
 
     private fun segmentGet(i: Int, s: Double, t: Double): Pose2d {

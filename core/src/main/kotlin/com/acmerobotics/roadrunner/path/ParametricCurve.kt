@@ -121,7 +121,7 @@ abstract class ParametricCurve {
     abstract fun length(): Double
 
     internal abstract fun reparam(s: Double): Double
-    internal fun reparam(s: DoubleProgression): DoubleArray = s.map(::reparam).toDoubleArray()
+    internal open fun reparam(s: DoubleProgression): DoubleArray = s.map(::reparam).toDoubleArray()
 
     internal abstract fun internalGet(t: Double): Vector2d
     internal abstract fun internalDeriv(t: Double): Vector2d

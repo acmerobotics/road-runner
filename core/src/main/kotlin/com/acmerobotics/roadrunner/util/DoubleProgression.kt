@@ -38,13 +38,21 @@ class DoubleProgression(
 
     override fun iterator() = IteratorImpl(range)
 
+    operator fun contains(query: Double) = query in start..end
+
     fun split(sep: Double): Pair<DoubleProgression, DoubleProgression> {
-        val intSep = floor((sep - start) / step)
-        return DoubleProgression(start, start + intSep * step, step) to
-            DoubleProgression(start + (intSep + 1) * step, end, step)
+        return if (sep in this) {
+            val intSep = floor((sep - start) / step)
+            DoubleProgression(start, start + intSep * step, step) to
+                DoubleProgression(start + (intSep + 1) * step, end, step)
+        } else {
+            this to DoubleProgression(0.0, -1.0, step)
+        }
     }
 
     override fun toString() = "DoubleProgression[$start, $end, $step]"
+
+    fun items() = range.last - range.first + 1
 }
 
 operator fun Double.plus(progression: DoubleProgression) = progression + this
