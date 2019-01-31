@@ -40,15 +40,15 @@ class WiggleInterpolator(
                 0.0,
                 0.0,
                 0.0,
-                internalGet(t1),
-                internalDeriv(t1) * (K * period),
-                internalSecondDeriv(t1) * (K * K * period * period)
+                waveGet(t1),
+                waveDeriv(t1) * (K * period),
+                waveSecondDeriv(t1) * (K * K * period * period)
         )
 
         endSpline = QuinticPolynomial(
-                internalGet(t2),
-                internalDeriv(t2) * (1 - K * period),
-                internalSecondDeriv(t2) * ((1 - K * period) * (1 - K * period)),
+                waveGet(t2),
+                waveDeriv(t2) * (1 - K * period),
+                waveSecondDeriv(t2) * ((1 - K * period) * (1 - K * period)),
                 0.0,
                 0.0,
                 0.0
@@ -57,53 +57,47 @@ class WiggleInterpolator(
 
     override fun respectsDerivativeContinuity() = baseInterpolator.respectsDerivativeContinuity()
 
-    private fun internalGet(t: Double) = amplitude * sin(2.0 * Math.PI * t / period)
+    private fun waveGet(t: Double) = amplitude * sin(2.0 * Math.PI * t / period)
 
-    private fun internalDeriv(t: Double) = 2.0 * Math.PI * amplitude / period * cos(2.0 * Math.PI * t / period)
+    private fun waveDeriv(t: Double) = 2.0 * Math.PI * amplitude / period * cos(2.0 * Math.PI * t / period)
 
-    private fun internalSecondDeriv(t: Double) = 4.0 * Math.PI * Math.PI * amplitude / (period * period) *
+    private fun waveSecondDeriv(t: Double) = 4.0 * Math.PI * Math.PI * amplitude / (period * period) *
             sin(2.0 * Math.PI * t / period)
 
-    override operator fun get(s: Double): Double {
-        val t = parametricCurve.reparam(s)
-
+    override fun internalGet(s: Double, t: Double): Double {
         val heading = when {
             t < K * period -> beginSpline[t / (K * period)]
             t > (1.0 - K * period) -> endSpline[t / (1 - K * period) - 1.0]
-            else -> internalGet(t)
+            else -> waveGet(t)
         }
 
-        return heading + baseInterpolator[s]
+        return heading + baseInterpolator[s, t]
     }
 
-    override fun deriv(s: Double): Double {
-        val t = parametricCurve.reparam(s)
-
+    override fun internalDeriv(s: Double, t: Double): Double {
         val headingDeriv = when {
             t < K * period -> beginSpline.deriv(t / (K * period)) / (K * period)
             t > (1.0 - K * period) -> endSpline.deriv(t / (1 - K * period) - 1.0) / (1 - K * period)
-            else -> internalDeriv(t)
+            else -> waveDeriv(t)
         }
 
-        return headingDeriv * parametricCurve.paramDeriv(t) + baseInterpolator.deriv(s)
+        return headingDeriv * parametricCurve.paramDeriv(t) + baseInterpolator.deriv(s, t)
     }
 
-    override fun secondDeriv(s: Double): Double {
-        val t = parametricCurve.reparam(s)
-
+    override fun internalSecondDeriv(s: Double, t: Double): Double {
         val headingDeriv = when {
             t < K * period -> beginSpline.deriv(t / (K * period)) / (K * period)
             t > (1.0 - K * period) -> endSpline.deriv(t / (1 - K * period) - 1.0) / (1 - K * period)
-            else -> internalDeriv(t)
+            else -> waveDeriv(t)
         }
 
         val headingSecondDeriv = when {
             t < K * period -> beginSpline.secondDeriv(t / (K * period)) / (K * K * period * period)
             t > (1.0 - K * period) -> endSpline.secondDeriv(t / (1 - K * period) - 1.0) / ((1 - K * period) * (1 - K * period))
-            else -> internalSecondDeriv(t)
+            else -> waveSecondDeriv(t)
         }
 
         return headingSecondDeriv * parametricCurve.paramDeriv(t) * parametricCurve.paramDeriv(t) +
-                headingDeriv * parametricCurve.paramSecondDeriv(t) + baseInterpolator.secondDeriv(s)
+                headingDeriv * parametricCurve.paramSecondDeriv(t) + baseInterpolator.secondDeriv(s, t)
     }
 }

@@ -8,10 +8,10 @@ package com.acmerobotics.roadrunner.path.heading
 class ConstantInterpolator(val heading: Double) : HeadingInterpolator() {
     override fun respectsDerivativeContinuity() = false
 
-    override fun get(s: Double) = heading
+    override fun internalGet(s: Double, t: Double): Double = heading
 
-    override fun deriv(s: Double) = 0.0
+    override fun internalDeriv(s: Double, t: Double) = 0.0
 
-    override fun secondDeriv(s: Double) = 0.0
+    override fun internalSecondDeriv(s: Double, t: Double) = 0.0
 
 }

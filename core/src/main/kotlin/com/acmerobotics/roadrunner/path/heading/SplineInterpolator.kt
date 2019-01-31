@@ -24,24 +24,24 @@ class SplineInterpolator(private val startHeading: Double, private val endHeadin
 
         headingSpline = QuinticPolynomial(
                 startHeading,
-                parametricCurve.tangentAngleDeriv(0.0) * len,
-                parametricCurve.tangentAngleSecondDeriv(0.0) * len * len,
+                parametricCurve.tangentAngleDeriv(0.0, 0.0) * len,
+                parametricCurve.tangentAngleSecondDeriv(0.0, 0.0) * len * len,
                 endHeading,
-                parametricCurve.tangentAngleDeriv(len) * len,
-                parametricCurve.tangentAngleSecondDeriv(len) * len * len
+                parametricCurve.tangentAngleDeriv(len, 1.0) * len,
+                parametricCurve.tangentAngleSecondDeriv(len, 1.0) * len * len
         )
     }
 
     override fun respectsDerivativeContinuity() = true
 
-    override operator fun get(s: Double) = headingSpline[s / parametricCurve.length()]
+    override fun internalGet(s: Double, t: Double) = headingSpline[s / parametricCurve.length()]
 
-    override fun deriv(s: Double): Double {
+    override fun internalDeriv(s: Double, t: Double): Double {
         val len = parametricCurve.length()
         return headingSpline.deriv(s / len) / len
     }
 
-    override fun secondDeriv(s: Double): Double {
+    override fun internalSecondDeriv(s: Double, t: Double): Double {
         val len = parametricCurve.length()
         return headingSpline.secondDeriv(s / len) / (len * len)
     }

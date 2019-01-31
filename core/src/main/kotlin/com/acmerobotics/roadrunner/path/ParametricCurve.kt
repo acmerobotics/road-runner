@@ -10,21 +10,20 @@ abstract class ParametricCurve {
     /**
      * Returns the vector [s] units along the curve.
      */
-    operator fun get(s: Double) = internalGet(reparam(s))
+    @JvmOverloads
+    operator fun get(s: Double, t: Double = reparam(s)) = internalGet(t)
 
     /**
      * Returns the derivative [s] units along the curve.
      */
-    fun deriv(s: Double): Vector2d {
-        val t = reparam(s)
-        return internalDeriv(t) * paramDeriv(t)
-    }
+    @JvmOverloads
+    fun deriv(s: Double, t: Double = reparam(s)) = internalDeriv(t) * paramDeriv(t)
 
     /**
      * Returns the second derivative [s] units along the curve.
      */
-    fun secondDeriv(s: Double): Vector2d {
-        val t = reparam(s)
+    @JvmOverloads
+    fun secondDeriv(s: Double, t: Double = reparam(s)): Vector2d {
         val deriv = internalDeriv(t)
         val secondDeriv = internalSecondDeriv(t)
         val splineParameterDeriv = paramDeriv(t)
@@ -36,8 +35,8 @@ abstract class ParametricCurve {
     /**
      * Returns the third derivative [s] units along the curve.
      */
-    fun thirdDeriv(s: Double): Vector2d {
-        val t = reparam(s)
+    @JvmOverloads
+    fun thirdDeriv(s: Double, t: Double = reparam(s)): Vector2d {
         val deriv = internalDeriv(t)
         val secondDeriv = internalSecondDeriv(t)
         val thirdDeriv = internalThirdDeriv(t)
@@ -52,63 +51,66 @@ abstract class ParametricCurve {
     /**
      * Returns the start vector.
      */
-    fun start() = get(0.0)
+    fun start() = get(0.0, 0.0)
 
     /**
      * Returns the start derivative.
      */
-    fun startDeriv() = deriv(0.0)
+    fun startDeriv() = deriv(0.0, 0.0)
 
     /**
      * Returns the start second derivative.
      */
-    fun startSecondDeriv() = secondDeriv(0.0)
+    fun startSecondDeriv() = secondDeriv(0.0, 0.0)
 
     /**
      * Returns the start third derivative.
      */
-    fun startThirdDeriv() = thirdDeriv(0.0)
+    fun startThirdDeriv() = thirdDeriv(0.0, 0.0)
 
     /**
      * Returns the end vector.
      */
-    fun end() = get(length())
+    fun end() = get(length(), 1.0)
 
     /**
      * Returns the end derivative.
      */
-    fun endDeriv() = deriv(length())
+    fun endDeriv() = deriv(length(), 1.0)
 
     /**
      * Returns the end second derivative.
      */
-    fun endSecondDeriv() = secondDeriv(length())
+    fun endSecondDeriv() = secondDeriv(length(), 1.0)
 
     /**
      * Returns the end third derivative.
      */
-    fun endThirdDeriv() = thirdDeriv(length())
+    fun endThirdDeriv() = thirdDeriv(length(), 1.0)
 
     /**
      * Returns the angle of the tangent line [s] units along the curve.
      */
-    fun tangentAngle(s: Double) = deriv(s).angle()
+    @JvmOverloads
+    fun tangentAngle(s: Double, t: Double = reparam(s)) = deriv(s, t).angle()
 
     /**
      * Returns the derivative of the tangent angle [s] units along the curve.
      */
-    fun tangentAngleDeriv(s: Double): Double {
-        val deriv = deriv(s)
-        val secondDeriv = secondDeriv(s)
+    @JvmOverloads
+    fun tangentAngleDeriv(s: Double, t: Double = reparam(s)): Double {
+        val deriv = deriv(s, t)
+        val secondDeriv = secondDeriv(s, t)
         return deriv.x * secondDeriv.y - deriv.y * secondDeriv.x
     }
 
     /**
      * Returns the second derivative of the tangent angle [s] units along the curve.
      */
-    fun tangentAngleSecondDeriv(s: Double): Double {
-        val deriv = deriv(s)
-        val thirdDeriv = thirdDeriv(s)
+    @JvmOverloads
+    fun tangentAngleSecondDeriv(s: Double, t: Double = reparam(s)): Double {
+        val deriv = deriv(s, t)
+        val thirdDeriv = thirdDeriv(s, t)
         return deriv.x * thirdDeriv.y - deriv.y * thirdDeriv.x
     }
 
@@ -117,12 +119,13 @@ abstract class ParametricCurve {
      */
     abstract fun length(): Double
 
+    internal abstract fun reparam(s: Double): Double
+
     internal abstract fun internalGet(t: Double): Vector2d
     internal abstract fun internalDeriv(t: Double): Vector2d
     internal abstract fun internalSecondDeriv(t: Double): Vector2d
     internal abstract fun internalThirdDeriv(t: Double): Vector2d
 
-    internal abstract fun reparam(s: Double): Double
     internal abstract fun paramDeriv(t: Double): Double
     internal abstract fun paramSecondDeriv(t: Double): Double
     internal abstract fun paramThirdDeriv(t: Double): Double

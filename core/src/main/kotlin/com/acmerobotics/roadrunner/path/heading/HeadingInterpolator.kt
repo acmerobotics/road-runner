@@ -31,45 +31,52 @@ abstract class HeadingInterpolator {
     /**
      * Returns the heading at the specified [s].
      */
-    abstract operator fun get(s: Double): Double
+    @JvmOverloads
+    operator fun get(s: Double, t: Double = parametricCurve.reparam(s)) = internalGet(s, t)
 
     /**
      * Returns the heading derivative at the specified [s].
      */
-    abstract fun deriv(s: Double): Double
+    @JvmOverloads
+    fun deriv(s: Double, t: Double = parametricCurve.reparam(s)) = internalDeriv(s, t)
 
     /**
      * Returns the heading second derivative at the specified [s].
      */
-    abstract fun secondDeriv(s: Double): Double
+    @JvmOverloads
+    fun secondDeriv(s: Double, t: Double = parametricCurve.reparam(s)) = internalSecondDeriv(s, t)
 
     /**
      * Returns the start heading.
      */
-    fun start() = get(0.0)
+    fun start() = get(0.0, 0.0)
 
     /**
      * Returns the start heading derivative.
      */
-    fun startDeriv() = deriv(0.0)
+    fun startDeriv() = deriv(0.0, 0.0)
 
     /**
      * Returns the start heading second derivative.
      */
-    fun startSecondDeriv() = secondDeriv(0.0)
+    fun startSecondDeriv() = secondDeriv(0.0, 0.0)
 
     /**
      * Returns the end heading.
      */
-    fun end() = get(parametricCurve.length())
+    fun end() = get(parametricCurve.length(), 1.0)
 
     /**
      * Returns the end heading derivative.
      */
-    fun endDeriv() = deriv(parametricCurve.length())
+    fun endDeriv() = deriv(parametricCurve.length(), 1.0)
 
     /**
      * Returns the end heading second derivative.
      */
-    fun endSecondDeriv() = secondDeriv(parametricCurve.length())
+    fun endSecondDeriv() = secondDeriv(parametricCurve.length(), 1.0)
+
+    protected abstract fun internalGet(s: Double, t: Double): Double
+    protected abstract fun internalDeriv(s: Double, t: Double): Double
+    protected abstract fun internalSecondDeriv(s: Double, t: Double): Double
 }
