@@ -57,7 +57,7 @@ class MainPanel : JPanel() {
     private fun updateTrajectory(poses: List<Pose2d>, constraints: DriveConstraints, resolution: Double) {
         this.poses = poses
         this.constraints = constraints
-        this.resolution = max(MIN_RESOLUTION, min(MAX_RESOLUTION, resolution))
+        this.resolution = min(MIN_RESOLUTION, max(MAX_RESOLUTION, resolution))
 
         val trajectory = TrajectoryConfig(this.poses, this.constraints, this.resolution).toTrajectory()
 
