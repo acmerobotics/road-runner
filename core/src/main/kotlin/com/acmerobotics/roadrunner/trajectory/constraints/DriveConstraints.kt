@@ -1,6 +1,7 @@
 package com.acmerobotics.roadrunner.trajectory.constraints
 
 import com.acmerobotics.roadrunner.Pose2d
+import com.acmerobotics.roadrunner.profile.SimpleMotionConstraints
 import kotlin.math.abs
 
 /**
@@ -19,15 +20,13 @@ open class DriveConstraints(
         @JvmField var maximumAngularVelocity: Double,
         @JvmField var maximumAngularAcceleration: Double
 ) : TrajectoryConstraints {
-    override fun maximumVelocity(pose: Pose2d, poseDeriv: Pose2d, poseSecondDeriv: Pose2d): Double {
+    override fun get(pose: Pose2d, poseDeriv: Pose2d, poseSecondDeriv: Pose2d): SimpleMotionConstraints {
         val maximumVelocities = mutableListOf(maximumVelocity)
 
         if (abs(poseDeriv.heading) > 1e-6) {
             maximumVelocities.add(maximumAngularVelocity / Math.abs(poseDeriv.heading))
         }
 
-        return maximumVelocities.min() ?: 0.0
+        return SimpleMotionConstraints(maximumVelocities.min() ?: 0.0, maximumAcceleration)
     }
-
-    override fun maximumAcceleration(pose: Pose2d, poseDeriv: Pose2d, poseSecondDeriv: Pose2d) = maximumAcceleration
 }

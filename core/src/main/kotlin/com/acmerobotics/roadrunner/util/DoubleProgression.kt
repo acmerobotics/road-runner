@@ -2,6 +2,7 @@ package com.acmerobotics.roadrunner.util
 
 import kotlin.math.ceil
 import kotlin.math.floor
+import kotlin.math.roundToInt
 
 /**
  * A progression of values of type `Double`.
@@ -11,13 +12,25 @@ class DoubleProgression(
     val end: Double,
     val step: Double
 ): Iterable<Double> {
-    private val range: IntRange = IntRange(0, ceil((end - start) / step).toInt())
+    private val range: IntRange
+
+    init {
+        val steps = ((end - start) / step)
+        val diff = steps - floor(steps)
+        range = if (diff < step / 1e6) {
+            IntRange(0, steps.roundToInt())
+        } else {
+            IntRange(0, ceil(steps).toInt())
+        }
+    }
 
     operator fun plus(offset: Double) =
         DoubleProgression(start + offset, end + offset, step)
 
     operator fun minus(offset: Double) =
         DoubleProgression(start - offset, end - offset, step)
+
+    operator fun unaryMinus() = DoubleProgression(-start, -end, -step)
 
     inner class IteratorImpl(range: IntRange) : Iterator<Double> {
         private val iterator: Iterator<Int> = range.iterator()
@@ -58,4 +71,4 @@ class DoubleProgression(
 operator fun Double.plus(progression: DoubleProgression) = progression + this
 
 operator fun Double.minus(progression: DoubleProgression) =
-    DoubleProgression(this - progression.start, this - progression.end, progression.step)
+    DoubleProgression(this - progression.start, this - progression.end, -progression.step)

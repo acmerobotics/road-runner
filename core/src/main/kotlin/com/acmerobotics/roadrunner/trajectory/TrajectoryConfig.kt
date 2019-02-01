@@ -15,7 +15,7 @@ import kotlin.math.abs
 class TrajectoryConfig @JvmOverloads constructor(
         val poses: List<Pose2d>,
         val constraints: DriveConstraints,
-        val resolution: Int = 250
+        val resolution: Double = 0.25
 ) {
 
     /**

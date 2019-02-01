@@ -1,17 +1,17 @@
 package com.acmerobotics.roadrunner.profile
 
+import com.acmerobotics.roadrunner.util.DoubleProgression
+
 /**
  * Motion profile motion constraints.
  */
-interface MotionConstraints {
+abstract class MotionConstraints {
 
     /**
-     * Returns the maximum velocity [displacement] units along the profile.
+     * Returns the motion constraints [s] units along the profile.
      */
-    fun maximumVelocity(displacement: Double): Double
+    abstract operator fun get(s: Double): SimpleMotionConstraints
 
-    /**
-     * Returns the maximum acceleration [displacement] units along the profile.
-     */
-    fun maximumAcceleration(displacement: Double): Double
+    open operator fun get(s: DoubleProgression): List<SimpleMotionConstraints> = s.map(::get)
+
 }

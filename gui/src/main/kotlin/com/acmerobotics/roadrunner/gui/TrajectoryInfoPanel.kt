@@ -10,9 +10,9 @@ import javax.swing.SwingConstants
 class TrajectoryInfoPanel : JPanel() {
     private val durationLabel: JLabel
     private val resolutionTextField: JTextField
-    private var resolution = 0
+    private var resolution = 0.0
 
-    var onResolutionUpdateListener: ((Int) -> Unit)? = null
+    var onResolutionUpdateListener: ((Double) -> Unit)? = null
 
     init {
         val panel = JPanel()
@@ -24,7 +24,7 @@ class TrajectoryInfoPanel : JPanel() {
         panel.add(JLabel("Resolution:", SwingConstants.RIGHT))
         resolutionTextField = JTextField(resolution.toString(), SwingConstants.LEFT)
         resolutionTextField.addChangeListener {
-            resolution = resolutionTextField.text.toIntOrNull() ?: resolution
+            resolution = resolutionTextField.text.toDoubleOrNull() ?: resolution
             onResolutionUpdateListener?.invoke(resolution)
         }
         panel.add(resolutionTextField)
@@ -40,7 +40,7 @@ class TrajectoryInfoPanel : JPanel() {
         }
     }
 
-    fun updateResolution(resolution: Int) {
+    fun updateResolution(resolution: Double) {
         resolutionTextField.text = resolution.toString()
     }
 }

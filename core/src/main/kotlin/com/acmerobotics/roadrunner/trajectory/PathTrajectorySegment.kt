@@ -2,11 +2,9 @@ package com.acmerobotics.roadrunner.trajectory
 
 import com.acmerobotics.roadrunner.Pose2d
 import com.acmerobotics.roadrunner.path.Path
-import com.acmerobotics.roadrunner.profile.MotionConstraints
-import com.acmerobotics.roadrunner.profile.MotionProfile
-import com.acmerobotics.roadrunner.profile.MotionProfileGenerator
-import com.acmerobotics.roadrunner.profile.MotionState
+import com.acmerobotics.roadrunner.profile.*
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryConstraints
+import com.acmerobotics.roadrunner.util.DoubleProgression
 import kotlin.math.max
 import kotlin.math.min
 
@@ -20,7 +18,7 @@ import kotlin.math.min
 class PathTrajectorySegment @JvmOverloads constructor(
         val paths: List<Path> = emptyList(),
         val trajectoryConstraintsList: List<TrajectoryConstraints> = emptyList(),
-        resolution: Int = 250
+        resolution: Double = 0.25
 ) : TrajectorySegment {
     /**
      * @param path path
@@ -30,7 +28,7 @@ class PathTrajectorySegment @JvmOverloads constructor(
     @JvmOverloads constructor(
             path: Path,
             trajectoryConstraints: TrajectoryConstraints,
-            resolution: Int = 250
+            resolution: Double = 0.25
     ) : this(listOf(path), listOf(trajectoryConstraints), resolution)
 
     /**
@@ -40,37 +38,64 @@ class PathTrajectorySegment @JvmOverloads constructor(
 
     init {
         val length = paths.sumByDouble { it.length() }
-        val compositeConstraints = object : MotionConstraints {
-            override fun maximumVelocity(displacement: Double): Double {
-                var remainingDisplacement = max(0.0, min(displacement, length))
+        val compositeConstraints = object : MotionConstraints() {
+            override fun get(s: Double) = internalGet(s, reparam(s))
+
+            override fun get(s: DoubleProgression) =
+                s.zip(internalReparam(s).asIterable()).map { internalGet(it.first, it.second) }
+
+            private fun internalGet(s: Double, t: Double): SimpleMotionConstraints {
+                var remainingDisplacement = max(0.0, min(s, length))
                 for ((path, motionConstraints) in paths.zip(trajectoryConstraintsList)) {
                     if (remainingDisplacement <= path.length()) {
-                        return motionConstraints.maximumVelocity(
-                            path[remainingDisplacement],
-                            path.deriv(remainingDisplacement),
-                            path.secondDeriv(remainingDisplacement)
-                        )
+                        return motionConstraints[
+                            path[remainingDisplacement, t],
+                            path.deriv(remainingDisplacement, t),
+                            path.secondDeriv(remainingDisplacement, t)
+                        ]
                     }
                     remainingDisplacement -= path.length()
                 }
-                return trajectoryConstraintsList.last()
-                    .maximumVelocity(paths.last().end(), paths.last().endDeriv(), paths.last().endSecondDeriv())
+                return trajectoryConstraintsList.last()[paths.last().end(),
+                    paths.last().endDeriv(), paths.last().endSecondDeriv()]
             }
 
-            override fun maximumAcceleration(displacement: Double): Double {
-                var remainingDisplacement = max(0.0, min(displacement, length))
-                for ((path, motionConstraints) in paths.zip(trajectoryConstraintsList)) {
+            private fun reparam(s: Double): Double {
+                var remainingDisplacement = s
+                for (i in paths.indices) {
+                    val path = paths[i]
                     if (remainingDisplacement <= path.length()) {
-                        return motionConstraints.maximumAcceleration(
-                            path[remainingDisplacement],
-                            path.deriv(remainingDisplacement),
-                            path.secondDeriv(remainingDisplacement)
-                        )
+                        return path.reparam(remainingDisplacement)
                     }
                     remainingDisplacement -= path.length()
                 }
-                return trajectoryConstraintsList.last()
-                    .maximumAcceleration(paths.last().end(), paths.last().endDeriv(), paths.last().endSecondDeriv())
+                return if (paths.last().reversed.last()) {
+                    0.0
+                } else {
+                    1.0
+                }
+            }
+
+            private fun internalReparam(s: DoubleProgression): DoubleArray {
+                val t = DoubleArray(s.items())
+                var offset = 0
+                var remainingDisplacement = s
+                for (i in paths.indices) {
+                    val path = paths[i]
+                    val splitDisplacement =
+                        remainingDisplacement.split(path.length())
+                    val segmentDisplacement = if (i == paths.lastIndex) {
+                        remainingDisplacement
+                    } else {
+                        splitDisplacement.first
+                    }
+                    if (!segmentDisplacement.isEmpty()) {
+                        path.reparam(segmentDisplacement).copyInto(t, offset, 0)
+                        offset += segmentDisplacement.items()
+                    }
+                    remainingDisplacement = splitDisplacement.second - path.length()
+                }
+                return t
             }
         }
 

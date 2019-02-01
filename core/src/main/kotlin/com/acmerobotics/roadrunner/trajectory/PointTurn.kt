@@ -1,12 +1,9 @@
 package com.acmerobotics.roadrunner.trajectory
 
-import com.acmerobotics.roadrunner.util.Angle
 import com.acmerobotics.roadrunner.Pose2d
-import com.acmerobotics.roadrunner.profile.MotionConstraints
-import com.acmerobotics.roadrunner.profile.MotionProfile
-import com.acmerobotics.roadrunner.profile.MotionProfileGenerator
-import com.acmerobotics.roadrunner.profile.MotionState
+import com.acmerobotics.roadrunner.profile.*
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
+import com.acmerobotics.roadrunner.util.Angle
 
 /**
  * Point turn trajectory segment.
@@ -30,9 +27,11 @@ class PointTurn(val start: Pose2d, endHeading: Double, val constraints: DriveCon
         }
         val start = MotionState(0.0, 0.0, 0.0)
         val goal = MotionState(turnAngle, 0.0, 0.0)
-        profile = MotionProfileGenerator.generateMotionProfile(start, goal, object : MotionConstraints {
-            override fun maximumVelocity(displacement: Double) = constraints.maximumAngularVelocity
-            override fun maximumAcceleration(displacement: Double) = constraints.maximumAngularAcceleration
+        profile = MotionProfileGenerator.generateMotionProfile(start, goal, object : MotionConstraints() {
+            override fun get(s: Double) = SimpleMotionConstraints(
+                constraints.maximumAngularVelocity,
+                constraints.maximumAngularAcceleration
+            )
         })
     }
 

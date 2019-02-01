@@ -22,7 +22,7 @@ import com.acmerobotics.roadrunner.util.Angle
 class TrajectoryBuilder @JvmOverloads constructor(
         startPose: Pose2d,
         private val globalConstraints: DriveConstraints,
-        private val resolution: Int = 250
+        private val resolution: Double = 0.25
 ) {
     private var currentPose: Pose2d = startPose
     private val trajectorySegments = mutableListOf<TrajectorySegment>()

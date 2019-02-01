@@ -12,9 +12,9 @@ import kotlin.math.max
 import kotlin.math.min
 
 private val DEFAULT_CONSTRAINTS = DriveConstraints(25.0, 40.0, Math.toRadians(180.0), Math.toRadians(360.0))
-private const val DEFAULT_RESOLUTION = 250
-private const val MIN_RESOLUTION = 50
-private const val MAX_RESOLUTION = 250000
+private const val DEFAULT_RESOLUTION = 0.25
+private const val MIN_RESOLUTION = 5.0
+private const val MAX_RESOLUTION = 0.01
 
 class MainPanel : JPanel() {
 
@@ -54,7 +54,7 @@ class MainPanel : JPanel() {
         add(lowerTabbedPane)
     }
 
-    private fun updateTrajectory(poses: List<Pose2d>, constraints: DriveConstraints, resolution: Int) {
+    private fun updateTrajectory(poses: List<Pose2d>, constraints: DriveConstraints, resolution: Double) {
         this.poses = poses
         this.constraints = constraints
         this.resolution = max(MIN_RESOLUTION, min(MAX_RESOLUTION, resolution))

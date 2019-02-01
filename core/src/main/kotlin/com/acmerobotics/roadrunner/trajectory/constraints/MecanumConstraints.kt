@@ -3,6 +3,7 @@ package com.acmerobotics.roadrunner.trajectory.constraints
 import com.acmerobotics.roadrunner.Pose2d
 import com.acmerobotics.roadrunner.drive.Kinematics
 import com.acmerobotics.roadrunner.drive.MecanumKinematics
+import com.acmerobotics.roadrunner.profile.SimpleMotionConstraints
 import kotlin.math.abs
 import kotlin.math.min
 
@@ -23,13 +24,15 @@ open class MecanumConstraints @JvmOverloads constructor(
         baseConstraints.maximumAngularVelocity,
         baseConstraints.maximumAngularAcceleration
 ) {
-    override fun maximumVelocity(pose: Pose2d, poseDeriv: Pose2d, poseSecondDeriv: Pose2d): Double {
+    override operator fun get(pose: Pose2d, poseDeriv: Pose2d, poseSecondDeriv: Pose2d): SimpleMotionConstraints {
         val robotPoseDeriv = Kinematics.fieldToRobotPoseVelocity(pose, poseDeriv)
 
         val wheelVelocities = MecanumKinematics.robotToWheelVelocities(robotPoseDeriv, trackWidth, wheelBase)
         val maxTrajVel = wheelVelocities.map { maximumVelocity / it }.map(::abs).min() ?: 0.0
 
-        return min(super.maximumVelocity(pose, poseDeriv, poseSecondDeriv), maxTrajVel)
+        val superConstraints = super.get(pose, poseDeriv, poseSecondDeriv)
+
+        return SimpleMotionConstraints(min(superConstraints.maximumVelocity, maxTrajVel), superConstraints.maximumAcceleration)
     }
 
 }

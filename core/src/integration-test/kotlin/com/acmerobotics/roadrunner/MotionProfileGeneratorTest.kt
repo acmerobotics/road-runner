@@ -1,10 +1,7 @@
 package com.acmerobotics.roadrunner
 
 import com.acmerobotics.roadrunner.TestUtil.assertContinuous
-import com.acmerobotics.roadrunner.profile.MotionConstraints
-import com.acmerobotics.roadrunner.profile.MotionProfile
-import com.acmerobotics.roadrunner.profile.MotionProfileGenerator
-import com.acmerobotics.roadrunner.profile.MotionState
+import com.acmerobotics.roadrunner.profile.*
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -149,9 +146,10 @@ class MotionProfileGeneratorTest {
             MotionProfileGenerator.generateMotionProfile(
                 MotionState(0.0, 0.0, 0.0),
                 MotionState(10.0, 0.0, 0.0),
-                object : MotionConstraints {
-                    override fun maximumVelocity(displacement: Double) = pow(displacement - 5.0, 4.0) + 1.0
-                    override fun maximumAcceleration(displacement: Double) = 5.0
+                object : MotionConstraints() {
+                    override fun get(s: Double) = SimpleMotionConstraints(
+                        pow(s - 5.0, 4.0) + 1.0, 5.0
+                    )
                 }
             )
         )
@@ -166,9 +164,11 @@ class MotionProfileGeneratorTest {
             MotionProfileGenerator.generateMotionProfile(
                 MotionState(0.0, 0.0, 0.0),
                 MotionState(10.0, 0.0, 0.0),
-                object : MotionConstraints {
-                    override fun maximumVelocity(displacement: Double) = pow(displacement - 5.0, 4.0) + 1.0
-                    override fun maximumAcceleration(displacement: Double) = min(pow(displacement - 5.0, 4.0) + 1.0, 10.0)
+                object : MotionConstraints() {
+                    override fun get(s: Double) = SimpleMotionConstraints(
+                        pow(s - 5.0, 4.0) + 1.0,
+                        min(pow(s - 5.0, 4.0) + 1.0, 10.0)
+                    )
                 }
             )
         )
@@ -183,9 +183,11 @@ class MotionProfileGeneratorTest {
             MotionProfileGenerator.generateMotionProfile(
                 MotionState(10.0, 0.0, 0.0),
                 MotionState(0.0, 0.0, 0.0),
-                object : MotionConstraints {
-                    override fun maximumVelocity(displacement: Double) = pow(displacement - 5.0, 4.0) + 1.0
-                    override fun maximumAcceleration(displacement: Double) = min(pow(displacement - 5.0, 4.0) + 1.0, 10.0)
+                object : MotionConstraints() {
+                    override fun get(s: Double) = SimpleMotionConstraints(
+                        pow(s - 5.0, 4.0) + 1.0,
+                        min(pow(s - 5.0, 4.0) + 1.0, 10.0)
+                    )
                 }
             )
         )

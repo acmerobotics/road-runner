@@ -1,7 +1,9 @@
 package com.acmerobotics.roadrunner.profile
 
+import com.acmerobotics.roadrunner.util.DoubleProgression
 import com.acmerobotics.roadrunner.util.MathUtil.solveQuadratic
 import kotlin.math.abs
+import kotlin.math.ceil
 import kotlin.math.sqrt
 
 /**
@@ -299,7 +301,7 @@ object MotionProfileGenerator {
      * @param start start motion state
      * @param goal goal motion state
      * @param constraints motion constraints
-     * @param resolution number of constraint samples
+     * @param resolution separation between constraint samples
      */
     @JvmStatic
     @JvmOverloads
@@ -307,32 +309,33 @@ object MotionProfileGenerator {
         start: MotionState,
         goal: MotionState,
         constraints: MotionConstraints,
-        resolution: Int = 250
+        resolution: Double = 0.25
     ): MotionProfile {
         if (goal.x < start.x) {
             return generateMotionProfile(
                 start.flipped(),
                 goal.flipped(),
-                object : MotionConstraints {
-                    override fun maximumVelocity(displacement: Double) =
-                            constraints.maximumVelocity(-displacement)
-                    override fun maximumAcceleration(displacement: Double) =
-                            constraints.maximumAcceleration(-displacement)
+                object : MotionConstraints() {
+                    override fun get(s: Double) = constraints[-s]
+                    override fun get(s: DoubleProgression) = constraints[-s]
                 },
                 resolution
             ).flipped()
         }
 
         val length = goal.x - start.x
-        val dx = length / resolution
+        // dx is an adjusted resolution that fits nicely within length
+        val samples = ceil(length / resolution).toInt()
+        val dx = length / samples
+
+        val s = DoubleProgression(0.0, length, dx)
+        val constraintsList = constraints[s + start.x]
 
         // compute the forward states
         val forwardStates = forwardPass(
             MotionState(0.0, start.v, start.a),
-            { constraints.maximumVelocity(start.x + it) },
-            { constraints.maximumAcceleration(start.x + it) },
-            resolution,
-            dx
+            s,
+            constraintsList
         ).map { (motionState, dx) -> Pair(
             MotionState(
                 motionState.x + start.x,
@@ -344,11 +347,11 @@ object MotionProfileGenerator {
         // compute the backward states
         val backwardStates = forwardPass(
             MotionState(0.0, goal.v, goal.a),
-            { constraints.maximumVelocity(goal.x - it) },
-            { constraints.maximumAcceleration(goal.x - it) },
-            resolution,
-            dx
-        ).map { (motionState, dx) -> Pair(afterDisplacement(motionState, dx), dx) }.map { (motionState, dx) ->
+            s,
+            constraintsList.reversed()
+        ).map { (motionState, dx) ->
+            Pair(afterDisplacement(motionState, dx), dx)
+        }.map { (motionState, dx) ->
             Pair(
                 MotionState(
                     goal.x - motionState.x,
@@ -456,45 +459,46 @@ object MotionProfileGenerator {
     // on a segment-by-segment basis
     private fun forwardPass(
         start: MotionState,
-        maximumVelocity: (displacement: Double) -> Double,
-        maximumAcceleration: (displacement: Double) -> Double,
-        resolution: Int,
-        dx: Double
+        displacements: DoubleProgression,
+        constraints: List<SimpleMotionConstraints>
     ): List<Pair<MotionState, Double>> {
         val forwardStates = mutableListOf<Pair<MotionState, Double>>()
 
-        val displacements = (0 until resolution).map { it * dx + start.x }
+        val dx = displacements.step
 
         var lastState = start
-        for (displacement in displacements) {
-            // compute the segment constraints
-            val maxVel = maximumVelocity(displacement)
-            val maxAccel = maximumAcceleration(displacement)
+        displacements
+            .zip(constraints)
+            .dropLast(1)
+            .forEach { (displacement, constraint) ->
+                // compute the segment constraints
+                val maxVel = constraint.maximumVelocity
+                val maxAccel = constraint.maximumAcceleration
 
-            lastState = if (lastState.v >= maxVel) {
-                // the last velocity exceeds max vel so we just coast
-                val state = MotionState(displacement, maxVel, 0.0)
-                forwardStates.add(Pair(state, dx))
-                afterDisplacement(state, dx)
-            } else {
-                // compute the final velocity assuming max accel
-                val finalVel = sqrt(lastState.v * lastState.v + 2 * maxAccel * dx)
-                if (finalVel <= maxVel) {
-                    // we're still under max vel so we're good
-                    val state = MotionState(displacement, lastState.v, maxAccel)
+                lastState = if (lastState.v >= maxVel) {
+                    // the last velocity exceeds max vel so we just coast
+                    val state = MotionState(displacement, maxVel, 0.0)
                     forwardStates.add(Pair(state, dx))
                     afterDisplacement(state, dx)
                 } else {
-                    // we went over max vel so now we split the segment
-                    val accelDx = (maxVel * maxVel - lastState.v * lastState.v) / (2 * maxAccel)
-                    val accelState = MotionState(displacement, lastState.v, maxAccel)
-                    val coastState = MotionState(displacement + accelDx, maxVel, 0.0)
-                    forwardStates.add(Pair(accelState, accelDx))
-                    forwardStates.add(Pair(coastState, dx - accelDx))
-                    afterDisplacement(coastState, dx - accelDx)
+                    // compute the final velocity assuming max accel
+                    val finalVel = sqrt(lastState.v * lastState.v + 2 * maxAccel * dx)
+                    if (finalVel <= maxVel) {
+                        // we're still under max vel so we're good
+                        val state = MotionState(displacement, lastState.v, maxAccel)
+                        forwardStates.add(Pair(state, dx))
+                        afterDisplacement(state, dx)
+                    } else {
+                        // we went over max vel so now we split the segment
+                        val accelDx = (maxVel * maxVel - lastState.v * lastState.v) / (2 * maxAccel)
+                        val accelState = MotionState(displacement, lastState.v, maxAccel)
+                        val coastState = MotionState(displacement + accelDx, maxVel, 0.0)
+                        forwardStates.add(Pair(accelState, accelDx))
+                        forwardStates.add(Pair(coastState, dx - accelDx))
+                        afterDisplacement(coastState, dx - accelDx)
+                    }
                 }
             }
-        }
 
         return forwardStates
     }

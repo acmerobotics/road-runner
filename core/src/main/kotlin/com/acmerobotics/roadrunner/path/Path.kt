@@ -114,7 +114,11 @@ class Path @JvmOverloads constructor(
             }
             remainingDisplacement -= parametricCurve.length()
         }
-        return 1.0
+        return if (reversed.last()) {
+            0.0
+        } else {
+            1.0
+        }
     }
 
     internal fun reparam(s: DoubleProgression): DoubleArray {
