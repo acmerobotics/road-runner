@@ -1,0 +1,78 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>GuidingVectorField - core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">core</a>&nbsp;/&nbsp;<a href="../index.html">com.acmerobotics.roadrunner.followers</a>&nbsp;/&nbsp;<a href="./index.html">GuidingVectorField</a><br/>
+<br/>
+<h1>GuidingVectorField</h1>
+<code><span class="keyword">class </span><span class="identifier">GuidingVectorField</span></code>
+<p>Guiding vector field for effective path following described in section III, eq. (9) of
+<a href="https://arxiv.org/pdf/1610.04391.pdf">1610.04391.pdf</a>. Implementation note: 2D parametric curves are used to
+describe paths instead of implicit curves of the form f(x,y) = 0 as described in the paper (which dramatically
+affects the cross track error calculation).</p>
+<h3>Parameters</h3>
+<p><a name="path"></a>
+<code>path</code> - path to follow (interpolator is ignored)</p>
+<p><a name="kN"></a>
+<code>kN</code> - path normal weight (see eq. (9))</p>
+<p><a name="errorMapFunc"></a>
+<code>errorMapFunc</code> - custom error mapping (see eq. (4))</p>
+<h3>Types</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-g-v-f-result/index.html">GVFResult</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">GVFResult</span></code>
+<p>Container for the direction of the GVF and intermediate values used in its computation.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">GuidingVectorField</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.followers.GuidingVectorField$<init>(com.acmerobotics.roadrunner.path.Path, kotlin.Double, kotlin.Function1((kotlin.Double, )))/path">path</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.path/-path/index.html"><span class="identifier">Path</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.followers.GuidingVectorField$<init>(com.acmerobotics.roadrunner.path.Path, kotlin.Double, kotlin.Function1((kotlin.Double, )))/kN">kN</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.followers.GuidingVectorField$<init>(com.acmerobotics.roadrunner.path.Path, kotlin.Double, kotlin.Function1((kotlin.Double, )))/errorMapFunc">errorMapFunc</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a>&nbsp;<span class="symbol">=</span>&nbsp;{ it }<span class="symbol">)</span></code>
+<p>Guiding vector field for effective path following described in section III, eq. (9) of
+<a href="https://arxiv.org/pdf/1610.04391.pdf">1610.04391.pdf</a>. Implementation note: 2D parametric curves are used to
+describe paths instead of implicit curves of the form f(x,y) = 0 as described in the paper (which dramatically
+affects the cross track error calculation).</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="get.html">get</a></p>
+</td>
+<td>
+<code><span class="keyword">operator</span> <span class="keyword">fun </span><span class="identifier">get</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.followers.GuidingVectorField$get(kotlin.Double, kotlin.Double)/x">x</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.followers.GuidingVectorField$get(kotlin.Double, kotlin.Double)/y">y</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner/-vector2d/index.html"><span class="identifier">Vector2d</span></a></code>
+<p>Returns the normalized value of the vector field at the given point.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="get-extended.html">getExtended</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">getExtended</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.followers.GuidingVectorField$getExtended(kotlin.Double, kotlin.Double, kotlin.Double)/x">x</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.followers.GuidingVectorField$getExtended(kotlin.Double, kotlin.Double, kotlin.Double)/y">y</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.followers.GuidingVectorField$getExtended(kotlin.Double, kotlin.Double, kotlin.Double)/projectGuess">projectGuess</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a>&nbsp;<span class="symbol">=</span>&nbsp;path.length() / 2.0<span class="symbol">)</span><span class="symbol">: </span><a href="-g-v-f-result/index.html"><span class="identifier">GVFResult</span></a></code>
+<p>Returns the normalized value of the vector field at the given point along with useful intermediate computations.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

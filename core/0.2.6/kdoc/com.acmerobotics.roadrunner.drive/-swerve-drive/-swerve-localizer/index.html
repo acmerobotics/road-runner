@@ -1,0 +1,63 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>SwerveDrive.SwerveLocalizer - core</title>
+<link rel="stylesheet" href="../../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../../index.html">core</a>&nbsp;/&nbsp;<a href="../../index.html">com.acmerobotics.roadrunner.drive</a>&nbsp;/&nbsp;<a href="../index.html">SwerveDrive</a>&nbsp;/&nbsp;<a href="./index.html">SwerveLocalizer</a><br/>
+<br/>
+<h1>SwerveLocalizer</h1>
+<code><span class="keyword">class </span><span class="identifier">SwerveLocalizer</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../-localizer/index.html"><span class="identifier">Localizer</span></a></code>
+<p>Default localizer for swerve drives based on the drive encoder positions, module orientations, and (optionally) a
+heading sensor.</p>
+<h3>Parameters</h3>
+<p><a name="drive"></a>
+<code>drive</code> - drive</p>
+<p><a name="useExternalHeading"></a>
+<code>useExternalHeading</code> - use external heading provided by an external sensor (e.g., IMU, gyroscope)</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">SwerveLocalizer</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.drive.SwerveDrive.SwerveLocalizer$<init>(com.acmerobotics.roadrunner.drive.SwerveDrive, kotlin.Boolean)/drive">drive</span><span class="symbol">:</span>&nbsp;<a href="../index.html"><span class="identifier">SwerveDrive</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.drive.SwerveDrive.SwerveLocalizer$<init>(com.acmerobotics.roadrunner.drive.SwerveDrive, kotlin.Boolean)/useExternalHeading">useExternalHeading</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a>&nbsp;<span class="symbol">=</span>&nbsp;true<span class="symbol">)</span></code>
+<p>Default localizer for swerve drives based on the drive encoder positions, module orientations, and (optionally) a
+heading sensor.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="pose-estimate.html">poseEstimate</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">poseEstimate</span><span class="symbol">: </span><a href="../../../com.acmerobotics.roadrunner/-pose2d/index.html"><span class="identifier">Pose2d</span></a></code>
+<p>Current robot pose estimate.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="update.html">update</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">update</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Completes a single localization update.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>
