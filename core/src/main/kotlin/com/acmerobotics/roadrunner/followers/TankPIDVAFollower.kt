@@ -1,11 +1,10 @@
 package com.acmerobotics.roadrunner.followers
 
+import com.acmerobotics.roadrunner.DriveSignal
 import com.acmerobotics.roadrunner.Pose2d
 import com.acmerobotics.roadrunner.control.PIDCoefficients
 import com.acmerobotics.roadrunner.control.PIDFController
 import com.acmerobotics.roadrunner.drive.Kinematics
-import com.acmerobotics.roadrunner.drive.TankDrive
-import com.acmerobotics.roadrunner.drive.TankKinematics
 import com.acmerobotics.roadrunner.util.NanoClock
 
 /**
@@ -14,40 +13,25 @@ import com.acmerobotics.roadrunner.util.NanoClock
  * another feedback loop to minimize cross track (lateral) error via heading correction (overall, very similar to
  * [MecanumPIDVAFollower] except adjusted for the nonholonomic constraint). Feedforward is applied at the wheel level.
  *
- * @param drive tank drive instance
- * @param displacementCoeffs PID coefficients for the robot axial (x) controller
+ * @param longitudinalCoeffs PID coefficients for the robot longitudinal (x) controller
  * @param crossTrackCoeffs PID coefficients for the robot heading controller based on cross track error
- * @param kV feedforward velocity gain
- * @param kA feedforward acceleration gain
- * @param kStatic signed, additive feedforward constant (used to overcome static friction)
  * @param admissibleError admissible/satisfactory pose error at the end of each move
  * @param timeout max time to wait for the error to be admissible
  * @param clock clock
  */
 class TankPIDVAFollower @JvmOverloads constructor(
-        private val drive: TankDrive,
-        displacementCoeffs: PIDCoefficients,
-        crossTrackCoeffs: PIDCoefficients,
-        private val kV: Double,
-        private val kA: Double,
-        private val kStatic: Double,
-        admissibleError: Pose2d = Pose2d(),
-        timeout: Double = 0.0,
-        clock: NanoClock = NanoClock.system()
+    longitudinalCoeffs: PIDCoefficients,
+    crossTrackCoeffs: PIDCoefficients,
+    admissibleError: Pose2d = Pose2d(),
+    timeout: Double = 0.0,
+    clock: NanoClock = NanoClock.system()
 ) : TrajectoryFollower(admissibleError, timeout, clock) {
-    private val displacementController = PIDFController(displacementCoeffs)
+    private val displacementController = PIDFController(longitudinalCoeffs)
     private val crossTrackController = PIDFController(crossTrackCoeffs)
 
     override var lastError: Pose2d = Pose2d()
 
-    override fun update(currentPose: Pose2d) {
-        super.update(currentPose)
-
-        if (!isFollowing()) {
-            drive.setMotorPowers(0.0, 0.0)
-            return
-        }
-
+    override fun internalUpdate(currentPose: Pose2d): DriveSignal {
         val t = elapsedTime()
 
         val targetPose = trajectory[t]
@@ -69,13 +53,8 @@ class TankPIDVAFollower @JvmOverloads constructor(
 
         val correctedVelocity = targetRobotPoseVelocity + Pose2d(axialCorrection, 0.0, headingCorrection)
 
-        val wheelVelocities = TankKinematics.robotToWheelVelocities(correctedVelocity, drive.trackWidth)
-        val wheelAccelerations = TankKinematics.robotToWheelAccelerations(targetRobotPoseAcceleration, drive.trackWidth)
-
-        val motorPowers = Kinematics.calculateMotorFeedforward(wheelVelocities, wheelAccelerations, kV, kA, kStatic)
-
-        drive.setMotorPowers(motorPowers[0], motorPowers[1])
-
         lastError = poseError
+
+        return DriveSignal(correctedVelocity, targetRobotPoseAcceleration)
     }
 }

@@ -1,9 +1,8 @@
 package com.acmerobotics.roadrunner.followers
 
+import com.acmerobotics.roadrunner.DriveSignal
 import com.acmerobotics.roadrunner.Pose2d
 import com.acmerobotics.roadrunner.drive.Kinematics
-import com.acmerobotics.roadrunner.drive.TankDrive
-import com.acmerobotics.roadrunner.drive.TankKinematics
 import com.acmerobotics.roadrunner.util.NanoClock
 import kotlin.math.cos
 import kotlin.math.sin
@@ -24,26 +23,15 @@ import kotlin.math.sqrt
  * @param clock clock
  */
 class RamseteFollower @JvmOverloads constructor(
-        private val drive: TankDrive,
-        private val b: Double,
-        private val zeta: Double,
-        private val kV: Double,
-        private val kA: Double,
-        private val kStatic: Double,
-        admissibleError: Pose2d = Pose2d(),
-        timeout: Double = 0.0,
-        clock: NanoClock = NanoClock.system()
+    private val b: Double,
+    private val zeta: Double,
+    admissibleError: Pose2d = Pose2d(),
+    timeout: Double = 0.0,
+    clock: NanoClock = NanoClock.system()
 ) : TrajectoryFollower(admissibleError, timeout, clock) {
     override var lastError: Pose2d = Pose2d()
 
-    override fun update(currentPose: Pose2d) {
-        super.update(currentPose)
-
-        if (!isFollowing()) {
-            drive.setMotorPowers(0.0, 0.0)
-            return
-        }
-
+    override fun internalUpdate(currentPose: Pose2d): DriveSignal {
         val t = elapsedTime()
 
         val targetPose = trajectory[t]
@@ -70,13 +58,8 @@ class RamseteFollower @JvmOverloads constructor(
         // TODO: is Ramsete acceleration FF worth?
         val targetRobotPoseAcceleration = Pose2d()
 
-        val wheelVelocities = TankKinematics.robotToWheelVelocities(Pose2d(v, 0.0, omega), drive.trackWidth)
-        val wheelAccelerations = TankKinematics.robotToWheelAccelerations(targetRobotPoseAcceleration, drive.trackWidth)
-
-        val motorPowers = Kinematics.calculateMotorFeedforward(wheelVelocities, wheelAccelerations, kV, kA, kStatic)
-
-        drive.setMotorPowers(motorPowers[0], motorPowers[1])
-
         lastError = error
+
+        return DriveSignal(Pose2d(v, 0.0, omega), targetRobotPoseAcceleration)
     }
 }

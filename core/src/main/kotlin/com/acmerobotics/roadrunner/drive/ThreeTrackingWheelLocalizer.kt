@@ -2,7 +2,6 @@ package com.acmerobotics.roadrunner.drive
 
 import com.acmerobotics.roadrunner.Pose2d
 import com.acmerobotics.roadrunner.Vector2d
-import com.acmerobotics.roadrunner.util.NanoClock
 import org.apache.commons.math3.linear.Array2DRowRealMatrix
 import org.apache.commons.math3.linear.DecompositionSolver
 import org.apache.commons.math3.linear.LUDecomposition
@@ -16,6 +15,7 @@ import kotlin.math.sin
  * @param wheelPositions wheel positions relative to the center of the robot (positive X points forward on the robot)
  * @param wheelOrientations angular orientations of the wheels measured counterclockwise from positive X in radians
  */
+// TODO: do localizers belong here or in their own package?
 abstract class ThreeTrackingWheelLocalizer(
         wheelPositions: List<Vector2d>,
         wheelOrientations: List<Double>

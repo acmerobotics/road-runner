@@ -1,5 +1,6 @@
 package com.acmerobotics.roadrunner.followers
 
+import com.acmerobotics.roadrunner.DriveSignal
 import com.acmerobotics.roadrunner.Pose2d
 import com.acmerobotics.roadrunner.path.Path
 import com.acmerobotics.roadrunner.util.NanoClock
@@ -44,7 +45,7 @@ abstract class PathFollower @JvmOverloads constructor(
     /**
      * Returns true if the current path has finished executing.
      */
-    open fun isFollowing(): Boolean {
+    fun isFollowing(): Boolean {
         return !admissible
     }
 
@@ -53,10 +54,17 @@ abstract class PathFollower @JvmOverloads constructor(
      *
      * @param currentPose current robot pose
      */
-    open fun update(currentPose: Pose2d) {
+    open fun update(currentPose: Pose2d): DriveSignal {
         val pathEndError = path.end() - currentPose
         admissible = abs(pathEndError.x) < admissibleError.x
                 && abs(pathEndError.y) < admissibleError.y
                 && abs(pathEndError.heading) < admissibleError.heading
+        return if (isFollowing()) {
+            internalUpdate(currentPose)
+        } else {
+            DriveSignal()
+        }
     }
+
+    protected abstract fun internalUpdate(currentPose: Pose2d): DriveSignal
 }

@@ -1,15 +1,22 @@
 package com.acmerobotics.roadrunner.drive
 
+import com.acmerobotics.roadrunner.DriveSignal
 import com.acmerobotics.roadrunner.Pose2d
 import com.acmerobotics.roadrunner.util.Angle
 
 /**
  * This class provides the basic functionality of a tank/differential drive using [TankKinematics].
  *
+ * @param kV velocity feedforward
+ * @param kA acceleration feedforward
+ * @param kStatic additive constant feedforward
  * @param trackWidth lateral distance between pairs of wheels on different sides of the robot
  */
 abstract class TankDrive constructor(
-        val trackWidth: Double
+    private val kV: Double,
+    private val kA: Double,
+    private val kStatic: Double,
+    private val trackWidth: Double
 ) : Drive() {
 
     /**
@@ -49,8 +56,10 @@ abstract class TankDrive constructor(
 
     override var localizer: Localizer = TankLocalizer(this)
 
-    override fun setVelocity(poseVelocity: Pose2d) {
-        val powers = TankKinematics.robotToWheelVelocities(poseVelocity, trackWidth)
+    override fun setDriveSignal(driveSignal: DriveSignal) {
+        val velocities = TankKinematics.robotToWheelVelocities(driveSignal.velocity, trackWidth)
+        val accelerations = TankKinematics.robotToWheelAccelerations(driveSignal.acceleration, trackWidth)
+        val powers = Kinematics.calculateMotorFeedforward(velocities, accelerations, kV, kA, kStatic)
         setMotorPowers(powers[0], powers[1])
     }
 

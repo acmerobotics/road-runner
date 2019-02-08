@@ -36,7 +36,7 @@ class TankFollowerTest {
             private val dt: Double,
             private val kV: Double,
             trackWidth: Double
-    ) : TankDrive(trackWidth) {
+    ) : TankDrive(kV, 0.0, 0.0, trackWidth) {
         var powers = listOf(0.0, 0.0)
         var positions = listOf(0.0, 0.0)
 
@@ -72,12 +72,8 @@ class TankFollowerTest {
         val clock = SimulatedClock()
         val drive = SimulatedTankDrive(dt, kV, TRACK_WIDTH)
         val follower = TankPIDVAFollower(
-                drive,
                 PIDCoefficients(0.01),
                 PIDCoefficients(kP = 0.1, kD = 0.001),
-                kV,
-                0.0,
-                0.0,
                 Pose2d(0.5, 0.5, Math.toRadians(3.0)),
                 1.0,
                 clock
@@ -92,7 +88,8 @@ class TankFollowerTest {
         while (follower.isFollowing()) {
             t += dt
             clock.time = t
-            follower.update(drive.poseEstimate)
+            val signal = follower.update(drive.poseEstimate)
+            drive.setDriveSignal(signal)
             drive.updatePoseEstimate()
 
             targetPositions.add(trajectory[t].pos())
@@ -129,12 +126,8 @@ class TankFollowerTest {
         val clock = SimulatedClock()
         val drive = SimulatedTankDrive(dt, kV, TRACK_WIDTH)
         val follower = RamseteFollower(
-                drive,
                 1.6,
                 0.9,
-                kV,
-                0.0,
-                0.0,
                 Pose2d(0.5, 0.5, Math.toRadians(3.0)),
                 1.0,
                 clock
@@ -149,7 +142,8 @@ class TankFollowerTest {
         while (follower.isFollowing()) {
             t += dt
             clock.time = t
-            follower.update(drive.poseEstimate)
+            val signal = follower.update(drive.poseEstimate)
+            drive.setDriveSignal(signal)
             drive.updatePoseEstimate()
 
             targetPositions.add(trajectory[t].pos())
@@ -183,14 +177,10 @@ class TankFollowerTest {
         val clock = SimulatedClock()
         val drive = SimulatedTankDrive(dt, kV, TRACK_WIDTH)
         val follower = GVFFollower(
-                drive,
                 SimpleMotionConstraints(5.0, 25.0),
                 Pose2d(0.5, 0.5, Math.toRadians(3.0)),
                 3.0,
                 5.0,
-                kV,
-                0.0,
-                0.0,
                 ::atan,
                 clock)
         follower.followPath(path)
@@ -202,7 +192,8 @@ class TankFollowerTest {
         while (follower.isFollowing()) {
             t += dt
             clock.time = t
-            follower.update(drive.poseEstimate)
+            val signal = follower.update(drive.poseEstimate)
+            drive.setDriveSignal(signal)
             drive.updatePoseEstimate()
 
             actualPositions.add(drive.poseEstimate.pos())

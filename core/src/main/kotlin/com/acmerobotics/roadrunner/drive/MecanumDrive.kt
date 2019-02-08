@@ -1,17 +1,24 @@
 package com.acmerobotics.roadrunner.drive
 
+import com.acmerobotics.roadrunner.DriveSignal
 import com.acmerobotics.roadrunner.Pose2d
 import com.acmerobotics.roadrunner.util.Angle
 
 /**
  * This class provides the basic functionality of a mecanum drive using [MecanumKinematics].
  *
+ * @param kV velocity feedforward
+ * @param kA acceleration feedforward
+ * @param kStatic additive constant feedforward
  * @param trackWidth lateral distance between pairs of wheels on different sides of the robot
  * @param wheelBase distance between pairs of wheels on the same side of the robot
  */
 abstract class MecanumDrive @JvmOverloads constructor(
-        val trackWidth: Double,
-        val wheelBase: Double = trackWidth
+    private val kV: Double,
+    private val kA: Double,
+    private val kStatic: Double,
+    private val trackWidth: Double,
+    private val wheelBase: Double = trackWidth
 ) : Drive() {
 
     /**
@@ -51,8 +58,10 @@ abstract class MecanumDrive @JvmOverloads constructor(
 
     override var localizer: Localizer = MecanumLocalizer(this)
 
-    override fun setVelocity(poseVelocity: Pose2d) {
-        val powers = MecanumKinematics.robotToWheelVelocities(poseVelocity, trackWidth, wheelBase)
+    override fun setDriveSignal(driveSignal: DriveSignal) {
+        val velocities = MecanumKinematics.robotToWheelVelocities(driveSignal.velocity, trackWidth, wheelBase)
+        val accelerations = MecanumKinematics.robotToWheelAccelerations(driveSignal.acceleration, trackWidth, wheelBase)
+        val powers = Kinematics.calculateMotorFeedforward(velocities, accelerations, kV, kA, kStatic)
         setMotorPowers(powers[0], powers[1], powers[2], powers[3])
     }
 

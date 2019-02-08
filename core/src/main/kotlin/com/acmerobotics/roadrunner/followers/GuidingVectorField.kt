@@ -14,6 +14,7 @@ import kotlin.math.sign
  * @param kN path normal weight (see eq. (9))
  * @param errorMapFunc custom error mapping (see eq. (4))
  */
+// TODO: move to util package?
 class GuidingVectorField(
         private val path: Path,
         private val kN: Double,

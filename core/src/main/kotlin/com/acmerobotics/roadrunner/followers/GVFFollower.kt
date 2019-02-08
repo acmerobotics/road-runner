@@ -1,9 +1,8 @@
 package com.acmerobotics.roadrunner.followers
 
+import com.acmerobotics.roadrunner.DriveSignal
 import com.acmerobotics.roadrunner.Pose2d
 import com.acmerobotics.roadrunner.drive.Kinematics
-import com.acmerobotics.roadrunner.drive.TankDrive
-import com.acmerobotics.roadrunner.drive.TankKinematics
 import com.acmerobotics.roadrunner.path.Path
 import com.acmerobotics.roadrunner.profile.SimpleMotionConstraints
 import com.acmerobotics.roadrunner.util.Angle
@@ -13,28 +12,20 @@ import kotlin.math.sqrt
 /**
  * State-of-the-art path follower based on the [GuidingVectorField].
  *
- * @param drive tank drive
  * @param constraints robot motion constraints
  * @param admissibleError admissible/satisfactory pose error at the end of each move
  * @param kN normal vector weight (see [GuidingVectorField])
  * @param kOmega proportional heading gain
- * @param kV feedforward velocity gain
- * @param kA feedforward acceleration gain (currently unused)
- * @param kStatic additive feedforward constant (used to overcome static friction)
  * @param errorMapFunc error map function (see [GuidingVectorField])
  * @param clock clock
  */
 class GVFFollower @JvmOverloads constructor(
-        private val drive: TankDrive,
-        private val constraints: SimpleMotionConstraints,
-        admissibleError: Pose2d,
-        private val kN: Double,
-        private val kOmega: Double,
-        private val kV: Double,
-        private val kA: Double,
-        private val kStatic: Double,
-        private val errorMapFunc: (Double) -> Double = { it },
-        clock: NanoClock = NanoClock.system()
+    private val constraints: SimpleMotionConstraints,
+    admissibleError: Pose2d,
+    private val kN: Double,
+    private val kOmega: Double,
+    private val errorMapFunc: (Double) -> Double = { it },
+    clock: NanoClock = NanoClock.system()
 ) : PathFollower(admissibleError, clock) {
     private lateinit var gvf: GuidingVectorField
     private var lastUpdateTimestamp: Double = 0.0
@@ -51,14 +42,7 @@ class GVFFollower @JvmOverloads constructor(
         super.followPath(path)
     }
 
-    override fun update(currentPose: Pose2d) {
-        super.update(currentPose)
-
-        if (!isFollowing()) {
-            drive.setMotorPowers(0.0, 0.0)
-            return
-        }
-
+    override fun internalUpdate(currentPose: Pose2d): DriveSignal {
         val gvfResult = gvf.getExtended(currentPose.x, currentPose.y, lastProjectionDisplacement)
 
         val desiredHeading = Math.atan2(gvfResult.vector.y, gvfResult.vector.x)
@@ -76,11 +60,8 @@ class GVFFollower @JvmOverloads constructor(
         val maxVelFromLast = lastVelocity + constraints.maximumAcceleration * dt
         val velocity = minOf(maxVelFromLast, maxVelToStop, constraints.maximumVelocity)
 
-        val wheelVelocities = TankKinematics.robotToWheelVelocities(Pose2d(velocity, 0.0, omega), drive.trackWidth)
-
-        val motorPowers = Kinematics.calculateMotorFeedforward(wheelVelocities, wheelVelocities.map { 0.0 }, kV, kA, kStatic)
-
-        drive.setMotorPowers(motorPowers[0], motorPowers[1])
+        // TODO: is GVF acceleration FF worth?
+        val targetRobotPoseAcceleration = Pose2d()
 
         lastUpdateTimestamp = timestamp
         lastVelocity = velocity
@@ -89,6 +70,8 @@ class GVFFollower @JvmOverloads constructor(
         val targetPose = path[gvfResult.displacement]
 
         lastError = Kinematics.calculatePoseError(targetPose, currentPose)
+
+        return DriveSignal(Pose2d(velocity, 0.0, omega), targetRobotPoseAcceleration)
     }
 
 }

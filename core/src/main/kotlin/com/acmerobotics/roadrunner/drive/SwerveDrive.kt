@@ -1,17 +1,24 @@
 package com.acmerobotics.roadrunner.drive
 
+import com.acmerobotics.roadrunner.DriveSignal
 import com.acmerobotics.roadrunner.Pose2d
 import com.acmerobotics.roadrunner.util.Angle
 
 /**
  * This class provides the basic functionality of a swerve drive using [SwerveKinematics].
  *
+ * @param kV velocity feedforward
+ * @param kA acceleration feedforward
+ * @param kStatic additive constant feedforward
  * @param trackWidth lateral distance between pairs of wheels on different sides of the robot
  * @param wheelBase distance between pairs of wheels on the same side of the robot
  */
 abstract class SwerveDrive @JvmOverloads constructor(
-        val trackWidth: Double,
-        val wheelBase: Double = trackWidth
+    private val kV: Double,
+    private val kA: Double,
+    private val kStatic: Double,
+    private val trackWidth: Double,
+    private val wheelBase: Double = trackWidth
 ) : Drive() {
 
     /**
@@ -54,11 +61,13 @@ abstract class SwerveDrive @JvmOverloads constructor(
 
     override var localizer: Localizer = SwerveLocalizer(this)
 
-    override fun setVelocity(poseVelocity: Pose2d) {
-        val motorPowers = SwerveKinematics.robotToWheelVelocities(poseVelocity, trackWidth, wheelBase)
-        val moduleOrientations = SwerveKinematics.robotToModuleOrientations(poseVelocity, trackWidth, wheelBase)
-        setMotorPowers(motorPowers[0], motorPowers[1], motorPowers[2], motorPowers[3])
-        setModuleOrientations(moduleOrientations[0], moduleOrientations[1], moduleOrientations[2], moduleOrientations[3])
+    override fun setDriveSignal(driveSignal: DriveSignal) {
+        val velocities = SwerveKinematics.robotToWheelVelocities(driveSignal.velocity, trackWidth, wheelBase)
+        val accelerations = SwerveKinematics.robotToWheelAccelerations(driveSignal.velocity, driveSignal.acceleration, trackWidth, wheelBase)
+        val powers = Kinematics.calculateMotorFeedforward(velocities, accelerations, kV, kA, kStatic)
+        val orientations = SwerveKinematics.robotToModuleOrientations(driveSignal.velocity, trackWidth, wheelBase)
+        setMotorPowers(powers[0], powers[1], powers[2], powers[3])
+        setModuleOrientations(orientations[0], orientations[1], orientations[2], orientations[3])
     }
 
     /**

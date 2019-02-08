@@ -1,5 +1,6 @@
 package com.acmerobotics.roadrunner.drive
 
+import com.acmerobotics.roadrunner.DriveSignal
 import com.acmerobotics.roadrunner.Pose2d
 
 /**
@@ -30,7 +31,7 @@ abstract class Drive {
     }
 
     /**
-     * Sets the [poseVelocity] of the robot.
+     * Sets the [driveSignal] of the robot.
      */
-    abstract fun setVelocity(poseVelocity: Pose2d)
+    abstract fun setDriveSignal(driveSignal: DriveSignal)
 }

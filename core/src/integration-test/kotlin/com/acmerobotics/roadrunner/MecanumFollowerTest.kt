@@ -2,7 +2,7 @@ package com.acmerobotics.roadrunner
 
 import com.acmerobotics.roadrunner.control.PIDCoefficients
 import com.acmerobotics.roadrunner.drive.MecanumDrive
-import com.acmerobotics.roadrunner.followers.MecanumPIDVAFollower
+import com.acmerobotics.roadrunner.followers.HolonomicPIDVAFollower
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import com.acmerobotics.roadrunner.trajectory.constraints.MecanumConstraints
@@ -32,7 +32,7 @@ class MecanumFollowerTest {
             private val kV: Double,
             trackWidth: Double,
             wheelBase: Double = trackWidth
-    ) : MecanumDrive(trackWidth, wheelBase) {
+    ) : MecanumDrive(kV, 0.0, 0.0, trackWidth, wheelBase) {
         var powers = listOf(0.0, 0.0, 0.0, 0.0)
         var positions = listOf(0.0, 0.0, 0.0, 0.0)
 
@@ -67,13 +67,9 @@ class MecanumFollowerTest {
 
         val clock = SimulatedClock()
         val drive = SimulatedMecanumDrive(dt, kV, TRACK_WIDTH)
-        val follower = MecanumPIDVAFollower(
-                drive,
+        val follower = HolonomicPIDVAFollower(
                 PIDCoefficients(0.1),
                 PIDCoefficients(0.1),
-                kV,
-                0.0,
-                0.0,
                 Pose2d(0.5, 0.5, Math.toRadians(3.0)),
                 1.0,
                 clock
@@ -87,7 +83,8 @@ class MecanumFollowerTest {
         while (follower.isFollowing()) {
             t += dt
             clock.time = t
-            follower.update(drive.poseEstimate)
+            val signal = follower.update(drive.poseEstimate)
+            drive.setDriveSignal(signal)
             drive.updatePoseEstimate()
 
             targetPositions.add(trajectory[t].pos())
