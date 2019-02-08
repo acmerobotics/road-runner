@@ -33,6 +33,7 @@ abstract class TankDrive constructor(
             set(value) {
                 lastWheelPositions = emptyList()
                 lastExtHeading = Double.NaN
+                drive.externalHeading = value.heading
                 field = value
             }
         private var lastWheelPositions = emptyList<Double>()
@@ -40,7 +41,7 @@ abstract class TankDrive constructor(
 
         override fun update() {
             val wheelPositions = drive.getWheelPositions()
-            val extHeading = if (useExternalHeading) drive.getExternalHeading() else Double.NaN
+            val extHeading = if (useExternalHeading) drive.externalHeading else Double.NaN
             if (lastWheelPositions.isNotEmpty()) {
                 val wheelDeltas = wheelPositions
                         .zip(lastWheelPositions)
@@ -73,10 +74,4 @@ abstract class TankDrive constructor(
      * [setMotorPowers].
      */
     abstract fun getWheelPositions(): List<Double>
-
-    /**
-     * Returns the robot's heading in radians as measured by an external sensor (e.g., IMU, gyroscope). Heading is
-     * measured counter-clockwise from the x-axis.
-     */
-    abstract fun getExternalHeading(): Double
 }

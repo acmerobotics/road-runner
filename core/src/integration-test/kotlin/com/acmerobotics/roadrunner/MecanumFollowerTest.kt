@@ -33,6 +33,7 @@ class MecanumFollowerTest {
             trackWidth: Double,
             wheelBase: Double = trackWidth
     ) : MecanumDrive(kV, 0.0, 0.0, trackWidth, wheelBase) {
+        override val rawExternalHeading = Double.NaN
         var powers = listOf(0.0, 0.0, 0.0, 0.0)
         var positions = listOf(0.0, 0.0, 0.0, 0.0)
 
@@ -49,8 +50,6 @@ class MecanumFollowerTest {
         }
 
         override fun getWheelPositions() = positions
-
-        override fun getExternalHeading() = Double.NaN
     }
 
     @Test

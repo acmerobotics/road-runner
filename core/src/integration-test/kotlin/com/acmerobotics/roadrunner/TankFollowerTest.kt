@@ -37,6 +37,7 @@ class TankFollowerTest {
             private val kV: Double,
             trackWidth: Double
     ) : TankDrive(kV, 0.0, 0.0, trackWidth) {
+        override val rawExternalHeading = Double.NaN
         var powers = listOf(0.0, 0.0)
         var positions = listOf(0.0, 0.0)
 
@@ -53,8 +54,6 @@ class TankFollowerTest {
         }
 
         override fun getWheelPositions() = positions
-
-        override fun getExternalHeading() = Double.NaN
     }
 
     @Test

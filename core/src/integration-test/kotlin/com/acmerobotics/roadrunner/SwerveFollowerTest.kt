@@ -31,6 +31,7 @@ class SwerveFollowerTest {
             trackWidth: Double,
             wheelBase: Double = trackWidth
     ) : SwerveDrive(kV, 0.0, 0.0, trackWidth, wheelBase) {
+        override val rawExternalHeading = Double.NaN
         var powers = listOf(0.0, 0.0, 0.0, 0.0)
         var positions = listOf(0.0, 0.0, 0.0, 0.0)
         var orientations = listOf(0.0, 0.0, 0.0, 0.0)
@@ -54,8 +55,6 @@ class SwerveFollowerTest {
         }
 
         override fun getModuleOrientations() = orientations
-
-        override fun getExternalHeading() = Double.NaN
     }
 
     @Test
