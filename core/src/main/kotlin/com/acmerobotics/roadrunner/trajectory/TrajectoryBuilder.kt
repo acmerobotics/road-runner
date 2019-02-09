@@ -204,7 +204,7 @@ class TrajectoryBuilder @JvmOverloads constructor(
         val spline = if (reversed) {
             Path(QuinticSplineSegment(startWaypoint, endWaypoint), interpolator, true)
         } else {
-            Path(QuinticSplineSegment(endWaypoint, startWaypoint), interpolator, true)
+            Path(QuinticSplineSegment(endWaypoint, startWaypoint), interpolator, false)
         }
         if (composite) {
             paths.add(spline)
