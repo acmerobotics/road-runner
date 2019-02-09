@@ -1,9 +1,9 @@
 package com.acmerobotics.roadrunner.path
 
+import kotlin.math.max
 import org.apache.commons.math3.linear.LUDecomposition
 import org.apache.commons.math3.linear.MatrixUtils
 import org.apache.commons.math3.linear.RealMatrix
-import kotlin.math.max
 
 /**
  * Nth-degree polynomial interpolated according to the provided derivatives. Note that this implementation is less
@@ -43,7 +43,7 @@ class NthDegreePolynomial(start: List<Double>, end: List<Double>) {
 
     private fun getBasisMatrix(t: Double): RealMatrix {
         val basisMatrix = MatrixUtils.createRealMatrix(size, 1)
-        basisMatrix.setEntry(size - 1, 0,1.0)
+        basisMatrix.setEntry(size - 1, 0, 1.0)
         for (row in size - 2 downTo 0) {
             basisMatrix.setEntry(row, 0, t * basisMatrix.getEntry(row + 1, 0))
         }

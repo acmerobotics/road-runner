@@ -30,8 +30,8 @@ abstract class MecanumDrive @JvmOverloads constructor(
      * @param useExternalHeading use external heading provided by an external sensor (e.g., IMU, gyroscope)
      */
     class MecanumLocalizer @JvmOverloads constructor(
-            private val drive: MecanumDrive,
-            private val useExternalHeading: Boolean = true
+        private val drive: MecanumDrive,
+        private val useExternalHeading: Boolean = true
     ) : Localizer {
         override var poseEstimate: Pose2d = Pose2d()
             set(value) {

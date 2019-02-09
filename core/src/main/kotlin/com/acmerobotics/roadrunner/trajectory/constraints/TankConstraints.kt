@@ -14,8 +14,8 @@ import kotlin.math.min
  * @param trackWidth track width
  */
 open class TankConstraints(
-        baseConstraints: DriveConstraints,
-        val trackWidth: Double
+    baseConstraints: DriveConstraints,
+    val trackWidth: Double
 ) : DriveConstraints(
         baseConstraints.maximumVelocity,
         baseConstraints.maximumAcceleration,
@@ -32,5 +32,4 @@ open class TankConstraints(
 
         return SimpleMotionConstraints(min(superConstraints.maximumVelocity, maxTrajVel), superConstraints.maximumAcceleration)
     }
-
 }

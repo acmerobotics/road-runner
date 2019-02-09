@@ -11,7 +11,7 @@ class DoubleProgression(
     val start: Double,
     val end: Double,
     val step: Double
-): Iterable<Double> {
+) : Iterable<Double> {
     private val range: IntRange
 
     init {

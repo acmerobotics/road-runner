@@ -5,7 +5,7 @@ import com.acmerobotics.roadrunner.path.QuinticPolynomial
 import kotlin.math.cos
 import kotlin.math.sin
 
-private const val K = 0.5  // fraction of a period replaced by a path on either side
+private const val K = 0.5 // fraction of a period replaced by a path on either side
 
 /**
  * Heading interpolator that wraps another interpolator and adds sinusoidal oscillations ("wiggles") while preserving
@@ -16,11 +16,11 @@ private const val K = 0.5  // fraction of a period replaced by a path on either 
  * @param baseInterpolator base interpolator to add oscillations to (e.g., oscillations relative to the tangent)
  */
 class WiggleInterpolator(
-        private val amplitude: Double,
-        private val desiredPeriod: Double,
-        private val baseInterpolator: HeadingInterpolator = TangentInterpolator()
+    private val amplitude: Double,
+    private val desiredPeriod: Double,
+    private val baseInterpolator: HeadingInterpolator = TangentInterpolator()
 ) : HeadingInterpolator() {
-    
+
     private var period: Double = 0.0
     private lateinit var beginSpline: QuinticPolynomial
     private lateinit var endSpline: QuinticPolynomial

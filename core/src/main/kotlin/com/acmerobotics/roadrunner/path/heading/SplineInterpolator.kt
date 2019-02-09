@@ -45,5 +45,4 @@ class SplineInterpolator(private val startHeading: Double, private val endHeadin
         val len = parametricCurve.length()
         return headingSpline.secondDeriv(s / len) / (len * len)
     }
-
 }

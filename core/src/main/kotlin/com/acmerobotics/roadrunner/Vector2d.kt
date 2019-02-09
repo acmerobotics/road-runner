@@ -8,8 +8,8 @@ import kotlin.math.sqrt
  * Class for representing 2D vectors (x and y).
  */
 class Vector2d @JvmOverloads constructor(
-        val x: Double = 0.0,
-        val y: Double = 0.0
+    val x: Double = 0.0,
+    val y: Double = 0.0
 ) {
     fun norm() = sqrt(x*x + y*y)
 

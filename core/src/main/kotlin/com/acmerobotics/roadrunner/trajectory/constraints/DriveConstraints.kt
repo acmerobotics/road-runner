@@ -15,10 +15,10 @@ import kotlin.math.abs
  * @param maximumAngularAcceleration maximum angular acceleration (ignored by path-based trajectories)
  */
 open class DriveConstraints(
-        @JvmField var maximumVelocity: Double,
-        @JvmField var maximumAcceleration: Double,
-        @JvmField var maximumAngularVelocity: Double,
-        @JvmField var maximumAngularAcceleration: Double
+    @JvmField var maximumVelocity: Double,
+    @JvmField var maximumAcceleration: Double,
+    @JvmField var maximumAngularVelocity: Double,
+    @JvmField var maximumAngularAcceleration: Double
 ) : TrajectoryConstraints {
     override fun get(pose: Pose2d, poseDeriv: Pose2d, poseSecondDeriv: Pose2d): SimpleMotionConstraints {
         val maximumVelocities = mutableListOf(maximumVelocity)

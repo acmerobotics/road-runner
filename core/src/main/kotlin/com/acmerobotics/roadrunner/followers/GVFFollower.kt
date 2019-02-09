@@ -1,7 +1,7 @@
 package com.acmerobotics.roadrunner.followers
 
-import com.acmerobotics.roadrunner.drive.DriveSignal
 import com.acmerobotics.roadrunner.Pose2d
+import com.acmerobotics.roadrunner.drive.DriveSignal
 import com.acmerobotics.roadrunner.kinematics.Kinematics
 import com.acmerobotics.roadrunner.path.Path
 import com.acmerobotics.roadrunner.profile.SimpleMotionConstraints
@@ -79,5 +79,4 @@ class GVFFollower @JvmOverloads constructor(
             ), targetRobotPoseAcceleration
         )
     }
-
 }

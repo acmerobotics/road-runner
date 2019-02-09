@@ -13,5 +13,4 @@ class ConstantInterpolator(val heading: Double) : HeadingInterpolator() {
     override fun internalDeriv(s: Double, t: Double) = 0.0
 
     override fun internalSecondDeriv(s: Double, t: Double) = 0.0
-
 }

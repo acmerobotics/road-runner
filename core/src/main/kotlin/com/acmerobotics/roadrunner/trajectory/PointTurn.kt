@@ -12,7 +12,7 @@ import com.acmerobotics.roadrunner.util.Angle
  * @param endHeading end heading
  * @param constraints drive constraints
  */
-class PointTurn(val start: Pose2d, endHeading: Double, val constraints: DriveConstraints): TrajectorySegment {
+class PointTurn(val start: Pose2d, endHeading: Double, val constraints: DriveConstraints) : TrajectorySegment {
     /**
      * Motion profile for the time parametrization of the turn.
      */
@@ -43,5 +43,4 @@ class PointTurn(val start: Pose2d, endHeading: Double, val constraints: DriveCon
     override fun velocity(time: Double) = Pose2d(0.0, 0.0, profile[time].v)
 
     override fun acceleration(time: Double) = Pose2d(0.0, 0.0, profile[time].a)
-
 }

@@ -13,5 +13,4 @@ abstract class MotionConstraints {
     abstract operator fun get(s: Double): SimpleMotionConstraints
 
     open operator fun get(s: DoubleProgression): List<SimpleMotionConstraints> = s.map(::get)
-
 }

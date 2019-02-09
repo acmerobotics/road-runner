@@ -16,9 +16,9 @@ import kotlin.math.sign
  */
 // TODO: move to util package?
 class GuidingVectorField(
-        private val path: Path,
-        private val kN: Double,
-        private val errorMapFunc: (Double) -> Double = { it }
+    private val path: Path,
+    private val kN: Double,
+    private val errorMapFunc: (Double) -> Double = { it }
 ) {
 
     /**

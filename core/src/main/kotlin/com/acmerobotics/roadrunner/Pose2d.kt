@@ -6,9 +6,9 @@ import kotlin.math.abs
  * Class for representing 2D robot poses (x, y, and heading) and their derivatives.
  */
 class Pose2d @JvmOverloads constructor(
-        val x: Double = 0.0,
-        val y: Double = 0.0,
-        val heading: Double = 0.0
+    val x: Double = 0.0,
+    val y: Double = 0.0,
+    val heading: Double = 0.0
 ) {
     constructor(pos: Vector2d, heading: Double) : this(pos.x, pos.y, heading)
 

@@ -23,5 +23,4 @@ object Angle {
 
         return modifiedAngle
     }
-
 }

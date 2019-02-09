@@ -39,12 +39,12 @@ class QuinticSplineSegment(start: Waypoint, end: Waypoint) : ParametricCurve() {
      * @param d2y y second derivative
      */
     class Waypoint @JvmOverloads constructor(
-            val x: Double,
-            val y: Double,
-            val dx: Double = 0.0,
-            val dy: Double = 0.0,
-            val d2x: Double = 0.0,
-            val d2y: Double = 0.0
+        val x: Double,
+        val y: Double,
+        val dx: Double = 0.0,
+        val dy: Double = 0.0,
+        val d2x: Double = 0.0,
+        val d2y: Double = 0.0
     ) {
         fun pos() = Vector2d(x, y)
 

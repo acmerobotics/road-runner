@@ -16,11 +16,11 @@ import kotlin.math.sign
  * @param kF custom, position-dependent feedforward (e.g., a gravity term for arms)
  */
 class PIDFController @JvmOverloads constructor(
-        private val pid: PIDCoefficients,
-        private val kV: Double = 0.0,
-        private val kA: Double = 0.0,
-        private val kStatic: Double = 0.0,
-        private val kF: (Double) -> Double = { 0.0 }
+    private val pid: PIDCoefficients,
+    private val kV: Double = 0.0,
+    private val kA: Double = 0.0,
+    private val kStatic: Double = 0.0,
+    private val kF: (Double) -> Double = { 0.0 }
 ) {
     private var errorSum: Double = 0.0
     private var lastUpdateTimestamp: Double = Double.NaN
@@ -93,7 +93,12 @@ class PIDFController @JvmOverloads constructor(
      * @param currentTimestamp timestamp for the above parameters (intendend for simulation)
      */
     @JvmOverloads
-    fun update(position: Double, velocity: Double = 0.0, acceleration: Double = 0.0, currentTimestamp: Double = System.nanoTime() / 1e9): Double {
+    fun update(
+        position: Double,
+        velocity: Double = 0.0,
+        acceleration: Double = 0.0,
+        currentTimestamp: Double = System.nanoTime() / 1e9
+    ): Double {
         val error = getError(position)
         return if (lastUpdateTimestamp.isNaN()) {
             lastError = error

@@ -51,7 +51,13 @@ object Kinematics {
      * Computes the motor feedforward (i.e., open loop powers) for the given set of coefficients.
      */
     @JvmStatic
-    fun calculateMotorFeedforward(velocities: List<Double>, accelerations: List<Double>, kV: Double, kA: Double, kStatic: Double) =
+    fun calculateMotorFeedforward(
+        velocities: List<Double>,
+        accelerations: List<Double>,
+        kV: Double,
+        kA: Double,
+        kStatic: Double
+    ) =
         velocities.zip(accelerations)
                 .map { it.first * kV + it.second * kA }
                 .map { if (abs(it) > 1e-4) it + sign(it) * kStatic else 0.0 }

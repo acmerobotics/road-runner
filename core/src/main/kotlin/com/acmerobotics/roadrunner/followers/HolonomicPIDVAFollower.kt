@@ -1,9 +1,9 @@
 package com.acmerobotics.roadrunner.followers
 
-import com.acmerobotics.roadrunner.drive.DriveSignal
 import com.acmerobotics.roadrunner.Pose2d
 import com.acmerobotics.roadrunner.control.PIDCoefficients
 import com.acmerobotics.roadrunner.control.PIDFController
+import com.acmerobotics.roadrunner.drive.DriveSignal
 import com.acmerobotics.roadrunner.kinematics.Kinematics
 import com.acmerobotics.roadrunner.util.NanoClock
 

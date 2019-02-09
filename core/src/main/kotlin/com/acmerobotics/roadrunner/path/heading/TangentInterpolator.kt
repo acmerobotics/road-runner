@@ -3,7 +3,7 @@ package com.acmerobotics.roadrunner.path.heading
 /**
  * Tangent (system) interpolator for tank/differential and other nonholonomic drives.
  */
-class TangentInterpolator: HeadingInterpolator() {
+class TangentInterpolator : HeadingInterpolator() {
     override fun respectsDerivativeContinuity() = true
 
     override fun internalGet(s: Double, t: Double) = parametricCurve.tangentAngle(s, t)

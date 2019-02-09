@@ -22,9 +22,9 @@ import org.apache.commons.math3.linear.RealVector
  * @param reversed whether or not to travel along the path segment in reverse
  */
 class Path @JvmOverloads constructor(
-        val parametricCurves: List<ParametricCurve> = emptyList(),
-        val interpolators: List<HeadingInterpolator> = parametricCurves.map { TangentInterpolator() },
-        val reversed: List<Boolean> = parametricCurves.map { false }
+    val parametricCurves: List<ParametricCurve> = emptyList(),
+    val interpolators: List<HeadingInterpolator> = parametricCurves.map { TangentInterpolator() },
+    val reversed: List<Boolean> = parametricCurves.map { false }
 ) {
     /**
      * @param parametricCurve parametric curve
@@ -32,9 +32,9 @@ class Path @JvmOverloads constructor(
      * @param reversed whether or not to travel in reverse
      */
     @JvmOverloads constructor(
-            parametricCurve: ParametricCurve,
-            interpolator: HeadingInterpolator = TangentInterpolator(),
-            reversed: Boolean = false
+        parametricCurve: ParametricCurve,
+        interpolator: HeadingInterpolator = TangentInterpolator(),
+        reversed: Boolean = false
     ) : this(listOf(parametricCurve), listOf(interpolator), listOf(reversed))
 
     /**

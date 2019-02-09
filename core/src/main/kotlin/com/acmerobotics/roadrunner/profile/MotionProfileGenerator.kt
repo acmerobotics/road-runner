@@ -192,10 +192,10 @@ object MotionProfileGenerator {
     }
 
     private fun generateAccelProfile(
-            start: MotionState,
-            maxVel: Double,
-            maxAccel: Double,
-            maxJerk: Double = Double.NaN
+        start: MotionState,
+        maxVel: Double,
+        maxAccel: Double,
+        maxJerk: Double = Double.NaN
     ): MotionProfile =
         if (maxJerk.isNaN()) {
             // acceleration-limited

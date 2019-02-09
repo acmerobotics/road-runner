@@ -31,8 +31,8 @@ abstract class SwerveDrive @JvmOverloads constructor(
      * @param useExternalHeading use external heading provided by an external sensor (e.g., IMU, gyroscope)
      */
     class SwerveLocalizer @JvmOverloads constructor(
-            private val drive: SwerveDrive,
-            private val useExternalHeading: Boolean = true
+        private val drive: SwerveDrive,
+        private val useExternalHeading: Boolean = true
     ) : Localizer {
         override var poseEstimate: Pose2d = Pose2d()
             set(value) {

@@ -87,7 +87,11 @@ class TrajectoryBuilder @JvmOverloads constructor(
      * @param constraintsOverride line-specific drive constraints
      */
     @JvmOverloads
-    fun lineTo(pos: Vector2d, interpolator: HeadingInterpolator = TangentInterpolator(), constraintsOverride: TrajectoryConstraints? = null): TrajectoryBuilder {
+    fun lineTo(
+        pos: Vector2d,
+        interpolator: HeadingInterpolator = TangentInterpolator(),
+        constraintsOverride: TrajectoryConstraints? = null
+    ): TrajectoryBuilder {
         val postBeginComposite = if (!interpolator.respectsDerivativeContinuity() && composite) {
             closeComposite()
             true
@@ -178,7 +182,11 @@ class TrajectoryBuilder @JvmOverloads constructor(
      * @param constraintsOverride spline-specific constraints
      */
     @JvmOverloads
-    fun splineTo(pose: Pose2d, interpolator: HeadingInterpolator = TangentInterpolator(), constraintsOverride: TrajectoryConstraints? = null): TrajectoryBuilder {
+    fun splineTo(
+        pose: Pose2d,
+        interpolator: HeadingInterpolator = TangentInterpolator(),
+        constraintsOverride: TrajectoryConstraints? = null
+    ): TrajectoryBuilder {
         val postBeginComposite = if (!interpolator.respectsDerivativeContinuity() && composite) {
             closeComposite()
             true

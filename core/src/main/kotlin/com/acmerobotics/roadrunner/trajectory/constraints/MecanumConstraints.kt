@@ -15,9 +15,9 @@ import kotlin.math.min
  * @param wheelBase wheel base
  */
 open class MecanumConstraints @JvmOverloads constructor(
-        baseConstraints: DriveConstraints,
-        private val trackWidth: Double,
-        private val wheelBase: Double = trackWidth
+    baseConstraints: DriveConstraints,
+    private val trackWidth: Double,
+    private val wheelBase: Double = trackWidth
 ) : DriveConstraints(
         baseConstraints.maximumVelocity,
         baseConstraints.maximumAcceleration,
@@ -34,5 +34,4 @@ open class MecanumConstraints @JvmOverloads constructor(
 
         return SimpleMotionConstraints(min(superConstraints.maximumVelocity, maxTrajVel), superConstraints.maximumAcceleration)
     }
-
 }

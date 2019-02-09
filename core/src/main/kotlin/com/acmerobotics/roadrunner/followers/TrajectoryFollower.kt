@@ -1,7 +1,7 @@
 package com.acmerobotics.roadrunner.followers
 
-import com.acmerobotics.roadrunner.drive.DriveSignal
 import com.acmerobotics.roadrunner.Pose2d
+import com.acmerobotics.roadrunner.drive.DriveSignal
 import com.acmerobotics.roadrunner.trajectory.Trajectory
 import com.acmerobotics.roadrunner.util.NanoClock
 import kotlin.math.abs
@@ -62,9 +62,9 @@ abstract class TrajectoryFollower @JvmOverloads constructor(
      */
     fun update(currentPose: Pose2d): DriveSignal {
         val trajEndError = trajectory.end() - currentPose
-        admissible = abs(trajEndError.x) < admissibleError.x
-                && abs(trajEndError.y) < admissibleError.y
-                && abs(trajEndError.heading) < admissibleError.heading
+        admissible = abs(trajEndError.x) < admissibleError.x &&
+                abs(trajEndError.y) < admissibleError.y &&
+                abs(trajEndError.heading) < admissibleError.heading
         return if (isFollowing()) {
             internalUpdate(currentPose)
         } else {
