@@ -33,7 +33,7 @@ shadowJar {
 dependencies {
     implementation project(':core')
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
     implementation "org.apache.commons:commons-math3:3.6.1"
 

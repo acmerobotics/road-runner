@@ -1,5 +1,3 @@
-import org.apache.tools.ant.taskdefs.condition.Os
-
 plugins {
     id 'org.jetbrains.intellij' version '0.3.4'
 }
@@ -20,7 +18,7 @@ compileKotlin {
 dependencies {
     compile project(':core')
     compile project(':gui')
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 }
 
 intellij {
@@ -28,18 +26,10 @@ intellij {
     pluginName 'road-runner-plugin'
     plugins 'android'
     updateSinceUntilBuild false
-    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-        alternativeIdePath "C:\\Program Files\\Android\\Android Studio"
-    } else {
-        alternativeIdePath "/Applications/Android Studio.app/Contents/"
+    if (System.env.RR_IDE_PATH) {
+        alternativeIdePath System.env.RR_IDE_PATH ?: ''
     }
 }
 
 group 'com.acmerobotics.roadrunner'
 version road_runner_version
-
-patchPluginXml {
-    changeNotes """
-      Add change notes here.<br>
-      <em>most HTML tags may be used</em>"""
-}
