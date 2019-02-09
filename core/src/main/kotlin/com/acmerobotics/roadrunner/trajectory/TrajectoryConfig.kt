@@ -13,9 +13,9 @@ import kotlin.math.abs
  * @param resolution resolution used for path-based segments (see [PathTrajectorySegment])
  */
 class TrajectoryConfig @JvmOverloads constructor(
-        val poses: List<Pose2d>,
-        val constraints: DriveConstraints,
-        val resolution: Double = 0.25
+    val poses: List<Pose2d>,
+    val constraints: DriveConstraints,
+    val resolution: Double = 0.25
 ) {
 
     /**

@@ -24,7 +24,8 @@ class TrajectoryTest {
                 .beginComposite()
                 .lineTo(Vector2d(12 - cryptoColWidth, -44.0))
                 .splineTo(Pose2d(16.0, -24.0, Math.PI / 3))
-                .splineTo(Pose2d(24.0, -10.0, Math.PI / 4),
+                .splineTo(
+                    Pose2d(24.0, -10.0, Math.PI / 4),
                         WiggleInterpolator(Math.toRadians(15.0), 6.0, TangentInterpolator()))
                 .closeComposite()
                 .build()

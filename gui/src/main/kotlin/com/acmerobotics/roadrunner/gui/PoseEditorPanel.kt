@@ -36,7 +36,12 @@ class PoseEditorPanel : JPanel() {
         headerPanel.add(JLabel("Y", SwingConstants.CENTER))
         headerPanel.add(JLabel("Heading", SwingConstants.CENTER))
         val addButton = JButton("Add")
-        addButton.addActionListener { addPose(poses.lastOrNull()?.immutable() ?: Pose2d(0.0, 0.0, 0.0)) }
+        addButton.addActionListener { addPose(poses.lastOrNull()?.immutable() ?: Pose2d(
+            0.0,
+            0.0,
+            0.0
+        )
+        ) }
         headerPanel.add(addButton)
 
         layout = BoxLayout(this, BoxLayout.PAGE_AXIS)

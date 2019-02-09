@@ -1,8 +1,8 @@
 package com.acmerobotics.roadrunner.trajectory.constraints
 
 import com.acmerobotics.roadrunner.Pose2d
-import com.acmerobotics.roadrunner.drive.Kinematics
-import com.acmerobotics.roadrunner.drive.SwerveKinematics
+import com.acmerobotics.roadrunner.kinematics.Kinematics
+import com.acmerobotics.roadrunner.kinematics.SwerveKinematics
 import com.acmerobotics.roadrunner.profile.SimpleMotionConstraints
 import kotlin.math.abs
 import kotlin.math.min

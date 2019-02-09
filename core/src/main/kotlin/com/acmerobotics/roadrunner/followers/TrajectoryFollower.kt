@@ -1,6 +1,6 @@
 package com.acmerobotics.roadrunner.followers
 
-import com.acmerobotics.roadrunner.DriveSignal
+import com.acmerobotics.roadrunner.drive.DriveSignal
 import com.acmerobotics.roadrunner.Pose2d
 import com.acmerobotics.roadrunner.trajectory.Trajectory
 import com.acmerobotics.roadrunner.util.NanoClock
@@ -14,9 +14,9 @@ import kotlin.math.abs
  * @param clock clock
  */
 abstract class TrajectoryFollower @JvmOverloads constructor(
-        private val admissibleError: Pose2d = Pose2d(),
-        private val timeout: Double = 0.0,
-        protected val clock: NanoClock = NanoClock.system()
+    private val admissibleError: Pose2d = Pose2d(),
+    private val timeout: Double = 0.0,
+    protected val clock: NanoClock = NanoClock.system()
 ) {
     private var startTimestamp: Double = 0.0
     private var admissible = false

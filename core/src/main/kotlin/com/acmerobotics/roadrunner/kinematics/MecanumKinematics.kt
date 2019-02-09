@@ -1,4 +1,4 @@
-package com.acmerobotics.roadrunner.drive
+package com.acmerobotics.roadrunner.kinematics
 
 import com.acmerobotics.roadrunner.Pose2d
 
@@ -44,7 +44,11 @@ object MecanumKinematics {
     @JvmOverloads
     // follows from linearity of the derivative
     fun robotToWheelAccelerations(robotPoseAcceleration: Pose2d, trackWidth: Double, wheelBase: Double = trackWidth) =
-            robotToWheelVelocities(robotPoseAcceleration, trackWidth, wheelBase)
+        robotToWheelVelocities(
+            robotPoseAcceleration,
+            trackWidth,
+            wheelBase
+        )
 
     /**
      * Computes the robot velocity corresponding to [wheelVelocities] and the given drive parameters.
@@ -58,9 +62,9 @@ object MecanumKinematics {
     fun wheelToRobotVelocities(wheelVelocities: List<Double>, trackWidth: Double, wheelBase: Double = trackWidth): Pose2d {
         val k = (trackWidth + wheelBase) / 2.0
         return Pose2d(
-                wheelVelocities.sum(),
-                wheelVelocities[1] + wheelVelocities[3] - wheelVelocities[0] - wheelVelocities[2],
-                (wheelVelocities[2] + wheelVelocities[3] - wheelVelocities[0] - wheelVelocities[1]) / k
+            wheelVelocities.sum(),
+            wheelVelocities[1] + wheelVelocities[3] - wheelVelocities[0] - wheelVelocities[2],
+            (wheelVelocities[2] + wheelVelocities[3] - wheelVelocities[0] - wheelVelocities[1]) / k
         ) * 0.25
     }
 }

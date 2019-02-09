@@ -1,7 +1,9 @@
 package com.acmerobotics.roadrunner.drive
 
-import com.acmerobotics.roadrunner.DriveSignal
 import com.acmerobotics.roadrunner.Pose2d
+import com.acmerobotics.roadrunner.kinematics.Kinematics
+import com.acmerobotics.roadrunner.kinematics.SwerveKinematics
+import com.acmerobotics.roadrunner.localization.Localizer
 import com.acmerobotics.roadrunner.util.Angle
 
 /**
@@ -53,7 +55,9 @@ abstract class SwerveDrive @JvmOverloads constructor(
                 val robotPoseDelta = SwerveKinematics.wheelToRobotVelocities(
                         wheelDeltas, moduleOrientations, drive.wheelBase, drive.trackWidth)
                 val finalHeadingDelta = if (useExternalHeading) Angle.norm(extHeading - lastExtHeading) else robotPoseDelta.heading
-                poseEstimate = Kinematics.relativeOdometryUpdate(poseEstimate, Pose2d(robotPoseDelta.pos(), finalHeadingDelta))
+                poseEstimate = Kinematics.relativeOdometryUpdate(poseEstimate,
+                    Pose2d(robotPoseDelta.pos(), finalHeadingDelta)
+                )
             }
             lastWheelPositions = wheelPositions
             lastExtHeading = extHeading

@@ -1,4 +1,4 @@
-package com.acmerobotics.roadrunner.drive
+package com.acmerobotics.roadrunner.kinematics
 
 import com.acmerobotics.roadrunner.Pose2d
 import com.acmerobotics.roadrunner.util.Angle
@@ -17,17 +17,24 @@ object Kinematics {
      */
     @JvmStatic
     fun fieldToRobotPoseVelocity(fieldPose: Pose2d, fieldPoseVelocity: Pose2d) =
-            Pose2d(fieldPoseVelocity.pos().rotated(-fieldPose.heading), fieldPoseVelocity.heading)
+        Pose2d(
+            fieldPoseVelocity.pos().rotated(-fieldPose.heading),
+            fieldPoseVelocity.heading
+        )
 
     /**
      * Returns the robot pose acceleration corresponding to [fieldPose], [fieldPoseVelocity], and [fieldPoseAcceleration].
      */
     @JvmStatic
     fun fieldToRobotPoseAcceleration(fieldPose: Pose2d, fieldPoseVelocity: Pose2d, fieldPoseAcceleration: Pose2d) =
-            Pose2d(fieldPoseAcceleration.pos().rotated(-fieldPose.heading), fieldPoseAcceleration.heading) +
-                    Pose2d(-fieldPoseVelocity.x * Math.sin(fieldPose.heading) + fieldPoseVelocity.y * Math.cos(fieldPose.heading),
-                            -fieldPoseVelocity.x * Math.cos(fieldPose.heading) - fieldPoseVelocity.y * Math.sin(fieldPose.heading),
-                            0.0
+            Pose2d(
+                fieldPoseAcceleration.pos().rotated(-fieldPose.heading),
+                fieldPoseAcceleration.heading
+            ) +
+                    Pose2d(
+                        -fieldPoseVelocity.x * Math.sin(fieldPose.heading) + fieldPoseVelocity.y * Math.cos(fieldPose.heading),
+                        -fieldPoseVelocity.x * Math.cos(fieldPose.heading) - fieldPoseVelocity.y * Math.sin(fieldPose.heading),
+                        0.0
                     ) * fieldPoseVelocity.heading
 
     /**
@@ -35,8 +42,10 @@ object Kinematics {
      */
     @JvmStatic
     fun calculatePoseError(targetFieldPose: Pose2d, currentFieldPose: Pose2d) =
-            Pose2d((targetFieldPose - currentFieldPose).pos().rotated(-currentFieldPose.heading),
-                    Angle.norm(targetFieldPose.heading - currentFieldPose.heading))
+        Pose2d(
+            (targetFieldPose - currentFieldPose).pos().rotated(-currentFieldPose.heading),
+            Angle.norm(targetFieldPose.heading - currentFieldPose.heading)
+        )
 
     /**
      * Computes the motor feedforward (i.e., open loop powers) for the given set of coefficients.
@@ -52,7 +61,13 @@ object Kinematics {
      */
     @JvmStatic
     fun calculateMotorFeedforward(velocity: Double, acceleration: Double, kV: Double, kA: Double, kStatic: Double) =
-            calculateMotorFeedforward(listOf(velocity), listOf(acceleration), kV, kA, kStatic)[0]
+            calculateMotorFeedforward(
+                listOf(velocity),
+                listOf(acceleration),
+                kV,
+                kA,
+                kStatic
+            )[0]
 
     /**
      * Performs a relative odometry update. Note: this assumes that the robot moves with constant velocity over the
@@ -66,14 +81,14 @@ object Kinematics {
             val sinTerm = sin(finalHeading) - sin(fieldPose.heading)
 
             Pose2d(
-                    (robotPoseDelta.x * sinTerm + robotPoseDelta.y * cosTerm) / robotPoseDelta.heading,
-                    (-robotPoseDelta.x * cosTerm + robotPoseDelta.y * sinTerm) / robotPoseDelta.heading,
-                    robotPoseDelta.heading
+                (robotPoseDelta.x * sinTerm + robotPoseDelta.y * cosTerm) / robotPoseDelta.heading,
+                (-robotPoseDelta.x * cosTerm + robotPoseDelta.y * sinTerm) / robotPoseDelta.heading,
+                robotPoseDelta.heading
             )
         } else {
             Pose2d(
-                    robotPoseDelta.pos().rotated(fieldPose.heading + robotPoseDelta.heading / 2),
-                    robotPoseDelta.heading
+                robotPoseDelta.pos().rotated(fieldPose.heading + robotPoseDelta.heading / 2),
+                robotPoseDelta.heading
             )
         }
 

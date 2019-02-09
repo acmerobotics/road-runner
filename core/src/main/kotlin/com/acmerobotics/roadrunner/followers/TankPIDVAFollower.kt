@@ -1,10 +1,10 @@
 package com.acmerobotics.roadrunner.followers
 
-import com.acmerobotics.roadrunner.DriveSignal
+import com.acmerobotics.roadrunner.drive.DriveSignal
 import com.acmerobotics.roadrunner.Pose2d
 import com.acmerobotics.roadrunner.control.PIDCoefficients
 import com.acmerobotics.roadrunner.control.PIDFController
-import com.acmerobotics.roadrunner.drive.Kinematics
+import com.acmerobotics.roadrunner.kinematics.Kinematics
 import com.acmerobotics.roadrunner.util.NanoClock
 
 /**
@@ -51,7 +51,11 @@ class TankPIDVAFollower @JvmOverloads constructor(
         val axialCorrection = displacementController.update(0.0, targetRobotPoseVelocity.x)
         val headingCorrection = crossTrackController.update(0.0, targetRobotPoseVelocity.y)
 
-        val correctedVelocity = targetRobotPoseVelocity + Pose2d(axialCorrection, 0.0, headingCorrection)
+        val correctedVelocity = targetRobotPoseVelocity + Pose2d(
+            axialCorrection,
+            0.0,
+            headingCorrection
+        )
 
         lastError = poseError
 

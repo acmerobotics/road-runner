@@ -1,8 +1,8 @@
 package com.acmerobotics.roadrunner.followers
 
-import com.acmerobotics.roadrunner.DriveSignal
+import com.acmerobotics.roadrunner.drive.DriveSignal
 import com.acmerobotics.roadrunner.Pose2d
-import com.acmerobotics.roadrunner.drive.Kinematics
+import com.acmerobotics.roadrunner.kinematics.Kinematics
 import com.acmerobotics.roadrunner.path.Path
 import com.acmerobotics.roadrunner.profile.SimpleMotionConstraints
 import com.acmerobotics.roadrunner.util.Angle
@@ -71,7 +71,13 @@ class GVFFollower @JvmOverloads constructor(
 
         lastError = Kinematics.calculatePoseError(targetPose, currentPose)
 
-        return DriveSignal(Pose2d(velocity, 0.0, omega), targetRobotPoseAcceleration)
+        return DriveSignal(
+            Pose2d(
+                velocity,
+                0.0,
+                omega
+            ), targetRobotPoseAcceleration
+        )
     }
 
 }

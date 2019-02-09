@@ -1,4 +1,4 @@
-package com.acmerobotics.roadrunner.drive
+package com.acmerobotics.roadrunner.kinematics
 
 import com.acmerobotics.roadrunner.Pose2d
 import com.acmerobotics.roadrunner.Vector2d
@@ -32,10 +32,10 @@ object SwerveKinematics {
         val omega = robotPoseVelocity.heading
 
         return listOf(
-                Vector2d(vx - omega * y, vy + omega * x),
-                Vector2d(vx - omega * y, vy - omega * x),
-                Vector2d(vx + omega * y, vy - omega * x),
-                Vector2d(vx + omega * y, vy + omega * x)
+            Vector2d(vx - omega * y, vy + omega * x),
+            Vector2d(vx - omega * y, vy - omega * x),
+            Vector2d(vx + omega * y, vy - omega * x),
+            Vector2d(vx + omega * y, vy + omega * x)
         )
     }
 
@@ -50,7 +50,11 @@ object SwerveKinematics {
     @JvmStatic
     @JvmOverloads
     fun robotToWheelVelocities(robotPoseVelocity: Pose2d, trackWidth: Double, wheelBase: Double = trackWidth) =
-            robotToModuleVelocityVectors(robotPoseVelocity, trackWidth, wheelBase).map(Vector2d::norm)
+            robotToModuleVelocityVectors(
+                robotPoseVelocity,
+                trackWidth,
+                wheelBase
+            ).map(Vector2d::norm)
 
     /**
      * Computes the module orientations (in radians) corresponding to [robotPoseVelocity] given the provided
@@ -63,7 +67,11 @@ object SwerveKinematics {
     @JvmStatic
     @JvmOverloads
     fun robotToModuleOrientations(robotPoseVelocity: Pose2d, trackWidth: Double, wheelBase: Double = trackWidth) =
-            robotToModuleVelocityVectors(robotPoseVelocity, trackWidth, wheelBase).map(Vector2d::angle)
+            robotToModuleVelocityVectors(
+                robotPoseVelocity,
+                trackWidth,
+                wheelBase
+            ).map(Vector2d::angle)
 
     /**
      * Computes the acceleration vectors corresponding to [robotPoseAcceleration] given the provided [trackWidth] and
@@ -84,10 +92,10 @@ object SwerveKinematics {
         val alpha = robotPoseAcceleration.heading
 
         return listOf(
-                Vector2d(ax - alpha * y, ay + alpha * x),
-                Vector2d(ax - alpha * y, ay - alpha * x),
-                Vector2d(ax + alpha * y, ay - alpha * x),
-                Vector2d(ax + alpha * y, ay + alpha * x)
+            Vector2d(ax - alpha * y, ay + alpha * x),
+            Vector2d(ax - alpha * y, ay - alpha * x),
+            Vector2d(ax + alpha * y, ay - alpha * x),
+            Vector2d(ax + alpha * y, ay + alpha * x)
         )
     }
 
@@ -102,8 +110,18 @@ object SwerveKinematics {
     @JvmStatic
     @JvmOverloads
     fun robotToWheelAccelerations(robotPoseVelocity: Pose2d, robotPoseAcceleration: Pose2d, trackWidth: Double, wheelBase: Double = trackWidth) =
-            robotToModuleVelocityVectors(robotPoseVelocity, trackWidth, wheelBase)
-                    .zip(robotToModuleAccelerationVectors(robotPoseAcceleration, trackWidth, wheelBase))
+            robotToModuleVelocityVectors(
+                robotPoseVelocity,
+                trackWidth,
+                wheelBase
+            )
+                    .zip(
+                        robotToModuleAccelerationVectors(
+                            robotPoseAcceleration,
+                            trackWidth,
+                            wheelBase
+                        )
+                    )
                     .map { (it.first.x * it.second.x + it.first.y * it.second.y) / it.first.norm() }
 
     /**
@@ -117,8 +135,18 @@ object SwerveKinematics {
     @JvmStatic
     @JvmOverloads
     fun robotToModuleAngularVelocities(robotPoseVelocity: Pose2d, robotPoseAcceleration: Pose2d, trackWidth: Double, wheelBase: Double = trackWidth) =
-            robotToModuleVelocityVectors(robotPoseVelocity, trackWidth, wheelBase)
-                    .zip(robotToModuleAccelerationVectors(robotPoseAcceleration, trackWidth, wheelBase))
+            robotToModuleVelocityVectors(
+                robotPoseVelocity,
+                trackWidth,
+                wheelBase
+            )
+                    .zip(
+                        robotToModuleAccelerationVectors(
+                            robotPoseAcceleration,
+                            trackWidth,
+                            wheelBase
+                        )
+                    )
                     .map { (it.first.x * it.second.y - it.first.y * it.second.x) / (it.first.x * it.first.x + it.first.y * it.first.y) }
 
     /**

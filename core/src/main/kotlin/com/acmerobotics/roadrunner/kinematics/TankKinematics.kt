@@ -1,4 +1,4 @@
-package com.acmerobotics.roadrunner.drive
+package com.acmerobotics.roadrunner.kinematics
 
 import com.acmerobotics.roadrunner.Pose2d
 import kotlin.math.abs
@@ -37,7 +37,7 @@ object TankKinematics {
     // follows from linearity of the derivative
     @JvmStatic
     fun robotToWheelAccelerations(robotPoseAcceleration: Pose2d, trackWidth: Double) =
-            robotToWheelVelocities(robotPoseAcceleration, trackWidth)
+        robotToWheelVelocities(robotPoseAcceleration, trackWidth)
 
     /**
      * Computes the robot velocity corresponding to [wheelVelocities] and the given drive parameters.
@@ -47,7 +47,9 @@ object TankKinematics {
      */
     @JvmStatic
     fun wheelToRobotVelocities(wheelVelocities: List<Double>, trackWidth: Double) =
-        Pose2d((wheelVelocities[0] + wheelVelocities[1]) / 2.0,
-                0.0,
-                (-wheelVelocities[0] + wheelVelocities[1]) / trackWidth)
+        Pose2d(
+            (wheelVelocities[0] + wheelVelocities[1]) / 2.0,
+            0.0,
+            (-wheelVelocities[0] + wheelVelocities[1]) / trackWidth
+        )
 }

@@ -73,7 +73,7 @@ class TankFollowerTest {
         val follower = TankPIDVAFollower(
                 PIDCoefficients(0.01),
                 PIDCoefficients(kP = 0.1, kD = 0.001),
-                Pose2d(0.5, 0.5, Math.toRadians(3.0)),
+            Pose2d(0.5, 0.5, Math.toRadians(3.0)),
                 1.0,
                 clock
         )
@@ -127,7 +127,7 @@ class TankFollowerTest {
         val follower = RamseteFollower(
                 1.6,
                 0.9,
-                Pose2d(0.5, 0.5, Math.toRadians(3.0)),
+            Pose2d(0.5, 0.5, Math.toRadians(3.0)),
                 1.0,
                 clock
         )
@@ -177,7 +177,7 @@ class TankFollowerTest {
         val drive = SimulatedTankDrive(dt, kV, TRACK_WIDTH)
         val follower = GVFFollower(
                 SimpleMotionConstraints(5.0, 25.0),
-                Pose2d(0.5, 0.5, Math.toRadians(3.0)),
+            Pose2d(0.5, 0.5, Math.toRadians(3.0)),
                 3.0,
                 5.0,
                 ::atan,

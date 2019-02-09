@@ -1,8 +1,8 @@
 package com.acmerobotics.roadrunner.followers
 
-import com.acmerobotics.roadrunner.DriveSignal
+import com.acmerobotics.roadrunner.drive.DriveSignal
 import com.acmerobotics.roadrunner.Pose2d
-import com.acmerobotics.roadrunner.drive.Kinematics
+import com.acmerobotics.roadrunner.kinematics.Kinematics
 import com.acmerobotics.roadrunner.util.NanoClock
 import kotlin.math.cos
 import kotlin.math.sin
@@ -60,6 +60,9 @@ class RamseteFollower @JvmOverloads constructor(
 
         lastError = error
 
-        return DriveSignal(Pose2d(v, 0.0, omega), targetRobotPoseAcceleration)
+        return DriveSignal(
+            Pose2d(v, 0.0, omega),
+            targetRobotPoseAcceleration
+        )
     }
 }

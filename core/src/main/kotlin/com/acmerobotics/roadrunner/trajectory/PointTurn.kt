@@ -37,7 +37,8 @@ class PointTurn(val start: Pose2d, endHeading: Double, val constraints: DriveCon
 
     override fun duration() = profile.duration()
 
-    override fun get(time: Double) = Pose2d(start.x, start.y, Angle.norm(start.heading + profile[time].x))
+    override fun get(time: Double) =
+        Pose2d(start.x, start.y, Angle.norm(start.heading + profile[time].x))
 
     override fun velocity(time: Double) = Pose2d(0.0, 0.0, profile[time].v)
 

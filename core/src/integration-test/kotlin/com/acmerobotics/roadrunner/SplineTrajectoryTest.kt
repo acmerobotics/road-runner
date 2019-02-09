@@ -18,8 +18,8 @@ class SplineTrajectoryTest {
     @Test
     fun testLineSegment() {
         val line = LineSegment(
-                Vector2d(0.0, 0.0),
-                Vector2d(25.0, 25.0)
+            Vector2d(0.0, 0.0),
+            Vector2d(25.0, 25.0)
         )
         val trajectory = Trajectory(listOf(
                 PathTrajectorySegment(listOf(Path(line)), listOf(BASE_CONSTRAINTS))
@@ -46,8 +46,8 @@ class SplineTrajectoryTest {
     @Test
     fun testCompositeSpline() {
         val line = LineSegment(
-                Vector2d(0.0, 0.0),
-                Vector2d(15.0, 15.0)
+            Vector2d(0.0, 0.0),
+            Vector2d(15.0, 15.0)
         )
         val spline = QuinticSplineSegment(
                 QuinticSplineSegment.Waypoint(15.0, 15.0, 15.0, 15.0),

@@ -20,9 +20,9 @@ import com.acmerobotics.roadrunner.util.Angle
  * @param resolution resolution used for path-based segments (see [PathTrajectorySegment])
  */
 class TrajectoryBuilder @JvmOverloads constructor(
-        startPose: Pose2d,
-        private val globalConstraints: DriveConstraints,
-        private val resolution: Double = 0.25
+    startPose: Pose2d,
+    private val globalConstraints: DriveConstraints,
+    private val resolution: Double = 0.25
 ) {
     private var currentPose: Pose2d = startPose
     private val trajectorySegments = mutableListOf<TrajectorySegment>()
@@ -130,9 +130,10 @@ class TrajectoryBuilder @JvmOverloads constructor(
      */
     fun forward(distance: Double): TrajectoryBuilder {
         return lineTo(currentPose.pos() + Vector2d(
-                distance * Math.cos(currentPose.heading),
-                distance * Math.sin(currentPose.heading)
-        ))
+            distance * Math.cos(currentPose.heading),
+            distance * Math.sin(currentPose.heading)
+        )
+        )
     }
 
     /**
@@ -154,9 +155,10 @@ class TrajectoryBuilder @JvmOverloads constructor(
      */
     fun strafeLeft(distance: Double): TrajectoryBuilder {
         return strafeTo(currentPose.pos() + Vector2d(
-                distance * Math.cos(currentPose.heading + Math.PI / 2),
-                distance * Math.sin(currentPose.heading + Math.PI / 2)
-        ))
+            distance * Math.cos(currentPose.heading + Math.PI / 2),
+            distance * Math.sin(currentPose.heading + Math.PI / 2)
+        )
+        )
     }
 
     /**

@@ -69,7 +69,7 @@ class MecanumFollowerTest {
         val follower = HolonomicPIDVAFollower(
                 PIDCoefficients(0.1),
                 PIDCoefficients(0.1),
-                Pose2d(0.5, 0.5, Math.toRadians(3.0)),
+            Pose2d(0.5, 0.5, Math.toRadians(3.0)),
                 1.0,
                 clock
         )

@@ -15,9 +15,11 @@ class Vector2d @JvmOverloads constructor(
 
     fun angle() = atan2(y, x)
 
-    operator fun plus(other: Vector2d) = Vector2d(x + other.x, y + other.y)
+    operator fun plus(other: Vector2d) =
+        Vector2d(x + other.x, y + other.y)
 
-    operator fun minus(other: Vector2d) = Vector2d(x - other.x, y - other.y)
+    operator fun minus(other: Vector2d) =
+        Vector2d(x - other.x, y - other.y)
 
     operator fun times(scalar: Double) = Vector2d(scalar * x, scalar * y)
 

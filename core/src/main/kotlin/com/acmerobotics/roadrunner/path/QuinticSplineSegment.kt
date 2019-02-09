@@ -85,9 +85,11 @@ class QuinticSplineSegment(start: Waypoint, end: Waypoint) : ParametricCurve() {
 
     override fun internalDeriv(t: Double) = Vector2d(x.deriv(t), y.deriv(t))
 
-    override fun internalSecondDeriv(t: Double) = Vector2d(x.secondDeriv(t), y.secondDeriv(t))
+    override fun internalSecondDeriv(t: Double) =
+        Vector2d(x.secondDeriv(t), y.secondDeriv(t))
 
-    override fun internalThirdDeriv(t: Double) = Vector2d(x.thirdDeriv(t), y.thirdDeriv(t))
+    override fun internalThirdDeriv(t: Double) =
+        Vector2d(x.thirdDeriv(t), y.thirdDeriv(t))
 
     override fun reparam(s: Double) = samplesTree.getInterpolated(s) ?: 0.0
 

@@ -8,8 +8,14 @@ import org.junit.jupiter.api.TestInstance
 class SplineComparisonTest {
     @Test
     fun testSplines() {
-        val startBase = mutableListOf(Vector2d(0.0, 0.0), Vector2d(20.0, -20.0))
-        val endBase = mutableListOf(Vector2d(20.0, 20.0), Vector2d(20.0, -20.0))
+        val startBase = mutableListOf(
+            Vector2d(0.0, 0.0),
+            Vector2d(20.0, -20.0)
+        )
+        val endBase = mutableListOf(
+            Vector2d(20.0, 20.0),
+            Vector2d(20.0, -20.0)
+        )
         for (i in 0..10) {
             val start = startBase + (0 until i).map { Vector2d(0.0, 0.0) }
             val end = endBase + (0 until i).map { Vector2d(0.0, 0.0) }

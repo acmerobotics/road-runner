@@ -14,11 +14,14 @@ class Pose2d @JvmOverloads constructor(
 
     fun pos() = Vector2d(x, y)
 
-    operator fun plus(other: Pose2d) = Pose2d(x + other.x, y + other.y, heading + other.heading)
+    operator fun plus(other: Pose2d) =
+        Pose2d(x + other.x, y + other.y, heading + other.heading)
 
-    operator fun minus(other: Pose2d) = Pose2d(x - other.x, y - other.y, heading - other.heading)
+    operator fun minus(other: Pose2d) =
+        Pose2d(x - other.x, y - other.y, heading - other.heading)
 
-    operator fun times(scalar: Double) = Pose2d(scalar * x, scalar * y, scalar * heading)
+    operator fun times(scalar: Double) =
+        Pose2d(scalar * x, scalar * y, scalar * heading)
 
     operator fun div(scalar: Double) = Pose2d(x / scalar, y / scalar, heading / scalar)
 

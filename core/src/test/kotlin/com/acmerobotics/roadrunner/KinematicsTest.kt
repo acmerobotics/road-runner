@@ -1,8 +1,8 @@
 package com.acmerobotics.roadrunner
 
-import com.acmerobotics.roadrunner.drive.MecanumKinematics
-import com.acmerobotics.roadrunner.drive.SwerveKinematics
-import com.acmerobotics.roadrunner.drive.TankKinematics
+import com.acmerobotics.roadrunner.kinematics.MecanumKinematics
+import com.acmerobotics.roadrunner.kinematics.SwerveKinematics
+import com.acmerobotics.roadrunner.kinematics.TankKinematics
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance

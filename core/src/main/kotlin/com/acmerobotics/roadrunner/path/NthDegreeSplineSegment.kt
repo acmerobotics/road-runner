@@ -15,8 +15,10 @@ private const val LENGTH_SAMPLES = 1000
  */
 // TODO: generic base class for numerical arc length parametrization
 class NthDegreeSplineSegment(start: List<Vector2d>, end: List<Vector2d>) : ParametricCurve() {
-    val x: NthDegreePolynomial = NthDegreePolynomial(start.map(Vector2d::x), end.map(Vector2d::x))
-    val y: NthDegreePolynomial = NthDegreePolynomial(start.map(Vector2d::y), end.map(Vector2d::y))
+    val x: NthDegreePolynomial = NthDegreePolynomial(start.map(Vector2d::x), end.map(
+        Vector2d::x))
+    val y: NthDegreePolynomial = NthDegreePolynomial(start.map(Vector2d::y), end.map(
+        Vector2d::y))
 
     private val length: Double
 
@@ -43,9 +45,11 @@ class NthDegreeSplineSegment(start: List<Vector2d>, end: List<Vector2d>) : Param
 
     override fun internalDeriv(t: Double) = Vector2d(x.deriv(t), y.deriv(t))
 
-    override fun internalSecondDeriv(t: Double) = Vector2d(x.secondDeriv(t), y.secondDeriv(t))
+    override fun internalSecondDeriv(t: Double) =
+        Vector2d(x.secondDeriv(t), y.secondDeriv(t))
 
-    override fun internalThirdDeriv(t: Double) = Vector2d(x.thirdDeriv(t), y.thirdDeriv(t))
+    override fun internalThirdDeriv(t: Double) =
+        Vector2d(x.thirdDeriv(t), y.thirdDeriv(t))
 
     override fun reparam(s: Double) = arcLengthSamples.getInterpolated(s) ?: 0.0
 

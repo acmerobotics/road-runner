@@ -72,9 +72,10 @@ class PathBuilder(startPose: Pose2d) {
      */
     fun forward(distance: Double): PathBuilder {
         return lineTo(currentPose.pos() + Vector2d(
-                distance * Math.cos(currentPose.heading),
-                distance * Math.sin(currentPose.heading)
-        ))
+            distance * Math.cos(currentPose.heading),
+            distance * Math.sin(currentPose.heading)
+        )
+        )
     }
 
     /**
@@ -96,9 +97,10 @@ class PathBuilder(startPose: Pose2d) {
      */
     fun strafeLeft(distance: Double): PathBuilder {
         return strafeTo(currentPose.pos() + Vector2d(
-                distance * Math.cos(currentPose.heading + Math.PI / 2),
-                distance * Math.sin(currentPose.heading + Math.PI / 2)
-        ))
+            distance * Math.cos(currentPose.heading + Math.PI / 2),
+            distance * Math.sin(currentPose.heading + Math.PI / 2)
+        )
+        )
     }
 
     /**

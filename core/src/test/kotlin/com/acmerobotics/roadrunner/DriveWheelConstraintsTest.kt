@@ -1,9 +1,9 @@
 package com.acmerobotics.roadrunner
 
-import com.acmerobotics.roadrunner.drive.Kinematics
-import com.acmerobotics.roadrunner.drive.MecanumKinematics
-import com.acmerobotics.roadrunner.drive.SwerveKinematics
-import com.acmerobotics.roadrunner.drive.TankKinematics
+import com.acmerobotics.roadrunner.kinematics.Kinematics
+import com.acmerobotics.roadrunner.kinematics.MecanumKinematics
+import com.acmerobotics.roadrunner.kinematics.SwerveKinematics
+import com.acmerobotics.roadrunner.kinematics.TankKinematics
 import com.acmerobotics.roadrunner.path.heading.SplineInterpolator
 import com.acmerobotics.roadrunner.path.heading.TangentInterpolator
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
