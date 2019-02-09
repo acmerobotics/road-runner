@@ -6,7 +6,6 @@ import java.awt.GridLayout
 import javax.swing.*
 import kotlin.math.min
 
-
 class PoseEditorPanel : JPanel() {
     override fun getPreferredSize(): Dimension {
         val size = super.getPreferredSize()

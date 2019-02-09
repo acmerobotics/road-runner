@@ -9,7 +9,6 @@ import java.io.File
 import java.nio.file.Files
 import javax.swing.*
 
-
 class PathDesignerPanel(private val project: Project) : JPanel() {
     private val moduleManager = ModuleManager.getInstance(project)
 

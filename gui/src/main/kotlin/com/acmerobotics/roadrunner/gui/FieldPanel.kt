@@ -70,7 +70,7 @@ class FieldPanel : JPanel() {
 
         val displacements = (0..RESOLUTION).map { it / RESOLUTION.toDouble() * trajectory.duration() }
         for (i in 1..RESOLUTION) {
-            val firstPose = trajectory[displacements[i-1]]
+            val firstPose = trajectory[displacements[i - 1]]
             val secondPose = trajectory[displacements[i]]
             val firstPoint = Point2D.Double()
             val secondPoint = Point2D.Double()

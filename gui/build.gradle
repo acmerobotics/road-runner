@@ -4,20 +4,31 @@ buildscript {
     }
     dependencies {
         classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.4'
+        classpath "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:$detekt_version"
     }
 }
 
+plugins {
+    id 'kotlin'
+}
 apply plugin: 'com.github.johnrengelman.shadow'
-apply plugin: "kotlin"
+apply plugin: 'io.gitlab.arturbosch.detekt'
 
 repositories {
-    mavenCentral()
+    jcenter()
 }
 
 compileKotlin {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+}
+
+detekt {
+    toolVersion = detekt_version
+    input = files("src/main/kotlin")
+    filters = ".*/resources/.*,.*/build/.*"
+    config = files("$rootDir/detekt-config.yml")
 }
 
 shadowJar {
@@ -34,11 +45,11 @@ dependencies {
     implementation project(':core')
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 
     implementation "org.apache.commons:commons-math3:3.6.1"
 
     implementation "org.knowm.xchart:xchart:3.5.2"
 
-    testImplementation "org.junit.jupiter:junit-jupiter-api:5.2.0"
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.2.0"
+    detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:$detekt_version"
 }

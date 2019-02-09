@@ -1,14 +1,14 @@
 package com.acmerobotics.roadrunner.gui
 
 import com.acmerobotics.roadrunner.trajectory.Trajectory
-import org.knowm.xchart.QuickChart
-import org.knowm.xchart.XYChart
-import org.knowm.xchart.style.MatlabTheme
-import org.knowm.xchart.style.Styler
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.Graphics2D
 import javax.swing.JPanel
+import org.knowm.xchart.QuickChart
+import org.knowm.xchart.XYChart
+import org.knowm.xchart.style.MatlabTheme
+import org.knowm.xchart.style.Styler
 
 private const val RESOLUTION = 1000
 val SERIES_COLORS = arrayOf(

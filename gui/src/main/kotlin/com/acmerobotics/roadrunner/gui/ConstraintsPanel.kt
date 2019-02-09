@@ -9,10 +9,10 @@ import javax.swing.SwingConstants
 
 class ConstraintsPanel : JPanel() {
     private class MutableDriveConstraints(
-            var maximumVelocity: Double,
-            var maximumAcceleration: Double,
-            var maximumAngularVelocity: Double,
-            var maximumAngularAcceleration: Double
+        var maximumVelocity: Double,
+        var maximumAcceleration: Double,
+        var maximumAngularVelocity: Double,
+        var maximumAngularAcceleration: Double
     ) {
         constructor(constraints: DriveConstraints): this(
                 constraints.maximumVelocity,

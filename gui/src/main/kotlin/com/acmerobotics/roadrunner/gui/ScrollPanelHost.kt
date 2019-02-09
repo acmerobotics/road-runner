@@ -4,7 +4,6 @@ import java.awt.Dimension
 import java.awt.Rectangle
 import javax.swing.*
 
-
 class ScrollPanelHost(private val scrollPanel: JPanel) : JPanel(BorderLayout()), Scrollable {
     init {
         add(scrollPanel)
