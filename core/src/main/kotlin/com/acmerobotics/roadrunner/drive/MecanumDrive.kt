@@ -48,11 +48,17 @@ abstract class MecanumDrive @JvmOverloads constructor(
             val extHeading = if (useExternalHeading) drive.externalHeading else Double.NaN
             if (lastWheelPositions.isNotEmpty()) {
                 val wheelDeltas = wheelPositions
-                        .zip(lastWheelPositions)
-                        .map { it.first - it.second }
-                val robotPoseDelta = MecanumKinematics.wheelToRobotVelocities(wheelDeltas, drive.wheelBase, drive.trackWidth)
-                val finalHeadingDelta = if (useExternalHeading) Angle.norm(extHeading - lastExtHeading) else robotPoseDelta.heading
-                poseEstimate = Kinematics.relativeOdometryUpdate(poseEstimate,
+                    .zip(lastWheelPositions)
+                    .map { it.first - it.second }
+                val robotPoseDelta = MecanumKinematics.wheelToRobotVelocities(
+                    wheelDeltas, drive.wheelBase, drive.trackWidth
+                )
+                val finalHeadingDelta = if (useExternalHeading)
+                    Angle.norm(extHeading - lastExtHeading)
+                else
+                    robotPoseDelta.heading
+                poseEstimate = Kinematics.relativeOdometryUpdate(
+                    poseEstimate,
                     Pose2d(robotPoseDelta.pos(), finalHeadingDelta)
                 )
             }

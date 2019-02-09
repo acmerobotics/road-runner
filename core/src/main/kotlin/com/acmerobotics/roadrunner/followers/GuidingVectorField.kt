@@ -29,7 +29,7 @@ class GuidingVectorField(
      * @param displacement displacement along the path of [pathPoint]
      * @param error signed cross track error (distance between [pathPoint] and the query point)
      */
-    class GVFResult(
+    data class GVFResult(
         val vector: Vector2d,
         val pathPoint: Vector2d,
         val displacement: Double,

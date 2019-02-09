@@ -30,6 +30,7 @@ open class TankConstraints(
 
         val superConstraints = super.get(pose, poseDeriv, poseSecondDeriv)
 
-        return SimpleMotionConstraints(min(superConstraints.maximumVelocity, maxTrajVel), superConstraints.maximumAcceleration)
+        return SimpleMotionConstraints(min(superConstraints.maximumVelocity, maxTrajVel),
+            superConstraints.maximumAcceleration)
     }
 }

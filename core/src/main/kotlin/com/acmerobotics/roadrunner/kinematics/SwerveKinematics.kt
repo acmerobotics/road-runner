@@ -23,7 +23,11 @@ object SwerveKinematics {
      */
     @JvmStatic
     @JvmOverloads
-    fun robotToModuleVelocityVectors(robotPoseVelocity: Pose2d, trackWidth: Double, wheelBase: Double = trackWidth): List<Vector2d> {
+    fun robotToModuleVelocityVectors(
+        robotPoseVelocity: Pose2d,
+        trackWidth: Double,
+        wheelBase: Double = trackWidth
+    ): List<Vector2d> {
         val x = wheelBase / 2
         val y = trackWidth / 2
 
@@ -149,19 +153,19 @@ object SwerveKinematics {
         trackWidth: Double,
         wheelBase: Double = trackWidth
     ) =
-            robotToModuleVelocityVectors(
-                robotPoseVelocity,
+        robotToModuleVelocityVectors(
+            robotPoseVelocity,
+            trackWidth,
+            wheelBase
+        ).zip(
+            robotToModuleAccelerationVectors(
+                robotPoseAcceleration,
                 trackWidth,
                 wheelBase
             )
-                    .zip(
-                        robotToModuleAccelerationVectors(
-                            robotPoseAcceleration,
-                            trackWidth,
-                            wheelBase
-                        )
-                    )
-                    .map { (it.first.x * it.second.y - it.first.y * it.second.x) / (it.first.x * it.first.x + it.first.y * it.first.y) }
+        ).map { (vel, accel) ->
+            (vel.x * accel.y - vel.y * accel.x) / (vel.x * vel.x + vel.y * vel.y)
+        }
 
     /**
      * Computes the robot velocities corresponding to [wheelVelocities], [moduleOrientations], and the drive parameters.

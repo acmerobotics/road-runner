@@ -54,7 +54,10 @@ abstract class SwerveDrive @JvmOverloads constructor(
                         .map { it.first - it.second }
                 val robotPoseDelta = SwerveKinematics.wheelToRobotVelocities(
                         wheelDeltas, moduleOrientations, drive.wheelBase, drive.trackWidth)
-                val finalHeadingDelta = if (useExternalHeading) Angle.norm(extHeading - lastExtHeading) else robotPoseDelta.heading
+                val finalHeadingDelta = if (useExternalHeading)
+                    Angle.norm(extHeading - lastExtHeading)
+                else
+                    robotPoseDelta.heading
                 poseEstimate = Kinematics.relativeOdometryUpdate(poseEstimate,
                     Pose2d(robotPoseDelta.pos(), finalHeadingDelta)
                 )
@@ -67,10 +70,13 @@ abstract class SwerveDrive @JvmOverloads constructor(
     override var localizer: Localizer = SwerveLocalizer(this)
 
     override fun setDriveSignal(driveSignal: DriveSignal) {
-        val velocities = SwerveKinematics.robotToWheelVelocities(driveSignal.velocity, trackWidth, wheelBase)
-        val accelerations = SwerveKinematics.robotToWheelAccelerations(driveSignal.velocity, driveSignal.acceleration, trackWidth, wheelBase)
+        val velocities = SwerveKinematics.robotToWheelVelocities(
+            driveSignal.velocity, trackWidth, wheelBase)
+        val accelerations = SwerveKinematics.robotToWheelAccelerations(
+            driveSignal.velocity, driveSignal.acceleration, trackWidth, wheelBase)
         val powers = Kinematics.calculateMotorFeedforward(velocities, accelerations, kV, kA, kStatic)
-        val orientations = SwerveKinematics.robotToModuleOrientations(driveSignal.velocity, trackWidth, wheelBase)
+        val orientations = SwerveKinematics.robotToModuleOrientations(
+            driveSignal.velocity, trackWidth, wheelBase)
         setMotorPowers(powers[0], powers[1], powers[2], powers[3])
         setModuleOrientations(orientations[0], orientations[1], orientations[2], orientations[3])
     }

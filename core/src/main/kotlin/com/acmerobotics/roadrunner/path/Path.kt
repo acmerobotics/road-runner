@@ -223,9 +223,9 @@ class Path @JvmOverloads constructor(
     fun project(point: Vector2d, projectGuess: Double = length() / 2.0): ProjectionResult {
         val problem = LeastSquaresBuilder()
                 .start(doubleArrayOf(projectGuess))
-                .model {
-                    val pathPoint = this[it.getEntry(0)].pos()
-                    val pathDerivative = deriv(it.getEntry(0)).pos()
+                .model { vector ->
+                    val pathPoint = this[vector.getEntry(0)].pos()
+                    val pathDerivative = deriv(vector.getEntry(0)).pos()
 
                     val diff = pathPoint - point
                     val distance = diff.norm()

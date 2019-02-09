@@ -22,7 +22,11 @@ object MecanumKinematics {
      */
     @JvmStatic
     @JvmOverloads
-    fun robotToWheelVelocities(robotPoseVelocity: Pose2d, trackWidth: Double, wheelBase: Double = trackWidth): List<Double> {
+    fun robotToWheelVelocities(
+        robotPoseVelocity: Pose2d,
+        trackWidth: Double,
+        wheelBase: Double = trackWidth
+    ): List<Double> {
         val k = (trackWidth + wheelBase) / 2.0
         return listOf(
                 robotPoseVelocity.x - robotPoseVelocity.y - k * robotPoseVelocity.heading,
@@ -59,7 +63,11 @@ object MecanumKinematics {
      */
     @JvmStatic
     @JvmOverloads
-    fun wheelToRobotVelocities(wheelVelocities: List<Double>, trackWidth: Double, wheelBase: Double = trackWidth): Pose2d {
+    fun wheelToRobotVelocities(
+        wheelVelocities: List<Double>,
+        trackWidth: Double,
+        wheelBase: Double = trackWidth
+    ): Pose2d {
         val k = (trackWidth + wheelBase) / 2.0
         return Pose2d(
             wheelVelocities.sum(),

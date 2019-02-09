@@ -114,7 +114,8 @@ class PIDFController @JvmOverloads constructor(
 
             // note: we'd like to refactor this with Kinematics.calculateMotorFeedforward() but kF complicates the
             // determination of the sign of kStatic
-            val baseOutput = pid.kP * error + pid.kI * errorSum + pid.kD * (errorDeriv - velocity) + kV * velocity + kA * acceleration + kF(position)
+            val baseOutput = pid.kP * error + pid.kI * errorSum + pid.kD * (errorDeriv - velocity) +
+                kV * velocity + kA * acceleration + kF(position)
             val output = if (abs(baseOutput) > 1e-4) baseOutput + sign(baseOutput) * kStatic else 0.0
 
             if (outputBounded) {

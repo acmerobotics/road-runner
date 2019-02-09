@@ -49,7 +49,10 @@ abstract class TankDrive constructor(
                         .zip(lastWheelPositions)
                         .map { it.first - it.second }
                 val robotPoseDelta = TankKinematics.wheelToRobotVelocities(wheelDeltas, drive.trackWidth)
-                val finalHeadingDelta = if (useExternalHeading) Angle.norm(extHeading - lastExtHeading) else robotPoseDelta.heading
+                val finalHeadingDelta = if (useExternalHeading)
+                    Angle.norm(extHeading - lastExtHeading)
+                else
+                    robotPoseDelta.heading
                 poseEstimate = Kinematics.relativeOdometryUpdate(poseEstimate,
                     Pose2d(robotPoseDelta.pos(), finalHeadingDelta)
                 )

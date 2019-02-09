@@ -39,7 +39,8 @@ class TankPIDVAFollower @JvmOverloads constructor(
         val targetPoseAcceleration = trajectory.acceleration(t)
 
         val targetRobotPoseVelocity = Kinematics.fieldToRobotPoseVelocity(targetPose, targetPoseVelocity)
-        val targetRobotPoseAcceleration = Kinematics.fieldToRobotPoseAcceleration(targetPose, targetPoseVelocity, targetPoseAcceleration)
+        val targetRobotPoseAcceleration = Kinematics.fieldToRobotPoseAcceleration(
+            targetPose, targetPoseVelocity, targetPoseAcceleration)
 
         val poseError = Kinematics.calculatePoseError(targetPose, currentPose)
 

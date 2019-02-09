@@ -53,7 +53,7 @@ abstract class ThreeTrackingWheelLocalizer(
         forwardSolver = LUDecomposition(inverseMatrix).solver
 
         if (!forwardSolver.isNonSingular) {
-            throw IllegalArgumentException("The specified wheel positions and orientations are not sufficient for full localization")
+            throw IllegalArgumentException("The specified configuration cannot support full localization")
         }
     }
 

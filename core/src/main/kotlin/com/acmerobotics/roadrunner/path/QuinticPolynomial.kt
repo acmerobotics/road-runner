@@ -3,6 +3,7 @@ package com.acmerobotics.roadrunner.path
 import org.apache.commons.math3.linear.LUDecomposition
 import org.apache.commons.math3.linear.MatrixUtils
 
+@Suppress("TopLevelPropertyNaming")
 private val COEFF_MATRIX = MatrixUtils.createRealMatrix(
         arrayOf(
                 doubleArrayOf(0.0, 0.0, 0.0, 0.0, 0.0, 1.0),

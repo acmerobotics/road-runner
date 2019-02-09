@@ -1,8 +1,11 @@
 package com.acmerobotics.roadrunner.trajectory
 
 import com.acmerobotics.roadrunner.Pose2d
+import com.acmerobotics.roadrunner.Vector2d
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import kotlin.math.abs
+import kotlin.math.cos
+import kotlin.math.sin
 
 /**
  * Basic trajectory configuration intended for serialization. Intentionally more simplistic and less flexible than
@@ -21,6 +24,7 @@ class TrajectoryConfig @JvmOverloads constructor(
     /**
      * Converts the configuration into a real [Trajectory].
      */
+    @Suppress("NestedBlockDepth")
     fun toTrajectory() =
             if (poses.isEmpty()) {
                 Trajectory()
@@ -35,7 +39,8 @@ class TrajectoryConfig @JvmOverloads constructor(
                     } else {
                         builder.beginComposite()
                         val diff = endPose - startPose
-                        val cosAngle = (Math.cos(endPose.heading) * diff.x + Math.sin(endPose.heading) * diff.y) / diff.pos().norm()
+                        val dot = Vector2d(cos(endPose.heading), sin(endPose.heading)) dot diff.pos()
+                        val cosAngle = dot / diff.pos().norm()
 
                         builder.setReversed(cosAngle < 0)
 

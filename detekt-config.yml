@@ -58,7 +58,7 @@ comments:
     active: false
     endOfSentenceFormat: ([.?!][ \t\n\r\f<])|([.?!]$)
   UndocumentedPublicClass:
-    active: false
+    active: true
     searchInNestedClass: true
     searchInInnerClass: true
     searchInInnerObject: true
@@ -105,7 +105,7 @@ complexity:
     excludeStringsWithLessThan5Characters: true
     ignoreStringsRegex: '$^'
   TooManyFunctions:
-    active: true
+    active: false
     thresholdInFiles: 11
     thresholdInClasses: 11
     thresholdInInterfaces: 11
@@ -256,7 +256,7 @@ formatting:
     active: true
     autoCorrect: true
   NoWildcardImports:
-    active: true
+    active: false
     autoCorrect: true
   PackageName:
     active: true
@@ -429,7 +429,7 @@ style:
     active: false
     maxJumpCount: 1
   MagicNumber:
-    active: true
+    active: false
     ignoreNumbers: '-1,0,1,2'
     ignoreHashCodeFunction: true
     ignorePropertyDeclaration: false
@@ -455,7 +455,7 @@ style:
   NewLineAtEndOfFile:
     active: true
   NoTabs:
-    active: false
+    active: true
   OptionalAbstractKeyword:
     active: true
   OptionalUnit:
@@ -467,9 +467,9 @@ style:
   ProtectedMemberInFinalClass:
     active: false
   RedundantVisibilityModifierRule:
-    active: false
-  ReturnCount:
     active: true
+  ReturnCount:
+    active: false
     max: 2
     excludedFunctions: "equals"
     excludeLabeled: false
@@ -491,7 +491,7 @@ style:
   UnnecessaryApply:
     active: false
   UnnecessaryInheritance:
-    active: false
+    active: true
   UnnecessaryLet:
     active: false
   UnnecessaryParentheses:
@@ -499,19 +499,19 @@ style:
   UntilInsteadOfRangeTo:
     active: false
   UnusedImports:
-    active: false
+    active: true
   UnusedPrivateClass:
     active: false
   UnusedPrivateMember:
     active: false
     allowedNames: "(_|ignored|expected|serialVersionUID)"
   UseDataClass:
-    active: false
+    active: true
     excludeAnnotatedClasses: ""
   UtilityClassWithPublicConstructor:
     active: false
   VarCouldBeVal:
     active: false
   WildcardImport:
-    active: true
+    active: false
     excludeImports: 'java.util.*,kotlinx.android.synthetic.*'

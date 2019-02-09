@@ -196,24 +196,15 @@ class TrajectoryBuilder @JvmOverloads constructor(
 
         val constraints = constraintsOverride ?: this.globalConstraints
         val derivMag = (currentPose.pos() distanceTo pose.pos())
+        val startWaypoint = QuinticSplineSegment.Waypoint(currentPose.x, currentPose.y,
+            derivMag * Math.cos(currentPose.heading), derivMag * Math.sin(currentPose.heading))
+        val endWaypoint = QuinticSplineSegment.Waypoint(pose.x, pose.y,
+            derivMag * Math.cos(pose.heading), derivMag * Math.sin(pose.heading))
+
         val spline = if (reversed) {
-            Path(
-                    QuinticSplineSegment(
-                            QuinticSplineSegment.Waypoint(pose.x, pose.y, derivMag * Math.cos(pose.heading), derivMag * Math.sin(pose.heading)),
-                            QuinticSplineSegment.Waypoint(currentPose.x, currentPose.y, derivMag * Math.cos(currentPose.heading), derivMag * Math.sin(currentPose.heading))
-                    ),
-                    interpolator,
-                    true
-            )
+            Path(QuinticSplineSegment(startWaypoint, endWaypoint), interpolator, true)
         } else {
-            Path(
-                    QuinticSplineSegment(
-                            QuinticSplineSegment.Waypoint(currentPose.x, currentPose.y, derivMag * Math.cos(currentPose.heading), derivMag * Math.sin(currentPose.heading)),
-                            QuinticSplineSegment.Waypoint(pose.x, pose.y, derivMag * Math.cos(pose.heading), derivMag * Math.sin(pose.heading))
-                    ),
-                    interpolator,
-                    false
-            )
+            Path(QuinticSplineSegment(endWaypoint, startWaypoint), interpolator, true)
         }
         if (composite) {
             paths.add(spline)

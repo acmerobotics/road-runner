@@ -9,6 +9,7 @@ import kotlin.math.sqrt
 /**
  * Motion profile generator with arbitrary start and end motion states and either dynamic constraints or jerk limiting.
  */
+@Suppress("LargeClass", "ComplexMethod", "NestedBlockDepth")
 object MotionProfileGenerator {
 
     /**
@@ -25,6 +26,7 @@ object MotionProfileGenerator {
      * @param maximumJerk maximum jerk
      * @param overshoot
      */
+    @Suppress("LongParameterList")
     @JvmStatic
     @JvmOverloads
     fun generateSimpleMotionProfile(
@@ -136,8 +138,8 @@ object MotionProfileGenerator {
                 // we *could* construct a large polynomial expression (i.e., a nasty cubic) and solve it using Cardano's
                 // method, some kind of inclusion method like modified Anderson-Bjorck-King, or a host of other methods
                 // (see https://link.springer.com/content/pdf/bbm%3A978-3-642-05175-3%2F1.pdf for modified ABK)
-                // instead, however, we conduct a binary search as it's sufficiently performant for this use case, requires
-                // less code, and is overall significantly more comprehensible
+                // instead, however, we conduct a binary search as it's sufficiently performant for this use case,
+                // requires less code, and is overall significantly more comprehensible
                 var upperBound = maximumVelocity
                 var lowerBound = 0.0
                 var iterations = 0

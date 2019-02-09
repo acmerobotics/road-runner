@@ -66,9 +66,12 @@ class WiggleInterpolator(
 
     override fun internalGet(s: Double, t: Double): Double {
         val heading = when {
-            t < K * period -> beginSpline[t / (K * period)]
-            t > (1.0 - K * period) -> endSpline[t / (1 - K * period) - 1.0]
-            else -> waveGet(t)
+            t < K * period ->
+                beginSpline[t / (K * period)]
+            t > (1.0 - K * period) ->
+                endSpline[t / (1 - K * period) - 1.0]
+            else ->
+                waveGet(t)
         }
 
         return heading + baseInterpolator[s, t]
@@ -76,9 +79,12 @@ class WiggleInterpolator(
 
     override fun internalDeriv(s: Double, t: Double): Double {
         val headingDeriv = when {
-            t < K * period -> beginSpline.deriv(t / (K * period)) / (K * period)
-            t > (1.0 - K * period) -> endSpline.deriv(t / (1 - K * period) - 1.0) / (1 - K * period)
-            else -> waveDeriv(t)
+            t < K * period ->
+                beginSpline.deriv(t / (K * period)) / (K * period)
+            t > (1.0 - K * period) ->
+                endSpline.deriv(t / (1 - K * period) - 1.0) / (1 - K * period)
+            else ->
+                waveDeriv(t)
         }
 
         return headingDeriv * parametricCurve.paramDeriv(t) + baseInterpolator.deriv(s, t)
@@ -86,15 +92,21 @@ class WiggleInterpolator(
 
     override fun internalSecondDeriv(s: Double, t: Double): Double {
         val headingDeriv = when {
-            t < K * period -> beginSpline.deriv(t / (K * period)) / (K * period)
-            t > (1.0 - K * period) -> endSpline.deriv(t / (1 - K * period) - 1.0) / (1 - K * period)
-            else -> waveDeriv(t)
+            t < K * period ->
+                beginSpline.deriv(t / (K * period)) / (K * period)
+            t > (1.0 - K * period) ->
+                endSpline.deriv(t / (1 - K * period) - 1.0) / (1 - K * period)
+            else ->
+                waveDeriv(t)
         }
 
         val headingSecondDeriv = when {
-            t < K * period -> beginSpline.secondDeriv(t / (K * period)) / (K * K * period * period)
-            t > (1.0 - K * period) -> endSpline.secondDeriv(t / (1 - K * period) - 1.0) / ((1 - K * period) * (1 - K * period))
-            else -> waveSecondDeriv(t)
+            t < K * period ->
+                beginSpline.secondDeriv(t / (K * period)) / (K * K * period * period)
+            t > (1.0 - K * period) ->
+                endSpline.secondDeriv(t / (1 - K * period) - 1.0) / ((1 - K * period) * (1 - K * period))
+            else ->
+                waveSecondDeriv(t)
         }
 
         return headingSecondDeriv * parametricCurve.paramDeriv(t) * parametricCurve.paramDeriv(t) +

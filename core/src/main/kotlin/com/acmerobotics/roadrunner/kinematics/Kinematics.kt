@@ -23,19 +23,20 @@ object Kinematics {
         )
 
     /**
-     * Returns the robot pose acceleration corresponding to [fieldPose], [fieldPoseVelocity], and [fieldPoseAcceleration].
+     * Returns the robot pose acceleration corresponding to [fieldPose], [fieldPoseVelocity], and
+     * [fieldPoseAcceleration].
      */
     @JvmStatic
     fun fieldToRobotPoseAcceleration(fieldPose: Pose2d, fieldPoseVelocity: Pose2d, fieldPoseAcceleration: Pose2d) =
-            Pose2d(
-                fieldPoseAcceleration.pos().rotated(-fieldPose.heading),
-                fieldPoseAcceleration.heading
-            ) +
-                    Pose2d(
-                        -fieldPoseVelocity.x * Math.sin(fieldPose.heading) + fieldPoseVelocity.y * Math.cos(fieldPose.heading),
-                        -fieldPoseVelocity.x * Math.cos(fieldPose.heading) - fieldPoseVelocity.y * Math.sin(fieldPose.heading),
-                        0.0
-                    ) * fieldPoseVelocity.heading
+        Pose2d(
+            fieldPoseAcceleration.pos().rotated(-fieldPose.heading),
+            fieldPoseAcceleration.heading
+        ) +
+        Pose2d(
+            -fieldPoseVelocity.x * Math.sin(fieldPose.heading) + fieldPoseVelocity.y * Math.cos(fieldPose.heading),
+            -fieldPoseVelocity.x * Math.cos(fieldPose.heading) - fieldPoseVelocity.y * Math.sin(fieldPose.heading),
+            0.0
+        ) * fieldPoseVelocity.heading
 
     /**
      * Returns the error between [targetFieldPose] and [currentFieldPose].
