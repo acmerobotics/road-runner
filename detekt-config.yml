@@ -114,6 +114,11 @@ complexity:
     ignoreDeprecated: false
     ignorePrivate: false
 
+custom-rules:
+  active: true
+  NoJavaMath:
+    active: true
+
 empty-blocks:
   active: true
   EmptyCatchBlock:

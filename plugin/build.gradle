@@ -40,6 +40,9 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 
     detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:$detekt_version"
+    detektPlugins "io.gitlab.arturbosch.detekt:detekt-cli:$detekt_version"
+
+    detektPlugins project(':custom-detekt-rules')
 }
 
 intellij {

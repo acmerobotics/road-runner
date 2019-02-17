@@ -57,6 +57,8 @@ detekt {
     config = files("$rootDir/detekt-config.yml")
 }
 
+tasks["detekt"].dependsOn(":custom-detekt-rules:assemble")
+
 dokka {
     moduleName = 'core'
     outputFormat = 'html'
@@ -112,6 +114,9 @@ dependencies {
     integrationTestImplementation "org.knowm.xchart:xchart:3.5.2"
 
     detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:$detekt_version"
+    detektPlugins "io.gitlab.arturbosch.detekt:detekt-cli:$detekt_version"
+
+    detektPlugins project(':custom-detekt-rules')
 }
 
 task sourcesJar(type: Jar) {
