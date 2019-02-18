@@ -10,8 +10,17 @@ import org.jetbrains.kotlin.psi.KtImportDirective
 class NoJavaMath(
     config: Config = Config.empty
 ) : Rule(config) {
+    companion object {
+        const val IGNORE = "ignore"
+    }
+
     override val issue = Issue(javaClass.simpleName,
-        Severity.Maintainability, "Prefer Kotlin math routines to Java ones.", Debt.FIVE_MINS)
+        Severity.Maintainability, "Prefer Kotlin to Java math.", Debt.FIVE_MINS)
+
+    private val ignore: List<String> =
+        valueOrDefault(IGNORE, "")
+            .split(",")
+            .filter { it.isNotBlank() }
 
     override fun visitImportDirective(importDirective: KtImportDirective) {
         if ("java.lang.Math" in importDirective.text) {
@@ -20,7 +29,8 @@ class NoJavaMath(
     }
 
     override fun visitDotQualifiedExpression(expression: KtDotQualifiedExpression) {
-        if (expression.text.startsWith("Math.")) {
+        if (expression.text.startsWith("Math.") &&
+            expression.text.removeSurrounding(".").split("(").first() !in ignore) {
             report(CodeSmell(issue, Entity.from(expression), "java.lang.Math qualified expression"))
         }
     }

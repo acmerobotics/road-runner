@@ -6,14 +6,14 @@ import com.acmerobotics.roadrunner.followers.HolonomicPIDVAFollower
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import com.acmerobotics.roadrunner.trajectory.constraints.MecanumConstraints
+import kotlin.math.max
+import kotlin.math.min
 import org.apache.commons.math3.distribution.NormalDistribution
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.knowm.xchart.XYChart
 import org.knowm.xchart.style.MatlabTheme
 import org.knowm.xchart.style.markers.None
-import kotlin.math.max
-import kotlin.math.min
 
 private const val kV = 1.0 / 60.0
 private const val SIMULATION_HZ = 25
@@ -28,10 +28,10 @@ private val VOLTAGE_NOISE_DIST = NormalDistribution(1.0, 0.05)
 class MecanumFollowerTest {
 
     private class SimulatedMecanumDrive(
-            private val dt: Double,
-            private val kV: Double,
-            trackWidth: Double,
-            wheelBase: Double = trackWidth
+        private val dt: Double,
+        private val kV: Double,
+        trackWidth: Double,
+        wheelBase: Double = trackWidth
     ) : MecanumDrive(kV, 0.0, 0.0, trackWidth, wheelBase) {
         override val rawExternalHeading = Double.NaN
         var powers = listOf(0.0, 0.0, 0.0, 0.0)

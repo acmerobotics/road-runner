@@ -11,6 +11,9 @@ import com.acmerobotics.roadrunner.path.heading.TangentInterpolator
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryConstraints
 import com.acmerobotics.roadrunner.util.Angle
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
 
 /**
  * Easy-to-use builder for creating [Trajectory] instances.
@@ -134,8 +137,8 @@ class TrajectoryBuilder @JvmOverloads constructor(
      */
     fun forward(distance: Double): TrajectoryBuilder {
         return lineTo(currentPose.pos() + Vector2d(
-            distance * Math.cos(currentPose.heading),
-            distance * Math.sin(currentPose.heading)
+            distance * cos(currentPose.heading),
+            distance * sin(currentPose.heading)
         )
         )
     }
@@ -159,8 +162,8 @@ class TrajectoryBuilder @JvmOverloads constructor(
      */
     fun strafeLeft(distance: Double): TrajectoryBuilder {
         return strafeTo(currentPose.pos() + Vector2d(
-            distance * Math.cos(currentPose.heading + Math.PI / 2),
-            distance * Math.sin(currentPose.heading + Math.PI / 2)
+            distance * cos(currentPose.heading + PI / 2),
+            distance * sin(currentPose.heading + PI / 2)
         )
         )
     }
@@ -197,9 +200,9 @@ class TrajectoryBuilder @JvmOverloads constructor(
         val constraints = constraintsOverride ?: this.globalConstraints
         val derivMag = (currentPose.pos() distanceTo pose.pos())
         val startWaypoint = QuinticSplineSegment.Waypoint(currentPose.x, currentPose.y,
-            derivMag * Math.cos(currentPose.heading), derivMag * Math.sin(currentPose.heading))
+            derivMag * cos(currentPose.heading), derivMag * sin(currentPose.heading))
         val endWaypoint = QuinticSplineSegment.Waypoint(pose.x, pose.y,
-            derivMag * Math.cos(pose.heading), derivMag * Math.sin(pose.heading))
+            derivMag * cos(pose.heading), derivMag * sin(pose.heading))
 
         val spline = if (reversed) {
             Path(QuinticSplineSegment(startWaypoint, endWaypoint), interpolator, true)

@@ -1,8 +1,6 @@
 package com.acmerobotics.roadrunner
 
-import kotlin.math.abs
-import kotlin.math.atan2
-import kotlin.math.sqrt
+import kotlin.math.*
 
 /**
  * Class for representing 2D vectors (x and y).
@@ -32,8 +30,8 @@ class Vector2d @JvmOverloads constructor(
     infix fun distanceTo(other: Vector2d) = (this - other).norm()
 
     fun rotated(angle: Double): Vector2d {
-        val newX = x * Math.cos(angle) - y * Math.sin(angle)
-        val newY = x * Math.sin(angle) + y * Math.cos(angle)
+        val newX = x * cos(angle) - y * sin(angle)
+        val newY = x * sin(angle) + y * cos(angle)
         return Vector2d(newX, newY)
     }
 

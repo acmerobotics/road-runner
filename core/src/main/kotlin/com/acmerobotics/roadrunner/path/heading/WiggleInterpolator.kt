@@ -2,6 +2,7 @@ package com.acmerobotics.roadrunner.path.heading
 
 import com.acmerobotics.roadrunner.path.ParametricCurve
 import com.acmerobotics.roadrunner.path.QuinticPolynomial
+import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -57,12 +58,12 @@ class WiggleInterpolator(
 
     override fun respectsDerivativeContinuity() = baseInterpolator.respectsDerivativeContinuity()
 
-    private fun waveGet(t: Double) = amplitude * sin(2.0 * Math.PI * t / period)
+    private fun waveGet(t: Double) = amplitude * sin(2.0 * PI * t / period)
 
-    private fun waveDeriv(t: Double) = 2.0 * Math.PI * amplitude / period * cos(2.0 * Math.PI * t / period)
+    private fun waveDeriv(t: Double) = 2.0 * PI * amplitude / period * cos(2.0 * PI * t / period)
 
-    private fun waveSecondDeriv(t: Double) = 4.0 * Math.PI * Math.PI * amplitude / (period * period) *
-            sin(2.0 * Math.PI * t / period)
+    private fun waveSecondDeriv(t: Double) = 4.0 * PI * PI * amplitude / (period * period) *
+            sin(2.0 * PI * t / period)
 
     override fun internalGet(s: Double, t: Double): Double {
         val heading = when {

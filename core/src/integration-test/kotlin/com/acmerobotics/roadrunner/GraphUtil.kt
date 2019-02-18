@@ -4,13 +4,12 @@ import com.acmerobotics.roadrunner.path.ParametricCurve
 import com.acmerobotics.roadrunner.path.Path
 import com.acmerobotics.roadrunner.profile.MotionProfile
 import com.acmerobotics.roadrunner.trajectory.Trajectory
-import javafx.scene.chart.LineChart
+import java.io.File
+import java.nio.file.Paths
 import org.knowm.xchart.BitmapEncoder
 import org.knowm.xchart.QuickChart
 import org.knowm.xchart.XYChart
 import org.knowm.xchart.style.MatlabTheme
-import java.io.File
-import java.nio.file.Paths
 
 const val GRAPH_DIR = "./graphs/"
 const val GRAPH_DPI = 300
@@ -24,7 +23,12 @@ object GraphUtil {
         BitmapEncoder.saveBitmapWithDPI(graph, file.absolutePath, BitmapEncoder.BitmapFormat.PNG, GRAPH_DPI)
     }
 
-    fun saveMotionProfile(name: String, profile: MotionProfile, includeAcceleration: Boolean = true, resolution: Int = 1000) {
+    fun saveMotionProfile(
+        name: String,
+        profile: MotionProfile,
+        includeAcceleration: Boolean = true,
+        resolution: Int = 1000
+    ) {
         val timeData = (0..resolution).map { it / resolution.toDouble() * profile.duration() }.toDoubleArray()
         val positionData = timeData.map { profile[it].x }.toDoubleArray()
         val velocityData = timeData.map { profile[it].v }.toDoubleArray()
@@ -128,7 +132,6 @@ object GraphUtil {
 
         saveGraph(name, graph)
     }
-
 
     fun saveTrajectory(name: String, trajectory: Trajectory, resolution: Int = 1000) {
         val timeData = (0..resolution).map { it / resolution.toDouble() * trajectory.duration() }.toDoubleArray()

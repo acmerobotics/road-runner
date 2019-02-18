@@ -118,6 +118,7 @@ custom-rules:
   active: true
   NoJavaMath:
     active: true
+    ignore: "Math.pow"
 
 empty-blocks:
   active: true

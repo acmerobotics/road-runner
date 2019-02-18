@@ -5,6 +5,9 @@ import com.acmerobotics.roadrunner.Vector2d
 import com.acmerobotics.roadrunner.path.heading.ConstantInterpolator
 import com.acmerobotics.roadrunner.path.heading.HeadingInterpolator
 import com.acmerobotics.roadrunner.path.heading.TangentInterpolator
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
 
 /**
  * Easy-to-use builder for creating [Path] instances.
@@ -72,8 +75,8 @@ class PathBuilder(startPose: Pose2d) {
      */
     fun forward(distance: Double): PathBuilder {
         return lineTo(currentPose.pos() + Vector2d(
-            distance * Math.cos(currentPose.heading),
-            distance * Math.sin(currentPose.heading)
+            distance * cos(currentPose.heading),
+            distance * sin(currentPose.heading)
         )
         )
     }
@@ -97,8 +100,8 @@ class PathBuilder(startPose: Pose2d) {
      */
     fun strafeLeft(distance: Double): PathBuilder {
         return strafeTo(currentPose.pos() + Vector2d(
-            distance * Math.cos(currentPose.heading + Math.PI / 2),
-            distance * Math.sin(currentPose.heading + Math.PI / 2)
+            distance * cos(currentPose.heading + PI / 2),
+            distance * sin(currentPose.heading + PI / 2)
         )
         )
     }
@@ -122,9 +125,9 @@ class PathBuilder(startPose: Pose2d) {
     fun splineTo(pose: Pose2d, interpolator: HeadingInterpolator = TangentInterpolator()): PathBuilder {
         val derivMag = (currentPose.pos() distanceTo pose.pos())
         val startWaypoint = QuinticSplineSegment.Waypoint(currentPose.x, currentPose.y,
-            derivMag * Math.cos(currentPose.heading), derivMag * Math.sin(currentPose.heading))
+            derivMag * cos(currentPose.heading), derivMag * sin(currentPose.heading))
         val endWaypoint = QuinticSplineSegment.Waypoint(pose.x, pose.y,
-            derivMag * Math.cos(pose.heading), derivMag * Math.sin(pose.heading))
+            derivMag * cos(pose.heading), derivMag * sin(pose.heading))
 
         val spline = if (currentReverse) {
             QuinticSplineSegment(endWaypoint, startWaypoint)

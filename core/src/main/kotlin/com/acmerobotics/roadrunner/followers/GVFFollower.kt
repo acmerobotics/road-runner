@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.path.Path
 import com.acmerobotics.roadrunner.profile.SimpleMotionConstraints
 import com.acmerobotics.roadrunner.util.Angle
 import com.acmerobotics.roadrunner.util.NanoClock
+import kotlin.math.atan2
 import kotlin.math.sqrt
 
 /**
@@ -45,7 +46,7 @@ class GVFFollower @JvmOverloads constructor(
     override fun internalUpdate(currentPose: Pose2d): DriveSignal {
         val gvfResult = gvf.getExtended(currentPose.x, currentPose.y, lastProjectionDisplacement)
 
-        val desiredHeading = Math.atan2(gvfResult.vector.y, gvfResult.vector.x)
+        val desiredHeading = atan2(gvfResult.vector.y, gvfResult.vector.x)
         val headingError = Angle.norm(currentPose.heading - desiredHeading)
 
         // TODO: implement this or nah? ref eqs. (18), (23), and (24)

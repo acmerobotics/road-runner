@@ -4,6 +4,7 @@ import com.acmerobotics.roadrunner.Pose2d
 import com.acmerobotics.roadrunner.profile.*
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import com.acmerobotics.roadrunner.util.Angle
+import kotlin.math.PI
 
 /**
  * Point turn trajectory segment.
@@ -20,7 +21,7 @@ class PointTurn(val start: Pose2d, endHeading: Double, val constraints: DriveCon
 
     init {
         val ccwTurnAngle = Angle.norm(endHeading - start.heading)
-        val turnAngle = if (ccwTurnAngle <= Math.PI) {
+        val turnAngle = if (ccwTurnAngle <= PI) {
             ccwTurnAngle
         } else {
             Angle.norm(start.heading - endHeading)

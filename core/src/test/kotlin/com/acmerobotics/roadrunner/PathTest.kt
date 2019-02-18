@@ -32,7 +32,7 @@ class PathTest {
         val heading = s.map { splineSegment[it].heading }
         val headingDeriv = s.map { splineSegment.deriv(it).heading }
         val headingSecondDeriv = s.map { splineSegment.secondDeriv(it).heading }
-        
+
         assertDerivEquals(x, dx, ds, 0.01)
         assertDerivEquals(dx, d2x, ds, 0.01)
 

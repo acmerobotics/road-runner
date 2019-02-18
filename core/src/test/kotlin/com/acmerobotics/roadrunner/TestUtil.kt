@@ -1,7 +1,7 @@
 package com.acmerobotics.roadrunner
 
-import org.assertj.core.api.Assertions.assertThat
 import kotlin.math.abs
+import org.assertj.core.api.Assertions.assertThat
 
 object TestUtil {
     // TODO: is padding the derivative acceptable?

@@ -2,11 +2,11 @@ package com.acmerobotics.roadrunner
 
 import com.acmerobotics.roadrunner.TestUtil.assertContinuous
 import com.acmerobotics.roadrunner.profile.*
+import java.lang.Math.min
+import java.lang.Math.pow
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import java.lang.Math.min
-import java.lang.Math.pow
 
 const val RESOLUTION = 1000
 
@@ -16,7 +16,13 @@ class MotionProfileGeneratorTest {
     /**
      * Verifies continuity and start/goal satisfaction and saves an image of the profile for manual inspection.
      */
-    private fun testProfile(name: String, start: MotionState, goal: MotionState, profile: MotionProfile, verifyAccel: Boolean = false) {
+    private fun testProfile(
+        name: String,
+        start: MotionState,
+        goal: MotionState,
+        profile: MotionProfile,
+        verifyAccel: Boolean = false
+    ) {
         // save it
         GraphUtil.saveMotionProfile("profiles/$name", profile)
 

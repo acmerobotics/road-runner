@@ -33,8 +33,8 @@ object Kinematics {
             fieldPoseAcceleration.heading
         ) +
         Pose2d(
-            -fieldPoseVelocity.x * Math.sin(fieldPose.heading) + fieldPoseVelocity.y * Math.cos(fieldPose.heading),
-            -fieldPoseVelocity.x * Math.cos(fieldPose.heading) - fieldPoseVelocity.y * Math.sin(fieldPose.heading),
+            -fieldPoseVelocity.x * sin(fieldPose.heading) + fieldPoseVelocity.y * cos(fieldPose.heading),
+            -fieldPoseVelocity.x * cos(fieldPose.heading) - fieldPoseVelocity.y * sin(fieldPose.heading),
             0.0
         ) * fieldPoseVelocity.heading
 

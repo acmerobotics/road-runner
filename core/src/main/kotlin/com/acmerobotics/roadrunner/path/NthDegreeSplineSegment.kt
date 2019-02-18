@@ -2,7 +2,6 @@ package com.acmerobotics.roadrunner.path
 
 import com.acmerobotics.roadrunner.Vector2d
 import com.acmerobotics.roadrunner.util.InterpolatingTreeMap
-import java.lang.Math.pow
 import kotlin.math.sqrt
 
 private const val LENGTH_SAMPLES = 1000
@@ -75,8 +74,8 @@ class NthDegreeSplineSegment(start: List<Vector2d>, end: List<Vector2d>) : Param
                 deriv.x * thirdDeriv.x + deriv.y * thirdDeriv.y
         val secondNumeratorSecondTerm = -4.0 * firstNumerator
         val denominator = deriv.x * deriv.x + deriv.y * deriv.y
-        return (secondNumeratorFirstTerm / pow(denominator, 2.5) +
-                secondNumeratorSecondTerm / pow(denominator, 3.5))
+        return (secondNumeratorFirstTerm / Math.pow(denominator, 2.5) +
+                secondNumeratorSecondTerm / Math.pow(denominator, 3.5))
     }
 
     override fun length() = length
