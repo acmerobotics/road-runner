@@ -80,6 +80,7 @@ object Kinematics {
      * Performs a relative odometry update. Note: this assumes that the robot moves with constant velocity over the
      * measurement interval.
      */
+    // TODO: should robotPoseDelta be robotPoseVelocity
     @JvmStatic
     fun relativeOdometryUpdate(fieldPose: Pose2d, robotPoseDelta: Pose2d): Pose2d {
         val fieldPoseDelta = if (abs(robotPoseDelta.heading) > 1e-6) {

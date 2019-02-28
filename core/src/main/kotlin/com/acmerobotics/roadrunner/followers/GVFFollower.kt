@@ -47,11 +47,11 @@ class GVFFollower @JvmOverloads constructor(
         val gvfResult = gvf.getExtended(currentPose.x, currentPose.y, lastProjectionDisplacement)
 
         val desiredHeading = atan2(gvfResult.vector.y, gvfResult.vector.x)
-        val headingError = Angle.norm(currentPose.heading - desiredHeading)
+        val headingError = Angle.norm(desiredHeading - currentPose.heading)
 
         // TODO: implement this or nah? ref eqs. (18), (23), and (24)
         val desiredOmega = 0.0
-        val omega = desiredOmega - kOmega * headingError
+        val omega = desiredOmega + kOmega * headingError
 
         // basic online motion profiling
         val timestamp = clock.seconds()
