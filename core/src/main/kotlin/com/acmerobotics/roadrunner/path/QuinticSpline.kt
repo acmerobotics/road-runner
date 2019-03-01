@@ -15,7 +15,7 @@ private const val LENGTH_SAMPLES = 1000
  * @param start start waypoint
  * @param end end waypoint
  */
-class QuinticSplineSegment(start: Waypoint, end: Waypoint) : ParametricCurve() {
+class QuinticSpline(start: Waypoint, end: Waypoint) : ParametricCurve() {
 
     /**
      * X polynomial (i.e., x(t))

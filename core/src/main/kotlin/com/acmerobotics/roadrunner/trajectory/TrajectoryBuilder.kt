@@ -4,7 +4,7 @@ import com.acmerobotics.roadrunner.Pose2d
 import com.acmerobotics.roadrunner.Vector2d
 import com.acmerobotics.roadrunner.path.LineSegment
 import com.acmerobotics.roadrunner.path.Path
-import com.acmerobotics.roadrunner.path.QuinticSplineSegment
+import com.acmerobotics.roadrunner.path.QuinticSpline
 import com.acmerobotics.roadrunner.path.heading.ConstantInterpolator
 import com.acmerobotics.roadrunner.path.heading.HeadingInterpolator
 import com.acmerobotics.roadrunner.path.heading.TangentInterpolator
@@ -199,15 +199,15 @@ class TrajectoryBuilder @JvmOverloads constructor(
 
         val constraints = constraintsOverride ?: this.globalConstraints
         val derivMag = (currentPose.pos() distanceTo pose.pos())
-        val startWaypoint = QuinticSplineSegment.Waypoint(currentPose.x, currentPose.y,
+        val startWaypoint = QuinticSpline.Waypoint(currentPose.x, currentPose.y,
             derivMag * cos(currentPose.heading), derivMag * sin(currentPose.heading))
-        val endWaypoint = QuinticSplineSegment.Waypoint(pose.x, pose.y,
+        val endWaypoint = QuinticSpline.Waypoint(pose.x, pose.y,
             derivMag * cos(pose.heading), derivMag * sin(pose.heading))
 
         val spline = if (reversed) {
-            Path(QuinticSplineSegment(endWaypoint, startWaypoint), interpolator, true)
+            Path(QuinticSpline(endWaypoint, startWaypoint), interpolator, true)
         } else {
-            Path(QuinticSplineSegment(startWaypoint, endWaypoint), interpolator, false)
+            Path(QuinticSpline(startWaypoint, endWaypoint), interpolator, false)
         }
         if (composite) {
             paths.add(spline)

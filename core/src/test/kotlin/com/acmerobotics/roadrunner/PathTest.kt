@@ -2,7 +2,7 @@ package com.acmerobotics.roadrunner
 
 import com.acmerobotics.roadrunner.TestUtil.assertDerivEquals
 import com.acmerobotics.roadrunner.path.Path
-import com.acmerobotics.roadrunner.path.QuinticSplineSegment
+import com.acmerobotics.roadrunner.path.QuinticSpline
 import com.acmerobotics.roadrunner.util.DoubleProgression
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -12,9 +12,9 @@ import org.junit.jupiter.api.TestInstance
 class PathTest {
     @Test
     fun testPathDerivatives() {
-        val splineSegment = Path(QuinticSplineSegment(
-                QuinticSplineSegment.Waypoint(0.0, 0.0, 20.0, 40.0),
-                QuinticSplineSegment.Waypoint(45.0, 35.0, 60.0, 10.0)
+        val splineSegment = Path(QuinticSpline(
+                QuinticSpline.Waypoint(0.0, 0.0, 20.0, 40.0),
+                QuinticSpline.Waypoint(45.0, 35.0, 60.0, 10.0)
         ))
 
         val resolution = 1000
@@ -46,12 +46,12 @@ class PathTest {
     @Test
     fun testProgressionParam() {
         val path = Path(listOf(
-            QuinticSplineSegment(
-                QuinticSplineSegment.Waypoint(0.0, 0.0, 20.0, 40.0),
-                QuinticSplineSegment.Waypoint(45.0, 35.0, 60.0, 10.0)
-            ), QuinticSplineSegment(
-                QuinticSplineSegment.Waypoint(45.0, 35.0, 60.0, 10.0),
-                QuinticSplineSegment.Waypoint(55.0, 70.0, -20.0, 30.0)
+            QuinticSpline(
+                QuinticSpline.Waypoint(0.0, 0.0, 20.0, 40.0),
+                QuinticSpline.Waypoint(45.0, 35.0, 60.0, 10.0)
+            ), QuinticSpline(
+                QuinticSpline.Waypoint(45.0, 35.0, 60.0, 10.0),
+                QuinticSpline.Waypoint(55.0, 70.0, -20.0, 30.0)
             )
         ))
 

@@ -2,7 +2,7 @@ package com.acmerobotics.roadrunner
 
 import com.acmerobotics.roadrunner.path.LineSegment
 import com.acmerobotics.roadrunner.path.Path
-import com.acmerobotics.roadrunner.path.QuinticSplineSegment
+import com.acmerobotics.roadrunner.path.QuinticSpline
 import com.acmerobotics.roadrunner.trajectory.PathTrajectorySegment
 import com.acmerobotics.roadrunner.trajectory.Trajectory
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
@@ -32,9 +32,9 @@ class SplineTrajectoryTest {
 
     @Test
     fun testSimpleSpline() {
-        val spline = QuinticSplineSegment(
-                QuinticSplineSegment.Waypoint(0.0, 0.0, 20.0, 20.0),
-                QuinticSplineSegment.Waypoint(30.0, 15.0, -30.0, 10.0)
+        val spline = QuinticSpline(
+                QuinticSpline.Waypoint(0.0, 0.0, 20.0, 20.0),
+                QuinticSpline.Waypoint(30.0, 15.0, -30.0, 10.0)
         )
         val trajectory = Trajectory(listOf(
             PathTrajectorySegment(listOf(Path(spline)), listOf(BASE_CONSTRAINTS))
@@ -50,9 +50,9 @@ class SplineTrajectoryTest {
             Vector2d(0.0, 0.0),
             Vector2d(15.0, 15.0)
         )
-        val spline = QuinticSplineSegment(
-                QuinticSplineSegment.Waypoint(15.0, 15.0, 15.0, 15.0),
-                QuinticSplineSegment.Waypoint(30.0, 15.0, 20.0, 5.0)
+        val spline = QuinticSpline(
+                QuinticSpline.Waypoint(15.0, 15.0, 15.0, 15.0),
+                QuinticSpline.Waypoint(30.0, 15.0, 20.0, 5.0)
         )
         val trajectory = Trajectory(listOf(
             PathTrajectorySegment(listOf(Path(line), Path(spline)), listOf(CONSTRAINTS, CONSTRAINTS))

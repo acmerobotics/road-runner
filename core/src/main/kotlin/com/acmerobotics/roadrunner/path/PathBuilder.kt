@@ -124,15 +124,15 @@ class PathBuilder(startPose: Pose2d) {
     @JvmOverloads
     fun splineTo(pose: Pose2d, interpolator: HeadingInterpolator = TangentInterpolator()): PathBuilder {
         val derivMag = (currentPose.pos() distanceTo pose.pos())
-        val startWaypoint = QuinticSplineSegment.Waypoint(currentPose.x, currentPose.y,
+        val startWaypoint = QuinticSpline.Waypoint(currentPose.x, currentPose.y,
             derivMag * cos(currentPose.heading), derivMag * sin(currentPose.heading))
-        val endWaypoint = QuinticSplineSegment.Waypoint(pose.x, pose.y,
+        val endWaypoint = QuinticSpline.Waypoint(pose.x, pose.y,
             derivMag * cos(pose.heading), derivMag * sin(pose.heading))
 
         val spline = if (currentReverse) {
-            QuinticSplineSegment(endWaypoint, startWaypoint)
+            QuinticSpline(endWaypoint, startWaypoint)
         } else {
-            QuinticSplineSegment(startWaypoint, endWaypoint)
+            QuinticSpline(startWaypoint, endWaypoint)
         }
 
         parametricCurves.add(spline)
