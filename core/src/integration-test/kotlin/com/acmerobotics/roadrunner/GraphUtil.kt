@@ -14,6 +14,9 @@ import org.knowm.xchart.style.MatlabTheme
 const val GRAPH_DIR = "./graphs/"
 const val GRAPH_DPI = 300
 
+/**
+ * Useful utilities for generating and saving graphs.
+ */
 object GraphUtil {
 
     fun saveGraph(name: String, graph: XYChart) {

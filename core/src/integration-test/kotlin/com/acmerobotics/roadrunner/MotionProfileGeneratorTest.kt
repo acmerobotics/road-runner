@@ -2,8 +2,7 @@ package com.acmerobotics.roadrunner
 
 import com.acmerobotics.roadrunner.TestUtil.assertContinuous
 import com.acmerobotics.roadrunner.profile.*
-import java.lang.Math.min
-import java.lang.Math.pow
+import kotlin.math.min
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -154,7 +153,7 @@ class MotionProfileGeneratorTest {
                 MotionState(10.0, 0.0, 0.0),
                 object : MotionConstraints() {
                     override fun get(s: Double) = SimpleMotionConstraints(
-                        pow(s - 5.0, 4.0) + 1.0, 5.0
+                        Math.pow(s - 5.0, 4.0) + 1.0, 5.0
                     )
                 }
             )
@@ -172,8 +171,8 @@ class MotionProfileGeneratorTest {
                 MotionState(10.0, 0.0, 0.0),
                 object : MotionConstraints() {
                     override fun get(s: Double) = SimpleMotionConstraints(
-                        pow(s - 5.0, 4.0) + 1.0,
-                        min(pow(s - 5.0, 4.0) + 1.0, 10.0)
+                        Math.pow(s - 5.0, 4.0) + 1.0,
+                        min(Math.pow(s - 5.0, 4.0) + 1.0, 10.0)
                     )
                 }
             )
@@ -191,8 +190,8 @@ class MotionProfileGeneratorTest {
                 MotionState(0.0, 0.0, 0.0),
                 object : MotionConstraints() {
                     override fun get(s: Double) = SimpleMotionConstraints(
-                        pow(s - 5.0, 4.0) + 1.0,
-                        min(pow(s - 5.0, 4.0) + 1.0, 10.0)
+                        Math.pow(s - 5.0, 4.0) + 1.0,
+                        min(Math.pow(s - 5.0, 4.0) + 1.0, 10.0)
                     )
                 }
             )

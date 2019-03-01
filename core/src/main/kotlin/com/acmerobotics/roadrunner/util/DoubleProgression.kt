@@ -32,7 +32,10 @@ class DoubleProgression(
 
     operator fun unaryMinus() = DoubleProgression(-start, -end, -step)
 
-    inner class IteratorImpl(range: IntRange) : Iterator<Double> {
+    /**
+     * Iterator implementation for [DoubleProgression].
+     */
+    inner class IteratorImpl internal constructor(range: IntRange) : Iterator<Double> {
         private val iterator: Iterator<Int> = range.iterator()
 
         override fun hasNext() = iterator.hasNext()

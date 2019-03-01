@@ -118,7 +118,7 @@ custom-rules:
   active: true
   NoJavaMath:
     active: true
-    ignore: "Math.pow"
+    ignore: "Math.pow,Math.toRadians,Math.toDegrees"
 
 empty-blocks:
   active: true

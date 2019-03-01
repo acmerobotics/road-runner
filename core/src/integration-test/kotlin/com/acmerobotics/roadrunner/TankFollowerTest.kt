@@ -10,6 +10,7 @@ import com.acmerobotics.roadrunner.profile.SimpleMotionConstraints
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import com.acmerobotics.roadrunner.trajectory.constraints.TankConstraints
+import kotlin.math.PI
 import kotlin.math.atan
 import kotlin.math.max
 import kotlin.math.min
@@ -24,7 +25,7 @@ private const val kV = 1.0 / 60.0
 private const val SIMULATION_HZ = 25
 private const val TRACK_WIDTH = 3.0
 
-private val BASE_CONSTRAINTS = DriveConstraints(50.0, 25.0, Math.PI / 2, Math.PI / 2)
+private val BASE_CONSTRAINTS = DriveConstraints(50.0, 25.0, PI / 2, PI / 2)
 private val CONSTRAINTS = TankConstraints(BASE_CONSTRAINTS, TRACK_WIDTH)
 
 private val VOLTAGE_NOISE_DIST = NormalDistribution(1.0, 0.05)
@@ -62,8 +63,8 @@ class TankFollowerTest {
 
         val trajectory = TrajectoryBuilder(Pose2d(0.0, 0.0, 0.0), CONSTRAINTS)
                 .beginComposite()
-                .splineTo(Pose2d(15.0, 15.0, Math.PI))
-                .splineTo(Pose2d(5.0, 35.0, Math.PI / 3))
+                .splineTo(Pose2d(15.0, 15.0, PI))
+                .splineTo(Pose2d(5.0, 35.0, PI / 3))
                 .closeComposite()
                 .waitFor(0.5)
                 .build()
@@ -116,8 +117,8 @@ class TankFollowerTest {
 
         val trajectory = TrajectoryBuilder(Pose2d(0.0, 0.0, 0.0), CONSTRAINTS)
                 .beginComposite()
-                .splineTo(Pose2d(15.0, 15.0, Math.PI))
-                .splineTo(Pose2d(5.0, 35.0, Math.PI / 3))
+                .splineTo(Pose2d(15.0, 15.0, PI))
+                .splineTo(Pose2d(5.0, 35.0, PI / 3))
                 .closeComposite()
                 .waitFor(0.5)
                 .build()
@@ -186,7 +187,7 @@ class TankFollowerTest {
 
         val actualPositions = mutableListOf<Vector2d>()
 
-        drive.poseEstimate = Pose2d(0.0, 10.0, -Math.PI / 2)
+        drive.poseEstimate = Pose2d(0.0, 10.0, -PI / 2)
         var t = 0.0
         while (follower.isFollowing()) {
             t += dt

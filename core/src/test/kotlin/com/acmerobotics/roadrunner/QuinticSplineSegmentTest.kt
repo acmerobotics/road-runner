@@ -8,6 +8,8 @@ import org.junit.jupiter.api.TestInstance
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class QuinticSplineSegmentTest {
+
+    @Suppress("LongMethod")
     @Test
     fun testSplineDerivatives() {
         val splineSegment = QuinticSplineSegment(
@@ -81,12 +83,16 @@ class QuinticSplineSegmentTest {
 
         assertEquals(splineSegment.deriv(0.0).x, splineSegment2.deriv(0.0).x, 0.001)
         assertEquals(splineSegment.deriv(0.0).y, splineSegment2.deriv(0.0).y, 0.001)
-        assertEquals(splineSegment.deriv(splineSegment.length()).x, splineSegment2.deriv(splineSegment.length()).x, 0.001)
-        assertEquals(splineSegment.deriv(splineSegment.length()).y, splineSegment2.deriv(splineSegment.length()).y, 0.001)
+        assertEquals(splineSegment.deriv(splineSegment.length()).x,
+            splineSegment2.deriv(splineSegment.length()).x, 0.001)
+        assertEquals(splineSegment.deriv(splineSegment.length()).y,
+            splineSegment2.deriv(splineSegment.length()).y, 0.001)
 
         assertEquals(splineSegment.secondDeriv(0.0).x, splineSegment2.secondDeriv(0.0).x, 0.001)
         assertEquals(splineSegment.secondDeriv(0.0).y, splineSegment2.secondDeriv(0.0).y, 0.001)
-        assertEquals(splineSegment.secondDeriv(splineSegment.length()).x, splineSegment2.secondDeriv(splineSegment.length()).x, 0.001)
-        assertEquals(splineSegment.secondDeriv(splineSegment.length()).y, splineSegment2.secondDeriv(splineSegment.length()).y, 0.001)
+        assertEquals(splineSegment.secondDeriv(splineSegment.length()).x,
+            splineSegment2.secondDeriv(splineSegment.length()).x, 0.001)
+        assertEquals(splineSegment.secondDeriv(splineSegment.length()).y,
+            splineSegment2.secondDeriv(splineSegment.length()).y, 0.001)
     }
 }

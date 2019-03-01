@@ -1,3 +1,5 @@
+@file:Suppress("NoItParamInMultilineLambda")
+
 package com.acmerobotics.roadrunner
 
 import com.acmerobotics.roadrunner.kinematics.Kinematics
@@ -11,12 +13,13 @@ import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import com.acmerobotics.roadrunner.trajectory.constraints.MecanumConstraints
 import com.acmerobotics.roadrunner.trajectory.constraints.SwerveConstraints
 import com.acmerobotics.roadrunner.trajectory.constraints.TankConstraints
+import kotlin.math.PI
 import kotlin.math.abs
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 
-private val BASE_CONSTRAINTS = DriveConstraints(10.0, 25.0, Math.PI / 2, Math.PI / 2)
+private val BASE_CONSTRAINTS = DriveConstraints(10.0, 25.0, PI / 2, PI / 2)
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class DriveWheelConstraintsTest {
@@ -24,8 +27,8 @@ class DriveWheelConstraintsTest {
     fun testTankWheelVelocityLimiting() {
         val constraints = TankConstraints(BASE_CONSTRAINTS, 10.0)
         val trajectory = TrajectoryBuilder(Pose2d(0.0, 0.0, 0.0), constraints)
-                .splineTo(Pose2d(15.0, 15.0, Math.PI))
-                .splineTo(Pose2d(5.0, 35.0, Math.PI / 3))
+                .splineTo(Pose2d(15.0, 15.0, PI))
+                .splineTo(Pose2d(5.0, 35.0, PI / 3))
                 .build()
 
         val dt = trajectory.duration() / 10000.0
@@ -45,8 +48,8 @@ class DriveWheelConstraintsTest {
     fun testMecanumWheelVelocityLimiting() {
         val constraints = MecanumConstraints(BASE_CONSTRAINTS, 10.0, 5.0)
         val trajectory = TrajectoryBuilder(Pose2d(0.0, 0.0, 0.0), constraints)
-                .splineTo(Pose2d(15.0, 15.0, Math.PI), interpolator = SplineInterpolator(0.0, Math.PI / 2))
-                .splineTo(Pose2d(5.0, 35.0, Math.PI / 3), interpolator = TangentInterpolator())
+                .splineTo(Pose2d(15.0, 15.0, PI), interpolator = SplineInterpolator(0.0, PI / 2))
+                .splineTo(Pose2d(5.0, 35.0, PI / 3), interpolator = TangentInterpolator())
                 .build()
 
         val dt = trajectory.duration() / 10000.0
@@ -66,8 +69,8 @@ class DriveWheelConstraintsTest {
     fun testSwerveWheelVelocityLimiting() {
         val constraints = SwerveConstraints(BASE_CONSTRAINTS, 10.0, 5.0)
         val trajectory = TrajectoryBuilder(Pose2d(0.0, 0.0, 0.0), constraints)
-                .splineTo(Pose2d(15.0, 15.0, Math.PI), interpolator = SplineInterpolator(0.0, Math.PI / 2))
-                .splineTo(Pose2d(5.0, 35.0, Math.PI / 3), interpolator = TangentInterpolator())
+                .splineTo(Pose2d(15.0, 15.0, PI), interpolator = SplineInterpolator(0.0, PI / 2))
+                .splineTo(Pose2d(5.0, 35.0, PI / 3), interpolator = TangentInterpolator())
                 .build()
 
         val dt = trajectory.duration() / 10000.0
