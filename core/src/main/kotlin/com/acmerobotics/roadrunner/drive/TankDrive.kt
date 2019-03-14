@@ -1,6 +1,6 @@
 package com.acmerobotics.roadrunner.drive
 
-import com.acmerobotics.roadrunner.Pose2d
+import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.kinematics.Kinematics
 import com.acmerobotics.roadrunner.kinematics.TankKinematics
 import com.acmerobotics.roadrunner.localization.Localizer
@@ -31,7 +31,8 @@ abstract class TankDrive constructor(
         private val drive: TankDrive,
         private val useExternalHeading: Boolean = true
     ) : Localizer {
-        override var poseEstimate: Pose2d = Pose2d()
+        override var poseEstimate: Pose2d =
+            Pose2d()
             set(value) {
                 lastWheelPositions = emptyList()
                 lastExtHeading = Double.NaN

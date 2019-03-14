@@ -7,6 +7,9 @@ import javax.swing.JPanel
 import javax.swing.JTextField
 import javax.swing.SwingConstants
 
+/**
+ * Panel for specifying the robot kinematic constraints.
+ */
 class ConstraintsPanel : JPanel() {
     private class MutableDriveConstraints(
         var maximumVelocity: Double,
@@ -38,6 +41,7 @@ class ConstraintsPanel : JPanel() {
 
     var onConstraintsUpdateListener: ((DriveConstraints) -> Unit)? = null
 
+    // TODO: make some helpers to make Swing less awful
     init {
         val panel = JPanel()
         panel.layout = GridLayout(0, 2, 5, 5)
@@ -45,7 +49,8 @@ class ConstraintsPanel : JPanel() {
         panel.add(JLabel("Max Velocity", SwingConstants.RIGHT))
         maxVelTextField = JTextField()
         maxVelTextField.addChangeListener {
-            mutableConstraints.maximumVelocity = maxVelTextField.text.toDoubleOrNull() ?: mutableConstraints.maximumVelocity
+            mutableConstraints.maximumVelocity = maxVelTextField.text.toDoubleOrNull()
+                ?: mutableConstraints.maximumVelocity
             fireUpdate()
         }
         panel.add(maxVelTextField)
@@ -53,7 +58,8 @@ class ConstraintsPanel : JPanel() {
         panel.add(JLabel("Max Accel", SwingConstants.RIGHT))
         maxAccelTextField = JTextField()
         maxAccelTextField.addChangeListener {
-            mutableConstraints.maximumAcceleration = maxAccelTextField.text.toDoubleOrNull() ?: mutableConstraints.maximumAcceleration
+            mutableConstraints.maximumAcceleration = maxAccelTextField.text.toDoubleOrNull()
+                ?: mutableConstraints.maximumAcceleration
             fireUpdate()
         }
         panel.add(maxAccelTextField)
@@ -61,7 +67,8 @@ class ConstraintsPanel : JPanel() {
         panel.add(JLabel("Max Ang Velocity", SwingConstants.RIGHT))
         maxAngVelTextField = JTextField()
         maxAngVelTextField.addChangeListener {
-            mutableConstraints.maximumAngularVelocity = maxAngVelTextField.text.toDoubleOrNull()?.toRadians() ?: mutableConstraints.maximumAngularVelocity
+            mutableConstraints.maximumAngularVelocity = maxAngVelTextField.text.toDoubleOrNull()?.toRadians()
+                ?: mutableConstraints.maximumAngularVelocity
             fireUpdate()
         }
         panel.add(maxAngVelTextField)
@@ -69,7 +76,8 @@ class ConstraintsPanel : JPanel() {
         panel.add(JLabel("Max Ang Accel", SwingConstants.RIGHT))
         maxAngAccelTextField = JTextField()
         maxAngAccelTextField.addChangeListener {
-            mutableConstraints.maximumAngularAcceleration = maxAngAccelTextField.text.toDoubleOrNull()?.toRadians() ?: mutableConstraints.maximumAngularAcceleration
+            mutableConstraints.maximumAngularAcceleration = maxAngAccelTextField.text.toDoubleOrNull()?.toRadians()
+                ?: mutableConstraints.maximumAngularAcceleration
             fireUpdate()
         }
         panel.add(maxAngAccelTextField)

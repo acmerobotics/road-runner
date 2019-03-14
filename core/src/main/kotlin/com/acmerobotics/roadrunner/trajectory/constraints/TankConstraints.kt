@@ -1,6 +1,6 @@
 package com.acmerobotics.roadrunner.trajectory.constraints
 
-import com.acmerobotics.roadrunner.Pose2d
+import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.kinematics.Kinematics
 import com.acmerobotics.roadrunner.kinematics.TankKinematics
 import com.acmerobotics.roadrunner.profile.SimpleMotionConstraints

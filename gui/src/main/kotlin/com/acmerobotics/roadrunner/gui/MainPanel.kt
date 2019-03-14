@@ -1,6 +1,6 @@
 package com.acmerobotics.roadrunner.gui
 
-import com.acmerobotics.roadrunner.Pose2d
+import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.trajectory.TrajectoryConfig
 import com.acmerobotics.roadrunner.trajectory.TrajectoryLoader
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
@@ -16,6 +16,9 @@ private const val DEFAULT_RESOLUTION = 0.25
 private const val MIN_RESOLUTION = 5.0
 private const val MAX_RESOLUTION = 0.01
 
+/**
+ * Main GUI window panel.
+ */
 class MainPanel : JPanel() {
 
     var onTrajectoryUpdateListener: (() -> Unit)? = null

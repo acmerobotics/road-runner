@@ -1,7 +1,7 @@
 package com.acmerobotics.roadrunner.trajectory
 
-import com.acmerobotics.roadrunner.Pose2d
-import com.acmerobotics.roadrunner.Vector2d
+import com.acmerobotics.roadrunner.geometry.Pose2d
+import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import kotlin.math.abs
 import kotlin.math.cos
@@ -39,7 +39,10 @@ class TrajectoryConfig @JvmOverloads constructor(
                     } else {
                         builder.beginComposite()
                         val diff = endPose - startPose
-                        val dot = Vector2d(cos(endPose.heading), sin(endPose.heading)) dot diff.pos()
+                        val dot = Vector2d(
+                            cos(endPose.heading),
+                            sin(endPose.heading)
+                        ) dot diff.pos()
                         val cosAngle = dot / diff.pos().norm()
 
                         builder.setReversed(cosAngle < 0)

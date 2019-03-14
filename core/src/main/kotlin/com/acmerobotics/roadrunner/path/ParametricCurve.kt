@@ -1,6 +1,6 @@
 package com.acmerobotics.roadrunner.path
 
-import com.acmerobotics.roadrunner.Vector2d
+import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.util.DoubleProgression
 
 /**

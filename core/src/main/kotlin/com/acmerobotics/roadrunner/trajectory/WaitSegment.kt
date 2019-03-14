@@ -1,6 +1,6 @@
 package com.acmerobotics.roadrunner.trajectory
 
-import com.acmerobotics.roadrunner.Pose2d
+import com.acmerobotics.roadrunner.geometry.Pose2d
 
 /**
  * Static trajectory segment that holds a constant pose. Used for giving trajectories extra time to settle.

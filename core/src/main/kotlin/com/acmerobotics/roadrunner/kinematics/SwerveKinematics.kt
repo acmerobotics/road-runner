@@ -1,7 +1,7 @@
 package com.acmerobotics.roadrunner.kinematics
 
-import com.acmerobotics.roadrunner.Pose2d
-import com.acmerobotics.roadrunner.Vector2d
+import com.acmerobotics.roadrunner.geometry.Pose2d
+import com.acmerobotics.roadrunner.geometry.Vector2d
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -123,19 +123,20 @@ object SwerveKinematics {
         trackWidth: Double,
         wheelBase: Double = trackWidth
     ) =
-            robotToModuleVelocityVectors(
-                robotPoseVelocity,
+        robotToModuleVelocityVectors(
+            robotPoseVelocity,
+            trackWidth,
+            wheelBase
+        ).zip(
+            robotToModuleAccelerationVectors(
+                robotPoseAcceleration,
                 trackWidth,
                 wheelBase
             )
-                    .zip(
-                        robotToModuleAccelerationVectors(
-                            robotPoseAcceleration,
-                            trackWidth,
-                            wheelBase
-                        )
-                    )
-                    .map { (it.first.x * it.second.x + it.first.y * it.second.y) / it.first.norm() }
+        )
+        .map { (vel, accel) ->
+            (vel.x * accel.x + vel.y * accel.y) / vel.norm()
+        }
 
     /**
      * Computes the module angular velocities corresponding to [robotPoseAcceleration] given the provided [trackWidth]
@@ -187,8 +188,13 @@ object SwerveKinematics {
         val y = trackWidth / 2
 
         val vectors = wheelVelocities
-                .zip(moduleOrientations)
-                .map { Vector2d(it.first * cos(it.second), it.first * sin(it.second)) }
+            .zip(moduleOrientations)
+            .map { (vel, orientation) ->
+                Vector2d(
+                    vel * cos(orientation),
+                    vel * sin(orientation)
+                )
+            }
 
         val vx = vectors.sumByDouble { it.x } / 4
         val vy = vectors.sumByDouble { it.y } / 4

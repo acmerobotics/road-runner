@@ -7,6 +7,9 @@ import javax.swing.JPanel
 import javax.swing.JTextField
 import javax.swing.SwingConstants
 
+/**
+ * Panel with basic information about the generated trajectory and some configurable options.
+ */
 class TrajectoryInfoPanel : JPanel() {
     private val durationLabel: JLabel
     private val resolutionTextField: JTextField

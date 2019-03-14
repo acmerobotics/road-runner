@@ -24,3 +24,9 @@ object MathUtil {
         }
     }
 }
+
+// TODO: make this a global epsilon?
+private const val EPSILON = 1e-6
+
+infix fun Double.epsilonEquals(other: Double) =
+    abs(this - other) < EPSILON

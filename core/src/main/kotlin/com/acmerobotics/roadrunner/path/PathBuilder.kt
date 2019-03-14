@@ -1,7 +1,7 @@
 package com.acmerobotics.roadrunner.path
 
-import com.acmerobotics.roadrunner.Pose2d
-import com.acmerobotics.roadrunner.Vector2d
+import com.acmerobotics.roadrunner.geometry.Pose2d
+import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.path.heading.ConstantInterpolator
 import com.acmerobotics.roadrunner.path.heading.HeadingInterpolator
 import com.acmerobotics.roadrunner.path.heading.TangentInterpolator

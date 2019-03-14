@@ -1,7 +1,7 @@
 package com.acmerobotics.roadrunner.localization
 
-import com.acmerobotics.roadrunner.Pose2d
-import com.acmerobotics.roadrunner.Vector2d
+import com.acmerobotics.roadrunner.geometry.Pose2d
+import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.kinematics.Kinematics
 import kotlin.math.cos
 import kotlin.math.sin
@@ -20,7 +20,8 @@ abstract class TwoTrackingWheelLocalizer(
     wheelPositions: List<Vector2d>,
     wheelOrientations: List<Double>
 ) : Localizer {
-    override var poseEstimate: Pose2d = Pose2d()
+    override var poseEstimate: Pose2d =
+        Pose2d()
         set(value) {
             lastWheelPositions = emptyList()
             lastHeading = Double.NaN

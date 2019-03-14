@@ -1,11 +1,15 @@
-package com.acmerobotics.roadrunner
+package com.acmerobotics.roadrunner.geometry
 
-import kotlin.math.*
+import com.acmerobotics.roadrunner.util.epsilonEquals
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.sqrt
 
 /**
  * Class for representing 2D vectors (x and y).
  */
-class Vector2d @JvmOverloads constructor(
+data class Vector2d @JvmOverloads constructor(
     val x: Double = 0.0,
     val y: Double = 0.0
 ) {
@@ -35,15 +39,10 @@ class Vector2d @JvmOverloads constructor(
         return Vector2d(newX, newY)
     }
 
-    override fun toString() = String.format("(%.3f, %.3f)", x, y)
+    infix fun epsilonEquals(other: Vector2d) =
+        x epsilonEquals other.x && y epsilonEquals other.y
 
-    override fun equals(other: Any?): Boolean {
-        return if (other is Vector2d) {
-            abs(x - other.x) < 1e-4 && abs(y - other.y) < 1e-4
-        } else {
-            false
-        }
-    }
+    override fun toString() = String.format("(%.3f, %.3f)", x, y)
 }
 
 operator fun Double.times(vector: Vector2d) = vector.times(this)

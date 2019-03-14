@@ -3,7 +3,11 @@ import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.Rectangle
 import javax.swing.*
+import kotlin.math.max
 
+/**
+ * Scroll panel host.
+ */
 class ScrollPanelHost(private val scrollPanel: JPanel) : JPanel(BorderLayout()), Scrollable {
     init {
         add(scrollPanel)
@@ -30,15 +34,15 @@ class ScrollPanelHost(private val scrollPanel: JPanel) : JPanel(BorderLayout()),
 
     override fun getScrollableBlockIncrement(visibleRect: Rectangle, orientation: Int, direction: Int): Int {
         return if (orientation == SwingConstants.HORIZONTAL)
-            Math.max(visibleRect.width * 9 / 10, 1)
+            max(visibleRect.width * 9 / 10, 1)
         else
-            Math.max(visibleRect.height * 9 / 10, 1)
+            max(visibleRect.height * 9 / 10, 1)
     }
 
     override fun getScrollableUnitIncrement(visibleRect: Rectangle, orientation: Int, direction: Int): Int {
         return if (orientation == SwingConstants.HORIZONTAL)
-            Math.max(visibleRect.width / 10, 1)
+            max(visibleRect.width / 10, 1)
         else
-            Math.max(visibleRect.height / 10, 1)
+            max(visibleRect.height / 10, 1)
     }
 }

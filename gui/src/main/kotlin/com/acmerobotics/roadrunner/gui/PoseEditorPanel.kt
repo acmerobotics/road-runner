@@ -1,11 +1,14 @@
 package com.acmerobotics.roadrunner.gui
 
-import com.acmerobotics.roadrunner.Pose2d
+import com.acmerobotics.roadrunner.geometry.Pose2d
 import java.awt.Dimension
 import java.awt.GridLayout
 import javax.swing.*
 import kotlin.math.min
 
+/**
+ * Panel for specifying path poses.
+ */
 class PoseEditorPanel : JPanel() {
     override fun getPreferredSize(): Dimension {
         val size = super.getPreferredSize()

@@ -1,6 +1,6 @@
 package com.acmerobotics.roadrunner.kinematics
 
-import com.acmerobotics.roadrunner.Pose2d
+import com.acmerobotics.roadrunner.geometry.Pose2d
 
 /**
  * Mecanum drive kinematic equations. All wheel positions and velocities are given starting with front left and

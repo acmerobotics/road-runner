@@ -1,24 +1,32 @@
 package com.acmerobotics.roadrunner.gui
 
 import com.acmerobotics.roadrunner.trajectory.Trajectory
-import java.awt.Color
-import java.awt.Graphics
-import java.awt.Graphics2D
-import javax.swing.JPanel
 import org.knowm.xchart.QuickChart
 import org.knowm.xchart.XYChart
 import org.knowm.xchart.style.MatlabTheme
 import org.knowm.xchart.style.Styler
+import java.awt.Color
+import java.awt.Graphics
+import java.awt.Graphics2D
+import javax.swing.JPanel
 
 private const val RESOLUTION = 1000
 val SERIES_COLORS = arrayOf(
         Color(0x2979ff), Color(0xdd2c00), Color(0x4caf50)
 )
 
+/**
+ * Panel with a graph of the robot velocities over time to examine the shape of the motion profile.
+ */
 class TrajectoryGraphPanel : JPanel() {
 
-    private var chart: XYChart = QuickChart.getChart("", "time", "velocity",
-            arrayOf("ẋ ", "ẏ ", "ω"), doubleArrayOf(0.0), arrayOf(doubleArrayOf(0.0), doubleArrayOf(0.0), doubleArrayOf(0.0)))
+    private var chart: XYChart = QuickChart.getChart(
+        "", "time", "velocity",
+        arrayOf("ẋ ", "ẏ ", "ω"),
+        doubleArrayOf(0.0),
+        arrayOf(doubleArrayOf(0.0),
+        doubleArrayOf(0.0),
+        doubleArrayOf(0.0)))
 
     override fun paintComponent(g: Graphics?) {
         super.paintComponent(g)
@@ -28,6 +36,7 @@ class TrajectoryGraphPanel : JPanel() {
         g2d.dispose()
     }
 
+    @Suppress("LongMethod")
     fun updateTrajectory(trajectory: Trajectory) {
         if (trajectory.duration().isInfinite() || trajectory.duration().isNaN()) {
             return

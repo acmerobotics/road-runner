@@ -1,5 +1,7 @@
 package com.acmerobotics.roadrunner
 
+import com.acmerobotics.roadrunner.geometry.Pose2d
+import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.path.Path
 import com.acmerobotics.roadrunner.path.PathBuilder
 import org.junit.jupiter.api.Test

@@ -1,6 +1,6 @@
 package com.acmerobotics.roadrunner.localization
 
-import com.acmerobotics.roadrunner.Pose2d
+import com.acmerobotics.roadrunner.geometry.Pose2d
 
 /**
  * Generic interface for estimating robot pose over time.

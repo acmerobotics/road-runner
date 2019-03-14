@@ -3,6 +3,9 @@ package com.acmerobotics.roadrunner.gui
 import javax.swing.SwingUtilities
 import javax.swing.UIManager
 
+/**
+ * Entrypoint fro the GUI.
+ */
 object Main {
     @JvmStatic
     fun main(args: Array<String>) {

@@ -1,6 +1,6 @@
 package com.acmerobotics.roadrunner.drive
 
-import com.acmerobotics.roadrunner.Pose2d
+import com.acmerobotics.roadrunner.geometry.Pose2d
 
 /**
  * Signal indicating the commanded kinematic state of a drive.

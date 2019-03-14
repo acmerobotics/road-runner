@@ -1,5 +1,6 @@
 package com.acmerobotics.roadrunner
 
+import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.path.LineSegment
 import com.acmerobotics.roadrunner.path.Path
 import com.acmerobotics.roadrunner.path.QuinticSpline

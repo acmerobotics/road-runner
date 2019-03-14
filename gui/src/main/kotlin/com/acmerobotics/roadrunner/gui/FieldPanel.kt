@@ -1,6 +1,6 @@
 package com.acmerobotics.roadrunner.gui
 
-import com.acmerobotics.roadrunner.Pose2d
+import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.trajectory.Trajectory
 import java.awt.*
 import java.awt.geom.AffineTransform
@@ -12,6 +12,9 @@ import kotlin.math.roundToInt
 
 private const val RESOLUTION = 1000
 
+/**
+ * Panel displaying an image of the field with the trajectory/path superimposed.
+ */
 class FieldPanel : JPanel() {
 
     private var poses = listOf<Pose2d>()
@@ -27,6 +30,7 @@ class FieldPanel : JPanel() {
         repaint()
     }
 
+    @Suppress("LongMethod")
     override fun paintComponent(g: Graphics?) {
         super.paintComponent(g)
 
@@ -76,7 +80,8 @@ class FieldPanel : JPanel() {
             val secondPoint = Point2D.Double()
             transform.transform(Point2D.Double(firstPose.x, firstPose.y), firstPoint)
             transform.transform(Point2D.Double(secondPose.x, secondPose.y), secondPoint)
-            g2d.drawLine(firstPoint.x.roundToInt(), firstPoint.y.roundToInt(), secondPoint.x.roundToInt(), secondPoint.y.roundToInt())
+            g2d.drawLine(firstPoint.x.roundToInt(), firstPoint.y.roundToInt(),
+                secondPoint.x.roundToInt(), secondPoint.y.roundToInt())
         }
     }
 }

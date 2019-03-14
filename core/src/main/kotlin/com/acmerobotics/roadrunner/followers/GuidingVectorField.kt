@@ -1,6 +1,6 @@
 package com.acmerobotics.roadrunner.followers
 
-import com.acmerobotics.roadrunner.Vector2d
+import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.path.Path
 import kotlin.math.sign
 
