@@ -33,6 +33,8 @@ class Pose2d @JvmOverloads constructor(
             false
         }
     }
+
+    val vector2d = Vector2d(x, y)
 }
 
 operator fun Double.times(pose: Pose2d) = pose.times(this)
