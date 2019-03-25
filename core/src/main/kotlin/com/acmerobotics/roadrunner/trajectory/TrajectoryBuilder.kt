@@ -19,7 +19,7 @@ import com.acmerobotics.roadrunner.util.Angle
  * @param globalConstraints global drive constraints (overridable for specific segments)
  * @param resolution resolution used for path-based segments (see [PathTrajectorySegment])
  */
-class TrajectoryBuilder @JvmOverloads constructor(
+open class TrajectoryBuilder @JvmOverloads constructor(
         startPose: Pose2d,
         private val globalConstraints: DriveConstraints,
         private val resolution: Int = 250
