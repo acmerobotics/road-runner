@@ -84,7 +84,7 @@ open class TrajectoryBuilder @JvmOverloads constructor(
      *
      * @param pos position to face
      */
-    fun face(pos: Vector2d) = turnTo((pos - currentPose.vector2d).angle())
+    fun face(pos: Vector2d) = turnTo((pos - currentPose.vector).angle())
 
     /**
      * Adds a line path segment.
