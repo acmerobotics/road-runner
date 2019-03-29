@@ -19,7 +19,7 @@ import com.acmerobotics.roadrunner.util.Angle
  * @param globalConstraints global drive constraints (overridable for specific segments)
  * @param resolution resolution used for path-based segments (see [PathTrajectorySegment])
  */
-class TrajectoryBuilder @JvmOverloads constructor(
+open class TrajectoryBuilder @JvmOverloads constructor(
         startPose: Pose2d,
         private val globalConstraints: DriveConstraints,
         private val resolution: Int = 250
@@ -78,6 +78,13 @@ class TrajectoryBuilder @JvmOverloads constructor(
 
         return this
     }
+
+    /**
+     * Turns to face a position.
+     *
+     * @param pos position to face
+     */
+    fun face(pos: Vector2d) = turnTo((pos - currentPose.vector).angle())
 
     /**
      * Adds a line path segment.
