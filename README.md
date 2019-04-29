@@ -2,7 +2,13 @@
 
 A simple Kotlin library for planning 2D mobile robot paths and trajectories designed for FTC. **Note:** this project is in alpha and many of the APIs are incubating.
 
-<p align="center"><img src="doc/image/plugin.png" width="450"/></span>
+<div style='display: flex; flex-direction: column; align-items: center;'>
+
+![](doc/image/8393.gif)
+
+(Courtesy of FTC Team 8393, Ochoa F2)
+
+</div>
 
 ## Installation
 
