@@ -23,7 +23,7 @@ open class TrajectoryBuilder @JvmOverloads constructor(
         startPose: Pose2d,
         private val globalConstraints: DriveConstraints,
         private val resolution: Int = 250
-) {
+) : ITrajectoryBuilder{
     private var currentPose: Pose2d = startPose
     private val trajectorySegments = mutableListOf<TrajectorySegment>()
     private var paths = mutableListOf<Path>()
@@ -34,7 +34,7 @@ open class TrajectoryBuilder @JvmOverloads constructor(
     /**
      * Reverse the direction of robot travel.
      */
-    open fun reverse(): TrajectoryBuilder {
+    override fun reverse(): TrajectoryBuilder {
         reversed = !reversed
         return this
     }
@@ -42,7 +42,7 @@ open class TrajectoryBuilder @JvmOverloads constructor(
     /**
      * Sets the robot travel direction.
      */
-    open fun setReversed(reversed: Boolean): TrajectoryBuilder {
+    override fun setReversed(reversed: Boolean): TrajectoryBuilder {
         this.reversed = reversed
         return this
     }
@@ -54,8 +54,7 @@ open class TrajectoryBuilder @JvmOverloads constructor(
      * @param constraintsOverride turn-specific drive constraints
      */
     // TODO: support turns that are greater than 180deg?
-    @JvmOverloads
-    open fun turn(angle: Double, constraintsOverride: DriveConstraints? = null): TrajectoryBuilder {
+    override fun turn(angle: Double, constraintsOverride: DriveConstraints?): TrajectoryBuilder {
         return turnTo(Angle.norm(currentPose.heading + angle), constraintsOverride)
     }
 
@@ -65,8 +64,7 @@ open class TrajectoryBuilder @JvmOverloads constructor(
      * @param heading heading to turn to
      * @param constraintsOverride turn-specific drive constraints
      */
-    @JvmOverloads
-    open fun turnTo(heading: Double, constraintsOverride: DriveConstraints? = null): TrajectoryBuilder {
+    override fun turnTo(heading: Double, constraintsOverride: DriveConstraints?): TrajectoryBuilder {
         if (composite) {
             closeComposite()
         }
@@ -84,7 +82,7 @@ open class TrajectoryBuilder @JvmOverloads constructor(
      *
      * @param pos position to face
      */
-    open fun face(pos: Vector2d) = turnTo((pos - currentPose.vector).angle())
+    override fun face(pos: Vector2d) = turnTo((pos - currentPose.vector).angle())
 
     /**
      * Adds a line path segment.
@@ -93,8 +91,7 @@ open class TrajectoryBuilder @JvmOverloads constructor(
      * @param interpolator heading interpolator
      * @param constraintsOverride line-specific drive constraints
      */
-    @JvmOverloads
-    open fun lineTo(pos: Vector2d, interpolator: HeadingInterpolator = TangentInterpolator(), constraintsOverride: TrajectoryConstraints? = null): TrajectoryBuilder {
+    override fun lineTo(pos: Vector2d, interpolator: HeadingInterpolator, constraintsOverride: TrajectoryConstraints?): TrajectoryBuilder {
         val postBeginComposite = if (!interpolator.respectsDerivativeContinuity() && composite) {
             closeComposite()
             true
@@ -128,14 +125,14 @@ open class TrajectoryBuilder @JvmOverloads constructor(
      *
      * @param pos end position
      */
-    open fun strafeTo(pos: Vector2d) = lineTo(pos, ConstantInterpolator(currentPose.heading))
+    override fun strafeTo(pos: Vector2d) = lineTo(pos, ConstantInterpolator(currentPose.heading))
 
     /**
      * Adds a line straight forward.
      *
      * @param distance distance to travel forward
      */
-    open fun forward(distance: Double): TrajectoryBuilder {
+    override fun forward(distance: Double): TrajectoryBuilder {
         return lineTo(currentPose.pos() + Vector2d(
                 distance * Math.cos(currentPose.heading),
                 distance * Math.sin(currentPose.heading)
@@ -147,7 +144,7 @@ open class TrajectoryBuilder @JvmOverloads constructor(
      *
      * @param distance distance to travel backward
      */
-    open fun back(distance: Double): TrajectoryBuilder {
+    override fun back(distance: Double): TrajectoryBuilder {
         reverse()
         forward(-distance)
         reverse()
@@ -159,7 +156,7 @@ open class TrajectoryBuilder @JvmOverloads constructor(
      *
      * @param distance distance to strafe left
      */
-    open fun strafeLeft(distance: Double): TrajectoryBuilder {
+    override fun strafeLeft(distance: Double): TrajectoryBuilder {
         return strafeTo(currentPose.pos() + Vector2d(
                 distance * Math.cos(currentPose.heading + Math.PI / 2),
                 distance * Math.sin(currentPose.heading + Math.PI / 2)
@@ -171,7 +168,7 @@ open class TrajectoryBuilder @JvmOverloads constructor(
      *
      * @param distance distance to strafe right
      */
-    open fun strafeRight(distance: Double): TrajectoryBuilder {
+    override fun strafeRight(distance: Double): TrajectoryBuilder {
         return strafeLeft(-distance)
     }
 
@@ -182,8 +179,7 @@ open class TrajectoryBuilder @JvmOverloads constructor(
      * @param interpolator heading interpolator
      * @param constraintsOverride spline-specific constraints
      */
-    @JvmOverloads
-    open fun splineTo(pose: Pose2d, interpolator: HeadingInterpolator = TangentInterpolator(), constraintsOverride: TrajectoryConstraints? = null): TrajectoryBuilder {
+    override fun splineTo(pose: Pose2d, interpolator: HeadingInterpolator, constraintsOverride: TrajectoryConstraints?): TrajectoryBuilder {
         val postBeginComposite = if (!interpolator.respectsDerivativeContinuity() && composite) {
             closeComposite()
             true
@@ -232,7 +228,7 @@ open class TrajectoryBuilder @JvmOverloads constructor(
      *
      * @param duration wait duration
      */
-    open fun waitFor(duration: Double): TrajectoryBuilder {
+    override fun waitFor(duration: Double): TrajectoryBuilder {
         trajectorySegments.add(WaitSegment(currentPose, duration))
         return this
     }
@@ -240,7 +236,7 @@ open class TrajectoryBuilder @JvmOverloads constructor(
     /**
      * Begins a composite path trajectory segment backed by a single continuous profile.
      */
-    open fun beginComposite(): TrajectoryBuilder {
+    override fun beginComposite(): TrajectoryBuilder {
         composite = true
         return this
     }
@@ -248,7 +244,7 @@ open class TrajectoryBuilder @JvmOverloads constructor(
     /**
      * Closes a composite path trajectory segment (see [beginComposite]).
      */
-    open fun closeComposite(): TrajectoryBuilder {
+    override fun closeComposite(): TrajectoryBuilder {
         composite = false
         if (paths.isNotEmpty() && constraintsList.isNotEmpty()) {
             trajectorySegments.add(PathTrajectorySegment(paths, constraintsList, resolution))
@@ -261,7 +257,7 @@ open class TrajectoryBuilder @JvmOverloads constructor(
     /**
      * Constructs the [Trajectory] instance.
      */
-    open fun build(): Trajectory {
+    override fun build(): Trajectory {
         if (composite) {
             closeComposite()
         }

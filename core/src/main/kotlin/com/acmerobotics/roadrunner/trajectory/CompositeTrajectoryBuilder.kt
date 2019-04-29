@@ -11,11 +11,11 @@ import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
  * @param resolution resolution used for path-based segments (see [PathTrajectorySegment])
  */
 
-class CompositeTrajectoryBuilder @JvmOverloads constructor(
+open class CompositeTrajectoryBuilder @JvmOverloads constructor(
         startPose: Pose2d,
         private val globalConstraints: DriveConstraints,
         private val resolution: Int = 250
-) : TrajectoryBuilder(startPose, globalConstraints, resolution){
+) : TrajectoryBuilder(startPose, globalConstraints, resolution) {
     init {
         beginComposite()
     }
