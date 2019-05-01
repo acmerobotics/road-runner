@@ -4,30 +4,23 @@ import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.profile.*
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import com.acmerobotics.roadrunner.util.Angle
-import kotlin.math.PI
 
 /**
  * Point turn trajectory segment.
  *
  * @param start start pose
- * @param endHeading end heading
+ * @param angle angle to sweep through (may exceed a full revolution)
  * @param constraints drive constraints
  */
-class PointTurn(val start: Pose2d, endHeading: Double, val constraints: DriveConstraints) : TrajectorySegment {
+class PointTurn(val start: Pose2d, val angle: Double, val constraints: DriveConstraints) : TrajectorySegment {
     /**
      * Motion profile for the time parametrization of the turn.
      */
     val profile: MotionProfile
 
     init {
-        val ccwTurnAngle = Angle.norm(endHeading - start.heading)
-        val turnAngle = if (ccwTurnAngle <= PI) {
-            ccwTurnAngle
-        } else {
-            Angle.norm(start.heading - endHeading)
-        }
         val start = MotionState(0.0, 0.0, 0.0)
-        val goal = MotionState(turnAngle, 0.0, 0.0)
+        val goal = MotionState(angle, 0.0, 0.0)
         profile = MotionProfileGenerator.generateMotionProfile(start, goal, object : MotionConstraints() {
             override fun get(s: Double) = SimpleMotionConstraints(
                 constraints.maximumAngularVelocity,

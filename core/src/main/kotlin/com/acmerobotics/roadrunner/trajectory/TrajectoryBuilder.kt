@@ -56,10 +56,18 @@ class TrajectoryBuilder @JvmOverloads constructor(
      * @param angle angle to turn by (relative to the current heading)
      * @param constraintsOverride turn-specific drive constraints
      */
-    // TODO: support turns that are greater than 180deg?
     @JvmOverloads
     fun turn(angle: Double, constraintsOverride: DriveConstraints? = null): TrajectoryBuilder {
-        return turnTo(Angle.norm(currentPose.heading + angle), constraintsOverride)
+        if (composite) {
+            closeComposite()
+        }
+
+        val constraints = constraintsOverride ?: globalConstraints
+        val pointTurn = PointTurn(currentPose, angle, constraints)
+        trajectorySegments.add(pointTurn)
+        currentPose = Pose2d(currentPose.pos(), Angle.norm(currentPose.heading + angle))
+
+        return this
     }
 
     /**
@@ -70,16 +78,14 @@ class TrajectoryBuilder @JvmOverloads constructor(
      */
     @JvmOverloads
     fun turnTo(heading: Double, constraintsOverride: DriveConstraints? = null): TrajectoryBuilder {
-        if (composite) {
-            closeComposite()
+        val ccwTurnAngle = Angle.norm(heading - currentPose.heading)
+        val turnAngle = if (ccwTurnAngle <= PI) {
+            ccwTurnAngle
+        } else {
+            Angle.norm(currentPose.heading - heading)
         }
 
-        val constraints = constraintsOverride ?: globalConstraints
-        val pointTurn = PointTurn(currentPose, heading, constraints)
-        trajectorySegments.add(pointTurn)
-        currentPose = Pose2d(currentPose.pos(), heading)
-
-        return this
+        return turn(turnAngle, constraintsOverride)
     }
 
     /**
