@@ -8,11 +8,11 @@ import com.acmerobotics.roadrunner.trajectory.PathTrajectorySegment
 import com.acmerobotics.roadrunner.trajectory.Trajectory
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import com.acmerobotics.roadrunner.trajectory.constraints.TankConstraints
-import kotlin.math.PI
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import kotlin.math.PI
 
-private val BASE_CONSTRAINTS = DriveConstraints(50.0, 25.0, PI / 2, PI / 2)
+private val BASE_CONSTRAINTS = DriveConstraints(50.0, 25.0, Double.NaN, PI / 2, PI / 2, Double.NaN)
 private val CONSTRAINTS = TankConstraints(BASE_CONSTRAINTS, 12.0)
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)

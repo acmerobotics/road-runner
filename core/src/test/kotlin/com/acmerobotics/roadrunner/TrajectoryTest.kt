@@ -7,9 +7,9 @@ import com.acmerobotics.roadrunner.path.heading.TangentInterpolator
 import com.acmerobotics.roadrunner.path.heading.WiggleInterpolator
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
-import kotlin.math.PI
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import kotlin.math.PI
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TrajectoryTest {
@@ -17,7 +17,7 @@ class TrajectoryTest {
     fun testTrajectoryDerivatives() {
         val cryptoColWidth = 7.5
         val stonePose = Pose2d(48.0, -47.5, PI)
-        val trajectory = TrajectoryBuilder(stonePose, DriveConstraints(5.0, 10.0, 2.0, 3.0))
+        val trajectory = TrajectoryBuilder(stonePose, DriveConstraints(5.0, 10.0, Double.NaN, 2.0, 3.0, Double.NaN))
                 .lineTo(Vector2d(12 - cryptoColWidth, stonePose.y))
                 .turnTo(PI / 2)
                 .reverse()

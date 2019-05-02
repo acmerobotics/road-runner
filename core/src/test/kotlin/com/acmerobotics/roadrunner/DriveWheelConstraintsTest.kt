@@ -14,13 +14,13 @@ import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import com.acmerobotics.roadrunner.trajectory.constraints.MecanumConstraints
 import com.acmerobotics.roadrunner.trajectory.constraints.SwerveConstraints
 import com.acmerobotics.roadrunner.trajectory.constraints.TankConstraints
-import kotlin.math.PI
-import kotlin.math.abs
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import kotlin.math.PI
+import kotlin.math.abs
 
-private val BASE_CONSTRAINTS = DriveConstraints(10.0, 25.0, PI / 2, PI / 2)
+private val BASE_CONSTRAINTS = DriveConstraints(10.0, 25.0, Double.NaN, PI / 2, PI / 2, Double.NaN)
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class DriveWheelConstraintsTest {

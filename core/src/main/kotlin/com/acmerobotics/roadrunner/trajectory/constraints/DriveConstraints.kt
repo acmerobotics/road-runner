@@ -11,14 +11,18 @@ import kotlin.math.abs
  *
  * @param maximumVelocity maximum robot velocity
  * @param maximumAcceleration maximum robot acceleration
+ * @param maximumJerk maximum robot jerk (ignored by dynamic profiles)
  * @param maximumAngularVelocity maximum angular velocity
  * @param maximumAngularAcceleration maximum angular acceleration (ignored by path-based trajectories)
+ * @param maximumAngularJerk maximum angular jerk (ignored by path-based trajectories)
  */
 open class DriveConstraints(
     @JvmField var maximumVelocity: Double,
     @JvmField var maximumAcceleration: Double,
+    @JvmField var maximumJerk: Double,
     @JvmField var maximumAngularVelocity: Double,
-    @JvmField var maximumAngularAcceleration: Double
+    @JvmField var maximumAngularAcceleration: Double,
+    @JvmField var maximumAngularJerk: Double
 ) : TrajectoryConstraints {
     override fun get(pose: Pose2d, poseDeriv: Pose2d, poseSecondDeriv: Pose2d): SimpleMotionConstraints {
         val maximumVelocities = mutableListOf(maximumVelocity)

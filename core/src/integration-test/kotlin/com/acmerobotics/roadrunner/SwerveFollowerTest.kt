@@ -7,21 +7,23 @@ import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
-import kotlin.math.PI
-import kotlin.math.max
-import kotlin.math.min
+import com.acmerobotics.roadrunner.trajectory.constraints.SwerveConstraints
 import org.apache.commons.math3.distribution.NormalDistribution
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.knowm.xchart.XYChart
 import org.knowm.xchart.style.MatlabTheme
 import org.knowm.xchart.style.markers.None
+import kotlin.math.PI
+import kotlin.math.max
+import kotlin.math.min
 
 private const val kV = 1.0 / 60.0
 private const val SIMULATION_HZ = 25
 private const val TRACK_WIDTH = 3.0
 
-private val BASE_CONSTRAINTS = DriveConstraints(50.0, 25.0, PI / 2, PI / 2)
+private val BASE_CONSTRAINTS = DriveConstraints(50.0, 25.0, Double.NaN, PI / 2, PI / 2, Double.NaN)
+private val CONSTRAINTS = SwerveConstraints(BASE_CONSTRAINTS, TRACK_WIDTH)
 
 private val VOLTAGE_NOISE_DIST = NormalDistribution(1.0, 0.05)
 
@@ -64,7 +66,7 @@ class SwerveFollowerTest {
     fun simulatePIDVAFollower() {
         val dt = 1.0 / SIMULATION_HZ
 
-        val trajectory = TrajectoryBuilder(Pose2d(0.0, 0.0, 0.0), BASE_CONSTRAINTS)
+        val trajectory = TrajectoryBuilder(Pose2d(0.0, 0.0, 0.0), CONSTRAINTS)
                 .beginComposite()
                 .splineTo(Pose2d(15.0, 15.0, PI))
                 .splineTo(Pose2d(5.0, 35.0, PI / 3))

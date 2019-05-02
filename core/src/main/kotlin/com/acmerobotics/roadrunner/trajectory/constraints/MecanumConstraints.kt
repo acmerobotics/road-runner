@@ -19,10 +19,12 @@ open class MecanumConstraints @JvmOverloads constructor(
     private val trackWidth: Double,
     private val wheelBase: Double = trackWidth
 ) : DriveConstraints(
-        baseConstraints.maximumVelocity,
-        baseConstraints.maximumAcceleration,
-        baseConstraints.maximumAngularVelocity,
-        baseConstraints.maximumAngularAcceleration
+    baseConstraints.maximumVelocity,
+    baseConstraints.maximumAcceleration,
+    baseConstraints.maximumJerk,
+    baseConstraints.maximumAngularVelocity,
+    baseConstraints.maximumAngularAcceleration,
+    baseConstraints.maximumAngularJerk
 ) {
     override operator fun get(pose: Pose2d, poseDeriv: Pose2d, poseSecondDeriv: Pose2d): SimpleMotionConstraints {
         val robotPoseDeriv = Kinematics.fieldToRobotPoseVelocity(pose, poseDeriv)

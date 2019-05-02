@@ -10,6 +10,7 @@ import javax.swing.SwingConstants
 /**
  * Panel for specifying the robot kinematic constraints.
  */
+// TODO: specify jerk?
 class ConstraintsPanel : JPanel() {
     private class MutableDriveConstraints(
         var maximumVelocity: Double,
@@ -17,18 +18,20 @@ class ConstraintsPanel : JPanel() {
         var maximumAngularVelocity: Double,
         var maximumAngularAcceleration: Double
     ) {
-        constructor(constraints: DriveConstraints): this(
-                constraints.maximumVelocity,
-                constraints.maximumAcceleration,
-                constraints.maximumAngularVelocity,
-                constraints.maximumAngularAcceleration
+        constructor(constraints: DriveConstraints) : this(
+            constraints.maximumVelocity,
+            constraints.maximumAcceleration,
+            constraints.maximumAngularVelocity,
+            constraints.maximumAngularAcceleration
         )
 
         fun immutable(): DriveConstraints = DriveConstraints(
-                maximumVelocity,
-                maximumAcceleration,
-                maximumAngularVelocity,
-                maximumAngularAcceleration
+            maximumVelocity,
+            maximumAcceleration,
+            Double.NaN,
+            maximumAngularVelocity,
+            maximumAngularAcceleration,
+            Double.NaN
         )
     }
 

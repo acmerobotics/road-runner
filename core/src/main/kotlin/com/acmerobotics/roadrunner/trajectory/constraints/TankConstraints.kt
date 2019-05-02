@@ -17,10 +17,12 @@ open class TankConstraints(
     baseConstraints: DriveConstraints,
     val trackWidth: Double
 ) : DriveConstraints(
-        baseConstraints.maximumVelocity,
-        baseConstraints.maximumAcceleration,
-        baseConstraints.maximumAngularVelocity,
-        baseConstraints.maximumAngularAcceleration
+    baseConstraints.maximumVelocity,
+    baseConstraints.maximumAcceleration,
+    baseConstraints.maximumJerk,
+    baseConstraints.maximumAngularVelocity,
+    baseConstraints.maximumAngularAcceleration,
+    baseConstraints.maximumAngularJerk
 ) {
     override operator fun get(pose: Pose2d, poseDeriv: Pose2d, poseSecondDeriv: Pose2d): SimpleMotionConstraints {
         val robotPoseDeriv = Kinematics.fieldToRobotPoseVelocity(pose, poseDeriv)

@@ -1,5 +1,4 @@
 autoCorrect: true
-failFast: false
 
 test-pattern: # Configure exclusions for test sources
   active: true
@@ -83,10 +82,10 @@ complexity:
   LabeledExpression:
     active: false
   LargeClass:
-    active: true
+    active: false
     threshold: 150
   LongMethod:
-    active: true
+    active: false
     threshold: 20
   LongParameterList:
     active: true
@@ -345,7 +344,7 @@ naming:
     active: true
     constantPattern: '[A-Z][_A-Z0-9]*'
     propertyPattern: '[A-Za-z][_A-Za-z0-9]*'
-    privatePropertyPattern: '(_)?[A-Za-z][A-Za-z0-9]*'
+    privatePropertyPattern: '[A-Za-z][_A-Za-z0-9]*'
   VariableMaxLength:
     active: false
     maximumVariableNameLength: 64
