@@ -11,7 +11,7 @@ import com.acmerobotics.roadrunner.util.NanoClock
  * Traditional PID controller with feedforward velocity and acceleration components to follow a trajectory. More
  * specifically, one feedback loop controls the path displacement (that is, x in the robot reference frame), and
  * another feedback loop to minimize cross track (lateral) error via heading correction (overall, very similar to
- * [MecanumPIDVAFollower] except adjusted for the nonholonomic constraint). Feedforward is applied at the wheel level.
+ * [HolonomicPIDVAFollower] except adjusted for the nonholonomic constraint). Feedforward is applied at the wheel level.
  *
  * @param longitudinalCoeffs PID coefficients for the robot longitudinal (x) controller
  * @param crossTrackCoeffs PID coefficients for the robot heading controller based on cross track error

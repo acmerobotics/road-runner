@@ -1,26 +1,21 @@
 package com.acmerobotics.roadrunner.path.heading
 
-import kotlin.math.PI
+import com.acmerobotics.roadrunner.util.Angle
 
 /**
  * Linear heading interpolator for time-optimal transitions between poses.
  *
  * @param startHeading start heading
- * @param endHeading end heading
+ * @param angle angle to sweep through (can be greater than a revolution)
  */
-class LinearInterpolator(private val startHeading: Double, endHeading: Double) : HeadingInterpolator() {
-    private val turnAngle: Double = if (endHeading >= startHeading) {
-        endHeading - startHeading
-    } else {
-        2 * PI - endHeading + startHeading
-    }
+class LinearInterpolator(private val startHeading: Double, private val angle: Double) : HeadingInterpolator() {
 
     override fun respectsDerivativeContinuity() = false
 
     override fun internalGet(s: Double, t: Double) =
-        (startHeading + s / parametricCurve.length() * turnAngle) % (2 * PI)
+        Angle.norm(startHeading + s / parametricCurve.length() * angle)
 
-    override fun internalDeriv(s: Double, t: Double) = turnAngle / parametricCurve.length()
+    override fun internalDeriv(s: Double, t: Double) = angle / parametricCurve.length()
 
     override fun internalSecondDeriv(s: Double, t: Double) = 0.0
 }
