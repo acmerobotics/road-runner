@@ -2,7 +2,6 @@ package com.acmerobotics.roadrunner.path
 
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.util.DoubleProgression
-import com.acmerobotics.roadrunner.util.InterpolatingTreeMap
 import kotlin.math.sqrt
 
 private const val LENGTH_SAMPLES = 1000
@@ -54,14 +53,12 @@ class QuinticSpline(start: Waypoint, end: Waypoint) : ParametricCurve() {
 
     private val length: Double
 
-    private val samplesTree: InterpolatingTreeMap = InterpolatingTreeMap()
-    private val sSamplesArray: DoubleArray = DoubleArray(LENGTH_SAMPLES + 1)
-    private val tSamplesArray: DoubleArray = DoubleArray(LENGTH_SAMPLES + 1)
+    private val sSamples = DoubleArray(LENGTH_SAMPLES + 1)
+    private val tSamples = DoubleArray(LENGTH_SAMPLES + 1)
 
     init {
-        samplesTree[0.0] = 0.0
-        sSamplesArray[0] = 0.0
-        tSamplesArray[0] = 0.0
+        sSamples[0] = 0.0
+        tSamples[0] = 0.0
 
         val dx = 1.0 / LENGTH_SAMPLES
         var sum = 0.0
@@ -73,9 +70,8 @@ class QuinticSpline(start: Waypoint, end: Waypoint) : ParametricCurve() {
             sum += (integrand + lastIntegrand) / 2.0
             lastIntegrand = integrand
 
-            samplesTree[sum] = t
-            sSamplesArray[i] = sum
-            tSamplesArray[i] = t
+            sSamples[i] = sum
+            tSamples[i] = t
         }
         length = sum
     }
@@ -90,10 +86,26 @@ class QuinticSpline(start: Waypoint, end: Waypoint) : ParametricCurve() {
     override fun internalThirdDeriv(t: Double) =
         Vector2d(x.thirdDeriv(t), y.thirdDeriv(t))
 
-    override fun reparam(s: Double) = samplesTree.getInterpolated(s) ?: 0.0
+    override fun reparam(s: Double): Double {
+        if (s <= 0.0) return 0.0
+        if (s >= length) return 1.0
 
-    // TODO: adaptively switch between this algorithm and the other algorithm
-    // one is O(k) and the other is O(n lg k)
+        var lo = 0
+        var hi = LENGTH_SAMPLES
+
+        while (lo <= hi) {
+            val mid = (hi + lo) / 2
+
+            if (s < sSamples[mid]) {
+                hi = mid - 1
+            } else if (s > sSamples[mid]) {
+                lo = mid + 1
+            }
+        }
+
+        return tSamples[lo] + (s - sSamples[lo]) * (tSamples[hi] - tSamples[lo]) / (sSamples[hi] - sSamples[lo])
+    }
+
     override fun reparam(s: DoubleProgression): DoubleArray {
         val t = DoubleArray(s.items())
         var i = 0
@@ -104,13 +116,13 @@ class QuinticSpline(start: Waypoint, end: Waypoint) : ParametricCurve() {
                 currS <= 0.0 -> 0.0
                 currS >= length -> 1.0
                 else -> {
-                    while (sSamplesArray[sampleIndex] < currS) {
+                    while (sSamples[sampleIndex] < currS) {
                         sampleIndex++
                     }
-                    val s0 = sSamplesArray[sampleIndex - 1]
-                    val s1 = sSamplesArray[sampleIndex]
-                    val t0 = tSamplesArray[sampleIndex - 1]
-                    val t1 = tSamplesArray[sampleIndex]
+                    val s0 = sSamples[sampleIndex - 1]
+                    val s1 = sSamples[sampleIndex]
+                    val t0 = tSamples[sampleIndex - 1]
+                    val t1 = tSamples[sampleIndex]
                     (t0 + (currS - s0) * (t1 - t0) / (s1 - s0))
                 }
             }
