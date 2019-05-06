@@ -24,7 +24,7 @@ class PointTurn(val start: Pose2d, val angle: Double, val constraints: DriveCons
         val start = MotionState(0.0, 0.0, 0.0)
         val goal = MotionState(angle, 0.0, 0.0)
         profile = MotionProfileGenerator.generateSimpleMotionProfile(start, goal,
-            constraints.maximumAngularVelocity, constraints.maximumAngularAcceleration, constraints.maximumAngularJerk)
+            constraints.maxAngVel, constraints.maxAngAccel, constraints.maxAngJerk)
     }
 
     override fun duration() = profile.duration()

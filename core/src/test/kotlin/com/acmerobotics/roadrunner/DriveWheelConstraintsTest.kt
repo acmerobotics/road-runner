@@ -34,15 +34,15 @@ class DriveWheelConstraintsTest {
 
         val dt = trajectory.duration() / 10000.0
         val t = (0..10000).map { it * dt }
-        val maxWheelVelocityMag = t.map {
+        val maxWheelVelMag = t.map {
             val pose = trajectory[it]
             val poseVel = trajectory.velocity(it)
-            val robotVelocity = Kinematics.fieldToRobotPoseVelocity(pose, poseVel)
-            TankKinematics.robotToWheelVelocities(robotVelocity, 10.0)
+            val robotVel = Kinematics.fieldToRobotVelocity(pose, poseVel)
+            TankKinematics.robotToWheelVelocities(robotVel, 10.0)
                     .map(::abs)
                     .max() ?: 0.0
         }.max() ?: 0.0
-        assertThat(maxWheelVelocityMag).isLessThan(BASE_CONSTRAINTS.maximumVelocity + 0.1)
+        assertThat(maxWheelVelMag).isLessThan(BASE_CONSTRAINTS.maxVel + 0.1)
     }
 
     @Test
@@ -55,15 +55,15 @@ class DriveWheelConstraintsTest {
 
         val dt = trajectory.duration() / 10000.0
         val t = (0..10000).map { it * dt }
-        val maxWheelVelocityMag = t.map {
+        val maxWheelVelMag = t.map {
             val pose = trajectory[it]
             val poseVel = trajectory.velocity(it)
-            val robotVelocity = Kinematics.fieldToRobotPoseVelocity(pose, poseVel)
-            MecanumKinematics.robotToWheelVelocities(robotVelocity, 10.0, 5.0)
+            val robotVel = Kinematics.fieldToRobotVelocity(pose, poseVel)
+            MecanumKinematics.robotToWheelVelocities(robotVel, 10.0, 5.0)
                     .map(::abs)
                     .max() ?: 0.0
         }.max() ?: 0.0
-        assertThat(maxWheelVelocityMag).isLessThan(BASE_CONSTRAINTS.maximumVelocity + 0.1)
+        assertThat(maxWheelVelMag).isLessThan(BASE_CONSTRAINTS.maxVel + 0.1)
     }
 
     @Test
@@ -76,14 +76,14 @@ class DriveWheelConstraintsTest {
 
         val dt = trajectory.duration() / 10000.0
         val t = (0..10000).map { it * dt }
-        val maxWheelVelocityMag = t.map {
+        val maxWheelVelMag = t.map {
             val pose = trajectory[it]
             val poseVel = trajectory.velocity(it)
-            val robotVelocity = Kinematics.fieldToRobotPoseVelocity(pose, poseVel)
-            SwerveKinematics.robotToWheelVelocities(robotVelocity, 10.0, 5.0)
+            val robotVel = Kinematics.fieldToRobotVelocity(pose, poseVel)
+            SwerveKinematics.robotToWheelVelocities(robotVel, 10.0, 5.0)
                     .map(::abs)
                     .max() ?: 0.0
         }.max() ?: 0.0
-        assertThat(maxWheelVelocityMag).isLessThan(BASE_CONSTRAINTS.maximumVelocity + 0.1)
+        assertThat(maxWheelVelMag).isLessThan(BASE_CONSTRAINTS.maxVel + 0.1)
     }
 }

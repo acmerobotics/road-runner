@@ -13,30 +13,26 @@ import kotlin.math.sin
 object Kinematics {
 
     /**
-     * Returns the robot pose velocity corresponding to [fieldPose] and [fieldPoseVelocity].
+     * Returns the robot pose velocity corresponding to [fieldPose] and [fieldVel].
      */
     @JvmStatic
-    fun fieldToRobotPoseVelocity(fieldPose: Pose2d, fieldPoseVelocity: Pose2d) =
-        Pose2d(
-            fieldPoseVelocity.pos().rotated(-fieldPose.heading),
-            fieldPoseVelocity.heading
-        )
+    fun fieldToRobotVelocity(fieldPose: Pose2d, fieldVel: Pose2d) =
+        Pose2d(fieldVel.pos().rotated(-fieldPose.heading), fieldVel.heading)
 
     /**
-     * Returns the robot pose acceleration corresponding to [fieldPose], [fieldPoseVelocity], and
-     * [fieldPoseAcceleration].
+     * Returns the robot pose acceleration corresponding to [fieldPose], [fieldVel], and [fieldAccel].
      */
     @JvmStatic
-    fun fieldToRobotPoseAcceleration(fieldPose: Pose2d, fieldPoseVelocity: Pose2d, fieldPoseAcceleration: Pose2d) =
+    fun fieldToRobotAcceleration(fieldPose: Pose2d, fieldVel: Pose2d, fieldAccel: Pose2d) =
         Pose2d(
-            fieldPoseAcceleration.pos().rotated(-fieldPose.heading),
-            fieldPoseAcceleration.heading
+            fieldAccel.pos().rotated(-fieldPose.heading),
+            fieldAccel.heading
         ) +
         Pose2d(
-            -fieldPoseVelocity.x * sin(fieldPose.heading) + fieldPoseVelocity.y * cos(fieldPose.heading),
-            -fieldPoseVelocity.x * cos(fieldPose.heading) - fieldPoseVelocity.y * sin(fieldPose.heading),
+            -fieldVel.x * sin(fieldPose.heading) + fieldVel.y * cos(fieldPose.heading),
+            -fieldVel.x * cos(fieldPose.heading) - fieldVel.y * sin(fieldPose.heading),
             0.0
-        ) * fieldPoseVelocity.heading
+        ) * fieldVel.heading
 
     /**
      * Returns the error between [targetFieldPose] and [currentFieldPose].
@@ -53,34 +49,32 @@ object Kinematics {
      */
     @JvmStatic
     fun calculateMotorFeedforward(
-        velocities: List<Double>,
-        accelerations: List<Double>,
+        vels: List<Double>,
+        accels: List<Double>,
         kV: Double,
         kA: Double,
         kStatic: Double
     ) =
-        velocities.zip(accelerations)
-                .map { it.first * kV + it.second * kA }
-                .map { if (abs(it) > 1e-4) it + sign(it) * kStatic else 0.0 }
+        vels.zip(accels)
+            .map { (vel, accel) -> calculateMotorFeedforward(vel, accel, kV, kA, kStatic) }
 
     /**
      * Computes the motor feedforward (i.e., open loop power) for the given set of coefficients.
      */
     @JvmStatic
-    fun calculateMotorFeedforward(velocity: Double, acceleration: Double, kV: Double, kA: Double, kStatic: Double) =
-            calculateMotorFeedforward(
-                listOf(velocity),
-                listOf(acceleration),
-                kV,
-                kA,
-                kStatic
-            )[0]
+    fun calculateMotorFeedforward(vel: Double, accel: Double, kV: Double, kA: Double, kStatic: Double): Double {
+        val basePower = vel * kV + accel * kA
+        return if (basePower > 1e-4) {
+            basePower + sign(basePower) * kStatic
+        } else {
+            0.0
+        }
+    }
 
     /**
      * Performs a relative odometry update. Note: this assumes that the robot moves with constant velocity over the
      * measurement interval.
      */
-    // TODO: should robotPoseDelta be robotPoseVelocity
     @JvmStatic
     fun relativeOdometryUpdate(fieldPose: Pose2d, robotPoseDelta: Pose2d): Pose2d {
         val fieldPoseDelta = if (abs(robotPoseDelta.heading) > 1e-6) {

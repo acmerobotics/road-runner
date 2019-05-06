@@ -19,6 +19,18 @@ localization.
 
 A collection of path and trajectory followers for various drive types.
 
+# Package com.acmerobotics.roadrunner.geometry
+
+Core geometric types for representing robot state.
+
+# Package com.acmerobotics.roadrunner.kinematics
+
+Kinematics for the various drive types.
+
+# Package com.acmerobotics.roadrunner.localization
+
+Home of tracking wheel localizers.
+
 # Package com.acmerobotics.roadrunner.path
 
 Type hierarchy for representing 2D holonomic robot paths (x, y, and heading components). 

@@ -12,8 +12,8 @@ interface TrajectoryConstraints {
      * Returns the maximum velocity and acceleration for the given pose derivatives.
      *
      * @param pose pose
-     * @param poseDeriv pose derivative
-     * @param poseSecondDeriv pose second derivative
+     * @param deriv pose derivative
+     * @param secondDeriv pose second derivative
      */
-    operator fun get(pose: Pose2d, poseDeriv: Pose2d, poseSecondDeriv: Pose2d): SimpleMotionConstraints
+    operator fun get(pose: Pose2d, deriv: Pose2d, secondDeriv: Pose2d): SimpleMotionConstraints
 }

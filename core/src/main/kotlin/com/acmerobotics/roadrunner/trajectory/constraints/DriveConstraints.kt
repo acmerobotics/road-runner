@@ -9,28 +9,28 @@ import kotlin.math.abs
  * robot acceleration, and robot angular velocity are limited.  For point turns, the angular velocity and angular
  * acceleration are limited.
  *
- * @param maximumVelocity maximum robot velocity
- * @param maximumAcceleration maximum robot acceleration
- * @param maximumJerk maximum robot jerk (ignored by dynamic profiles)
- * @param maximumAngularVelocity maximum angular velocity
- * @param maximumAngularAcceleration maximum angular acceleration (ignored by path-based trajectories)
- * @param maximumAngularJerk maximum angular jerk (ignored by path-based trajectories)
+ * @param maxVel maximum robot velocity
+ * @param maxAccel maximum robot acceleration
+ * @param maxJerk maximum robot jerk (ignored by dynamic profiles)
+ * @param maxAngVel maximum angular velocity
+ * @param maxAngAccel maximum angular acceleration (ignored by path-based trajectories)
+ * @param maxAngJerk maximum angular jerk (ignored by path-based trajectories)
  */
 open class DriveConstraints(
-    @JvmField var maximumVelocity: Double,
-    @JvmField var maximumAcceleration: Double,
-    @JvmField var maximumJerk: Double,
-    @JvmField var maximumAngularVelocity: Double,
-    @JvmField var maximumAngularAcceleration: Double,
-    @JvmField var maximumAngularJerk: Double
+    @JvmField var maxVel: Double,
+    @JvmField var maxAccel: Double,
+    @JvmField var maxJerk: Double,
+    @JvmField var maxAngVel: Double,
+    @JvmField var maxAngAccel: Double,
+    @JvmField var maxAngJerk: Double
 ) : TrajectoryConstraints {
-    override fun get(pose: Pose2d, poseDeriv: Pose2d, poseSecondDeriv: Pose2d): SimpleMotionConstraints {
-        val maximumVelocities = mutableListOf(maximumVelocity)
+    override fun get(pose: Pose2d, deriv: Pose2d, secondDeriv: Pose2d): SimpleMotionConstraints {
+        val maxVels = mutableListOf(maxVel)
 
-        if (abs(poseDeriv.heading) > 1e-6) {
-            maximumVelocities.add(maximumAngularVelocity / Math.abs(poseDeriv.heading))
+        if (abs(deriv.heading) > 1e-6) {
+            maxVels.add(maxAngVel / Math.abs(deriv.heading))
         }
 
-        return SimpleMotionConstraints(maximumVelocities.min() ?: 0.0, maximumAcceleration)
+        return SimpleMotionConstraints(maxVels.min() ?: 0.0, maxAccel)
     }
 }

@@ -77,11 +77,12 @@ class SwerveFollowerTest {
         val clock = SimulatedClock()
         val drive = SimulatedSwerveDrive(dt, kV, TRACK_WIDTH, TRACK_WIDTH)
         val follower = HolonomicPIDVAFollower(
-                PIDCoefficients(0.1),
-                PIDCoefficients(0.1),
+            PIDCoefficients(0.1),
+            PIDCoefficients(0.1),
+            PIDCoefficients(0.1),
             Pose2d(0.5, 0.5, Math.toRadians(3.0)),
-                1.0,
-                clock
+            1.0,
+            clock
         )
         follower.followTrajectory(trajectory)
 

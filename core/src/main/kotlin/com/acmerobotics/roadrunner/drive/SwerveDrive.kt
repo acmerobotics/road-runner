@@ -72,12 +72,12 @@ abstract class SwerveDrive @JvmOverloads constructor(
 
     override fun setDriveSignal(driveSignal: DriveSignal) {
         val velocities = SwerveKinematics.robotToWheelVelocities(
-            driveSignal.velocity, trackWidth, wheelBase)
+            driveSignal.vel, trackWidth, wheelBase)
         val accelerations = SwerveKinematics.robotToWheelAccelerations(
-            driveSignal.velocity, driveSignal.acceleration, trackWidth, wheelBase)
+            driveSignal.vel, driveSignal.accel, trackWidth, wheelBase)
         val powers = Kinematics.calculateMotorFeedforward(velocities, accelerations, kV, kA, kStatic)
         val orientations = SwerveKinematics.robotToModuleOrientations(
-            driveSignal.velocity, trackWidth, wheelBase)
+            driveSignal.vel, trackWidth, wheelBase)
         setMotorPowers(powers[0], powers[1], powers[2], powers[3])
         setModuleOrientations(orientations[0], orientations[1], orientations[2], orientations[3])
     }

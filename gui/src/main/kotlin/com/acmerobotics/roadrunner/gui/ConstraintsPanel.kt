@@ -19,10 +19,10 @@ class ConstraintsPanel : JPanel() {
         var maximumAngularAcceleration: Double
     ) {
         constructor(constraints: DriveConstraints) : this(
-            constraints.maximumVelocity,
-            constraints.maximumAcceleration,
-            constraints.maximumAngularVelocity,
-            constraints.maximumAngularAcceleration
+            constraints.maxVel,
+            constraints.maxAccel,
+            constraints.maxAngVel,
+            constraints.maxAngAccel
         )
 
         fun immutable(): DriveConstraints = DriveConstraints(
@@ -95,9 +95,9 @@ class ConstraintsPanel : JPanel() {
     fun updateConstraints(constraints: DriveConstraints) {
         this.mutableConstraints = MutableDriveConstraints(constraints)
 
-        maxVelTextField.text = String.format("%.2f", constraints.maximumVelocity)
-        maxAccelTextField.text = String.format("%.2f", constraints.maximumAcceleration)
-        maxAngVelTextField.text = String.format("%.2f", constraints.maximumAngularVelocity.toDegrees())
-        maxAngAccelTextField.text = String.format("%.2f", constraints.maximumAngularAcceleration.toDegrees())
+        maxVelTextField.text = String.format("%.2f", constraints.maxVel)
+        maxAccelTextField.text = String.format("%.2f", constraints.maxAccel)
+        maxAngVelTextField.text = String.format("%.2f", constraints.maxAngVel.toDegrees())
+        maxAngAccelTextField.text = String.format("%.2f", constraints.maxAngAccel.toDegrees())
     }
 }

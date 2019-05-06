@@ -66,8 +66,8 @@ abstract class TankDrive constructor(
     override var localizer: Localizer = TankLocalizer(this)
 
     override fun setDriveSignal(driveSignal: DriveSignal) {
-        val velocities = TankKinematics.robotToWheelVelocities(driveSignal.velocity, trackWidth)
-        val accelerations = TankKinematics.robotToWheelAccelerations(driveSignal.acceleration, trackWidth)
+        val velocities = TankKinematics.robotToWheelVelocities(driveSignal.vel, trackWidth)
+        val accelerations = TankKinematics.robotToWheelAccelerations(driveSignal.accel, trackWidth)
         val powers = Kinematics.calculateMotorFeedforward(velocities, accelerations, kV, kA, kStatic)
         setMotorPowers(powers[0], powers[1])
     }

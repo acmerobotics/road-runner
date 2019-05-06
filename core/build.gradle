@@ -4,7 +4,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "org.jetbrains.dokka:dokka-gradle-plugin:0.9.17"
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:0.9.18"
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
         classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.4'
         classpath "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:$detekt_version"

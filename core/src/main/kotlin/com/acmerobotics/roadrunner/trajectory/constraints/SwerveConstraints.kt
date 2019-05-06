@@ -19,22 +19,22 @@ open class SwerveConstraints @JvmOverloads constructor(
     private val trackWidth: Double,
     private val wheelBase: Double = trackWidth
 ) : DriveConstraints(
-    baseConstraints.maximumVelocity,
-    baseConstraints.maximumAcceleration,
-    baseConstraints.maximumJerk,
-    baseConstraints.maximumAngularVelocity,
-    baseConstraints.maximumAngularAcceleration,
-    baseConstraints.maximumAngularJerk
+    baseConstraints.maxVel,
+    baseConstraints.maxAccel,
+    baseConstraints.maxJerk,
+    baseConstraints.maxAngVel,
+    baseConstraints.maxAngAccel,
+    baseConstraints.maxAngJerk
 ) {
-    override operator fun get(pose: Pose2d, poseDeriv: Pose2d, poseSecondDeriv: Pose2d): SimpleMotionConstraints {
-        val robotPoseDeriv = Kinematics.fieldToRobotPoseVelocity(pose, poseDeriv)
+    override operator fun get(pose: Pose2d, deriv: Pose2d, secondDeriv: Pose2d): SimpleMotionConstraints {
+        val robotDeriv = Kinematics.fieldToRobotVelocity(pose, deriv)
 
-        val wheelVelocities = SwerveKinematics.robotToWheelVelocities(robotPoseDeriv, trackWidth, wheelBase)
-        val maxTrajVel = wheelVelocities.map { maximumVelocity / it }.map(::abs).min() ?: 0.0
+        val wheelVelocities = SwerveKinematics.robotToWheelVelocities(robotDeriv, trackWidth, wheelBase)
+        val maxTrajVel = wheelVelocities.map { maxVel / it }.map(::abs).min() ?: 0.0
 
-        val superConstraints = super.get(pose, poseDeriv, poseSecondDeriv)
+        val superConstraints = super.get(pose, deriv, secondDeriv)
 
-        return SimpleMotionConstraints(min(superConstraints.maximumVelocity, maxTrajVel),
-            superConstraints.maximumAcceleration)
+        return SimpleMotionConstraints(min(superConstraints.maxVel, maxTrajVel),
+            superConstraints.maxAccel)
     }
 }

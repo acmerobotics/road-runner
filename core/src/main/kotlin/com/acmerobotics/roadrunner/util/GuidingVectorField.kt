@@ -1,4 +1,4 @@
-package com.acmerobotics.roadrunner.followers
+package com.acmerobotics.roadrunner.util
 
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.path.Path
@@ -14,7 +14,6 @@ import kotlin.math.sign
  * @param kN path normal weight (see eq. (9))
  * @param errorMapFunc custom error mapping (see eq. (4))
  */
-// TODO: move to util package?
 class GuidingVectorField(
     private val path: Path,
     private val kN: Double,
@@ -49,7 +48,12 @@ class GuidingVectorField(
         val error = orientation * projectResult.distance
         val normal = tangent.rotated(Math.PI / 2.0)
         val vector = tangent - normal * kN * errorMapFunc(error)
-        return GVFResult(vector / vector.norm(), pathPoint, projectResult.displacement, error)
+        return GVFResult(
+            vector / vector.norm(),
+            pathPoint,
+            projectResult.displacement,
+            error
+        )
     }
 
     /**

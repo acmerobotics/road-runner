@@ -1,11 +1,12 @@
 package com.acmerobotics.roadrunner.followers
 
-import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.drive.DriveSignal
+import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.kinematics.Kinematics
 import com.acmerobotics.roadrunner.path.Path
 import com.acmerobotics.roadrunner.profile.SimpleMotionConstraints
 import com.acmerobotics.roadrunner.util.Angle
+import com.acmerobotics.roadrunner.util.GuidingVectorField
 import com.acmerobotics.roadrunner.util.NanoClock
 import kotlin.math.atan2
 import kotlin.math.sqrt
@@ -30,21 +31,21 @@ class GVFFollower @JvmOverloads constructor(
 ) : PathFollower(admissibleError, clock) {
     private lateinit var gvf: GuidingVectorField
     private var lastUpdateTimestamp: Double = 0.0
-    private var lastVelocity: Double = 0.0
-    private var lastProjectionDisplacement: Double = 0.0
+    private var lastVel: Double = 0.0
+    private var lastProjDisplacement: Double = 0.0
 
     override var lastError: Pose2d = Pose2d()
 
     override fun followPath(path: Path) {
         gvf = GuidingVectorField(path, kN, errorMapFunc)
         lastUpdateTimestamp = clock.seconds()
-        lastVelocity = 0.0
-        lastProjectionDisplacement = 0.0
+        lastVel = 0.0
+        lastProjDisplacement = 0.0
         super.followPath(path)
     }
 
     override fun internalUpdate(currentPose: Pose2d): DriveSignal {
-        val gvfResult = gvf.getExtended(currentPose.x, currentPose.y, lastProjectionDisplacement)
+        val gvfResult = gvf.getExtended(currentPose.x, currentPose.y, lastProjDisplacement)
 
         val desiredHeading = atan2(gvfResult.vector.y, gvfResult.vector.x)
         val headingError = Angle.norm(desiredHeading - currentPose.heading)
@@ -57,27 +58,19 @@ class GVFFollower @JvmOverloads constructor(
         val timestamp = clock.seconds()
         val dt = timestamp - lastUpdateTimestamp
         val remainingDistance = currentPose.pos() distanceTo path.end().pos()
-        val maxVelToStop = sqrt(2 * constraints.maximumAcceleration * remainingDistance)
-        val maxVelFromLast = lastVelocity + constraints.maximumAcceleration * dt
-        val velocity = minOf(maxVelFromLast, maxVelToStop, constraints.maximumVelocity)
-
-        // TODO: is GVF acceleration FF worth?
-        val targetRobotPoseAcceleration = Pose2d()
+        val maxVelToStop = sqrt(2 * constraints.maxAccel * remainingDistance)
+        val maxVelFromLast = lastVel + constraints.maxAccel * dt
+        val velocity = minOf(maxVelFromLast, maxVelToStop, constraints.maxVel)
 
         lastUpdateTimestamp = timestamp
-        lastVelocity = velocity
-        lastProjectionDisplacement = gvfResult.displacement
+        lastVel = velocity
+        lastProjDisplacement = gvfResult.displacement
 
         val targetPose = path[gvfResult.displacement]
 
         lastError = Kinematics.calculatePoseError(targetPose, currentPose)
 
-        return DriveSignal(
-            Pose2d(
-                velocity,
-                0.0,
-                omega
-            ), targetRobotPoseAcceleration
-        )
+        // TODO: GVF acceleration FF?
+        return DriveSignal(Pose2d(velocity, 0.0, omega))
     }
 }

@@ -14,26 +14,26 @@ import kotlin.math.sin
 object SwerveKinematics {
 
     /**
-     * Computes the wheel velocity vectors corresponding to [robotPoseVelocity] given the provided [trackWidth] and
+     * Computes the wheel velocity vectors corresponding to [robotVel] given the provided [trackWidth] and
      * [wheelBase].
      *
-     * @param robotPoseVelocity velocity of the robot in its reference frame
+     * @param robotVel velocity of the robot in its reference frame
      * @param trackWidth lateral distance between pairs of wheels on different sides of the robot
      * @param wheelBase distance between pairs of wheels on the same side of the robot
      */
     @JvmStatic
     @JvmOverloads
     fun robotToModuleVelocityVectors(
-        robotPoseVelocity: Pose2d,
+        robotVel: Pose2d,
         trackWidth: Double,
         wheelBase: Double = trackWidth
     ): List<Vector2d> {
         val x = wheelBase / 2
         val y = trackWidth / 2
 
-        val vx = robotPoseVelocity.x
-        val vy = robotPoseVelocity.y
-        val omega = robotPoseVelocity.heading
+        val vx = robotVel.x
+        val vy = robotVel.y
+        val omega = robotVel.heading
 
         return listOf(
             Vector2d(vx - omega * y, vy + omega * x),
@@ -44,60 +44,60 @@ object SwerveKinematics {
     }
 
     /**
-     * Computes the wheel velocities corresponding to [robotPoseVelocity] given the provided [trackWidth] and
+     * Computes the wheel velocities corresponding to [robotVel] given the provided [trackWidth] and
      * [wheelBase].
      *
-     * @param robotPoseVelocity velocity of the robot in its reference frame
+     * @param robotVel velocity of the robot in its reference frame
      * @param trackWidth lateral distance between pairs of wheels on different sides of the robot
      * @param wheelBase distance between pairs of wheels on the same side of the robot
      */
     @JvmStatic
     @JvmOverloads
-    fun robotToWheelVelocities(robotPoseVelocity: Pose2d, trackWidth: Double, wheelBase: Double = trackWidth) =
+    fun robotToWheelVelocities(robotVel: Pose2d, trackWidth: Double, wheelBase: Double = trackWidth) =
             robotToModuleVelocityVectors(
-                robotPoseVelocity,
+                robotVel,
                 trackWidth,
                 wheelBase
             ).map(Vector2d::norm)
 
     /**
-     * Computes the module orientations (in radians) corresponding to [robotPoseVelocity] given the provided
+     * Computes the module orientations (in radians) corresponding to [robotVel] given the provided
      * [trackWidth] and [wheelBase].
      *
-     * @param robotPoseVelocity velocity of the robot in its reference frame
+     * @param robotVel velocity of the robot in its reference frame
      * @param trackWidth lateral distance between pairs of wheels on different sides of the robot
      * @param wheelBase distance between pairs of wheels on the same side of the robot
      */
     @JvmStatic
     @JvmOverloads
-    fun robotToModuleOrientations(robotPoseVelocity: Pose2d, trackWidth: Double, wheelBase: Double = trackWidth) =
+    fun robotToModuleOrientations(robotVel: Pose2d, trackWidth: Double, wheelBase: Double = trackWidth) =
             robotToModuleVelocityVectors(
-                robotPoseVelocity,
+                robotVel,
                 trackWidth,
                 wheelBase
             ).map(Vector2d::angle)
 
     /**
-     * Computes the acceleration vectors corresponding to [robotPoseAcceleration] given the provided [trackWidth] and
+     * Computes the acceleration vectors corresponding to [robotAccel] given the provided [trackWidth] and
      * [wheelBase].
      *
-     * @param robotPoseAcceleration velocity of the robot in its reference frame
+     * @param robotAccel velocity of the robot in its reference frame
      * @param trackWidth lateral distance between pairs of wheels on different sides of the robot
      * @param wheelBase distance between pairs of wheels on the same side of the robot
      */
     @JvmStatic
     @JvmOverloads
     fun robotToModuleAccelerationVectors(
-        robotPoseAcceleration: Pose2d,
+        robotAccel: Pose2d,
         trackWidth: Double,
         wheelBase: Double = trackWidth
     ): List<Vector2d> {
         val x = wheelBase / 2
         val y = trackWidth / 2
 
-        val ax = robotPoseAcceleration.x
-        val ay = robotPoseAcceleration.y
-        val alpha = robotPoseAcceleration.heading
+        val ax = robotAccel.x
+        val ay = robotAccel.y
+        val alpha = robotAccel.heading
 
         return listOf(
             Vector2d(ax - alpha * y, ay + alpha * x),
@@ -108,28 +108,28 @@ object SwerveKinematics {
     }
 
     /**
-     * Computes the wheel accelerations corresponding to [robotPoseAcceleration] given the provided [trackWidth] and
+     * Computes the wheel accelerations corresponding to [robotAccel] given the provided [trackWidth] and
      * [wheelBase].
      *
-     * @param robotPoseAcceleration velocity of the robot in its reference frame
+     * @param robotAccel velocity of the robot in its reference frame
      * @param trackWidth lateral distance between pairs of wheels on different sides of the robot
      * @param wheelBase distance between pairs of wheels on the same side of the robot
      */
     @JvmStatic
     @JvmOverloads
     fun robotToWheelAccelerations(
-        robotPoseVelocity: Pose2d,
-        robotPoseAcceleration: Pose2d,
+        robotVel: Pose2d,
+        robotAccel: Pose2d,
         trackWidth: Double,
         wheelBase: Double = trackWidth
     ) =
         robotToModuleVelocityVectors(
-            robotPoseVelocity,
+            robotVel,
             trackWidth,
             wheelBase
         ).zip(
             robotToModuleAccelerationVectors(
-                robotPoseAcceleration,
+                robotAccel,
                 trackWidth,
                 wheelBase
             )
@@ -139,28 +139,28 @@ object SwerveKinematics {
         }
 
     /**
-     * Computes the module angular velocities corresponding to [robotPoseAcceleration] given the provided [trackWidth]
+     * Computes the module angular velocities corresponding to [robotAccel] given the provided [trackWidth]
      * and [wheelBase].
      *
-     * @param robotPoseAcceleration velocity of the robot in its reference frame
+     * @param robotAccel velocity of the robot in its reference frame
      * @param trackWidth lateral distance between pairs of wheels on different sides of the robot
      * @param wheelBase distance between pairs of wheels on the same side of the robot
      */
     @JvmStatic
     @JvmOverloads
     fun robotToModuleAngularVelocities(
-        robotPoseVelocity: Pose2d,
-        robotPoseAcceleration: Pose2d,
+        robotVel: Pose2d,
+        robotAccel: Pose2d,
         trackWidth: Double,
         wheelBase: Double = trackWidth
     ) =
         robotToModuleVelocityVectors(
-            robotPoseVelocity,
+            robotVel,
             trackWidth,
             wheelBase
         ).zip(
             robotToModuleAccelerationVectors(
-                robotPoseAcceleration,
+                robotAccel,
                 trackWidth,
                 wheelBase
             )

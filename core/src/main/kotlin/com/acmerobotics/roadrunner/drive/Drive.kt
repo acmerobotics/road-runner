@@ -48,7 +48,7 @@ abstract class Drive {
     }
 
     /**
-     * Sets the [driveSignal] of the robot.
+     * Sets the current commanded drive state of the robot.
      */
     abstract fun setDriveSignal(driveSignal: DriveSignal)
 }

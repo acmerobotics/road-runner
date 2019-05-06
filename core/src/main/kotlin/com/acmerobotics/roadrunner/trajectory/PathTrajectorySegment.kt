@@ -98,7 +98,7 @@ class PathTrajectorySegment(
             val start = MotionState(0.0, 0.0, 0.0)
             val goal = MotionState(paths.sumByDouble { it.length() }, 0.0, 0.0)
             return MotionProfileGenerator.generateSimpleMotionProfile(start, goal,
-                constraints.maximumVelocity, constraints.maximumAcceleration, constraints.maximumJerk)
+                constraints.maxVel, constraints.maxAccel, constraints.maxJerk)
         }
     }
 

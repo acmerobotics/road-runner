@@ -13,31 +13,31 @@ import kotlin.math.abs
 object TankKinematics {
 
     /**
-     * Computes the wheel velocities corresponding to [robotPoseVelocity] given [trackWidth].
+     * Computes the wheel velocities corresponding to [robotVel] given [trackWidth].
      *
-     * @param robotPoseVelocity velocity of the robot in its reference frame
+     * @param robotVel velocity of the robot in its reference frame
      * @param trackWidth lateral distance between pairs of wheels on different sides of the robot
      */
     @JvmStatic
-    fun robotToWheelVelocities(robotPoseVelocity: Pose2d, trackWidth: Double): List<Double> {
-        if (abs(robotPoseVelocity.y) > 1e-2) {
+    fun robotToWheelVelocities(robotVel: Pose2d, trackWidth: Double): List<Double> {
+        if (abs(robotVel.y) > 1e-2) {
             throw IllegalArgumentException("Lateral (robot y) velocity must be zero for tank drives")
         }
 
-        return listOf(robotPoseVelocity.x - trackWidth / 2 * robotPoseVelocity.heading,
-                robotPoseVelocity.x + trackWidth / 2 * robotPoseVelocity.heading)
+        return listOf(robotVel.x - trackWidth / 2 * robotVel.heading,
+                robotVel.x + trackWidth / 2 * robotVel.heading)
     }
 
     /**
-     * Computes the wheel accelerations corresponding to [robotPoseAcceleration] given [trackWidth].
+     * Computes the wheel accelerations corresponding to [robotAccel] given [trackWidth].
      *
-     * @param robotPoseAcceleration velocity of the robot in its reference frame
+     * @param robotAccel velocity of the robot in its reference frame
      * @param trackWidth lateral distance between pairs of wheels on different sides of the robot
      */
     // follows from linearity of the derivative
     @JvmStatic
-    fun robotToWheelAccelerations(robotPoseAcceleration: Pose2d, trackWidth: Double) =
-        robotToWheelVelocities(robotPoseAcceleration, trackWidth)
+    fun robotToWheelAccelerations(robotAccel: Pose2d, trackWidth: Double) =
+        robotToWheelVelocities(robotAccel, trackWidth)
 
     /**
      * Computes the robot velocity corresponding to [wheelVelocities] and the given drive parameters.

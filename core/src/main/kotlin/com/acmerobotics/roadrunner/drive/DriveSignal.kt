@@ -4,5 +4,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d
 
 /**
  * Signal indicating the commanded kinematic state of a drive.
+ * @param vel robot frame velocity
+ * @param accel robot frame acceleration
  */
-data class DriveSignal @JvmOverloads constructor(val velocity: Pose2d = Pose2d(), val acceleration: Pose2d = Pose2d())
+data class DriveSignal @JvmOverloads constructor(val vel: Pose2d = Pose2d(), val accel: Pose2d = Pose2d())

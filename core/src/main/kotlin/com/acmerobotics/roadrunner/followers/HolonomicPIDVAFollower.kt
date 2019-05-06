@@ -12,21 +12,23 @@ import com.acmerobotics.roadrunner.util.NanoClock
  * specifically, the feedback is applied to the components of the robot's pose (x position, y position, and heading) to
  * determine the velocity correction. The feedforward components are instead applied at the wheel level.
  *
- * @param translationalCoeffs PID coefficients for the robot axial and lateral (x and y, respectively) controllers
+ * @param longitudinalCoeffs PID coefficients for the robot longitudinal controller (robot X)
+ * @param lateralCoeffs PID coefficients for the robot lateral controller (robot Y)
  * @param headingCoeffs PID coefficients for the robot heading controller
  * @param admissibleError admissible/satisfactory pose error at the end of each move
  * @param timeout max time to wait for the error to be admissible
  * @param clock clock
  */
 class HolonomicPIDVAFollower @JvmOverloads constructor(
-    translationalCoeffs: PIDCoefficients,
+    longitudinalCoeffs: PIDCoefficients,
+    lateralCoeffs: PIDCoefficients,
     headingCoeffs: PIDCoefficients,
     admissibleError: Pose2d = Pose2d(),
     timeout: Double = 0.0,
     clock: NanoClock = NanoClock.system()
 ) : TrajectoryFollower(admissibleError, timeout, clock) {
-    private val longitudinalController = PIDFController(translationalCoeffs)
-    private val lateralController = PIDFController(translationalCoeffs)
+    private val longitudinalController = PIDFController(longitudinalCoeffs)
+    private val lateralController = PIDFController(lateralCoeffs)
     private val headingController = PIDFController(headingCoeffs)
 
     override var lastError: Pose2d = Pose2d()
@@ -39,12 +41,11 @@ class HolonomicPIDVAFollower @JvmOverloads constructor(
         val t = elapsedTime()
 
         val targetPose = trajectory[t]
-        val targetPoseVelocity = trajectory.velocity(t)
-        val targetPoseAcceleration = trajectory.acceleration(t)
+        val targetVel = trajectory.velocity(t)
+        val targetAccel = trajectory.acceleration(t)
 
-        val targetRobotPoseVelocity = Kinematics.fieldToRobotPoseVelocity(targetPose, targetPoseVelocity)
-        val targetRobotPoseAcceleration = Kinematics.fieldToRobotPoseAcceleration(
-            targetPose, targetPoseVelocity, targetPoseAcceleration)
+        val targetRobotVel = Kinematics.fieldToRobotVelocity(targetPose, targetVel)
+        val targetRobotAccel = Kinematics.fieldToRobotAcceleration(targetPose, targetVel, targetAccel)
 
         val poseError = Kinematics.calculatePoseError(targetPose, currentPose)
 
@@ -54,18 +55,18 @@ class HolonomicPIDVAFollower @JvmOverloads constructor(
         headingController.targetPosition = poseError.heading
 
         // note: feedforward is processed at the wheel level; velocity is only passed here to adjust the derivative term
-        val axialCorrection = longitudinalController.update(0.0, targetRobotPoseVelocity.x)
-        val lateralCorrection = lateralController.update(0.0, targetRobotPoseVelocity.y)
-        val headingCorrection = headingController.update(0.0, targetRobotPoseVelocity.heading)
+        val longitudialCorrection = longitudinalController.update(0.0, targetRobotVel.x)
+        val lateralCorrection = lateralController.update(0.0, targetRobotVel.y)
+        val headingCorrection = headingController.update(0.0, targetRobotVel.heading)
 
-        val correctedVelocity = targetRobotPoseVelocity + Pose2d(
-            axialCorrection,
+        val correctedVelocity = targetRobotVel + Pose2d(
+            longitudialCorrection,
             lateralCorrection,
             headingCorrection
         )
 
         lastError = poseError
 
-        return DriveSignal(correctedVelocity, targetRobotPoseAcceleration)
+        return DriveSignal(correctedVelocity, targetRobotAccel)
     }
 }

@@ -13,43 +13,43 @@ import com.acmerobotics.roadrunner.geometry.Pose2d
 object MecanumKinematics {
 
     /**
-     * Computes the wheel velocities corresponding to [robotPoseVelocity] given the provided [trackWidth] and
+     * Computes the wheel velocities corresponding to [robotVel] given the provided [trackWidth] and
      * [wheelBase].
      *
-     * @param robotPoseVelocity velocity of the robot in its reference frame
+     * @param robotVel velocity of the robot in its reference frame
      * @param trackWidth lateral distance between pairs of wheels on different sides of the robot
      * @param wheelBase distance between pairs of wheels on the same side of the robot
      */
     @JvmStatic
     @JvmOverloads
     fun robotToWheelVelocities(
-        robotPoseVelocity: Pose2d,
+        robotVel: Pose2d,
         trackWidth: Double,
         wheelBase: Double = trackWidth
     ): List<Double> {
         val k = (trackWidth + wheelBase) / 2.0
         return listOf(
-                robotPoseVelocity.x - robotPoseVelocity.y - k * robotPoseVelocity.heading,
-                robotPoseVelocity.x + robotPoseVelocity.y - k * robotPoseVelocity.heading,
-                robotPoseVelocity.x - robotPoseVelocity.y + k * robotPoseVelocity.heading,
-                robotPoseVelocity.x + robotPoseVelocity.y + k * robotPoseVelocity.heading
+                robotVel.x - robotVel.y - k * robotVel.heading,
+                robotVel.x + robotVel.y - k * robotVel.heading,
+                robotVel.x - robotVel.y + k * robotVel.heading,
+                robotVel.x + robotVel.y + k * robotVel.heading
         )
     }
 
     /**
-     * Computes the wheel accelerations corresponding to [robotPoseAcceleration] given the provided [trackWidth] and
+     * Computes the wheel accelerations corresponding to [robotAccel] given the provided [trackWidth] and
      * [wheelBase].
      *
-     * @param robotPoseAcceleration acceleration of the robot in its reference frame
+     * @param robotAccel acceleration of the robot in its reference frame
      * @param trackWidth lateral distance between pairs of wheels on different sides of the robot
      * @param wheelBase distance between pairs of wheels on the same side of the robot
      */
     @JvmStatic
     @JvmOverloads
     // follows from linearity of the derivative
-    fun robotToWheelAccelerations(robotPoseAcceleration: Pose2d, trackWidth: Double, wheelBase: Double = trackWidth) =
+    fun robotToWheelAccelerations(robotAccel: Pose2d, trackWidth: Double, wheelBase: Double = trackWidth) =
         robotToWheelVelocities(
-            robotPoseAcceleration,
+            robotAccel,
             trackWidth,
             wheelBase
         )

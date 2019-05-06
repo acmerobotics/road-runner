@@ -71,8 +71,8 @@ abstract class MecanumDrive @JvmOverloads constructor(
     override var localizer: Localizer = MecanumLocalizer(this)
 
     override fun setDriveSignal(driveSignal: DriveSignal) {
-        val velocities = MecanumKinematics.robotToWheelVelocities(driveSignal.velocity, trackWidth, wheelBase)
-        val accelerations = MecanumKinematics.robotToWheelAccelerations(driveSignal.acceleration, trackWidth, wheelBase)
+        val velocities = MecanumKinematics.robotToWheelVelocities(driveSignal.vel, trackWidth, wheelBase)
+        val accelerations = MecanumKinematics.robotToWheelAccelerations(driveSignal.accel, trackWidth, wheelBase)
         val powers = Kinematics.calculateMotorFeedforward(velocities, accelerations, kV, kA, kStatic)
         setMotorPowers(powers[0], powers[1], powers[2], powers[3])
     }
