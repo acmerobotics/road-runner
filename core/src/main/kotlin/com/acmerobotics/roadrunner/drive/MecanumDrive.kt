@@ -77,6 +77,11 @@ abstract class MecanumDrive @JvmOverloads constructor(
         setMotorPowers(powers[0], powers[1], powers[2], powers[3])
     }
 
+    override fun setDrivePower(drivePower: Pose2d) {
+        val powers = MecanumKinematics.robotToWheelVelocities(drivePower, trackWidth, wheelBase)
+        setMotorPowers(powers[0], powers[1], powers[2], powers[3])
+    }
+
     /**
      * Sets the following motor powers (normalized voltages). All arguments are on the interval `[-1.0, 1.0]`.
      */

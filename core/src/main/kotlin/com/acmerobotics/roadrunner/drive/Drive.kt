@@ -48,7 +48,13 @@ abstract class Drive {
     }
 
     /**
-     * Sets the current commanded drive state of the robot.
+     * Sets the current commanded drive state of the robot. Feedforward is applied to [driveSignal] before it reaches
+     * the motors.
      */
     abstract fun setDriveSignal(driveSignal: DriveSignal)
+
+    /**
+     * Sets the current commanded drive state of the robot. Feedforward is *not* applied to [drivePower].
+     */
+    abstract fun setDrivePower(drivePower: Pose2d)
 }

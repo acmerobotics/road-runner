@@ -72,6 +72,11 @@ abstract class TankDrive constructor(
         setMotorPowers(powers[0], powers[1])
     }
 
+    override fun setDrivePower(drivePower: Pose2d) {
+        val powers = TankKinematics.robotToWheelVelocities(drivePower, trackWidth)
+        setMotorPowers(powers[0], powers[1])
+    }
+
     /**
      * Sets the following motor powers (normalized voltages). All arguments are on the interval `[-1.0, 1.0]`.
      */
