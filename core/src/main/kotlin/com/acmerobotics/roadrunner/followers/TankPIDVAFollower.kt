@@ -13,20 +13,20 @@ import com.acmerobotics.roadrunner.util.NanoClock
  * another feedback loop to minimize cross track (lateral) error via heading correction (overall, very similar to
  * [HolonomicPIDVAFollower] except adjusted for the nonholonomic constraint). Feedforward is applied at the wheel level.
  *
- * @param longitudinalCoeffs PID coefficients for the robot longitudinal (x) controller
+ * @param axialCoeffs PID coefficients for the robot axial (robot X) controller
  * @param crossTrackCoeffs PID coefficients for the robot heading controller based on cross track error
  * @param admissibleError admissible/satisfactory pose error at the end of each move
  * @param timeout max time to wait for the error to be admissible
  * @param clock clock
  */
 class TankPIDVAFollower @JvmOverloads constructor(
-    longitudinalCoeffs: PIDCoefficients,
+    axialCoeffs: PIDCoefficients,
     crossTrackCoeffs: PIDCoefficients,
     admissibleError: Pose2d = Pose2d(),
     timeout: Double = 0.0,
     clock: NanoClock = NanoClock.system()
 ) : TrajectoryFollower(admissibleError, timeout, clock) {
-    private val longitudinalController = PIDFController(longitudinalCoeffs)
+    private val axialController = PIDFController(axialCoeffs)
     private val crossTrackController = PIDFController(crossTrackCoeffs)
 
     override var lastError: Pose2d = Pose2d()
@@ -44,15 +44,15 @@ class TankPIDVAFollower @JvmOverloads constructor(
         val poseError = Kinematics.calculatePoseError(targetPose, currentPose)
 
         // you can pass the error directly to PIDFController by setting setpoint = error and position = 0
-        longitudinalController.targetPosition = poseError.x
+        axialController.targetPosition = poseError.x
         crossTrackController.targetPosition = poseError.y
 
         // note: feedforward is processed at the wheel level; velocity is only passed here to adjust the derivative term
-        val longitudinalCorrection = longitudinalController.update(0.0, targetRobotVel.x)
+        val axialCorrection = axialController.update(0.0, targetRobotVel.x)
         val headingCorrection = crossTrackController.update(0.0, targetRobotVel.y)
 
         val correctedVelocity = targetRobotVel + Pose2d(
-            longitudinalCorrection,
+            axialCorrection,
             0.0,
             headingCorrection
         )

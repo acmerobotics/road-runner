@@ -12,7 +12,7 @@ import com.acmerobotics.roadrunner.util.NanoClock
  * specifically, the feedback is applied to the components of the robot's pose (x position, y position, and heading) to
  * determine the velocity correction. The feedforward components are instead applied at the wheel level.
  *
- * @param longitudinalCoeffs PID coefficients for the robot longitudinal controller (robot X)
+ * @param axialCoeffs PID coefficients for the robot axial controller (robot X)
  * @param lateralCoeffs PID coefficients for the robot lateral controller (robot Y)
  * @param headingCoeffs PID coefficients for the robot heading controller
  * @param admissibleError admissible/satisfactory pose error at the end of each move
@@ -20,14 +20,14 @@ import com.acmerobotics.roadrunner.util.NanoClock
  * @param clock clock
  */
 class HolonomicPIDVAFollower @JvmOverloads constructor(
-    longitudinalCoeffs: PIDCoefficients,
+    axialCoeffs: PIDCoefficients,
     lateralCoeffs: PIDCoefficients,
     headingCoeffs: PIDCoefficients,
     admissibleError: Pose2d = Pose2d(),
     timeout: Double = 0.0,
     clock: NanoClock = NanoClock.system()
 ) : TrajectoryFollower(admissibleError, timeout, clock) {
-    private val longitudinalController = PIDFController(longitudinalCoeffs)
+    private val axialController = PIDFController(axialCoeffs)
     private val lateralController = PIDFController(lateralCoeffs)
     private val headingController = PIDFController(headingCoeffs)
 
@@ -50,17 +50,17 @@ class HolonomicPIDVAFollower @JvmOverloads constructor(
         val poseError = Kinematics.calculatePoseError(targetPose, currentPose)
 
         // you can pass the error directly to PIDFController by setting setpoint = error and position = 0
-        longitudinalController.targetPosition = poseError.x
+        axialController.targetPosition = poseError.x
         lateralController.targetPosition = poseError.y
         headingController.targetPosition = poseError.heading
 
         // note: feedforward is processed at the wheel level; velocity is only passed here to adjust the derivative term
-        val longitudialCorrection = longitudinalController.update(0.0, targetRobotVel.x)
+        val axialCorrection = axialController.update(0.0, targetRobotVel.x)
         val lateralCorrection = lateralController.update(0.0, targetRobotVel.y)
         val headingCorrection = headingController.update(0.0, targetRobotVel.heading)
 
         val correctedVelocity = targetRobotVel + Pose2d(
-            longitudialCorrection,
+            axialCorrection,
             lateralCorrection,
             headingCorrection
         )
