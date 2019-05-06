@@ -89,6 +89,13 @@ class TrajectoryBuilder @JvmOverloads constructor(
     }
 
     /**
+     * Turns to face a position.
+     *
+     * @param pos position to face
+     */
+    fun face(pos: Vector2d) = turnTo((pos - currentPose.pos()).angle())
+
+    /**
      * Adds a line path segment.
      *
      * @param pos end position
@@ -145,8 +152,7 @@ class TrajectoryBuilder @JvmOverloads constructor(
         return lineTo(currentPose.pos() + Vector2d(
             distance * cos(currentPose.heading),
             distance * sin(currentPose.heading)
-        )
-        )
+        ))
     }
 
     /**
@@ -170,8 +176,7 @@ class TrajectoryBuilder @JvmOverloads constructor(
         return strafeTo(currentPose.pos() + Vector2d(
             distance * cos(currentPose.heading + PI / 2),
             distance * sin(currentPose.heading + PI / 2)
-        )
-        )
+        ))
     }
 
     /**
