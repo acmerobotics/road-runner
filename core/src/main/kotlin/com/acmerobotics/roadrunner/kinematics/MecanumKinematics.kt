@@ -69,10 +69,11 @@ object MecanumKinematics {
         wheelBase: Double = trackWidth
     ): Pose2d {
         val k = (trackWidth + wheelBase) / 2.0
+        val (frontLeft, rearLeft, rearRight, frontRight) = wheelVelocities
         return Pose2d(
             wheelVelocities.sum(),
-            wheelVelocities[1] + wheelVelocities[3] - wheelVelocities[0] - wheelVelocities[2],
-            (wheelVelocities[2] + wheelVelocities[3] - wheelVelocities[0] - wheelVelocities[1]) / k
+            rearLeft + frontRight - frontLeft - rearRight,
+            (rearRight + frontRight - frontLeft - rearLeft) / k
         ) * 0.25
     }
 }

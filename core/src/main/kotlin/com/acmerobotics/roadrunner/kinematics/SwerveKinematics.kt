@@ -198,8 +198,11 @@ object SwerveKinematics {
 
         val vx = vectors.sumByDouble { it.x } / 4
         val vy = vectors.sumByDouble { it.y } / 4
-        val omega = (y * (vectors[2].x + vectors[3].x - vectors[0].x - vectors[1].x) +
-                x * (vectors[0].y + vectors[3].y - vectors[1].y - vectors[2].y)) / (4 * (x * x + y * y))
+        val (frontLeft, rearLeft, rearRight, frontRight) = vectors
+        val omega = (
+            y * (rearRight.x + frontRight.x - frontLeft.x - rearLeft.x) +
+            x * (frontLeft.y + frontRight.y - rearLeft.y - rearRight.y)
+        ) / (4 * (x * x + y * y))
 
         return Pose2d(vx, vy, omega)
     }

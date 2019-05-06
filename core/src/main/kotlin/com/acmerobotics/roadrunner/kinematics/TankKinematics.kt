@@ -46,10 +46,12 @@ object TankKinematics {
      * @param trackWidth lateral distance between pairs of wheels on different sides of the robot
      */
     @JvmStatic
-    fun wheelToRobotVelocities(wheelVelocities: List<Double>, trackWidth: Double) =
-        Pose2d(
-            (wheelVelocities[0] + wheelVelocities[1]) / 2.0,
+    fun wheelToRobotVelocities(wheelVelocities: List<Double>, trackWidth: Double): Pose2d {
+        val (left, right) = wheelVelocities
+        return Pose2d(
+            (left + right) / 2.0,
             0.0,
-            (-wheelVelocities[0] + wheelVelocities[1]) / trackWidth
+            (-left + right) / trackWidth
         )
+    }
 }
