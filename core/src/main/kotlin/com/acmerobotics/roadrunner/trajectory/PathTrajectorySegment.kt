@@ -23,11 +23,14 @@ class PathTrajectorySegment(
     companion object {
         @Suppress("ComplexMethod")
         private fun generateProfile(
-            paths: List<Path> = emptyList(),
-            trajectoryConstraintsList: List<TrajectoryConstraints> = emptyList(),
-            resolution: Double = 0.25
+            paths: List<Path>,
+            trajectoryConstraintsList: List<TrajectoryConstraints>,
+            start: MotionState,
+            goal: MotionState,
+            resolution: Double
         ): MotionProfile {
             val length = paths.sumByDouble { it.length() }
+            // TODO: make this a separate class
             val compositeConstraints = object : MotionConstraints() {
                 override fun get(s: Double) = internalGet(s, reparam(s))
 
@@ -89,14 +92,14 @@ class PathTrajectorySegment(
                 }
             }
 
-            val start = MotionState(0.0, 0.0, 0.0)
-            val goal = MotionState(length, 0.0, 0.0)
             return MotionProfileGenerator.generateMotionProfile(start, goal, compositeConstraints, resolution)
         }
 
-        private fun generateSimpleProfile(paths: List<Path>, constraints: DriveConstraints): MotionProfile {
-            val start = MotionState(0.0, 0.0, 0.0)
-            val goal = MotionState(paths.sumByDouble { it.length() }, 0.0, 0.0)
+        private fun generateSimpleProfile(
+            constraints: DriveConstraints,
+            start: MotionState,
+            goal: MotionState
+        ): MotionProfile {
             return MotionProfileGenerator.generateSimpleMotionProfile(start, goal,
                 constraints.maxVel, constraints.maxAccel, constraints.maxJerk)
         }
@@ -105,13 +108,17 @@ class PathTrajectorySegment(
     /**
      * @param paths paths
      * @param trajectoryConstraintsList list of trajectory constraints
+     * @param start profile start state
+     * @param goal profile goal (end) state
      * @param resolution resolution for the motion profile
      */
     @JvmOverloads constructor(
         paths: List<Path> = emptyList(),
         trajectoryConstraintsList: List<TrajectoryConstraints> = emptyList(),
+        start: MotionState = MotionState(0.0, 0.0, 0.0),
+        goal: MotionState = MotionState(paths.sumByDouble { it.length() }, 0.0, 0.0),
         resolution: Double = 0.25
-    ) : this(paths, generateProfile(paths, trajectoryConstraintsList, resolution))
+    ) : this(paths, generateProfile(paths, trajectoryConstraintsList, start, goal, resolution))
 
     /**
      * @param path path
@@ -121,8 +128,10 @@ class PathTrajectorySegment(
     @JvmOverloads constructor(
         path: Path,
         trajectoryConstraints: TrajectoryConstraints,
+        start: MotionState = MotionState(0.0, 0.0, 0.0),
+        goal: MotionState = MotionState(path.length(), 0.0, 0.0),
         resolution: Double = 0.25
-    ) : this(listOf(path), listOf(trajectoryConstraints), resolution)
+    ) : this(listOf(path), listOf(trajectoryConstraints), start, goal, resolution)
 
     /**
      * @param paths paths
@@ -130,17 +139,21 @@ class PathTrajectorySegment(
      */
     @JvmOverloads constructor(
         paths: List<Path> = emptyList(),
-        constraints: DriveConstraints
-    ) : this(paths, generateSimpleProfile(paths, constraints))
+        constraints: DriveConstraints,
+        start: MotionState = MotionState(0.0, 0.0, 0.0, 0.0),
+        goal: MotionState = MotionState(paths.sumByDouble { it.length() }, 0.0, 0.0, 0.0)
+    ) : this(paths, generateSimpleProfile(constraints, start, goal))
 
     /**
      * @param path path
      * @param constraints drive constraints
      */
-    constructor(
+    @JvmOverloads constructor(
         path: Path,
-        constraints: DriveConstraints
-    ) : this(listOf(path), generateSimpleProfile(listOf(path), constraints))
+        constraints: DriveConstraints,
+        start: MotionState = MotionState(0.0, 0.0, 0.0, 0.0),
+        goal: MotionState = MotionState(path.length(), 0.0, 0.0, 0.0)
+    ) : this(listOf(path), generateSimpleProfile(constraints, start, goal))
 
     override fun duration() = profile.duration()
 

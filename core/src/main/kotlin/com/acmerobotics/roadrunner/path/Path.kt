@@ -46,7 +46,9 @@ class Path @JvmOverloads constructor(
     data class ProjectionResult(val displacement: Double, val distance: Double)
 
     init {
-        interpolators.zip(parametricCurves).forEach { it.first.init(it.second) }
+        interpolators.zip(parametricCurves).forEach { (interpolator, curve) ->
+            interpolator.init(curve)
+        }
     }
 
     /**

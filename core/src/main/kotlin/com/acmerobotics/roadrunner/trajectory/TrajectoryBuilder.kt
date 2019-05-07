@@ -125,7 +125,7 @@ class TrajectoryBuilder @JvmOverloads constructor(
             paths.add(line)
             constraintsList.add(constraints)
         } else {
-            trajectorySegments.add(PathTrajectorySegment(listOf(line), listOf(constraints), resolution))
+            trajectorySegments.add(PathTrajectorySegment(listOf(line), listOf(constraints), resolution = resolution))
         }
         currentPose = Pose2d(pos, currentPose.heading)
 
@@ -224,7 +224,7 @@ class TrajectoryBuilder @JvmOverloads constructor(
             paths.add(spline)
             constraintsList.add(constraints)
         } else {
-            trajectorySegments.add(PathTrajectorySegment(listOf(spline), listOf(constraints), resolution))
+            trajectorySegments.add(PathTrajectorySegment(listOf(spline), listOf(constraints), resolution = resolution))
         }
         currentPose = pose
 
@@ -259,7 +259,7 @@ class TrajectoryBuilder @JvmOverloads constructor(
     fun closeComposite(): TrajectoryBuilder {
         composite = false
         if (paths.isNotEmpty() && constraintsList.isNotEmpty()) {
-            trajectorySegments.add(PathTrajectorySegment(paths, constraintsList, resolution))
+            trajectorySegments.add(PathTrajectorySegment(paths, constraintsList, resolution = resolution))
             paths = mutableListOf()
             constraintsList = mutableListOf()
         }
