@@ -12,7 +12,7 @@ Controllers for generic control tasks including tracking motion profiles (not li
 
 # Package com.acmerobotics.roadrunner.drive
 
-Drive-specific interfaces that provide functionality for setting robot velocities and using positional feedback for 
+Drive-specific interfaces that provide functionality for setting robot velocities and using positional feedback for
 localization.
 
 # Package com.acmerobotics.roadrunner.followers
@@ -33,7 +33,7 @@ Home of tracking wheel localizers.
 
 # Package com.acmerobotics.roadrunner.path
 
-Type hierarchy for representing 2D holonomic robot paths (x, y, and heading components). 
+Type hierarchy for representing 2D holonomic robot paths (x, y, and heading components).
 
 # Package com.acmerobotics.roadrunner.path.heading
 
@@ -50,6 +50,10 @@ Types for representing 2D robot trajectories, including time parametrizations of
 # Package com.acmerobotics.roadrunner.trajectory.constraints
 
 Specific constraints for trajectories and different drive types.
+
+# Package com.acmerobotics.roadrunner.tuning
+
+Basic regression analysis for tuning feedforward parameters.
 
 # Package com.acmerobotics.roadrunner.util
 
