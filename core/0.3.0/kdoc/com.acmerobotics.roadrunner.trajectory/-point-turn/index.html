@@ -1,0 +1,117 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>PointTurn - core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">core</a>&nbsp;/&nbsp;<a href="../index.html">com.acmerobotics.roadrunner.trajectory</a>&nbsp;/&nbsp;<a href="./index.html">PointTurn</a><br/>
+<br/>
+<h1>PointTurn</h1>
+<code><span class="keyword">class </span><span class="identifier">PointTurn</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-trajectory-segment/index.html"><span class="identifier">TrajectorySegment</span></a></code>
+<p>Point turn trajectory segment.</p>
+<h3>Parameters</h3>
+<p><a name="start"></a>
+<code>start</code> - start pose</p>
+<p><a name="angle"></a>
+<code>angle</code> - angle to sweep through (may exceed a full revolution)</p>
+<p><a name="constraints"></a>
+<code>constraints</code> - drive constraints</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">PointTurn</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.PointTurn$<init>(com.acmerobotics.roadrunner.geometry.Pose2d, kotlin.Double, com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints)/start">start</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.PointTurn$<init>(com.acmerobotics.roadrunner.geometry.Pose2d, kotlin.Double, com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints)/angle">angle</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.PointTurn$<init>(com.acmerobotics.roadrunner.geometry.Pose2d, kotlin.Double, com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints)/constraints">constraints</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.trajectory.constraints/-drive-constraints/index.html"><span class="identifier">DriveConstraints</span></a><span class="symbol">)</span></code>
+<p>Point turn trajectory segment.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="angle.html">angle</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">angle</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code>
+<p>angle to sweep through (may exceed a full revolution)</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="constraints.html">constraints</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">constraints</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.trajectory.constraints/-drive-constraints/index.html"><span class="identifier">DriveConstraints</span></a></code>
+<p>drive constraints</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="profile.html">profile</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">profile</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.profile/-motion-profile/index.html"><span class="identifier">MotionProfile</span></a></code>
+<p>Motion profile for the time parametrization of the turn.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="start.html">start</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">start</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a></code>
+<p>start pose</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="acceleration.html">acceleration</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">acceleration</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.PointTurn$acceleration(kotlin.Double)/time">time</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a></code>
+<p>Returns the pose acceleration at the given <a href="../-trajectory-segment/acceleration.html#com.acmerobotics.roadrunner.trajectory.TrajectorySegment$acceleration(kotlin.Double)/time">time</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="duration.html">duration</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">duration</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code>
+<p>Returns the duration of the segment.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="get.html">get</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">get</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.PointTurn$get(kotlin.Double)/time">time</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a></code>
+<p>Returns the pose at the given <a href="../-trajectory-segment/get.html#com.acmerobotics.roadrunner.trajectory.TrajectorySegment$get(kotlin.Double)/time">time</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="velocity.html">velocity</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">velocity</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.PointTurn$velocity(kotlin.Double)/time">time</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a></code>
+<p>Returns the pose velocity at the given <a href="../-trajectory-segment/velocity.html#com.acmerobotics.roadrunner.trajectory.TrajectorySegment$velocity(kotlin.Double)/time">time</a>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

@@ -1,0 +1,235 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>QuinticSpline - core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">core</a>&nbsp;/&nbsp;<a href="../index.html">com.acmerobotics.roadrunner.path</a>&nbsp;/&nbsp;<a href="./index.html">QuinticSpline</a><br/>
+<br/>
+<h1>QuinticSpline</h1>
+<code><span class="keyword">class </span><span class="identifier">QuinticSpline</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-parametric-curve/index.html"><span class="identifier">ParametricCurve</span></a></code>
+<p>Combination of two quintic polynomials into a 2D quintic spline. See
+<a href="https://github.com/acmerobotics/road-runner/blob/master/doc/pdf/Quintic_Splines_for_FTC.pdf">this short paper</a> for
+some motivation and implementation details.</p>
+<h3>Parameters</h3>
+<p><a name="start"></a>
+<code>start</code> - start waypoint</p>
+<p><a name="end"></a>
+<code>end</code> - end waypoint</p>
+<h3>Types</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-waypoint/index.html">Waypoint</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">Waypoint</span></code>
+<p>Class for representing the end points of interpolated quintic splines.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">QuinticSpline</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.path.QuinticSpline$<init>(com.acmerobotics.roadrunner.path.QuinticSpline.Waypoint, com.acmerobotics.roadrunner.path.QuinticSpline.Waypoint)/start">start</span><span class="symbol">:</span>&nbsp;<a href="-waypoint/index.html"><span class="identifier">QuinticSpline.Waypoint</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.path.QuinticSpline$<init>(com.acmerobotics.roadrunner.path.QuinticSpline.Waypoint, com.acmerobotics.roadrunner.path.QuinticSpline.Waypoint)/end">end</span><span class="symbol">:</span>&nbsp;<a href="-waypoint/index.html"><span class="identifier">QuinticSpline.Waypoint</span></a><span class="symbol">)</span></code>
+<p>Combination of two quintic polynomials into a 2D quintic spline. See
+<a href="https://github.com/acmerobotics/road-runner/blob/master/doc/pdf/Quintic_Splines_for_FTC.pdf">this short paper</a> for
+some motivation and implementation details.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="x.html">x</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">x</span><span class="symbol">: </span><a href="../-quintic-polynomial/index.html"><span class="identifier">QuinticPolynomial</span></a></code>
+<p>X polynomial (i.e., x(t))</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="y.html">y</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">y</span><span class="symbol">: </span><a href="../-quintic-polynomial/index.html"><span class="identifier">QuinticPolynomial</span></a></code>
+<p>Y polynomial (i.e., y(t))</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="length.html">length</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">length</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code>
+<p>Returns the length of the curve.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="to-string.html">toString</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">toString</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Inherited Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../-parametric-curve/deriv.html">deriv</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">deriv</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.path.ParametricCurve$deriv(kotlin.Double, kotlin.Double)/s">s</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.path.ParametricCurve$deriv(kotlin.Double, kotlin.Double)/t">t</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a>&nbsp;<span class="symbol">=</span>&nbsp;reparam(s)<span class="symbol">)</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.geometry/-vector2d/index.html"><span class="identifier">Vector2d</span></a></code>
+<p>Returns the derivative <a href="../-parametric-curve/deriv.html#com.acmerobotics.roadrunner.path.ParametricCurve$deriv(kotlin.Double, kotlin.Double)/s">s</a> units along the curve.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-parametric-curve/end.html">end</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">end</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.geometry/-vector2d/index.html"><span class="identifier">Vector2d</span></a></code>
+<p>Returns the end vector.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-parametric-curve/end-deriv.html">endDeriv</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">endDeriv</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.geometry/-vector2d/index.html"><span class="identifier">Vector2d</span></a></code>
+<p>Returns the end derivative.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-parametric-curve/end-second-deriv.html">endSecondDeriv</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">endSecondDeriv</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.geometry/-vector2d/index.html"><span class="identifier">Vector2d</span></a></code>
+<p>Returns the end second derivative.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-parametric-curve/end-third-deriv.html">endThirdDeriv</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">endThirdDeriv</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.geometry/-vector2d/index.html"><span class="identifier">Vector2d</span></a></code>
+<p>Returns the end third derivative.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-parametric-curve/get.html">get</a></p>
+</td>
+<td>
+<code><span class="keyword">operator</span> <span class="keyword">fun </span><span class="identifier">get</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.path.ParametricCurve$get(kotlin.Double, kotlin.Double)/s">s</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.path.ParametricCurve$get(kotlin.Double, kotlin.Double)/t">t</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a>&nbsp;<span class="symbol">=</span>&nbsp;reparam(s)<span class="symbol">)</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.geometry/-vector2d/index.html"><span class="identifier">Vector2d</span></a></code>
+<p>Returns the vector <a href="../-parametric-curve/get.html#com.acmerobotics.roadrunner.path.ParametricCurve$get(kotlin.Double, kotlin.Double)/s">s</a> units along the curve.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-parametric-curve/second-deriv.html">secondDeriv</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">secondDeriv</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.path.ParametricCurve$secondDeriv(kotlin.Double, kotlin.Double)/s">s</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.path.ParametricCurve$secondDeriv(kotlin.Double, kotlin.Double)/t">t</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a>&nbsp;<span class="symbol">=</span>&nbsp;reparam(s)<span class="symbol">)</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.geometry/-vector2d/index.html"><span class="identifier">Vector2d</span></a></code>
+<p>Returns the second derivative <a href="../-parametric-curve/second-deriv.html#com.acmerobotics.roadrunner.path.ParametricCurve$secondDeriv(kotlin.Double, kotlin.Double)/s">s</a> units along the curve.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-parametric-curve/start.html">start</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">start</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.geometry/-vector2d/index.html"><span class="identifier">Vector2d</span></a></code>
+<p>Returns the start vector.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-parametric-curve/start-deriv.html">startDeriv</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">startDeriv</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.geometry/-vector2d/index.html"><span class="identifier">Vector2d</span></a></code>
+<p>Returns the start derivative.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-parametric-curve/start-second-deriv.html">startSecondDeriv</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">startSecondDeriv</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.geometry/-vector2d/index.html"><span class="identifier">Vector2d</span></a></code>
+<p>Returns the start second derivative.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-parametric-curve/start-third-deriv.html">startThirdDeriv</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">startThirdDeriv</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.geometry/-vector2d/index.html"><span class="identifier">Vector2d</span></a></code>
+<p>Returns the start third derivative.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-parametric-curve/tangent-angle.html">tangentAngle</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">tangentAngle</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.path.ParametricCurve$tangentAngle(kotlin.Double, kotlin.Double)/s">s</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.path.ParametricCurve$tangentAngle(kotlin.Double, kotlin.Double)/t">t</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a>&nbsp;<span class="symbol">=</span>&nbsp;reparam(s)<span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code>
+<p>Returns the angle of the tangent line <a href="../-parametric-curve/tangent-angle.html#com.acmerobotics.roadrunner.path.ParametricCurve$tangentAngle(kotlin.Double, kotlin.Double)/s">s</a> units along the curve.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-parametric-curve/tangent-angle-deriv.html">tangentAngleDeriv</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">tangentAngleDeriv</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.path.ParametricCurve$tangentAngleDeriv(kotlin.Double, kotlin.Double)/s">s</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.path.ParametricCurve$tangentAngleDeriv(kotlin.Double, kotlin.Double)/t">t</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a>&nbsp;<span class="symbol">=</span>&nbsp;reparam(s)<span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code>
+<p>Returns the derivative of the tangent angle <a href="../-parametric-curve/tangent-angle-deriv.html#com.acmerobotics.roadrunner.path.ParametricCurve$tangentAngleDeriv(kotlin.Double, kotlin.Double)/s">s</a> units along the curve.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-parametric-curve/tangent-angle-second-deriv.html">tangentAngleSecondDeriv</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">tangentAngleSecondDeriv</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.path.ParametricCurve$tangentAngleSecondDeriv(kotlin.Double, kotlin.Double)/s">s</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.path.ParametricCurve$tangentAngleSecondDeriv(kotlin.Double, kotlin.Double)/t">t</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a>&nbsp;<span class="symbol">=</span>&nbsp;reparam(s)<span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code>
+<p>Returns the second derivative of the tangent angle <a href="../-parametric-curve/tangent-angle-second-deriv.html#com.acmerobotics.roadrunner.path.ParametricCurve$tangentAngleSecondDeriv(kotlin.Double, kotlin.Double)/s">s</a> units along the curve.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-parametric-curve/third-deriv.html">thirdDeriv</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">thirdDeriv</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.path.ParametricCurve$thirdDeriv(kotlin.Double, kotlin.Double)/s">s</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.path.ParametricCurve$thirdDeriv(kotlin.Double, kotlin.Double)/t">t</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a>&nbsp;<span class="symbol">=</span>&nbsp;reparam(s)<span class="symbol">)</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.geometry/-vector2d/index.html"><span class="identifier">Vector2d</span></a></code>
+<p>Returns the third derivative <a href="../-parametric-curve/third-deriv.html#com.acmerobotics.roadrunner.path.ParametricCurve$thirdDeriv(kotlin.Double, kotlin.Double)/s">s</a> units along the curve.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

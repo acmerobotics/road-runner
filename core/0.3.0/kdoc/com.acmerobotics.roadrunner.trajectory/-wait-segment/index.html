@@ -1,0 +1,74 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>WaitSegment - core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">core</a>&nbsp;/&nbsp;<a href="../index.html">com.acmerobotics.roadrunner.trajectory</a>&nbsp;/&nbsp;<a href="./index.html">WaitSegment</a><br/>
+<br/>
+<h1>WaitSegment</h1>
+<code><span class="keyword">class </span><span class="identifier">WaitSegment</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-trajectory-segment/index.html"><span class="identifier">TrajectorySegment</span></a></code>
+<p>Static trajectory segment that holds a constant pose. Used for giving trajectories extra time to settle.</p>
+<h3>Parameters</h3>
+<p><a name="pose"></a>
+<code>pose</code> - pose to hold</p>
+<p><a name="duration"></a>
+<code>duration</code> - duration</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">WaitSegment</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.WaitSegment$<init>(com.acmerobotics.roadrunner.geometry.Pose2d, kotlin.Double)/pose">pose</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.WaitSegment$<init>(com.acmerobotics.roadrunner.geometry.Pose2d, kotlin.Double)/duration">duration</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span></code>
+<p>Static trajectory segment that holds a constant pose. Used for giving trajectories extra time to settle.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="acceleration.html">acceleration</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">acceleration</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.WaitSegment$acceleration(kotlin.Double)/time">time</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a></code>
+<p>Returns the pose acceleration at the given <a href="../-trajectory-segment/acceleration.html#com.acmerobotics.roadrunner.trajectory.TrajectorySegment$acceleration(kotlin.Double)/time">time</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="duration.html">duration</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">duration</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code>
+<p>Returns the duration of the segment.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="get.html">get</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">get</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.WaitSegment$get(kotlin.Double)/time">time</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a></code>
+<p>Returns the pose at the given <a href="../-trajectory-segment/get.html#com.acmerobotics.roadrunner.trajectory.TrajectorySegment$get(kotlin.Double)/time">time</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="velocity.html">velocity</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">velocity</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.WaitSegment$velocity(kotlin.Double)/time">time</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a></code>
+<p>Returns the pose velocity at the given <a href="../-trajectory-segment/velocity.html#com.acmerobotics.roadrunner.trajectory.TrajectorySegment$velocity(kotlin.Double)/time">time</a>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

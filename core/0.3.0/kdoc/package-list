@@ -1,0 +1,23 @@
+$dokka.format:html
+$dokka.linkExtension:html
+$dokka.location:com.acmerobotics.roadrunner.geometry$div(kotlin.Double, com.acmerobotics.roadrunner.geometry.Pose2d)com.acmerobotics.roadrunner.geometry/kotlin.-double/div.html
+$dokka.location:com.acmerobotics.roadrunner.geometry$div(kotlin.Double, com.acmerobotics.roadrunner.geometry.Vector2d)com.acmerobotics.roadrunner.geometry/kotlin.-double/div.html
+$dokka.location:com.acmerobotics.roadrunner.geometry$times(kotlin.Double, com.acmerobotics.roadrunner.geometry.Pose2d)com.acmerobotics.roadrunner.geometry/kotlin.-double/times.html
+$dokka.location:com.acmerobotics.roadrunner.geometry$times(kotlin.Double, com.acmerobotics.roadrunner.geometry.Vector2d)com.acmerobotics.roadrunner.geometry/kotlin.-double/times.html
+$dokka.location:com.acmerobotics.roadrunner.path$minus(kotlin.Pair((kotlin.Double, )), kotlin.Pair((kotlin.Double, )))com.acmerobotics.roadrunner.path/kotlin.-pair/minus.html
+$dokka.location:com.acmerobotics.roadrunner.util$epsilonEquals(kotlin.Double, kotlin.Double)com.acmerobotics.roadrunner.util/kotlin.-double/epsilon-equals.html
+$dokka.location:com.acmerobotics.roadrunner.util$minus(kotlin.Double, com.acmerobotics.roadrunner.util.DoubleProgression)com.acmerobotics.roadrunner.util/kotlin.-double/minus.html
+$dokka.location:com.acmerobotics.roadrunner.util$plus(kotlin.Double, com.acmerobotics.roadrunner.util.DoubleProgression)com.acmerobotics.roadrunner.util/kotlin.-double/plus.html
+com.acmerobotics.roadrunner.control
+com.acmerobotics.roadrunner.drive
+com.acmerobotics.roadrunner.followers
+com.acmerobotics.roadrunner.geometry
+com.acmerobotics.roadrunner.kinematics
+com.acmerobotics.roadrunner.localization
+com.acmerobotics.roadrunner.path
+com.acmerobotics.roadrunner.path.heading
+com.acmerobotics.roadrunner.profile
+com.acmerobotics.roadrunner.trajectory
+com.acmerobotics.roadrunner.trajectory.constraints
+com.acmerobotics.roadrunner.tuning
+com.acmerobotics.roadrunner.util

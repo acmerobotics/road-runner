@@ -1,0 +1,126 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>PathBuilder - core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">core</a>&nbsp;/&nbsp;<a href="../index.html">com.acmerobotics.roadrunner.path</a>&nbsp;/&nbsp;<a href="./index.html">PathBuilder</a><br/>
+<br/>
+<h1>PathBuilder</h1>
+<code><span class="keyword">class </span><span class="identifier">PathBuilder</span></code>
+<p>Easy-to-use builder for creating <a href="../-path/index.html">Path</a> instances.</p>
+<h3>Parameters</h3>
+<p><a name="startPose"></a>
+<code>startPose</code> - start pose</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">PathBuilder</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.path.PathBuilder$<init>(com.acmerobotics.roadrunner.geometry.Pose2d)/startPose">startPose</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a><span class="symbol">)</span></code>
+<p>Easy-to-use builder for creating <a href="../-path/index.html">Path</a> instances.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="back.html">back</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">back</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.path.PathBuilder$back(kotlin.Double)/distance">distance</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">PathBuilder</span></a></code>
+<p>Adds a line straight backward.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="build.html">build</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">build</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../-path/index.html"><span class="identifier">Path</span></a></code>
+<p>Constructs the <a href="../-path/index.html">Path</a> instance.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="forward.html">forward</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">forward</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.path.PathBuilder$forward(kotlin.Double)/distance">distance</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">PathBuilder</span></a></code>
+<p>Adds a line straight forward.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="line-to.html">lineTo</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">lineTo</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.path.PathBuilder$lineTo(com.acmerobotics.roadrunner.geometry.Vector2d, com.acmerobotics.roadrunner.path.heading.HeadingInterpolator)/pos">pos</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.geometry/-vector2d/index.html"><span class="identifier">Vector2d</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.path.PathBuilder$lineTo(com.acmerobotics.roadrunner.geometry.Vector2d, com.acmerobotics.roadrunner.path.heading.HeadingInterpolator)/interpolator">interpolator</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.path.heading/-heading-interpolator/index.html"><span class="identifier">HeadingInterpolator</span></a>&nbsp;<span class="symbol">=</span>&nbsp;TangentInterpolator()<span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">PathBuilder</span></a></code>
+<p>Adds a line path segment.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="reverse.html">reverse</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">reverse</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">PathBuilder</span></a></code>
+<p>Reverse the direction of robot travel.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="set-reversed.html">setReversed</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">setReversed</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.path.PathBuilder$setReversed(kotlin.Boolean)/reversed">reversed</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">PathBuilder</span></a></code>
+<p>Sets the robot travel direction.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="spline-to.html">splineTo</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">splineTo</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.path.PathBuilder$splineTo(com.acmerobotics.roadrunner.geometry.Pose2d, com.acmerobotics.roadrunner.path.heading.HeadingInterpolator)/pose">pose</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.path.PathBuilder$splineTo(com.acmerobotics.roadrunner.geometry.Pose2d, com.acmerobotics.roadrunner.path.heading.HeadingInterpolator)/interpolator">interpolator</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.path.heading/-heading-interpolator/index.html"><span class="identifier">HeadingInterpolator</span></a>&nbsp;<span class="symbol">=</span>&nbsp;TangentInterpolator()<span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">PathBuilder</span></a></code>
+<p>Adds a spline segment.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="strafe-left.html">strafeLeft</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">strafeLeft</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.path.PathBuilder$strafeLeft(kotlin.Double)/distance">distance</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">PathBuilder</span></a></code>
+<p>Adds a segment that strafes left in the robot reference frame.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="strafe-right.html">strafeRight</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">strafeRight</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.path.PathBuilder$strafeRight(kotlin.Double)/distance">distance</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">PathBuilder</span></a></code>
+<p>Adds a segment that strafes right in the robot reference frame.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="strafe-to.html">strafeTo</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">strafeTo</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.path.PathBuilder$strafeTo(com.acmerobotics.roadrunner.geometry.Vector2d)/pos">pos</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.geometry/-vector2d/index.html"><span class="identifier">Vector2d</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">PathBuilder</span></a></code>
+<p>Adds a strafe path segment.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>
