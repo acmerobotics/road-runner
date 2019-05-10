@@ -118,36 +118,36 @@ val line = Path(LineSegment(Vector2d(10.0, 10.0), Vector2d(20.0, 20.0)))
 Similarly, here's a spline declaration:
 
 ```java
-Path spline = new Path(new QuinticSplineSegment(
-    new QuinticSplineSegment.Waypoint(10, 10, 10, 0), // start position and derivatives
-    new QuinticSplineSegment.Waypoint(20, 20, 0, 10) // end position and derivatives
+Path spline = new Path(new QuinticSpline(
+    new QuinticSpline.Waypoint(10, 10, 10, 0), // start position and derivatives
+    new QuinticSpline.Waypoint(20, 20, 0, 10) // end position and derivatives
 ));
 ```
 
  or
 
 ```kotlin
-val spline = Path(QuinticSplineSegment(
-    QuinticSplineSegment.Waypoint(10.0, 10.0, 10.0, 0.0),
-    QuinticSplineSegment.Waypoint(20.0, 20.0, 0.0, 10.0)
+val spline = Path(QuinticSpline(
+    QuinticSpline.Waypoint(10.0, 10.0, 10.0, 0.0),
+    QuinticSpline.Waypoint(20.0, 20.0, 0.0, 10.0)
 ))
 ```
 
 Paths also describe the robot's heading in addition to its xy position. For tank/differential drive robots (and other with nonholonomic constraints), the heading always points in the direction of the curve. However, for holonomic robots (for example, mecanum, X-drive, H-drive, or ball drive), the heading is independent (and therefore controllable). To change the default heading behavior, simply pass a heading interpolator as the second argument to the `Path` constructor:
 
 ```java
-Path constantHeadingSpline = new Path(new QuinticSplineSegment(
-    new QuinticSplineSegment.Waypoint(10, 10, 10, 0), // start position and derivatives
-    new QuinticSplineSegment.Waypoint(20, 20, 0, 10) // end position and derivatives
+Path constantHeadingSpline = new Path(new QuinticSpline(
+    new QuinticSpline.Waypoint(10, 10, 10, 0), // start position and derivatives
+    new QuinticSpline.Waypoint(20, 20, 0, 10) // end position and derivatives
 ), new ConstantInterpolator(Math.toRadians(45)));
 ```
 
 or
 
 ```kotlin
-val spline = Path(QuinticSplineSegment(
-    QuinticSplineSegment.Waypoint(10.0, 10.0, 10.0, 0.0),
-    QuinticSplineSegment.Waypoint(20.0, 20.0, 0.0, 10.0)
+val spline = Path(QuinticSpline(
+    QuinticSpline.Waypoint(10.0, 10.0, 10.0, 0.0),
+    QuinticSpline.Waypoint(20.0, 20.0, 0.0, 10.0)
 ), ConstantInterpolator(Math.toRadians(45.0)))
 ```
 
@@ -177,7 +177,7 @@ Here `constraints` is an extended version of the motion profile maximum velocity
 Trajectory trajectory = new Trajectory(Arrays.asList(
     new PointTurn(
         new Pose2d(0, 0, 0), // start pose (position and heading)
-        Math.toRadians(90), // end heading
+        Math.toRadians(90), // angle to sweep through
         constraints // drive constraints
     )
 ));
