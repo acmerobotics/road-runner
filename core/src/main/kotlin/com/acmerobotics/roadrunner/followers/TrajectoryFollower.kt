@@ -1,7 +1,7 @@
 package com.acmerobotics.roadrunner.followers
 
-import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.drive.DriveSignal
+import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.trajectory.Trajectory
 import com.acmerobotics.roadrunner.util.NanoClock
 import kotlin.math.abs
@@ -24,7 +24,7 @@ abstract class TrajectoryFollower @JvmOverloads constructor(
     /**
      * Trajectory being followed if [isFollowing] is true.
      */
-    var trajectory: Trajectory = Trajectory()
+    lateinit var trajectory: Trajectory
         protected set
 
     /**

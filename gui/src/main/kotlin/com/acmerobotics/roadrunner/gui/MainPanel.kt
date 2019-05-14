@@ -64,6 +64,7 @@ class MainPanel : JPanel() {
         this.resolution = min(MIN_RESOLUTION, max(MAX_RESOLUTION, resolution))
 
         val trajectory = TrajectoryConfig(this.poses, this.constraints, this.resolution).toTrajectory()
+            ?: return
 
         fieldPanel.updateTrajectoryAndPoses(trajectory, poses)
         trajectoryInfoPanel.updateTrajectory(trajectory)

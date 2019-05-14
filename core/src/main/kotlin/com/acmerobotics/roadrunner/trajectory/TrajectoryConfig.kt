@@ -9,11 +9,11 @@ import kotlin.math.sin
 
 /**
  * Basic trajectory configuration intended for serialization. Intentionally more simplistic and less flexible than
- * [TrajectoryBuilder].
+ * [BaseTrajectoryBuilder].
  *
  * @param poses poses
  * @param constraints constraints
- * @param resolution resolution used for path-based segments (see [PathTrajectorySegment])
+ * @param resolution resolution used for path-based segments (see [Trajectory])
  */
 class TrajectoryConfig @JvmOverloads constructor(
     val poses: List<Pose2d>,
@@ -27,33 +27,27 @@ class TrajectoryConfig @JvmOverloads constructor(
     @Suppress("NestedBlockDepth")
     fun toTrajectory() =
             if (poses.isEmpty()) {
-                Trajectory()
+                null
             } else {
-                val builder = TrajectoryBuilder(poses.first(), constraints, resolution)
+                val builder = TrajectoryBuilder(poses.first(), constraints, resolution = resolution)
                 for (i in 1 until poses.size) {
                     val startPose = poses[i - 1]
                     val endPose = poses[i]
-                    if (abs(startPose.x - endPose.x) < 1e-2 && abs(startPose.y - endPose.y) < 1e-2) {
-                        // this is probably a turn
-                        builder.turnTo(endPose.heading)
+                    val diff = endPose - startPose
+                    val dot = Vector2d(
+                        cos(endPose.heading),
+                        sin(endPose.heading)
+                    ) dot diff.pos()
+                    val cosAngle = dot / diff.pos().norm()
+
+                    builder.setReversed(cosAngle < 0)
+
+                    if (abs(startPose.heading - endPose.heading) < 1e-2 && abs(1 - abs(cosAngle)) < 1e-2) {
+                        // this is probably a line
+                        builder.lineTo(endPose.pos())
                     } else {
-                        builder.beginComposite()
-                        val diff = endPose - startPose
-                        val dot = Vector2d(
-                            cos(endPose.heading),
-                            sin(endPose.heading)
-                        ) dot diff.pos()
-                        val cosAngle = dot / diff.pos().norm()
-
-                        builder.setReversed(cosAngle < 0)
-
-                        if (abs(startPose.heading - endPose.heading) < 1e-2 && abs(1 - abs(cosAngle)) < 1e-2) {
-                            // this is probably a line
-                            builder.lineTo(endPose.pos())
-                        } else {
-                            // this is probably a spline
-                            builder.splineTo(endPose)
-                        }
+                        // this is probably a spline
+                        builder.splineTo(endPose)
                     }
                 }
                 builder.build()

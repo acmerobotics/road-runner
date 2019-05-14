@@ -18,7 +18,7 @@ private const val RESOLUTION = 1000
 class FieldPanel : JPanel() {
 
     private var poses = listOf<Pose2d>()
-    private var trajectory = Trajectory()
+    private var trajectory: Trajectory? = null
 
     init {
         preferredSize = Dimension(500, 500)
@@ -65,17 +65,21 @@ class FieldPanel : JPanel() {
             g2d.fillArc(point.x.roundToInt() - 5, point.y.roundToInt() - 5, 10, 10, 0, 360)
         }
 
+        if (trajectory == null) return
+
         // draw trajectory
         g2d.stroke = BasicStroke(3F)
 
-        if (trajectory.duration() == 0.0) {
+        if (trajectory?.duration() == 0.0) {
             return
         }
 
-        val displacements = (0..RESOLUTION).map { it / RESOLUTION.toDouble() * trajectory.duration() }
+        val displacements = (0..RESOLUTION).map {
+            it / RESOLUTION.toDouble() * (trajectory?.duration() ?: 1.0)
+        }
         for (i in 1..RESOLUTION) {
-            val firstPose = trajectory[displacements[i - 1]]
-            val secondPose = trajectory[displacements[i]]
+            val firstPose = trajectory?.get(displacements[i - 1]) ?: Pose2d()
+            val secondPose = trajectory?.get(displacements[i]) ?: Pose2d()
             val firstPoint = Point2D.Double()
             val secondPoint = Point2D.Double()
             transform.transform(Point2D.Double(firstPose.x, firstPose.y), firstPoint)

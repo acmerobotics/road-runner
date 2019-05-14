@@ -18,19 +18,11 @@ class TrajectoryTest {
         val cryptoColWidth = 7.5
         val stonePose = Pose2d(48.0, -47.5, PI)
         val trajectory = TrajectoryBuilder(stonePose, DriveConstraints(5.0, 10.0, Double.NaN, 2.0, 3.0, Double.NaN))
-                .lineTo(Vector2d(12 - cryptoColWidth, stonePose.y))
-                .turnTo(PI / 2)
-                .reverse()
-                .lineTo(Vector2d(12 - cryptoColWidth, -56.0))
-                // deposit
-                .reverse()
-                .beginComposite()
                 .lineTo(Vector2d(12 - cryptoColWidth, -44.0))
                 .splineTo(Pose2d(16.0, -24.0, PI / 3))
                 .splineTo(
                     Pose2d(24.0, -10.0, PI / 4),
                         WiggleInterpolator(Math.toRadians(15.0), 6.0, TangentInterpolator()))
-                .closeComposite()
                 .build()
 
         val dt = trajectory.duration() / 10000.0

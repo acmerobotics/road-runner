@@ -1,89 +1,36 @@
 package com.acmerobotics.roadrunner.trajectory
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
-import kotlin.math.max
-import kotlin.math.min
+import com.acmerobotics.roadrunner.path.Path
+import com.acmerobotics.roadrunner.profile.MotionProfile
 
 /**
- * Time-parametrized trajectory of poses.
+ * Trajectory backed by a [Path] and a [MotionProfile].
  *
- * @param segments trajectory segments
+ * @param paths paths
+ * @param profile motion profile
  */
-class Trajectory(val segments: List<TrajectorySegment> = emptyList()) {
-    /**
-     * Returns the trajectory duration.
-     */
-    fun duration() = segments.sumByDouble { it.duration() }
+class Trajectory(
+    val path: Path,
+    val profile: MotionProfile
+) {
 
-    /**
-     * Returns the pose at the specified [time].
-     */
-    operator fun get(time: Double): Pose2d {
-        var remainingTime = max(0.0, min(time, duration()))
-        for (segment in segments) {
-            if (remainingTime <= segment.duration()) {
-                return segment[remainingTime]
-            }
-            remainingTime -= segment.duration()
-        }
-        return segments.lastOrNull()?.get(segments.last().duration()) ?: Pose2d()
-    }
+    fun duration() = profile.duration()
 
-    /**
-     * Returns the pose velocity at the specified [time].
-     */
+    operator fun get(time: Double) = path[profile[time].x]
+
     fun velocity(time: Double): Pose2d {
-        var remainingTime = max(0.0, min(time, duration()))
-        for (segment in segments) {
-            if (remainingTime <= segment.duration()) {
-                return segment.velocity(remainingTime)
-            }
-            remainingTime -= segment.duration()
-        }
-        return segments.lastOrNull()?.velocity(segments.last().duration()) ?: Pose2d()
+        val motionState = profile[time]
+        return path.deriv(motionState.x) * motionState.v
     }
 
-    /**
-     * Returns the pose acceleration at the specified [time].
-     */
     fun acceleration(time: Double): Pose2d {
-        var remainingTime = max(0.0, min(time, duration()))
-        for (segment in segments) {
-            if (remainingTime <= segment.duration()) {
-                return segment.acceleration(remainingTime)
-            }
-            remainingTime -= segment.duration()
-        }
-        return segments.lastOrNull()?.acceleration(segments.last().duration()) ?: Pose2d()
+        val motionState = profile[time]
+        return path.secondDeriv(motionState.x) * motionState.v * motionState.v +
+            path.deriv(motionState.x) * motionState.a
     }
 
-    /**
-     * Returns the start pose.
-     */
-    fun start() = get(0.0)
+    fun start() = path[0.0, 0.0]
 
-    /**
-     * Returns the start pose velocity.
-     */
-    fun startVelocity() = velocity(0.0)
-
-    /**
-     * Returns the start pose acceleration.
-     */
-    fun startAcceleration() = acceleration(0.0)
-
-    /**
-     * Returns the end pose.
-     */
-    fun end() = get(duration())
-
-    /**
-     * Returns the end pose velocity.
-     */
-    fun endVelocity() = velocity(duration())
-
-    /**
-     * Returns the end pose acceleration.
-     */
-    fun endAcceleration() = acceleration(duration())
+    fun end() = path[path.length(), 1.0]
 }

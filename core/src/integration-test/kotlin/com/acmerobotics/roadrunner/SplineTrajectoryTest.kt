@@ -4,8 +4,7 @@ import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.path.LineSegment
 import com.acmerobotics.roadrunner.path.Path
 import com.acmerobotics.roadrunner.path.QuinticSpline
-import com.acmerobotics.roadrunner.trajectory.PathTrajectorySegment
-import com.acmerobotics.roadrunner.trajectory.Trajectory
+import com.acmerobotics.roadrunner.trajectory.TrajectoryGenerator
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import com.acmerobotics.roadrunner.trajectory.constraints.TankConstraints
 import org.junit.jupiter.api.Test
@@ -23,9 +22,7 @@ class SplineTrajectoryTest {
             Vector2d(0.0, 0.0),
             Vector2d(25.0, 25.0)
         )
-        val trajectory = Trajectory(listOf(
-                PathTrajectorySegment(listOf(Path(line)), listOf(BASE_CONSTRAINTS))
-        ))
+        val trajectory = TrajectoryGenerator.generateTrajectory(Path(line), BASE_CONSTRAINTS)
 
         GraphUtil.saveParametricCurve("lineSegment/curve", line)
         GraphUtil.saveTrajectory("lineSegment/trajectory", trajectory)
@@ -37,9 +34,7 @@ class SplineTrajectoryTest {
                 QuinticSpline.Waypoint(0.0, 0.0, 20.0, 20.0),
                 QuinticSpline.Waypoint(30.0, 15.0, -30.0, 10.0)
         )
-        val trajectory = Trajectory(listOf(
-            PathTrajectorySegment(listOf(Path(spline)), listOf(BASE_CONSTRAINTS))
-        ))
+        val trajectory = TrajectoryGenerator.generateTrajectory(Path(spline), BASE_CONSTRAINTS)
 
         GraphUtil.saveParametricCurve("simpleSpline/curve", spline)
         GraphUtil.saveTrajectory("simpleSpline/trajectory", trajectory)
@@ -55,9 +50,7 @@ class SplineTrajectoryTest {
                 QuinticSpline.Waypoint(15.0, 15.0, 15.0, 15.0),
                 QuinticSpline.Waypoint(30.0, 15.0, 20.0, 5.0)
         )
-        val trajectory = Trajectory(listOf(
-            PathTrajectorySegment(listOf(Path(line), Path(spline)), listOf(CONSTRAINTS, CONSTRAINTS))
-        ))
+        val trajectory = TrajectoryGenerator.generateTrajectory(Path(listOf(line, spline)), BASE_CONSTRAINTS)
 
         GraphUtil.saveParametricCurve("compositeSpline/curve", spline)
         GraphUtil.saveTrajectory("compositeSpline/trajectory", trajectory)
