@@ -44,6 +44,12 @@ class QuinticSpline(start: Waypoint, end: Waypoint) : ParametricCurve() {
         val d2x: Double = 0.0,
         val d2y: Double = 0.0
     ) {
+        @JvmOverloads constructor(
+            pos: Vector2d,
+            deriv: Vector2d = Vector2d(),
+            secondDeriv: Vector2d = Vector2d()
+        ) : this(pos.x, pos.y, deriv.x, deriv.y, secondDeriv.x, secondDeriv.y)
+
         fun pos() = Vector2d(x, y)
 
         fun deriv() = Vector2d(dx, dy)

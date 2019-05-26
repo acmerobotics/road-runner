@@ -4,7 +4,8 @@ import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.util.DoubleProgression
 
 /**
- * Parametric curve with two components (x and y).
+ * Parametric curve with two components (x and y). These curves are reparametrized from an internal parameter (t) to the
+ * arc length parameter (s).
  */
 abstract class ParametricCurve {
 
@@ -27,10 +28,12 @@ abstract class ParametricCurve {
     fun secondDeriv(s: Double, t: Double = reparam(s)): Vector2d {
         val deriv = internalDeriv(t)
         val secondDeriv = internalSecondDeriv(t)
-        val splineParameterDeriv = paramDeriv(t)
-        val splineParameterSecondDeriv = paramSecondDeriv(t)
-        return secondDeriv * splineParameterDeriv * splineParameterDeriv +
-                deriv * splineParameterSecondDeriv
+
+        val paramDeriv = paramDeriv(t)
+        val paramSecondDeriv = paramSecondDeriv(t)
+
+        return secondDeriv * paramDeriv * paramDeriv +
+                deriv * paramSecondDeriv
     }
 
     /**
@@ -41,12 +44,14 @@ abstract class ParametricCurve {
         val deriv = internalDeriv(t)
         val secondDeriv = internalSecondDeriv(t)
         val thirdDeriv = internalThirdDeriv(t)
-        val splineParameterDeriv = paramDeriv(t)
-        val splineParameterSecondDeriv = paramSecondDeriv(t)
-        val splineParameterThirdDeriv = paramThirdDeriv(t)
-        return thirdDeriv * splineParameterDeriv * splineParameterDeriv * splineParameterDeriv +
-                secondDeriv * splineParameterSecondDeriv * splineParameterDeriv * 3.0 +
-                deriv * splineParameterThirdDeriv
+
+        val paramDeriv = paramDeriv(t)
+        val paramSecondDeriv = paramSecondDeriv(t)
+        val paramThirdDeriv = paramThirdDeriv(t)
+
+        return thirdDeriv * paramDeriv * paramDeriv * paramDeriv +
+                secondDeriv * paramSecondDeriv * paramDeriv * 3.0 +
+                deriv * paramThirdDeriv
     }
 
     /**

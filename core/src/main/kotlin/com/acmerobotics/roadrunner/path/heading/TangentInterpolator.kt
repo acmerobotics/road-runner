@@ -6,9 +6,9 @@ package com.acmerobotics.roadrunner.path.heading
 class TangentInterpolator : HeadingInterpolator() {
     override fun respectsDerivativeContinuity() = true
 
-    override fun internalGet(s: Double, t: Double) = parametricCurve.tangentAngle(s, t)
+    override fun internalGet(s: Double, t: Double) = curve.tangentAngle(s, t)
 
-    override fun internalDeriv(s: Double, t: Double) = parametricCurve.tangentAngleDeriv(s, t)
+    override fun internalDeriv(s: Double, t: Double) = curve.tangentAngleDeriv(s, t)
 
-    override fun internalSecondDeriv(s: Double, t: Double) = parametricCurve.tangentAngleSecondDeriv(s, t)
+    override fun internalSecondDeriv(s: Double, t: Double) = curve.tangentAngleSecondDeriv(s, t)
 }

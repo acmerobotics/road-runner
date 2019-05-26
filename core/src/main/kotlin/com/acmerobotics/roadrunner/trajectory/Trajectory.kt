@@ -7,7 +7,7 @@ import com.acmerobotics.roadrunner.profile.MotionProfile
 /**
  * Trajectory backed by a [Path] and a [MotionProfile].
  *
- * @param paths paths
+ * @param path path
  * @param profile motion profile
  */
 class Trajectory(

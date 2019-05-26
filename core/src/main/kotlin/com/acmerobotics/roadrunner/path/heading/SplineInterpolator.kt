@@ -15,34 +15,34 @@ class SplineInterpolator(private val startHeading: Double, private val endHeadin
     private val tangentInterpolator = TangentInterpolator()
     private lateinit var headingSpline: QuinticPolynomial
 
-    override fun init(parametricCurve: ParametricCurve) {
-        super.init(parametricCurve)
+    override fun init(curve: ParametricCurve) {
+        super.init(curve)
 
-        tangentInterpolator.init(this.parametricCurve)
+        tangentInterpolator.init(this.curve)
 
-        val len = parametricCurve.length()
+        val len = curve.length()
 
         headingSpline = QuinticPolynomial(
                 startHeading,
-                parametricCurve.tangentAngleDeriv(0.0, 0.0) * len,
-                parametricCurve.tangentAngleSecondDeriv(0.0, 0.0) * len * len,
+                curve.tangentAngleDeriv(0.0, 0.0) * len,
+                curve.tangentAngleSecondDeriv(0.0, 0.0) * len * len,
                 endHeading,
-                parametricCurve.tangentAngleDeriv(len, 1.0) * len,
-                parametricCurve.tangentAngleSecondDeriv(len, 1.0) * len * len
+                curve.tangentAngleDeriv(len, 1.0) * len,
+                curve.tangentAngleSecondDeriv(len, 1.0) * len * len
         )
     }
 
     override fun respectsDerivativeContinuity() = true
 
-    override fun internalGet(s: Double, t: Double) = headingSpline[s / parametricCurve.length()]
+    override fun internalGet(s: Double, t: Double) = headingSpline[s / curve.length()]
 
     override fun internalDeriv(s: Double, t: Double): Double {
-        val len = parametricCurve.length()
+        val len = curve.length()
         return headingSpline.deriv(s / len) / len
     }
 
     override fun internalSecondDeriv(s: Double, t: Double): Double {
-        val len = parametricCurve.length()
+        val len = curve.length()
         return headingSpline.secondDeriv(s / len) / (len * len)
     }
 }

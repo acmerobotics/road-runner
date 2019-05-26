@@ -16,17 +16,15 @@ import kotlin.math.sin
  */
 class PathBuilder(startPose: Pose2d) {
     private var currentPose: Pose2d = startPose
-    private var currentReverse = false
+    private var currentReversed = false
 
-    private var parametricCurves = mutableListOf<ParametricCurve>()
-    private var interpolators = mutableListOf<HeadingInterpolator>()
-    private var reversed = mutableListOf<Boolean>()
+    private var segments = mutableListOf<PathSegment>()
 
     /**
      * Reverse the direction of robot travel.
      */
     fun reverse(): PathBuilder {
-        currentReverse = !currentReverse
+        currentReversed = !currentReversed
         return this
     }
 
@@ -34,7 +32,7 @@ class PathBuilder(startPose: Pose2d) {
      * Sets the robot travel direction.
      */
     fun setReversed(reversed: Boolean): PathBuilder {
-        this.currentReverse = reversed
+        this.currentReversed = reversed
         return this
     }
 
@@ -46,15 +44,13 @@ class PathBuilder(startPose: Pose2d) {
      */
     @JvmOverloads
     fun lineTo(pos: Vector2d, interpolator: HeadingInterpolator = TangentInterpolator()): PathBuilder {
-        val line = if (currentReverse) {
+        val line = if (currentReversed) {
             LineSegment(pos, currentPose.pos())
         } else {
             LineSegment(currentPose.pos(), pos)
         }
 
-        parametricCurves.add(line)
-        interpolators.add(interpolator)
-        reversed.add(currentReverse)
+        segments.add(PathSegment(line, interpolator, currentReversed))
 
         currentPose = Pose2d(pos, currentPose.heading)
 
@@ -129,15 +125,13 @@ class PathBuilder(startPose: Pose2d) {
         val endWaypoint = QuinticSpline.Waypoint(pose.x, pose.y,
             derivMag * cos(pose.heading), derivMag * sin(pose.heading))
 
-        val spline = if (currentReverse) {
+        val spline = if (currentReversed) {
             QuinticSpline(endWaypoint, startWaypoint)
         } else {
             QuinticSpline(startWaypoint, endWaypoint)
         }
 
-        parametricCurves.add(spline)
-        interpolators.add(interpolator)
-        reversed.add(currentReverse)
+        segments.add(PathSegment(spline, interpolator, currentReversed))
 
         currentPose = pose
 
@@ -147,5 +141,5 @@ class PathBuilder(startPose: Pose2d) {
     /**
      * Constructs the [Path] instance.
      */
-    fun build() = Path(parametricCurves, interpolators, reversed)
+    fun build() = Path(segments)
 }

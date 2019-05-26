@@ -26,12 +26,12 @@ class WiggleInterpolator(
     private lateinit var beginSpline: QuinticPolynomial
     private lateinit var endSpline: QuinticPolynomial
 
-    override fun init(parametricCurve: ParametricCurve) {
-        super.init(parametricCurve)
+    override fun init(curve: ParametricCurve) {
+        super.init(curve)
 
-        baseInterpolator.init(parametricCurve)
+        baseInterpolator.init(curve)
 
-        val n = (parametricCurve.length() / desiredPeriod).toInt()
+        val n = (curve.length() / desiredPeriod).toInt()
         period = 1.0 / n
 
         val t1 = K * period
@@ -88,7 +88,7 @@ class WiggleInterpolator(
                 waveDeriv(t)
         }
 
-        return headingDeriv * parametricCurve.paramDeriv(t) + baseInterpolator.deriv(s, t)
+        return headingDeriv * curve.paramDeriv(t) + baseInterpolator.deriv(s, t)
     }
 
     override fun internalSecondDeriv(s: Double, t: Double): Double {
@@ -110,7 +110,7 @@ class WiggleInterpolator(
                 waveSecondDeriv(t)
         }
 
-        return headingSecondDeriv * parametricCurve.paramDeriv(t) * parametricCurve.paramDeriv(t) +
-                headingDeriv * parametricCurve.paramSecondDeriv(t) + baseInterpolator.secondDeriv(s, t)
+        return headingSecondDeriv * curve.paramDeriv(t) * curve.paramDeriv(t) +
+                headingDeriv * curve.paramSecondDeriv(t) + baseInterpolator.secondDeriv(s, t)
     }
 }

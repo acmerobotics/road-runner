@@ -9,15 +9,15 @@ abstract class HeadingInterpolator {
     /**
      * Base parametric curve
      */
-    protected lateinit var parametricCurve: ParametricCurve
+    protected lateinit var curve: ParametricCurve
 
     /**
-     * Initialize the interpolator with a [parametricCurve].
+     * Initialize the interpolator with a [curve].
      *
-     *  @param parametricCurve parametric curve
+     *  @param curve parametric curve
      */
-    open fun init(parametricCurve: ParametricCurve) {
-        this.parametricCurve = parametricCurve
+    open fun init(curve: ParametricCurve) {
+        this.curve = curve
     }
 
     /**
@@ -32,19 +32,19 @@ abstract class HeadingInterpolator {
      * Returns the heading at the specified [s].
      */
     @JvmOverloads
-    operator fun get(s: Double, t: Double = parametricCurve.reparam(s)) = internalGet(s, t)
+    operator fun get(s: Double, t: Double = curve.reparam(s)) = internalGet(s, t)
 
     /**
      * Returns the heading derivative at the specified [s].
      */
     @JvmOverloads
-    fun deriv(s: Double, t: Double = parametricCurve.reparam(s)) = internalDeriv(s, t)
+    fun deriv(s: Double, t: Double = curve.reparam(s)) = internalDeriv(s, t)
 
     /**
      * Returns the heading second derivative at the specified [s].
      */
     @JvmOverloads
-    fun secondDeriv(s: Double, t: Double = parametricCurve.reparam(s)) = internalSecondDeriv(s, t)
+    fun secondDeriv(s: Double, t: Double = curve.reparam(s)) = internalSecondDeriv(s, t)
 
     /**
      * Returns the start heading.
@@ -64,17 +64,17 @@ abstract class HeadingInterpolator {
     /**
      * Returns the end heading.
      */
-    fun end() = get(parametricCurve.length(), 1.0)
+    fun end() = get(curve.length(), 1.0)
 
     /**
      * Returns the end heading derivative.
      */
-    fun endDeriv() = deriv(parametricCurve.length(), 1.0)
+    fun endDeriv() = deriv(curve.length(), 1.0)
 
     /**
      * Returns the end heading second derivative.
      */
-    fun endSecondDeriv() = secondDeriv(parametricCurve.length(), 1.0)
+    fun endSecondDeriv() = secondDeriv(curve.length(), 1.0)
 
     protected abstract fun internalGet(s: Double, t: Double): Double
     protected abstract fun internalDeriv(s: Double, t: Double): Double

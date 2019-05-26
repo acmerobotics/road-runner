@@ -13,9 +13,9 @@ class LinearInterpolator(private val startHeading: Double, private val angle: Do
     override fun respectsDerivativeContinuity() = false
 
     override fun internalGet(s: Double, t: Double) =
-        Angle.norm(startHeading + s / parametricCurve.length() * angle)
+        Angle.norm(startHeading + s / curve.length() * angle)
 
-    override fun internalDeriv(s: Double, t: Double) = angle / parametricCurve.length()
+    override fun internalDeriv(s: Double, t: Double) = angle / curve.length()
 
     override fun internalSecondDeriv(s: Double, t: Double) = 0.0
 }

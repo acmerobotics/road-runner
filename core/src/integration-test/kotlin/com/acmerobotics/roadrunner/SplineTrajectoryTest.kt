@@ -3,6 +3,7 @@ package com.acmerobotics.roadrunner
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.path.LineSegment
 import com.acmerobotics.roadrunner.path.Path
+import com.acmerobotics.roadrunner.path.PathSegment
 import com.acmerobotics.roadrunner.path.QuinticSpline
 import com.acmerobotics.roadrunner.trajectory.TrajectoryGenerator
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
@@ -22,7 +23,7 @@ class SplineTrajectoryTest {
             Vector2d(0.0, 0.0),
             Vector2d(25.0, 25.0)
         )
-        val trajectory = TrajectoryGenerator.generateTrajectory(Path(line), BASE_CONSTRAINTS)
+        val trajectory = TrajectoryGenerator.generateTrajectory(Path(PathSegment(line)), BASE_CONSTRAINTS)
 
         GraphUtil.saveParametricCurve("lineSegment/curve", line)
         GraphUtil.saveTrajectory("lineSegment/trajectory", trajectory)
@@ -34,7 +35,7 @@ class SplineTrajectoryTest {
                 QuinticSpline.Waypoint(0.0, 0.0, 20.0, 20.0),
                 QuinticSpline.Waypoint(30.0, 15.0, -30.0, 10.0)
         )
-        val trajectory = TrajectoryGenerator.generateTrajectory(Path(spline), BASE_CONSTRAINTS)
+        val trajectory = TrajectoryGenerator.generateTrajectory(Path(PathSegment(spline)), BASE_CONSTRAINTS)
 
         GraphUtil.saveParametricCurve("simpleSpline/curve", spline)
         GraphUtil.saveTrajectory("simpleSpline/trajectory", trajectory)
@@ -50,7 +51,11 @@ class SplineTrajectoryTest {
                 QuinticSpline.Waypoint(15.0, 15.0, 15.0, 15.0),
                 QuinticSpline.Waypoint(30.0, 15.0, 20.0, 5.0)
         )
-        val trajectory = TrajectoryGenerator.generateTrajectory(Path(listOf(line, spline)), BASE_CONSTRAINTS)
+        val path = Path(listOf(
+            PathSegment(line),
+            PathSegment(spline)
+        ))
+        val trajectory = TrajectoryGenerator.generateTrajectory(path, BASE_CONSTRAINTS)
 
         GraphUtil.saveParametricCurve("compositeSpline/curve", spline)
         GraphUtil.saveTrajectory("compositeSpline/trajectory", trajectory)
