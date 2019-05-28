@@ -21,14 +21,6 @@ abstract class HeadingInterpolator {
     }
 
     /**
-     * Returns true if the heading interpolator respects derivative continuity at path segment endpoints. That is,
-     * the start and end heading derivatives match those of the [TangentInterpolator].
-     *
-     * @return true if derivatives match [TangentInterpolator]
-     */
-    abstract fun respectsDerivativeContinuity(): Boolean
-
-    /**
      * Returns the heading at the specified [s].
      */
     @JvmOverloads

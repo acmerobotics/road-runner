@@ -56,8 +56,6 @@ class WiggleInterpolator(
         )
     }
 
-    override fun respectsDerivativeContinuity() = baseInterpolator.respectsDerivativeContinuity()
-
     private fun waveGet(t: Double) = amplitude * sin(2.0 * PI * t / period)
 
     private fun waveDeriv(t: Double) = 2.0 * PI * amplitude / period * cos(2.0 * PI * t / period)

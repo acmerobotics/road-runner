@@ -32,8 +32,6 @@ class SplineInterpolator(private val startHeading: Double, private val endHeadin
         )
     }
 
-    override fun respectsDerivativeContinuity() = true
-
     override fun internalGet(s: Double, t: Double) = headingSpline[s / curve.length()]
 
     override fun internalDeriv(s: Double, t: Double): Double {

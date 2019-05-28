@@ -9,9 +9,6 @@ import com.acmerobotics.roadrunner.util.Angle
  * @param angle angle to sweep through (can be greater than a revolution)
  */
 class LinearInterpolator(private val startHeading: Double, private val angle: Double) : HeadingInterpolator() {
-
-    override fun respectsDerivativeContinuity() = false
-
     override fun internalGet(s: Double, t: Double) =
         Angle.norm(startHeading + s / curve.length() * angle)
 

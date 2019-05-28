@@ -6,8 +6,6 @@ package com.acmerobotics.roadrunner.path.heading
  * @param heading heading to maintain
  */
 class ConstantInterpolator(val heading: Double) : HeadingInterpolator() {
-    override fun respectsDerivativeContinuity() = false
-
     override fun internalGet(s: Double, t: Double): Double = heading
 
     override fun internalDeriv(s: Double, t: Double) = 0.0
