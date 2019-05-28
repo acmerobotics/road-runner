@@ -76,7 +76,7 @@ abstract class HeadingInterpolator {
      */
     fun endSecondDeriv() = secondDeriv(curve.length(), 1.0)
 
-    protected abstract fun internalGet(s: Double, t: Double): Double
-    protected abstract fun internalDeriv(s: Double, t: Double): Double
-    protected abstract fun internalSecondDeriv(s: Double, t: Double): Double
+    internal abstract fun internalGet(s: Double, t: Double): Double
+    internal abstract fun internalDeriv(s: Double, t: Double): Double
+    internal abstract fun internalSecondDeriv(s: Double, t: Double): Double
 }

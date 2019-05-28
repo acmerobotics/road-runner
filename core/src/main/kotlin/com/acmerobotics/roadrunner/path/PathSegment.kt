@@ -69,6 +69,32 @@ class PathSegment @JvmOverloads constructor(
         return Pose2d(secondDeriv.x, secondDeriv.y, headingSecondDeriv)
     }
 
+    @JvmOverloads
+    internal fun internalDeriv(s: Double, t: Double = reparam(s)): Pose2d {
+        val deriv = if (reversed) {
+            -curve.internalDeriv(t)
+        } else {
+            curve.internalDeriv(t)
+        }
+        val headingDeriv = if (reversed) {
+            -interpolator.deriv(curve.length() - s, t)
+        } else {
+            interpolator.deriv(s, t)
+        }
+        return Pose2d(deriv.x, deriv.y, headingDeriv)
+    }
+
+    @JvmOverloads
+    internal fun internalSecondDeriv(s: Double, t: Double = reparam(s)): Pose2d {
+        val secondDeriv = curve.internalSecondDeriv(t)
+        val headingSecondDeriv = if (reversed) {
+            interpolator.internalSecondDeriv(curve.length() - s, t)
+        } else {
+            interpolator.internalSecondDeriv(s, t)
+        }
+        return Pose2d(secondDeriv.x, secondDeriv.y, headingSecondDeriv)
+    }
+
     fun reparam(s: Double): Double {
         return if (reversed) {
             curve.reparam(curve.length() - s)
@@ -100,6 +126,10 @@ class PathSegment @JvmOverloads constructor(
      */
     fun startSecondDeriv() = secondDeriv(0.0)
 
+    internal fun startInternalDeriv() = internalDeriv(0.0)
+
+    internal fun startInternalSecondDeriv() = internalSecondDeriv(0.0)
+
     /**
      * Returns the end pose.
      */
@@ -114,4 +144,8 @@ class PathSegment @JvmOverloads constructor(
      * Returns the end pose second derivative.
      */
     fun endSecondDeriv() = secondDeriv(length())
+
+    internal fun endInternalDeriv() = internalDeriv(length())
+
+    internal fun endInternalSecondDeriv() = internalSecondDeriv(length())
 }

@@ -90,6 +90,36 @@ class Path @JvmOverloads constructor(val segments: List<PathSegment> = emptyList
         return segments.lastOrNull()?.endSecondDeriv() ?: return Pose2d()
     }
 
+    @JvmOverloads
+    internal fun internalDeriv(s: Double, t: Double = reparam(s)): Pose2d {
+        if (s <= 0.0) {
+            return segments.firstOrNull()?.startInternalDeriv() ?: return Pose2d()
+        }
+        var remainingDisplacement = s
+        for (segment in segments) {
+            if (remainingDisplacement <= segment.length()) {
+                return segment.internalDeriv(remainingDisplacement, t)
+            }
+            remainingDisplacement -= segment.length()
+        }
+        return segments.lastOrNull()?.endInternalDeriv() ?: return Pose2d()
+    }
+
+    @JvmOverloads
+    internal fun internalSecondDeriv(s: Double, t: Double = reparam(s)): Pose2d {
+        if (s <= 0.0) {
+            return segments.firstOrNull()?.startInternalSecondDeriv() ?: return Pose2d()
+        }
+        var remainingDisplacement = s
+        for (segment in segments) {
+            if (remainingDisplacement <= segment.length()) {
+                return segment.internalSecondDeriv(remainingDisplacement, t)
+            }
+            remainingDisplacement -= segment.length()
+        }
+        return segments.lastOrNull()?.endInternalSecondDeriv() ?: return Pose2d()
+    }
+
     internal fun reparam(s: Double): Double {
         if (s <= 0.0) {
             return 0.0
