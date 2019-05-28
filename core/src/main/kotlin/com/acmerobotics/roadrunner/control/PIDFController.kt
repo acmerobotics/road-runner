@@ -1,5 +1,6 @@
 package com.acmerobotics.roadrunner.control
 
+import com.acmerobotics.roadrunner.util.epsilonEquals
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -116,7 +117,7 @@ class PIDFController @JvmOverloads constructor(
             // determination of the sign of kStatic
             val baseOutput = pid.kP * error + pid.kI * errorSum + pid.kD * (errorDeriv - velocity) +
                 kV * velocity + kA * acceleration + kF(position)
-            val output = if (abs(baseOutput) > 1e-4) baseOutput + sign(baseOutput) * kStatic else 0.0
+            val output = if (baseOutput epsilonEquals 0.0) 0.0 else baseOutput + sign(baseOutput) * kStatic
 
             if (outputBounded) {
                 max(minOutput, min(output, maxOutput))

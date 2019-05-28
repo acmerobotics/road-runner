@@ -4,7 +4,6 @@ import org.assertj.core.api.Assertions.assertThat
 import kotlin.math.abs
 
 object TestUtil {
-    // TODO: is padding the derivative acceptable?
     private fun numericalDerivative(x: List<Double>, ds: Double): List<Double> {
         val deriv = (0 until x.size - 2).map { (x[it + 2] - x[it]) / (2 * ds) }.toMutableList()
         deriv.add(0, deriv[0])

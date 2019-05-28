@@ -2,7 +2,7 @@ package com.acmerobotics.roadrunner.kinematics
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.util.Angle
-import kotlin.math.abs
+import com.acmerobotics.roadrunner.util.epsilonEquals
 import kotlin.math.cos
 import kotlin.math.sign
 import kotlin.math.sin
@@ -64,10 +64,10 @@ object Kinematics {
     @JvmStatic
     fun calculateMotorFeedforward(vel: Double, accel: Double, kV: Double, kA: Double, kStatic: Double): Double {
         val basePower = vel * kV + accel * kA
-        return if (basePower > 1e-4) {
-            basePower + sign(basePower) * kStatic
-        } else {
+        return if (basePower epsilonEquals 0.0) {
             0.0
+        } else {
+            basePower + sign(basePower) * kStatic
         }
     }
 
@@ -77,7 +77,12 @@ object Kinematics {
      */
     @JvmStatic
     fun relativeOdometryUpdate(fieldPose: Pose2d, robotPoseDelta: Pose2d): Pose2d {
-        val fieldPoseDelta = if (abs(robotPoseDelta.heading) > 1e-6) {
+        val fieldPoseDelta = if (robotPoseDelta.heading epsilonEquals 0.0) {
+            Pose2d(
+                robotPoseDelta.pos().rotated(fieldPose.heading + robotPoseDelta.heading / 2),
+                robotPoseDelta.heading
+            )
+        } else {
             val finalHeading = fieldPose.heading + robotPoseDelta.heading
             val cosTerm = cos(finalHeading) - cos(fieldPose.heading)
             val sinTerm = sin(finalHeading) - sin(fieldPose.heading)
@@ -85,11 +90,6 @@ object Kinematics {
             Pose2d(
                 (robotPoseDelta.x * sinTerm + robotPoseDelta.y * cosTerm) / robotPoseDelta.heading,
                 (-robotPoseDelta.x * cosTerm + robotPoseDelta.y * sinTerm) / robotPoseDelta.heading,
-                robotPoseDelta.heading
-            )
-        } else {
-            Pose2d(
-                robotPoseDelta.pos().rotated(fieldPose.heading + robotPoseDelta.heading / 2),
                 robotPoseDelta.heading
             )
         }

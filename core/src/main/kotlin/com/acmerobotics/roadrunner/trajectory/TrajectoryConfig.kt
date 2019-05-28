@@ -3,6 +3,7 @@ package com.acmerobotics.roadrunner.trajectory
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
+import com.acmerobotics.roadrunner.util.epsilonEquals
 import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.sin
@@ -42,7 +43,7 @@ class TrajectoryConfig @JvmOverloads constructor(
 
                     builder.setReversed(cosAngle < 0)
 
-                    if (abs(startPose.heading - endPose.heading) < 1e-2 && abs(1 - abs(cosAngle)) < 1e-2) {
+                    if (startPose.heading epsilonEquals endPose.heading && abs(cosAngle) epsilonEquals 1.0) {
                         // this is probably a line
                         builder.lineTo(endPose.pos())
                     } else {

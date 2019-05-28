@@ -1,7 +1,7 @@
 package com.acmerobotics.roadrunner.kinematics
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
-import kotlin.math.abs
+import com.acmerobotics.roadrunner.util.epsilonEquals
 
 /**
  * Tank drive kinematic equations based upon the unicycle model. All wheel positions and velocities are given in
@@ -20,7 +20,7 @@ object TankKinematics {
      */
     @JvmStatic
     fun robotToWheelVelocities(robotVel: Pose2d, trackWidth: Double): List<Double> {
-        if (abs(robotVel.y) > 1e-2) {
+        if (!(robotVel.y epsilonEquals 0.0)) {
             throw IllegalArgumentException("Lateral (robot y) velocity must be zero for tank drives")
         }
 

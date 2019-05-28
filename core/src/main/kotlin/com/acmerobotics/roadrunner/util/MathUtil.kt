@@ -15,7 +15,7 @@ object MathUtil {
     fun solveQuadratic(a: Double, b: Double, c: Double): List<Double> {
         val disc = b * b - 4 * a * c
         return when {
-            abs(disc) < 1e-6 -> listOf(-b / (2 * a))
+            disc epsilonEquals 0.0 -> listOf(-b / (2 * a))
             disc > 0.0 -> listOf(
                     (-b + sqrt(disc)) / (2 * a),
                     (-b - sqrt(disc)) / (2 * a)
@@ -31,7 +31,6 @@ object MathUtil {
      * @param y y-values
      * @return derivative values
      */
-    // TODO: is padding acceptable, also what about TestUtil.numericalDerivative()
     fun numericalDerivative(x: List<Double>, y: List<Double>): List<Double> {
         val deriv = mutableListOf<Double>()
         for (i in 2 until x.size) {
@@ -43,8 +42,6 @@ object MathUtil {
     }
 }
 
-// TODO: make this a global epsilon?
-private const val EPSILON = 1e-6
+const val EPSILON = 1e-6
 
-infix fun Double.epsilonEquals(other: Double) =
-    abs(this - other) < EPSILON
+infix fun Double.epsilonEquals(other: Double) = abs(this - other) < EPSILON

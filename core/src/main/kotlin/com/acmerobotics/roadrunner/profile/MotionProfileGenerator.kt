@@ -2,6 +2,7 @@ package com.acmerobotics.roadrunner.profile
 
 import com.acmerobotics.roadrunner.util.DoubleProgression
 import com.acmerobotics.roadrunner.util.MathUtil.solveQuadratic
+import com.acmerobotics.roadrunner.util.epsilonEquals
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.sqrt
@@ -154,7 +155,7 @@ object MotionProfileGenerator {
 
                     val error = goal.x - searchProfile.end().x
 
-                    if (abs(error) < 1e-10) {
+                    if (error epsilonEquals 0.0) {
                         return searchProfile
                     }
 
@@ -374,7 +375,7 @@ object MotionProfileGenerator {
 
             // if there's a discrepancy in the displacements, split the the longer chunk in two and add the second
             // to the corresponding list; this guarantees that segments are always aligned
-            if (abs(forwardDx - backwardDx) > 1e-6) {
+            if (!(forwardDx epsilonEquals backwardDx)) {
                 if (forwardDx > backwardDx) {
                     // forward longer
                     forwardStates.add(
@@ -441,15 +442,15 @@ object MotionProfileGenerator {
         // turn the final states into actual time-parametrized motion segments
         val motionSegments = mutableListOf<MotionSegment>()
         for ((state, stateDx) in finalStates) {
-            val dt = if (abs(state.a) > 1e-6) {
+            val dt = if (state.a epsilonEquals 0.0) {
+                stateDx / state.v
+            } else {
                 val discriminant = state.v * state.v + 2 * state.a * stateDx
-                if (abs(discriminant) < 1e-6) {
+                if (discriminant epsilonEquals 0.0) {
                     -state.v / state.a
                 } else {
                     (sqrt(discriminant) - state.v) / state.a
                 }
-            } else {
-                stateDx / state.v
             }
             motionSegments.add(MotionSegment(state, dt))
         }
@@ -507,7 +508,7 @@ object MotionProfileGenerator {
 
     private fun afterDisplacement(state: MotionState, dx: Double): MotionState {
         val discriminant = state.v * state.v + 2 * state.a * dx
-        return if (abs(discriminant) < 1e-6) {
+        return if (discriminant epsilonEquals 0.0) {
             MotionState(state.x + dx, 0.0, state.a)
         } else {
             MotionState(state.x + dx, sqrt(discriminant), state.a)
