@@ -11,11 +11,15 @@ import com.acmerobotics.roadrunner.path.heading.TangentInterpolator
  * Easy-to-use builder for creating [Trajectory] instances.
  *
  * @param startPose start pose
- * @param constraints global drive constraints (overridable for specific segments)
- * @param resolution resolution used for path-based segments (see [Trajectory])
+ * @param trajectory initial trajectory (for splicing)
+ * @param t time index in previous trajectory to begin new trajectory
  */
-abstract class BaseTrajectoryBuilder(startPose: Pose2d) {
-    private var pathBuilder = PathBuilder(startPose)
+abstract class BaseTrajectoryBuilder protected constructor(startPose: Pose2d?, trajectory: Trajectory?, t: Double?) {
+    private var pathBuilder: PathBuilder = if (startPose == null) {
+        PathBuilder(trajectory!!.path, trajectory.profile[t!!].x)
+    } else {
+        PathBuilder(startPose)
+    }
 
     /**
      * Reverse the direction of robot travel.
@@ -109,7 +113,6 @@ abstract class BaseTrajectoryBuilder(startPose: Pose2d) {
      *
      * @param pose end pose
      * @param interpolator heading interpolator
-     * @param constraintsOverride spline-specific constraints
      */
     @JvmOverloads
     fun splineTo(

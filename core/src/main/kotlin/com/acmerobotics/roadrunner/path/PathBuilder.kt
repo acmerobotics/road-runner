@@ -14,8 +14,12 @@ import kotlin.math.sin
  *
  * @param startPose start pose
  */
-class PathBuilder(startPose: Pose2d) {
-    private var currentPose: Pose2d = startPose
+class PathBuilder private constructor(startPose: Pose2d?, private val path: Path?, private val s: Double?) {
+    constructor(startPose: Pose2d) : this(startPose, null, null)
+
+    constructor(path: Path, s: Double) : this(null, path, s)
+
+    private var currentPose: Pose2d? = startPose
     private var currentReversed = false
 
     private var segments = mutableListOf<PathSegment>()
@@ -39,20 +43,26 @@ class PathBuilder(startPose: Pose2d) {
     /**
      * Adds a line path segment.
      *
-     * @param pos end position
+     * @param end end position
      * @param interpolator heading interpolator
      */
     @JvmOverloads
-    fun lineTo(pos: Vector2d, interpolator: HeadingInterpolator = TangentInterpolator()): PathBuilder {
-        val line = if (currentReversed) {
-            LineSegment(pos, currentPose.pos())
+    fun lineTo(end: Vector2d, interpolator: HeadingInterpolator = TangentInterpolator()): PathBuilder {
+        val start = if (currentPose == null) {
+            path!![s!!]
         } else {
-            LineSegment(currentPose.pos(), pos)
+            currentPose!!
+        }
+
+        val line = if (currentReversed) {
+            LineSegment(end, start.pos())
+        } else {
+            LineSegment(start.pos(), end)
         }
 
         segments.add(PathSegment(line, interpolator, currentReversed))
 
-        currentPose = Pose2d(pos, currentPose.heading)
+        currentPose = Pose2d(end, start.heading)
 
         return this
     }
@@ -60,9 +70,15 @@ class PathBuilder(startPose: Pose2d) {
     /**
      * Adds a strafe path segment.
      *
-     * @param pos end position
+     * @param end end position
      */
-    fun strafeTo(pos: Vector2d) = lineTo(pos, ConstantInterpolator(currentPose.heading))
+    fun strafeTo(end: Vector2d) = lineTo(end, ConstantInterpolator(
+            if (currentPose == null) {
+                path!![s!!].heading
+            } else {
+                currentPose!!.heading
+            }
+        ))
 
     /**
      * Adds a line straight forward.
@@ -70,11 +86,16 @@ class PathBuilder(startPose: Pose2d) {
      * @param distance distance to travel forward
      */
     fun forward(distance: Double): PathBuilder {
-        return lineTo(currentPose.pos() + Vector2d(
-            distance * cos(currentPose.heading),
-            distance * sin(currentPose.heading)
-        )
-        )
+        val start = if (currentPose == null) {
+            path!![s!!]
+        } else {
+            currentPose!!
+        }
+
+        return lineTo(start.pos() + Vector2d(
+            distance * cos(start.heading),
+            distance * sin(start.heading)
+        ))
     }
 
     /**
@@ -95,11 +116,16 @@ class PathBuilder(startPose: Pose2d) {
      * @param distance distance to strafe left
      */
     fun strafeLeft(distance: Double): PathBuilder {
-        return strafeTo(currentPose.pos() + Vector2d(
-            distance * cos(currentPose.heading + PI / 2),
-            distance * sin(currentPose.heading + PI / 2)
-        )
-        )
+        val start = if (currentPose == null) {
+            path!![s!!]
+        } else {
+            currentPose!!
+        }
+
+        return strafeTo(start.pos() + Vector2d(
+            distance * cos(start.heading + PI / 2),
+            distance * sin(start.heading + PI / 2)
+        ))
     }
 
     /**
@@ -114,16 +140,25 @@ class PathBuilder(startPose: Pose2d) {
     /**
      * Adds a spline segment.
      *
-     * @param pose end pose
+     * @param end end end
      * @param interpolator heading interpolator
      */
     @JvmOverloads
-    fun splineTo(pose: Pose2d, interpolator: HeadingInterpolator = TangentInterpolator()): PathBuilder {
-        val derivMag = (currentPose.pos() distanceTo pose.pos())
-        val startWaypoint = QuinticSpline.Waypoint(currentPose.x, currentPose.y,
-            derivMag * cos(currentPose.heading), derivMag * sin(currentPose.heading))
-        val endWaypoint = QuinticSpline.Waypoint(pose.x, pose.y,
-            derivMag * cos(pose.heading), derivMag * sin(pose.heading))
+    fun splineTo(end: Pose2d, interpolator: HeadingInterpolator = TangentInterpolator()): PathBuilder {
+        val (startWaypoint, endWaypoint) = if (currentPose == null) {
+            val start = path!![s!!].pos()
+            val startDeriv = path.internalDeriv(s).pos()
+            val startSecondDeriv = path.internalSecondDeriv(s).pos()
+            val derivMag = (start distanceTo end.pos())
+            QuinticSpline.Waypoint(start, startDeriv, startSecondDeriv) to
+                QuinticSpline.Waypoint(end.pos(), Vector2d(cos(end.heading) * derivMag, sin(end.heading)))
+        } else {
+            val derivMag = (currentPose!!.pos() distanceTo end.pos())
+            QuinticSpline.Waypoint(currentPose!!.x, currentPose!!.y,
+                derivMag * cos(currentPose!!.heading), derivMag * sin(currentPose!!.heading)) to
+                QuinticSpline.Waypoint(end.x, end.y,
+                derivMag * cos(end.heading), derivMag * sin(end.heading))
+        }
 
         val spline = if (currentReversed) {
             QuinticSpline(endWaypoint, startWaypoint)
@@ -133,7 +168,7 @@ class PathBuilder(startPose: Pose2d) {
 
         segments.add(PathSegment(spline, interpolator, currentReversed))
 
-        currentPose = pose
+        currentPose = end
 
         return this
     }
