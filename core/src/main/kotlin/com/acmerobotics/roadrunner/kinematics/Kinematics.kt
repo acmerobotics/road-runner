@@ -1,6 +1,7 @@
 package com.acmerobotics.roadrunner.kinematics
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
+import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.util.Angle
 import com.acmerobotics.roadrunner.util.epsilonEquals
 import kotlin.math.cos
@@ -77,22 +78,19 @@ object Kinematics {
      */
     @JvmStatic
     fun relativeOdometryUpdate(fieldPose: Pose2d, robotPoseDelta: Pose2d): Pose2d {
-        val fieldPoseDelta = if (robotPoseDelta.heading epsilonEquals 0.0) {
-            Pose2d(
-                robotPoseDelta.pos().rotated(fieldPose.heading + robotPoseDelta.heading / 2),
-                robotPoseDelta.heading
-            )
+        val dtheta = robotPoseDelta.heading
+        val (sineTerm, cosTerm) = if (dtheta epsilonEquals 0.0) {
+            1.0 - dtheta * dtheta / 6.0 to dtheta / 2.0
         } else {
-            val finalHeading = fieldPose.heading + robotPoseDelta.heading
-            val cosTerm = cos(finalHeading) - cos(fieldPose.heading)
-            val sinTerm = sin(finalHeading) - sin(fieldPose.heading)
-
-            Pose2d(
-                (robotPoseDelta.x * sinTerm + robotPoseDelta.y * cosTerm) / robotPoseDelta.heading,
-                (-robotPoseDelta.x * cosTerm + robotPoseDelta.y * sinTerm) / robotPoseDelta.heading,
-                robotPoseDelta.heading
-            )
+            sin(dtheta) / dtheta to (1 - cos(dtheta)) / dtheta
         }
+
+        val fieldPositionDelta = Vector2d(
+            sineTerm * robotPoseDelta.x - cosTerm * robotPoseDelta.y,
+            cosTerm * robotPoseDelta.x + sineTerm * robotPoseDelta.y
+        )
+
+        val fieldPoseDelta = Pose2d(fieldPositionDelta.rotated(fieldPose.heading), robotPoseDelta.heading)
 
         return fieldPose + fieldPoseDelta
     }

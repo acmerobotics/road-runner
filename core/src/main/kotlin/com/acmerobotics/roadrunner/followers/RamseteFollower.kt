@@ -4,6 +4,7 @@ import com.acmerobotics.roadrunner.drive.DriveSignal
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.kinematics.Kinematics
 import com.acmerobotics.roadrunner.util.NanoClock
+import com.acmerobotics.roadrunner.util.epsilonEquals
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
@@ -27,6 +28,13 @@ class RamseteFollower @JvmOverloads constructor(
 ) : TrajectoryFollower(admissibleError, timeout, clock) {
     override var lastError: Pose2d = Pose2d()
 
+    private fun sinc(x: Double) =
+        if (x epsilonEquals 0.0) {
+            1.0 - x * x / 6.0
+        } else {
+            sin(x) / x
+        }
+
     override fun internalUpdate(currentPose: Pose2d): DriveSignal {
         val t = elapsedTime()
 
@@ -47,7 +55,7 @@ class RamseteFollower @JvmOverloads constructor(
 
         val v = targetV * cos(error.heading) +
                 k1 * (cos(currentPose.heading) * error.x + sin(currentPose.heading) * error.y)
-        val omega = targetOmega + k2 * targetV * sin(error.heading) / error.heading *
+        val omega = targetOmega + k2 * targetV * sinc(error.heading) *
                 (cos(currentPose.heading) * error.y - sin(currentPose.heading) * error.x) +
                 k3 * error.heading
 
