@@ -2,9 +2,11 @@ package com.acmerobotics.roadrunner.path
 
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.util.DoubleProgression
+import com.acmerobotics.roadrunner.util.epsilonEquals
+import kotlin.math.abs
+import kotlin.math.asin
+import kotlin.math.max
 import kotlin.math.sqrt
-
-private const val LENGTH_SAMPLES = 1000
 
 /**
  * Combination of two quintic polynomials into a 2D quintic spline. See
@@ -14,7 +16,12 @@ private const val LENGTH_SAMPLES = 1000
  * @param start start waypoint
  * @param end end waypoint
  */
-class QuinticSpline(start: Waypoint, end: Waypoint) : ParametricCurve() {
+class QuinticSpline @JvmOverloads constructor(
+    start: Waypoint,
+    end: Waypoint,
+    private val maxArcLength: Double = 1.0,
+    private val maxDeltaK: Double = 0.01
+) : ParametricCurve() {
 
     /**
      * X polynomial (i.e., x(t))
@@ -57,29 +64,74 @@ class QuinticSpline(start: Waypoint, end: Waypoint) : ParametricCurve() {
         fun secondDeriv() = Vector2d(d2x, d2y)
     }
 
-    private val length: Double
-
-    private val sSamples = DoubleArray(LENGTH_SAMPLES + 1)
-    private val tSamples = DoubleArray(LENGTH_SAMPLES + 1)
+    private val sSamples = mutableListOf(0.0)
+    private val tSamples = mutableListOf(0.0)
+    private var length: Double = 0.0
 
     init {
-        sSamples[0] = 0.0
-        tSamples[0] = 0.0
+        parametrize()
+        println("${sSamples.size} samples")
+    }
 
-        val dx = 1.0 / LENGTH_SAMPLES
-        var sum = 0.0
-        var lastIntegrand = 0.0
-        for (i in 1..LENGTH_SAMPLES) {
-            val t = i * dx
-            val deriv = internalDeriv(t)
-            val integrand = sqrt(deriv.x * deriv.x + deriv.y * deriv.y) * dx
-            sum += (integrand + lastIntegrand) / 2.0
-            lastIntegrand = integrand
+    private fun internalCurvature(t: Double): Double {
+        val deriv = internalDeriv(t)
+        val derivNorm = deriv.norm()
+        val secondDeriv = internalSecondDeriv(t)
+        return abs((secondDeriv.x * deriv.y - deriv.x * secondDeriv.y) /
+            (derivNorm * derivNorm * derivNorm))
+    }
 
-            sSamples[i] = sum
-            tSamples[i] = t
+    private fun approxLength(v1: Vector2d, v2: Vector2d, v3: Vector2d): Double {
+        // try to approximate with an arc
+        // helpful vectors
+        val w1 = (v2 - v1) * 2.0
+        val w2 = (v2 - v3) * 2.0
+
+        val det = w1.x * w2.y - w2.x * w1.y
+        return if (det epsilonEquals 0.0) {
+            // the vectors are collinear
+            v1 distanceTo v3
+        } else {
+            // vector squared magnitudes
+            val m1 = v1.x * v1.x + v1.y * v1.y
+            val m2 = v2.x * v2.x + v2.y * v2.y
+            val m3 = v3.x * v3.x + v3.y * v3.y
+
+            // Cramer's rule for the radius vector 2x2 system
+            val origin = Vector2d(
+                (m2 - m1) * w2.y - (m2 - m3) * w1.y,
+                (m2 - m3) * w1.x - (m2 - m1) * w2.x
+            ) / det
+            val r = origin distanceTo v1
+            val l = max(max(v1 distanceTo v2, v1 distanceTo v3), v2 distanceTo v3)
+            2 * r * asin(l / (2.0 * r))
         }
-        length = sum
+    }
+
+    /*
+     * Arc length parametrization method inspired by Grapple Robotics Pathfinder
+     * https://github.com/GrappleRobotics/Pathfinder/blob/master/Pathfinder/src/include/grpl/pf/path/arc_parameterizer.h
+     */
+    private fun parametrize(
+        tLo: Double = 0.0,
+        tHi: Double = 1.0,
+        vLo: Vector2d = internalGet(tLo),
+        vHi: Vector2d = internalGet(tHi)
+    ) {
+        val tMid = 0.5 * (tLo + tHi)
+        val vMid = internalGet(tMid)
+
+        val deltaK = abs(internalCurvature(tLo) - internalCurvature(tHi))
+        val arcLength = approxLength(vLo, vMid, vHi)
+
+        if (deltaK > maxDeltaK || arcLength > maxArcLength) {
+            parametrize(tLo, tMid, vLo, vMid)
+            parametrize(tMid, tHi, vMid, vHi)
+        } else {
+            length += arcLength
+            sSamples.add(length)
+            tSamples.add(tHi)
+        }
     }
 
     override fun internalGet(t: Double) = Vector2d(x[t], y[t])
@@ -97,7 +149,7 @@ class QuinticSpline(start: Waypoint, end: Waypoint) : ParametricCurve() {
         if (s >= length) return 1.0
 
         var lo = 0
-        var hi = LENGTH_SAMPLES
+        var hi = sSamples.size
 
         while (lo <= hi) {
             val mid = (hi + lo) / 2
@@ -171,6 +223,3 @@ class QuinticSpline(start: Waypoint, end: Waypoint) : ParametricCurve() {
 
     override fun toString() = "($x,$y)"
 }
-
-operator fun Pair<Double, Double>.minus(other: Pair<Double, Double>) =
-    Pair(first - other.first, second - other.second)
