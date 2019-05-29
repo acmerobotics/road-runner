@@ -24,14 +24,6 @@ class Path @JvmOverloads constructor(val segments: List<PathSegment> = emptyList
     constructor(segment: PathSegment) : this(listOf(segment))
 
     /**
-     * Simple container for the result of a projection (i.e., a [project] call).
-     *
-     * @param displacement displacement along the path
-     * @param distance Euclidean distance between the path and query points
-     */
-    data class ProjectionResult(val displacement: Double, val distance: Double)
-
-    /**
      * Returns the length of the path.
      */
     fun length() = segments.sumByDouble { it.length() }
@@ -161,7 +153,8 @@ class Path @JvmOverloads constructor(val segments: List<PathSegment> = emptyList
      * @param point query point
      * @param projectGuess guess for the projected point's s along the path
      */
-    fun project(point: Vector2d, projectGuess: Double = length() / 2.0): ProjectionResult {
+    // TODO: use something more specialized than Levenberg-Marquardt?
+    fun project(point: Vector2d, projectGuess: Double = length() / 2.0): Double {
         val problem = LeastSquaresBuilder()
                 .start(doubleArrayOf(projectGuess))
                 .model { vector ->
@@ -184,15 +177,12 @@ class Path @JvmOverloads constructor(val segments: List<PathSegment> = emptyList
                 .maxIterations(1000)
                 .build()
 
-        val displacement = try {
+        return try {
             val optimum = LevenbergMarquardtOptimizer().optimize(problem)
             optimum.point.getEntry(0)
         } catch (e: ConvergenceException) {
             0.0
         }
-        val optimumPoint = this[displacement].pos()
-
-        return ProjectionResult(displacement, point distanceTo optimumPoint)
     }
 
     /**
