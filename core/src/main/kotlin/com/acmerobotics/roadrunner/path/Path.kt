@@ -3,13 +3,9 @@ package com.acmerobotics.roadrunner.path
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.util.DoubleProgression
-import org.apache.commons.math3.exception.ConvergenceException
-import org.apache.commons.math3.fitting.leastsquares.LeastSquaresBuilder
-import org.apache.commons.math3.fitting.leastsquares.LevenbergMarquardtOptimizer
-import org.apache.commons.math3.linear.ArrayRealVector
-import org.apache.commons.math3.linear.MatrixUtils
-import org.apache.commons.math3.linear.RealMatrix
-import org.apache.commons.math3.linear.RealVector
+import com.acmerobotics.roadrunner.util.epsilonEquals
+import kotlin.math.abs
+import kotlin.math.sign
 
 /**
  * Path composed of a list of parametric curves and heading interpolators.
@@ -148,41 +144,42 @@ class Path @JvmOverloads constructor(val segments: List<PathSegment> = emptyList
     }
 
     /**
-     * Project [point] onto the current path.
+     * Project [queryPoint] onto the current path using the iterative method described
+     * [here](http://www.geometrie.tugraz.at/wallner/sproj.pdf).
      *
-     * @param point query point
-     * @param projectGuess guess for the projected point's s along the path
+     * @param queryPoint query queryPoint
+     * @param projectGuess guess for the projected queryPoint's s along the path
      */
-    // TODO: use something more specialized than Levenberg-Marquardt?
-    fun project(point: Vector2d, projectGuess: Double = length() / 2.0): Double {
-        val problem = LeastSquaresBuilder()
-                .start(doubleArrayOf(projectGuess))
-                .model { vector ->
-                    val pathPoint = this[vector.getEntry(0)].pos()
-                    val pathDerivative = deriv(vector.getEntry(0)).pos()
+    fun project(queryPoint: Vector2d, projectGuess: Double = length() / 2.0): Double {
+        var s = projectGuess
+        while (true) {
+            val pathPoint = get(s).pos()
+            val deriv = deriv(s).pos()
+            val secondDeriv = deriv(s).pos()
+            val k = secondDeriv.norm()
+            val ds = if (k epsilonEquals 0.0) {
+                // use the first-order method
+                // this should always work as derivNorm = 1.0 for arc length param
+                // (and generally derivNorm != 0.0 for smooth params)
 
-                    val diff = pathPoint - point
-                    val distance = diff.norm()
+                // for first-order, qRel is the projection onto the tangent
+                val qRel = (queryPoint - pathPoint) projectOnto deriv
+                deriv dot qRel
+            } else {
+                // use the second-order method
 
-                    val value = ArrayRealVector(doubleArrayOf(distance))
+                // for second-order, qRel is the projection onto the osculating circle
+                val pToOrigin = queryPoint - pathPoint - secondDeriv
+                val qRel = secondDeriv + pToOrigin / pToOrigin.norm() * k
+                val area = abs(deriv.x * qRel.y - qRel.x * deriv.y)
+                2.0 * area / k * sign(deriv dot qRel)
+            }
 
-                    val derivative = (diff.x * pathDerivative.x + diff.y * pathDerivative.y) / distance
-                    val jacobian = MatrixUtils.createRealMatrix(arrayOf(doubleArrayOf(derivative)))
+            if (ds epsilonEquals 0.0) break
 
-                    org.apache.commons.math3.util.Pair<RealVector, RealMatrix>(value, jacobian)
-                }
-                .target(doubleArrayOf(0.0))
-                .lazyEvaluation(false)
-                .maxEvaluations(1000)
-                .maxIterations(1000)
-                .build()
-
-        return try {
-            val optimum = LevenbergMarquardtOptimizer().optimize(problem)
-            optimum.point.getEntry(0)
-        } catch (e: ConvergenceException) {
-            0.0
+            s += ds
         }
+        return s
     }
 
     /**

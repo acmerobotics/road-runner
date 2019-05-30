@@ -14,12 +14,12 @@ import kotlin.math.sin
  *
  * @param startPose start pose
  */
-class PathBuilder private constructor(startPose: Pose2d?, private val path: Path?, private val s: Double?) {
+class PathBuilder private constructor(startPose: Pose2d?, internal val path: Path?, internal val s: Double?) {
     constructor(startPose: Pose2d) : this(startPose, null, null)
 
     constructor(path: Path, s: Double) : this(null, path, s)
 
-    private var currentPose: Pose2d? = startPose
+    internal var currentPose: Pose2d? = startPose
     private var currentReversed = false
 
     private var segments = mutableListOf<PathSegment>()

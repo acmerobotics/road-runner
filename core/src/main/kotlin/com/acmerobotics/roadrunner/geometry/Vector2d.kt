@@ -33,6 +33,8 @@ data class Vector2d @JvmOverloads constructor(
 
     infix fun distanceTo(other: Vector2d) = (this - other).norm()
 
+    infix fun projectOnto(other: Vector2d) = other * (this dot other) / (other dot other)
+
     fun rotated(angle: Double): Vector2d {
         val newX = x * cos(angle) - y * sin(angle)
         val newY = x * sin(angle) + y * cos(angle)

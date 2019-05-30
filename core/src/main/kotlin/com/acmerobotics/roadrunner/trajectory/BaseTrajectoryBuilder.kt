@@ -16,16 +16,14 @@ import com.acmerobotics.roadrunner.path.heading.TangentInterpolator
  */
 abstract class BaseTrajectoryBuilder protected constructor(
     startPose: Pose2d?,
-    private val trajectory: Trajectory?,
-    private val t: Double?
+    trajectory: Trajectory?,
+    t: Double?
 ) {
     private var pathBuilder: PathBuilder = if (startPose == null) {
         PathBuilder(trajectory!!.path, trajectory.profile[t!!].x)
     } else {
         PathBuilder(startPose)
     }
-
-    private var currentPose = startPose
 
     private var temporalMarkers = mutableListOf<TemporalMarker>()
     private var spatialMarkers = mutableListOf<SpatialMarker>()
@@ -35,6 +33,7 @@ abstract class BaseTrajectoryBuilder protected constructor(
      */
     fun reverse(): BaseTrajectoryBuilder {
         pathBuilder.reverse()
+
         return this
     }
 
@@ -43,6 +42,7 @@ abstract class BaseTrajectoryBuilder protected constructor(
      */
     fun setReversed(reversed: Boolean): BaseTrajectoryBuilder {
         pathBuilder.setReversed(reversed)
+
         return this
     }
 
@@ -155,7 +155,7 @@ abstract class BaseTrajectoryBuilder protected constructor(
      * Adds a marker at the current position of the trajectory.
      */
     fun addMarker(callback: () -> Unit) =
-        addMarker((currentPose ?: trajectory!![t!!]).pos(), callback)
+        addMarker((pathBuilder.currentPose ?: pathBuilder.path!![pathBuilder.s!!]).pos(), callback)
 
     /**
      * Constructs the [Trajectory] instance.
