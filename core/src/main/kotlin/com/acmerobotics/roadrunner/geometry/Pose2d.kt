@@ -12,7 +12,7 @@ data class Pose2d @JvmOverloads constructor(
 ) {
     constructor(pos: Vector2d, heading: Double) : this(pos.x, pos.y, heading)
 
-    fun pos() = Vector2d(x, y)
+    fun vec() = Vector2d(x, y)
 
     operator fun plus(other: Pose2d) =
         Pose2d(x + other.x, y + other.y, heading + other.heading)

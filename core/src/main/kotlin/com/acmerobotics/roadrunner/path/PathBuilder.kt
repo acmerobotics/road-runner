@@ -55,9 +55,9 @@ class PathBuilder private constructor(startPose: Pose2d?, internal val path: Pat
         }
 
         val line = if (currentReversed) {
-            LineSegment(end, start.pos())
+            LineSegment(end, start.vec())
         } else {
-            LineSegment(start.pos(), end)
+            LineSegment(start.vec(), end)
         }
 
         segments.add(PathSegment(line, interpolator, currentReversed))
@@ -92,7 +92,7 @@ class PathBuilder private constructor(startPose: Pose2d?, internal val path: Pat
             currentPose!!
         }
 
-        return lineTo(start.pos() + Vector2d(
+        return lineTo(start.vec() + Vector2d(
             distance * cos(start.heading),
             distance * sin(start.heading)
         ))
@@ -122,7 +122,7 @@ class PathBuilder private constructor(startPose: Pose2d?, internal val path: Pat
             currentPose!!
         }
 
-        return strafeTo(start.pos() + Vector2d(
+        return strafeTo(start.vec() + Vector2d(
             distance * cos(start.heading + PI / 2),
             distance * sin(start.heading + PI / 2)
         ))
@@ -146,14 +146,14 @@ class PathBuilder private constructor(startPose: Pose2d?, internal val path: Pat
     @JvmOverloads
     fun splineTo(end: Pose2d, interpolator: HeadingInterpolator = TangentInterpolator()): PathBuilder {
         val (startWaypoint, endWaypoint) = if (currentPose == null) {
-            val start = path!![s!!].pos()
-            val startDeriv = path.internalDeriv(s).pos()
-            val startSecondDeriv = path.internalSecondDeriv(s).pos()
-            val derivMag = (start distanceTo end.pos())
+            val start = path!![s!!].vec()
+            val startDeriv = path.internalDeriv(s).vec()
+            val startSecondDeriv = path.internalSecondDeriv(s).vec()
+            val derivMag = (start distanceTo end.vec())
             QuinticSpline.Waypoint(start, startDeriv, startSecondDeriv) to
-                QuinticSpline.Waypoint(end.pos(), Vector2d(cos(end.heading) * derivMag, sin(end.heading)))
+                QuinticSpline.Waypoint(end.vec(), Vector2d(cos(end.heading) * derivMag, sin(end.heading)))
         } else {
-            val derivMag = (currentPose!!.pos() distanceTo end.pos())
+            val derivMag = (currentPose!!.vec() distanceTo end.vec())
             QuinticSpline.Waypoint(currentPose!!.x, currentPose!!.y,
                 derivMag * cos(currentPose!!.heading), derivMag * sin(currentPose!!.heading)) to
                 QuinticSpline.Waypoint(end.x, end.y,

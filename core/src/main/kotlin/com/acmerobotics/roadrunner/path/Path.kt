@@ -153,9 +153,9 @@ class Path(val segments: List<PathSegment>) {
     fun project(queryPoint: Vector2d, projectGuess: Double = length() / 2.0): Double {
         var s = projectGuess
         while (true) {
-            val pathPoint = get(s).pos()
-            val deriv = deriv(s).pos()
-            val secondDeriv = deriv(s).pos()
+            val pathPoint = get(s).vec()
+            val deriv = deriv(s).vec()
+            val secondDeriv = deriv(s).vec()
             val k = secondDeriv.norm()
             val ds = if (k epsilonEquals 0.0) {
                 // use the first-order method

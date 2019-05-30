@@ -91,8 +91,8 @@ class TankFollowerTest {
             drive.setDriveSignal(signal)
             drive.updatePoseEstimate()
 
-            targetPositions.add(trajectory[t].pos())
-            actualPositions.add(drive.poseEstimate.pos())
+            targetPositions.add(trajectory[t].vec())
+            actualPositions.add(drive.poseEstimate.vec())
         }
 
         val graph = XYChart(600, 400)
@@ -142,8 +142,8 @@ class TankFollowerTest {
             drive.setDriveSignal(signal)
             drive.updatePoseEstimate()
 
-            targetPositions.add(trajectory[t].pos())
-            actualPositions.add(drive.poseEstimate.pos())
+            targetPositions.add(trajectory[t].vec())
+            actualPositions.add(drive.poseEstimate.vec())
         }
 
         val graph = XYChart(600, 400)
@@ -192,7 +192,7 @@ class TankFollowerTest {
             drive.setDriveSignal(signal)
             drive.updatePoseEstimate()
 
-            actualPositions.add(drive.poseEstimate.pos())
+            actualPositions.add(drive.poseEstimate.vec())
         }
 
         val pathPoints = (0..10000)

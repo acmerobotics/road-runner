@@ -87,8 +87,8 @@ class MecanumFollowerTest {
             drive.setDriveSignal(signal)
             drive.updatePoseEstimate()
 
-            targetPositions.add(trajectory[t].pos())
-            actualPositions.add(drive.poseEstimate.pos())
+            targetPositions.add(trajectory[t].vec())
+            actualPositions.add(drive.poseEstimate.vec())
         }
 
         val graph = XYChart(600, 400)

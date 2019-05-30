@@ -38,14 +38,14 @@ class TrajectoryConfig @JvmOverloads constructor(
                     val dot = Vector2d(
                         cos(endPose.heading),
                         sin(endPose.heading)
-                    ) dot diff.pos()
-                    val cosAngle = dot / diff.pos().norm()
+                    ) dot diff.vec()
+                    val cosAngle = dot / diff.vec().norm()
 
                     builder.setReversed(cosAngle < 0)
 
                     if (startPose.heading epsilonEquals endPose.heading && abs(cosAngle) epsilonEquals 1.0) {
                         // this is probably a line
-                        builder.lineTo(endPose.pos())
+                        builder.lineTo(endPose.vec())
                     } else {
                         // this is probably a spline
                         builder.splineTo(endPose)

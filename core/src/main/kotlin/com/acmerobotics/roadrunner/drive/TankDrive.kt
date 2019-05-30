@@ -55,7 +55,7 @@ abstract class TankDrive constructor(
                 else
                     robotPoseDelta.heading
                 poseEstimate = Kinematics.relativeOdometryUpdate(poseEstimate,
-                    Pose2d(robotPoseDelta.pos(), finalHeadingDelta)
+                    Pose2d(robotPoseDelta.vec(), finalHeadingDelta)
                 )
             }
             lastWheelPositions = wheelPositions

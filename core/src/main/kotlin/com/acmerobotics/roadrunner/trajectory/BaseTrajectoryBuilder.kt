@@ -155,7 +155,7 @@ abstract class BaseTrajectoryBuilder protected constructor(
      * Adds a marker at the current position of the trajectory.
      */
     fun addMarker(callback: () -> Unit) =
-        addMarker((pathBuilder.currentPose ?: pathBuilder.path!![pathBuilder.s!!]).pos(), callback)
+        addMarker((pathBuilder.currentPose ?: pathBuilder.path!![pathBuilder.s!!]).vec(), callback)
 
     /**
      * Constructs the [Trajectory] instance.

@@ -18,7 +18,7 @@ object Kinematics {
      */
     @JvmStatic
     fun fieldToRobotVelocity(fieldPose: Pose2d, fieldVel: Pose2d) =
-        Pose2d(fieldVel.pos().rotated(-fieldPose.heading), fieldVel.heading)
+        Pose2d(fieldVel.vec().rotated(-fieldPose.heading), fieldVel.heading)
 
     /**
      * Returns the robot pose acceleration corresponding to [fieldPose], [fieldVel], and [fieldAccel].
@@ -26,7 +26,7 @@ object Kinematics {
     @JvmStatic
     fun fieldToRobotAcceleration(fieldPose: Pose2d, fieldVel: Pose2d, fieldAccel: Pose2d) =
         Pose2d(
-            fieldAccel.pos().rotated(-fieldPose.heading),
+            fieldAccel.vec().rotated(-fieldPose.heading),
             fieldAccel.heading
         ) +
         Pose2d(
@@ -41,7 +41,7 @@ object Kinematics {
     @JvmStatic
     fun calculatePoseError(targetFieldPose: Pose2d, currentFieldPose: Pose2d) =
         Pose2d(
-            (targetFieldPose - currentFieldPose).pos().rotated(-currentFieldPose.heading),
+            (targetFieldPose - currentFieldPose).vec().rotated(-currentFieldPose.heading),
             Angle.norm(targetFieldPose.heading - currentFieldPose.heading)
         )
 
