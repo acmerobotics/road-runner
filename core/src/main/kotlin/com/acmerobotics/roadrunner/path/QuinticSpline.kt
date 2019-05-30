@@ -171,6 +171,3 @@ class QuinticSpline(start: Waypoint, end: Waypoint) : ParametricCurve() {
 
     override fun toString() = "($x,$y)"
 }
-
-operator fun Pair<Double, Double>.minus(other: Pair<Double, Double>) =
-    Pair(first - other.first, second - other.second)
