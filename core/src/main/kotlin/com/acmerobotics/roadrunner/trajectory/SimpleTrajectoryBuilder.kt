@@ -37,8 +37,19 @@ class SimpleTrajectoryBuilder private constructor(
         driveConstraints: DriveConstraints
     ) : this(null, trajectory, t, driveConstraints, zeroPosition(trajectory.profile[t]))
 
-    override fun buildTrajectory(path: Path): Trajectory {
+    override fun buildTrajectory(
+        path: Path,
+        temporalMarkers: List<TemporalMarker>,
+        spatialMarkers: List<SpatialMarker>
+    ): Trajectory {
         val goal = MotionState(path.length(), 0.0, 0.0)
-        return TrajectoryGenerator.generateSimpleTrajectory(path, driveConstraints, start, goal)
+        return TrajectoryGenerator.generateSimpleTrajectory(
+            path,
+            driveConstraints,
+            start,
+            goal,
+            temporalMarkers,
+            spatialMarkers
+        )
     }
 }

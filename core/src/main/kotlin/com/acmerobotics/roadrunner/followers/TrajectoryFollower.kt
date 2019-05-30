@@ -2,6 +2,7 @@ package com.acmerobotics.roadrunner.followers
 
 import com.acmerobotics.roadrunner.drive.DriveSignal
 import com.acmerobotics.roadrunner.geometry.Pose2d
+import com.acmerobotics.roadrunner.trajectory.TemporalMarker
 import com.acmerobotics.roadrunner.trajectory.Trajectory
 import com.acmerobotics.roadrunner.util.NanoClock
 import kotlin.math.abs
@@ -20,6 +21,7 @@ abstract class TrajectoryFollower @JvmOverloads constructor(
 ) {
     private var startTimestamp: Double = 0.0
     private var admissible = false
+    private var remainingMarkers = mutableListOf<TemporalMarker>()
 
     /**
      * Trajectory being followed if [isFollowing] is true.
@@ -40,6 +42,10 @@ abstract class TrajectoryFollower @JvmOverloads constructor(
         this.startTimestamp = clock.seconds()
         this.trajectory = trajectory
         this.admissible = false
+
+        remainingMarkers.clear()
+        remainingMarkers.addAll(trajectory.markers)
+        remainingMarkers.sortBy { it.time }
     }
 
     /**
@@ -61,6 +67,10 @@ abstract class TrajectoryFollower @JvmOverloads constructor(
      * @param currentPose current robot pose
      */
     fun update(currentPose: Pose2d): DriveSignal {
+        while (remainingMarkers.size > 0 && elapsedTime() > remainingMarkers[0].time) {
+            remainingMarkers.removeAt(0).callback()
+        }
+
         val trajEndError = trajectory.end() - currentPose
         admissible = abs(trajEndError.x) < admissibleError.x &&
                 abs(trajEndError.y) < admissibleError.y &&

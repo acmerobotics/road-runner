@@ -14,12 +14,21 @@ import com.acmerobotics.roadrunner.path.heading.TangentInterpolator
  * @param trajectory initial trajectory (for splicing)
  * @param t time index in previous trajectory to begin new trajectory
  */
-abstract class BaseTrajectoryBuilder protected constructor(startPose: Pose2d?, trajectory: Trajectory?, t: Double?) {
+abstract class BaseTrajectoryBuilder protected constructor(
+    startPose: Pose2d?,
+    private val trajectory: Trajectory?,
+    private val t: Double?
+) {
     private var pathBuilder: PathBuilder = if (startPose == null) {
         PathBuilder(trajectory!!.path, trajectory.profile[t!!].x)
     } else {
         PathBuilder(startPose)
     }
+
+    private var currentPose = startPose
+
+    private var temporalMarkers = mutableListOf<TemporalMarker>()
+    private var spatialMarkers = mutableListOf<SpatialMarker>()
 
     /**
      * Reverse the direction of robot travel.
@@ -125,12 +134,40 @@ abstract class BaseTrajectoryBuilder protected constructor(startPose: Pose2d?, t
     }
 
     /**
+     * Adds a marker to the trajectory at [time].
+     */
+    fun addMarker(time: Double, callback: () -> Unit): BaseTrajectoryBuilder {
+        temporalMarkers.add(TemporalMarker(time, callback))
+
+        return this
+    }
+
+    /**
+     * Adds a marker that will be triggered at the closest trajectory point to [point].
+     */
+    fun addMarker(point: Vector2d, callback: () -> Unit): BaseTrajectoryBuilder {
+        spatialMarkers.add(SpatialMarker(point, callback))
+
+        return this
+    }
+
+    /**
+     * Adds a marker at the current position of the trajectory.
+     */
+    fun addMarker(callback: () -> Unit) =
+        addMarker((currentPose ?: trajectory!![t!!]).pos(), callback)
+
+    /**
      * Constructs the [Trajectory] instance.
      */
-    fun build() = buildTrajectory(pathBuilder.build())
+    fun build() = buildTrajectory(pathBuilder.build(), temporalMarkers, spatialMarkers)
 
     /**
      * Build a trajectory from [path].
      */
-    protected abstract fun buildTrajectory(path: Path): Trajectory
+    protected abstract fun buildTrajectory(
+        path: Path,
+        temporalMarkers: List<TemporalMarker>,
+        spatialMarkers: List<SpatialMarker>
+    ): Trajectory
 }
