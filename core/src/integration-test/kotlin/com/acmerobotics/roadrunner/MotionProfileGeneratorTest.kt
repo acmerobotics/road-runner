@@ -2,12 +2,12 @@ package com.acmerobotics.roadrunner
 
 import com.acmerobotics.roadrunner.TestUtil.assertContinuous
 import com.acmerobotics.roadrunner.profile.*
-import kotlin.math.min
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import kotlin.math.min
 
-const val RESOLUTION = 1000
+private const val RESOLUTION = 1000
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class MotionProfileGeneratorTest {

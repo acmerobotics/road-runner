@@ -4,8 +4,8 @@ import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.util.DoubleProgression
 import com.acmerobotics.roadrunner.util.epsilonEquals
-import kotlin.math.abs
-import kotlin.math.sign
+import kotlin.math.max
+import kotlin.math.min
 
 /**
  * Path composed of a list of parametric curves and heading interpolators.
@@ -151,33 +151,23 @@ class Path(val segments: List<PathSegment>) {
      * @param projectGuess guess for the projected queryPoint's s along the path
      */
     fun project(queryPoint: Vector2d, projectGuess: Double = length() / 2.0): Double {
+        // we use the first-order method (since we already compute the arc length param
         var s = projectGuess
         while (true) {
             val pathPoint = get(s).vec()
             val deriv = deriv(s).vec()
-            val secondDeriv = deriv(s).vec()
-            val k = secondDeriv.norm()
-            val ds = if (k epsilonEquals 0.0) {
-                // use the first-order method
-                // this should always work as derivNorm = 1.0 for arc length param
-                // (and generally derivNorm != 0.0 for smooth params)
-
-                // for first-order, qRel is the projection onto the tangent
-                val qRel = (queryPoint - pathPoint) projectOnto deriv
-                deriv dot qRel
-            } else {
-                // use the second-order method
-
-                // for second-order, qRel is the projection onto the osculating circle
-                val pToOrigin = queryPoint - pathPoint - secondDeriv
-                val qRel = secondDeriv + pToOrigin / pToOrigin.norm() * k
-                val area = abs(deriv.x * qRel.y - qRel.x * deriv.y)
-                2.0 * area / k * sign(deriv dot qRel)
-            }
+            val ds = (queryPoint - pathPoint) dot deriv
 
             if (ds epsilonEquals 0.0) break
 
-            s += ds
+            // there are occasional oscillations if the full ds is used
+            // this should guarantee convergence with a minor performance penalty
+            s += ds / 2.0
+
+            if (s <= 0.0 || s >= length()) {
+                s = max(0.0, min(s, length()))
+                break
+            }
         }
         return s
     }
