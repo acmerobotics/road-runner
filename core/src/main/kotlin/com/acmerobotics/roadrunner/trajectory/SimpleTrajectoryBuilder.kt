@@ -21,7 +21,7 @@ class SimpleTrajectoryBuilder private constructor(
      * Create a builder from a start pose and motion state. This is the recommended constructor for creating
      * trajectories from rest.
      */
-    constructor(
+    @JvmOverloads constructor(
         startPose: Pose2d,
         driveConstraints: DriveConstraints,
         start: MotionState = MotionState(0.0, 0.0, 0.0)

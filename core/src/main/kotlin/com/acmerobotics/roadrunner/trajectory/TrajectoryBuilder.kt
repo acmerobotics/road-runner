@@ -22,7 +22,7 @@ class TrajectoryBuilder private constructor(
      * Create a builder from a start pose and motion state. This is the recommended constructor for creating
      * trajectories from rest.
      */
-    constructor(
+    @JvmOverloads constructor(
         startPose: Pose2d,
         trajectoryConstraints: TrajectoryConstraints,
         start: MotionState = MotionState(0.0, 0.0, 0.0),
@@ -33,7 +33,7 @@ class TrajectoryBuilder private constructor(
      * Create a builder from an active trajectory. This is useful for interrupting a live trajectory and smoothly
      * transitioning to a new one.
      */
-    constructor(
+    @JvmOverloads constructor(
         trajectory: Trajectory,
         t: Double,
         trajectoryConstraints: TrajectoryConstraints,
