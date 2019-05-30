@@ -12,7 +12,7 @@ import kotlin.math.sign
  *
  * @param segments list of path segments
  */
-class Path @JvmOverloads constructor(val segments: List<PathSegment> = emptyList()) {
+class Path(val segments: List<PathSegment>) {
 
     /**
      * @param segment single path segment

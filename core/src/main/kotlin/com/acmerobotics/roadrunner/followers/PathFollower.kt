@@ -21,7 +21,7 @@ abstract class PathFollower @JvmOverloads constructor(
     /**
      * Path being followed if [isFollowing] is true.
      */
-    var path: Path = Path()
+    lateinit var path: Path
         protected set
 
     /**

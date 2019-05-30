@@ -8,8 +8,7 @@ import kotlin.math.min
  *
  * @param segments profile motion segments
  */
-class MotionProfile @JvmOverloads constructor(segments: List<MotionSegment> = emptyList()) {
-    // TODO: is internal acceptable here?
+class MotionProfile(segments: List<MotionSegment>) {
     internal val segments: MutableList<MotionSegment> = segments.toMutableList()
 
     /**

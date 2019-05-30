@@ -1,5 +1,6 @@
 package com.acmerobotics.roadrunner.control
 
+import com.acmerobotics.roadrunner.util.NanoClock
 import com.acmerobotics.roadrunner.util.epsilonEquals
 import kotlin.math.abs
 import kotlin.math.max
@@ -15,13 +16,15 @@ import kotlin.math.sign
  * @param kA feedforward acceleration gain
  * @param kStatic additive feedforward constant
  * @param kF custom, position-dependent feedforward (e.g., a gravity term for arms)
+ * @param clock clock
  */
 class PIDFController @JvmOverloads constructor(
     private val pid: PIDCoefficients,
     private val kV: Double = 0.0,
     private val kA: Double = 0.0,
     private val kStatic: Double = 0.0,
-    private val kF: (Double) -> Double = { 0.0 }
+    private val kF: (Double) -> Double = { 0.0 },
+    private val clock: NanoClock = NanoClock.system()
 ) {
     private var errorSum: Double = 0.0
     private var lastUpdateTimestamp: Double = Double.NaN
@@ -91,15 +94,14 @@ class PIDFController @JvmOverloads constructor(
      * @param position current measured position (feedback)
      * @param velocity feedforward velocity
      * @param acceleration feedforward acceleration
-     * @param currentTimestamp timestamp for the above parameters (intendend for simulation)
      */
     @JvmOverloads
     fun update(
         position: Double,
         velocity: Double = 0.0,
-        acceleration: Double = 0.0,
-        currentTimestamp: Double = System.nanoTime() / 1e9
+        acceleration: Double = 0.0
     ): Double {
+        val currentTimestamp = clock.seconds()
         val error = getError(position)
         return if (lastUpdateTimestamp.isNaN()) {
             lastError = error
