@@ -57,7 +57,7 @@ class GVFFollower @JvmOverloads constructor(
         // basic online motion profiling
         val timestamp = clock.seconds()
         val dt = timestamp - lastUpdateTimestamp
-        val remainingDistance = currentPose.vec() distanceTo path.end().vec()
+        val remainingDistance = currentPose.vec() distTo path.end().vec()
         val maxVelToStop = sqrt(2 * constraints.maxAccel * remainingDistance)
         val maxVelFromLast = lastVel + constraints.maxAccel * dt
         val velocity = minOf(maxVelFromLast, maxVelToStop, constraints.maxVel)

@@ -2,6 +2,9 @@ package com.acmerobotics.roadrunner.path
 
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.util.DoubleProgression
+import com.acmerobotics.roadrunner.util.epsilonEquals
+import kotlin.math.abs
+import kotlin.math.asin
 import kotlin.math.sqrt
 
 private const val LENGTH_SAMPLES = 1000
@@ -13,8 +16,15 @@ private const val LENGTH_SAMPLES = 1000
  *
  * @param start start waypoint
  * @param end end waypoint
+ * @param maxDeltaK maximum change in curvature between arc length param segments
+ * @param maxSegmentLength maximum length of a single param segment
  */
-class QuinticSpline(start: Waypoint, end: Waypoint) : ParametricCurve() {
+class QuinticSpline(
+    start: Waypoint,
+    end: Waypoint,
+    private val maxDeltaK: Double = 0.01,
+    private val maxSegmentLength: Double = 0.25
+) : ParametricCurve() {
 
     /**
      * X polynomial (i.e., x(t))
@@ -57,29 +67,63 @@ class QuinticSpline(start: Waypoint, end: Waypoint) : ParametricCurve() {
         fun secondDeriv() = Vector2d(d2x, d2y)
     }
 
-    private val length: Double
+    private var length: Double = 0.0
 
-    private val sSamples = DoubleArray(LENGTH_SAMPLES + 1)
-    private val tSamples = DoubleArray(LENGTH_SAMPLES + 1)
+    private val sSamples = mutableListOf(0.0)
+    private val tSamples = mutableListOf(0.0)
 
     init {
-        sSamples[0] = 0.0
-        tSamples[0] = 0.0
+        parametrize(0.0, 1.0)
+    }
 
-        val dx = 1.0 / LENGTH_SAMPLES
-        var sum = 0.0
-        var lastIntegrand = 0.0
-        for (i in 1..LENGTH_SAMPLES) {
-            val t = i * dx
-            val deriv = internalDeriv(t)
-            val integrand = sqrt(deriv.x * deriv.x + deriv.y * deriv.y) * dx
-            sum += (integrand + lastIntegrand) / 2.0
-            lastIntegrand = integrand
+    private fun approxLength(v1: Vector2d, v2: Vector2d, v3: Vector2d): Double {
+        val w1 = (v2 - v1) * 2.0
+        val w2 = (v2 - v3) * 2.0
+        val det = w1.x * w2.y - w2.x * w1.y
+        val chord = v1 distTo v3
+        return if (det epsilonEquals 0.0) {
+            chord
+        } else {
+            val x1 = v1.x * v1.x + v1.y * v1.y
+            val x2 = v2.x * v2.x + v2.y * v2.y
+            val x3 = v3.x * v3.x + v3.y * v3.y
 
-            sSamples[i] = sum
-            tSamples[i] = t
+            val y1 = x2 - x1
+            val y2 = x2 - x3
+
+            val origin = Vector2d(y1 * w2.y - y2 * w1.y, y2 * w1.x - y1 * w2.x) / det
+            val radius = origin distTo v1
+            2.0 * radius * asin(chord / (2.0 * radius))
         }
-        length = sum
+    }
+
+    private fun internalCurvature(t: Double): Double {
+        val deriv = internalDeriv(t)
+        val derivNorm = deriv.norm()
+        val secondDeriv = internalSecondDeriv(t)
+        return abs(secondDeriv.x * deriv.y - deriv.x * secondDeriv.y) / (derivNorm * derivNorm * derivNorm)
+    }
+
+    private fun parametrize(
+        tLo: Double,
+        tHi: Double,
+        vLo: Vector2d = internalGet(tLo),
+        vHi: Vector2d = internalGet(tHi)
+    ) {
+        val tMid = 0.5 * (tLo + tHi)
+        val vMid = internalGet(tMid)
+
+        val deltaK = abs(internalCurvature(tLo) - internalCurvature(tHi))
+        val segmentLength = approxLength(vLo, vMid, vHi)
+
+        if (deltaK > maxDeltaK || segmentLength > maxSegmentLength) {
+            parametrize(tLo, tMid, vLo, vMid)
+            parametrize(tMid, tHi, vMid, vHi)
+        } else {
+            length += segmentLength
+            sSamples.add(length)
+            tSamples.add(tHi)
+        }
     }
 
     override fun internalGet(t: Double) = Vector2d(x[t], y[t])
@@ -92,12 +136,15 @@ class QuinticSpline(start: Waypoint, end: Waypoint) : ParametricCurve() {
     override fun internalThirdDeriv(t: Double) =
         Vector2d(x.thirdDeriv(t), y.thirdDeriv(t))
 
+    private fun interp(s: Double, sLo: Double, sHi: Double, tLo: Double, tHi: Double) =
+        tLo + (s - sLo) * (tHi - tLo) / (sHi - sLo)
+
     override fun reparam(s: Double): Double {
         if (s <= 0.0) return 0.0
         if (s >= length) return 1.0
 
         var lo = 0
-        var hi = LENGTH_SAMPLES
+        var hi = sSamples.size
 
         while (lo <= hi) {
             val mid = (hi + lo) / 2
@@ -109,7 +156,11 @@ class QuinticSpline(start: Waypoint, end: Waypoint) : ParametricCurve() {
             }
         }
 
-        return tSamples[lo] + (s - sSamples[lo]) * (tSamples[hi] - tSamples[lo]) / (sSamples[hi] - sSamples[lo])
+        if (lo + 1 == sSamples.size) {
+            lo = sSamples.size - 2
+        }
+
+        return interp(s, sSamples[lo], sSamples[lo + 1], tSamples[lo], tSamples[lo + 1])
     }
 
     override fun reparam(s: DoubleProgression): DoubleArray {
@@ -129,7 +180,7 @@ class QuinticSpline(start: Waypoint, end: Waypoint) : ParametricCurve() {
                     val s1 = sSamples[sampleIndex]
                     val t0 = tSamples[sampleIndex - 1]
                     val t1 = tSamples[sampleIndex]
-                    (t0 + (currS - s0) * (t1 - t0) / (s1 - s0))
+                    interp(currS, s0, s1, t0, t1)
                 }
             }
             currS += s.step

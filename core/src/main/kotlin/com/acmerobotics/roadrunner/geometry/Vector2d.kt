@@ -31,7 +31,7 @@ data class Vector2d @JvmOverloads constructor(
 
     infix fun dot(other: Vector2d) = x * other.x + y * other.y
 
-    infix fun distanceTo(other: Vector2d) = (this - other).norm()
+    infix fun distTo(other: Vector2d) = (this - other).norm()
 
     infix fun projectOnto(other: Vector2d) = other * (this dot other) / (other dot other)
 

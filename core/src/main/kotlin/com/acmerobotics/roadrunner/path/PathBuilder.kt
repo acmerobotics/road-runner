@@ -149,11 +149,11 @@ class PathBuilder private constructor(startPose: Pose2d?, internal val path: Pat
             val start = path!![s!!].vec()
             val startDeriv = path.internalDeriv(s).vec()
             val startSecondDeriv = path.internalSecondDeriv(s).vec()
-            val derivMag = (start distanceTo end.vec())
+            val derivMag = (start distTo end.vec())
             QuinticSpline.Waypoint(start, startDeriv, startSecondDeriv) to
                 QuinticSpline.Waypoint(end.vec(), Vector2d(cos(end.heading) * derivMag, sin(end.heading)))
         } else {
-            val derivMag = (currentPose!!.vec() distanceTo end.vec())
+            val derivMag = (currentPose!!.vec() distTo end.vec())
             QuinticSpline.Waypoint(currentPose!!.x, currentPose!!.y,
                 derivMag * cos(currentPose!!.heading), derivMag * sin(currentPose!!.heading)) to
                 QuinticSpline.Waypoint(end.x, end.y,
