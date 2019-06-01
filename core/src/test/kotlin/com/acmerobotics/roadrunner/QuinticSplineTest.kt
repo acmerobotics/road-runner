@@ -40,12 +40,12 @@ class QuinticSplineTest {
         val d2t = s.map { splineSegment.paramSecondDeriv(it) }
         val d3t = s.map { splineSegment.paramThirdDeriv(it) }
 
-        assertDerivEquals(x, dx, ds, 0.0001)
-        assertDerivEquals(dx, d2x, ds, 0.0001)
+        assertDerivEquals(x, dx, ds, 0.01)
+        assertDerivEquals(dx, d2x, ds, 0.01)
         assertDerivEquals(d2x, d3x, ds, 0.01)
 
-        assertDerivEquals(y, dy, ds, 0.0001)
-        assertDerivEquals(dy, d2y, ds, 0.0001)
+        assertDerivEquals(y, dy, ds, 0.01)
+        assertDerivEquals(dy, d2y, ds, 0.01)
         assertDerivEquals(d2y, d3y, ds, 0.02)
 
         assertDerivEquals(tangentAngle, tangentAngleDeriv, ds, 0.0001)

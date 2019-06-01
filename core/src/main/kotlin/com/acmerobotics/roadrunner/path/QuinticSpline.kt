@@ -7,8 +7,6 @@ import kotlin.math.abs
 import kotlin.math.asin
 import kotlin.math.sqrt
 
-private const val LENGTH_SAMPLES = 1000
-
 /**
  * Combination of two quintic polynomials into a 2D quintic spline. See
  * [this short paper](https://github.com/acmerobotics/road-runner/blob/master/doc/pdf/Quintic_Splines_for_FTC.pdf) for
@@ -156,11 +154,7 @@ class QuinticSpline(
             }
         }
 
-        if (lo + 1 == sSamples.size) {
-            lo = sSamples.size - 2
-        }
-
-        return interp(s, sSamples[lo], sSamples[lo + 1], tSamples[lo], tSamples[lo + 1])
+        return interp(s, sSamples[lo], sSamples[hi], tSamples[lo], tSamples[hi])
     }
 
     override fun reparam(s: DoubleProgression): DoubleArray {
