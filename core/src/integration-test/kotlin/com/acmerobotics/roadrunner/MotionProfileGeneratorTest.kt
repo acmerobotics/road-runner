@@ -23,7 +23,7 @@ class MotionProfileGeneratorTest {
         verifyAccel: Boolean = false
     ) {
         // save it
-        GraphUtil.saveMotionProfile("profiles/$name", profile)
+        GraphUtil.saveMotionProfile("$name", profile)
 
         // verify start state satisfaction
         assertEquals(start.x, profile.start().x, 1e-4)
@@ -199,6 +199,23 @@ class MotionProfileGeneratorTest {
     }
 
     // simple jerk-limited tests
+
+    @Test
+    fun testForDocs() {
+        testProfile(
+            "Sample Jerk-Limited Profile",
+            MotionState(0.0, 0.0, 0.0),
+            MotionState(60.0, 0.0, 0.0),
+            MotionProfileGenerator.generateSimpleMotionProfile(
+                MotionState(0.0, 0.0, 0.0),
+                MotionState(60.0, 0.0, 0.0),
+                25.0,
+                40.0,
+                100.0
+            ),
+            true
+        )
+    }
 
     @Test
     fun testJerkLimited() {

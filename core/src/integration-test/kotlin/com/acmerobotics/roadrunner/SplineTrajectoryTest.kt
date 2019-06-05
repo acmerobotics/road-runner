@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import kotlin.math.PI
 
-private val BASE_CONSTRAINTS = DriveConstraints(50.0, 25.0, Double.NaN, PI / 2, PI / 2, Double.NaN)
+private val BASE_CONSTRAINTS = DriveConstraints(50.0, 25.0, 0.0, PI / 2, PI / 2, 0.0)
 private val CONSTRAINTS = TankConstraints(BASE_CONSTRAINTS, 12.0)
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -37,7 +37,7 @@ class SplineTrajectoryTest {
         )
         val trajectory = TrajectoryGenerator.generateTrajectory(Path(PathSegment(spline)), BASE_CONSTRAINTS)
 
-        GraphUtil.saveParametricCurve("simpleSpline/curve", spline)
+        GraphUtil.saveParametricCurve("Sample Quintic Spline", spline)
         GraphUtil.saveTrajectory("simpleSpline/trajectory", trajectory)
     }
 

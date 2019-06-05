@@ -3,6 +3,7 @@ package com.acmerobotics.roadrunner.util
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.roundToInt
+import kotlin.IndexOutOfBoundsException as IndexOutOfBoundsException1
 
 /**
  * A progression of values of type `Double`.
@@ -45,24 +46,28 @@ class DoubleProgression(
 
     fun isEmpty() = range.isEmpty()
 
-//     TODO: float equality epsilon?
     override fun equals(other: Any?): Boolean =
-            other is DoubleProgression &&
-                step == other.step && start == other.start && end == other.end
+        other is DoubleProgression &&
+            step epsilonEquals other.step && start epsilonEquals other.start && end epsilonEquals other.end
 
     override fun hashCode(): Int = range.hashCode() * 31 + step.hashCode()
 
     override fun iterator() = IteratorImpl(range)
 
-    operator fun contains(query: Double) = query in start..end
+    operator fun contains(query: Double) = query in start..end ||
+        query epsilonEquals start || query epsilonEquals end
 
     fun split(sep: Double): Pair<DoubleProgression, DoubleProgression> {
         return if (sep in this) {
-            val intSep = floor((sep - start) / step)
-            DoubleProgression(start, start + intSep * step, step) to
-                DoubleProgression(start + (intSep + 1) * step, end, step)
+            if (step epsilonEquals 0.0) {
+                DoubleProgression(start, sep, step) to DoubleProgression(sep, end, step)
+            } else {
+                val intSep = floor((sep - start) / step)
+                DoubleProgression(start, start + intSep * step, step) to
+                    DoubleProgression(start + (intSep + 1) * step, end, step)
+            }
         } else {
-            this to DoubleProgression(0.0, -1.0, step)
+            throw IndexOutOfBoundsException("sep outside of the progression")
         }
     }
 

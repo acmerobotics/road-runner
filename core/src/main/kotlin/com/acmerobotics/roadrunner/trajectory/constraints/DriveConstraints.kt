@@ -7,14 +7,14 @@ import com.acmerobotics.roadrunner.util.epsilonEquals
 /**
  * This class describes general robot trajectory constraints. More specifically, for paths, the robot velocity,
  * robot acceleration, and robot angular velocity are limited.  For point turns, the angular velocity and angular
- * acceleration are limited.
+ * acceleration are limited. If [maxJerk] or [maxAngJerk] are 0, acceleration-limited fallbacks will be used.
  *
  * @param maxVel maximum robot velocity
  * @param maxAccel maximum robot acceleration
  * @param maxJerk maximum robot jerk (ignored by dynamic profiles)
  * @param maxAngVel maximum angular velocity
- * @param maxAngAccel maximum angular acceleration (ignored by path-based trajectories)
- * @param maxAngJerk maximum angular jerk (ignored by path-based trajectories)
+ * @param maxAngAccel maximum angular acceleration (ignored by trajectories)
+ * @param maxAngJerk maximum angular jerk (ignored by trajectories)
  */
 open class DriveConstraints(
     @JvmField var maxVel: Double,

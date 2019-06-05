@@ -22,7 +22,7 @@ class MotionProfile(segments: List<MotionSegment>) {
             }
             remainingTime -= segment.dt
         }
-        return segments.last().end()
+        return segments.lastOrNull()?.end() ?: MotionState(0.0, 0.0)
     }
 
     /**

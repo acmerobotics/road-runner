@@ -28,10 +28,10 @@ class ConstraintsPanel : JPanel() {
         fun immutable(): DriveConstraints = DriveConstraints(
             maximumVelocity,
             maximumAcceleration,
-            Double.NaN,
+            0.0,
             maximumAngularVelocity,
             maximumAngularAcceleration,
-            Double.NaN
+            0.0
         )
     }
 

@@ -128,6 +128,9 @@ class Path(val segments: List<PathSegment>) {
         var (ignore, remainingDisplacement) = s.split(0.0)
         var offset = ignore.items()
         for (segment in segments) {
+            if (offset == t.size) {
+                break
+            }
             val pair =
                 remainingDisplacement.split(segment.length())
             val segmentDisplacement = pair.first

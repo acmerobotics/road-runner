@@ -11,8 +11,8 @@ import javax.swing.JTabbedPane
 import kotlin.math.max
 import kotlin.math.min
 
-private val DEFAULT_CONSTRAINTS = DriveConstraints(25.0, 40.0, Double.NaN,
-    Math.toRadians(180.0), Math.toRadians(360.0), Double.NaN)
+private val DEFAULT_CONSTRAINTS = DriveConstraints(25.0, 40.0, 0.0,
+    Math.toRadians(180.0), Math.toRadians(360.0), 0.0)
 private const val DEFAULT_RESOLUTION = 0.25
 private const val MIN_RESOLUTION = 5.0
 private const val MAX_RESOLUTION = 0.01

@@ -1,5 +1,7 @@
 package com.acmerobotics.roadrunner.profile
 
+import com.acmerobotics.roadrunner.util.epsilonEquals
+
 /**
  * Easy-to-use builder for creating motion profiles.
  *
@@ -34,7 +36,7 @@ class MotionProfileBuilder(start: MotionState) {
      */
     fun appendProfile(profile: MotionProfile): MotionProfileBuilder {
         for (segment in profile.segments) {
-            if (segment.start.j.isNaN()) {
+            if (segment.start.j epsilonEquals 0.0) {
                 // constant acceleration
                 appendAccelerationControl(segment.start.a, segment.dt)
             } else {

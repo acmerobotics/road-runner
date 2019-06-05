@@ -27,7 +27,7 @@ class TrajectoryConfig @JvmOverloads constructor(
      */
     @Suppress("NestedBlockDepth")
     fun toTrajectory() =
-            if (poses.isEmpty()) {
+            if (poses.size < 2) {
                 null
             } else {
                 val builder = TrajectoryBuilder(poses.first(), constraints, resolution = resolution)

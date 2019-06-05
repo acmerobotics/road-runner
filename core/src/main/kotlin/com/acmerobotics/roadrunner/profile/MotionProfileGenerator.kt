@@ -14,18 +14,18 @@ import kotlin.math.sqrt
 object MotionProfileGenerator {
 
     /**
-     * Generates a simple motion profile with constant [maxVel], [maxAccel], and [maxJerk]. If
-     * constraints can't be obeyed, there are two possible fallbacks. If [overshoot] is true, then two profiles will be
-     * concatenated (the first one overshoots the goal and the second one reverses back to reach the goal). Otherwise,
-     * The highest order constraint (e.g., max jerk for jerk-limited profiles) is repeatedly violated until the goal is
-     * satisfiable.
+     * Generates a simple motion profile with constant [maxVel], [maxAccel], and [maxJerk]. If [maxJerk] is zero, an
+     * acceleration-limited profile will be generated instead of a jerk-limited one. If constraints can't be obeyed,
+     * there are two possible fallbacks: If [overshoot] is true, then two profiles will be concatenated (the first one
+     * overshoots the goal and the second one reverses back to reach the goal). Otherwise, the highest order constraint
+     * (e.g., max jerk for jerk-limited profiles) is repeatedly violated until the goal is achieved.
      *
      * @param start start motion state
      * @param goal goal motion state
      * @param maxVel maximum velocity
      * @param maxAccel maximum acceleration
      * @param maxJerk maximum jerk
-     * @param overshoot
+     * @param overshoot if true overshoot otherwise violate constraints (see description above)
      */
     @Suppress("LongParameterList")
     @JvmStatic
@@ -35,7 +35,7 @@ object MotionProfileGenerator {
         goal: MotionState,
         maxVel: Double,
         maxAccel: Double,
-        maxJerk: Double = Double.NaN,
+        maxJerk: Double = 0.0,
         overshoot: Boolean = false
     ): MotionProfile {
         // ensure the goal is always after the start; plan the flipped profile otherwise
@@ -49,7 +49,7 @@ object MotionProfileGenerator {
             ).flipped()
         }
 
-        if (maxJerk.isNaN()) {
+        if (maxJerk epsilonEquals 0.0) {
             // acceleration-limited profile (trapezoidal)
             val requiredAccel = (goal.v * goal.v - start.v * start.v) / (2 * (goal.x - start.x))
 
@@ -198,9 +198,9 @@ object MotionProfileGenerator {
         start: MotionState,
         maxVel: Double,
         maxAccel: Double,
-        maxJerk: Double = Double.NaN
+        maxJerk: Double = 0.0
     ): MotionProfile =
-        if (maxJerk.isNaN()) {
+        if (maxJerk epsilonEquals 0.0) {
             // acceleration-limited
             val deltaT1 = abs(start.v - maxVel) / maxAccel
             val builder = MotionProfileBuilder(start)
