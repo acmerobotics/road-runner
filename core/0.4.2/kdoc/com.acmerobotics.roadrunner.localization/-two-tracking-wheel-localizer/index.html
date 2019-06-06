@@ -1,0 +1,79 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>TwoTrackingWheelLocalizer - core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">core</a>&nbsp;/&nbsp;<a href="../index.html">com.acmerobotics.roadrunner.localization</a>&nbsp;/&nbsp;<a href="./index.html">TwoTrackingWheelLocalizer</a><br/>
+<br/>
+<h1>TwoTrackingWheelLocalizer</h1>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">TwoTrackingWheelLocalizer</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-localizer/index.html"><span class="identifier">Localizer</span></a></code>
+<p>Localizer based on two unpowered tracking omni wheels and an orientation sensor.</p>
+<h3>Parameters</h3>
+<p><a name="wheelPositions"></a>
+<code>wheelPositions</code> - wheel positions relative to the center of the robot (positive X points forward on the robot)</p>
+<p><a name="wheelOrientations"></a>
+<code>wheelOrientations</code> - angular orientations of the wheels measured counterclockwise from positive X in radians</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">TwoTrackingWheelLocalizer</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.localization.TwoTrackingWheelLocalizer$<init>(kotlin.collections.List((com.acmerobotics.roadrunner.geometry.Vector2d)), kotlin.collections.List((kotlin.Double)))/wheelPositions">wheelPositions</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../../com.acmerobotics.roadrunner.geometry/-vector2d/index.html"><span class="identifier">Vector2d</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.localization.TwoTrackingWheelLocalizer$<init>(kotlin.collections.List((com.acmerobotics.roadrunner.geometry.Vector2d)), kotlin.collections.List((kotlin.Double)))/wheelOrientations">wheelOrientations</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">&gt;</span><span class="symbol">)</span></code>
+<p>Localizer based on two unpowered tracking omni wheels and an orientation sensor.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="pose-estimate.html">poseEstimate</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">var </span><span class="identifier">poseEstimate</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a></code>
+<p>Current robot pose estimate.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="get-heading.html">getHeading</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">getHeading</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code>
+<p>Returns the heading of the robot (usually from a gyroscope or IMU).</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="get-wheel-positions.html">getWheelPositions</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">getWheelPositions</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">&gt;</span></code>
+<p>Returns the positions of the tracking wheels in the desired distance units (not encoder counts!)</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="update.html">update</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">update</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Completes a single localization update.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

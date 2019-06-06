@@ -1,0 +1,66 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>com.acmerobotics.roadrunner.drive - core</title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">core</a>&nbsp;/&nbsp;<a href="./index.html">com.acmerobotics.roadrunner.drive</a><br/>
+<br/>
+<h2>Package com.acmerobotics.roadrunner.drive</h2>
+<p>Drive-specific interfaces that provide functionality for setting robot velocities and using positional feedback for
+localization.</p>
+<h3>Types</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-drive/index.html">Drive</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">Drive</span></code>
+<p>Abstraction for generic robot drive motion and localization. Robot poses are specified in a coordinate system with
+positive x pointing forward, positive y pointing left, and positive heading measured counter-clockwise from the
+x-axis.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-drive-signal/index.html">DriveSignal</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">DriveSignal</span></code>
+<p>Signal indicating the commanded kinematic state of a drive.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-mecanum-drive/index.html">MecanumDrive</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">MecanumDrive</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-drive/index.html"><span class="identifier">Drive</span></a></code>
+<p>This class provides the basic functionality of a mecanum drive using <a href="../com.acmerobotics.roadrunner.kinematics/-mecanum-kinematics/index.html">MecanumKinematics</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-swerve-drive/index.html">SwerveDrive</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">SwerveDrive</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-drive/index.html"><span class="identifier">Drive</span></a></code>
+<p>This class provides the basic functionality of a swerve drive using <a href="../com.acmerobotics.roadrunner.kinematics/-swerve-kinematics/index.html">SwerveKinematics</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-tank-drive/index.html">TankDrive</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">TankDrive</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-drive/index.html"><span class="identifier">Drive</span></a></code>
+<p>This class provides the basic functionality of a tank/differential drive using <a href="../com.acmerobotics.roadrunner.kinematics/-tank-kinematics/index.html">TankKinematics</a>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>
