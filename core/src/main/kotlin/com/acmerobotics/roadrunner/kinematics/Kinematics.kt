@@ -92,6 +92,10 @@ object Kinematics {
 
         val fieldPoseDelta = Pose2d(fieldPositionDelta.rotated(fieldPose.heading), robotPoseDelta.heading)
 
-        return fieldPose + fieldPoseDelta
+        return Pose2d(
+            fieldPose.x + fieldPoseDelta.x,
+            fieldPose.y + fieldPoseDelta.y,
+            Angle.norm(fieldPose.heading + fieldPoseDelta.heading)
+        )
     }
 }
