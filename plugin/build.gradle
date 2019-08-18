@@ -4,6 +4,7 @@ buildscript {
     }
 
     dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.4'
         classpath "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:$detekt_version"
     }
 }
@@ -13,6 +14,7 @@ plugins {
     id 'kotlin'
     id 'org.jetbrains.intellij' version '0.3.4'
 }
+apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'io.gitlab.arturbosch.detekt'
 
 repositories {
@@ -31,6 +33,17 @@ detekt {
     filters = ".*/resources/.*,.*/build/.*"
     config = files("$rootDir/detekt-config.yml")
 }
+
+tasks["detekt"].dependsOn(":custom-detekt-rules:assemble")
+
+shadowJar {
+    classifier = null
+    version = road_runner_version
+}
+
+jar.enabled = false
+
+jar.dependsOn shadowJar
 
 dependencies {
     implementation project(':core')

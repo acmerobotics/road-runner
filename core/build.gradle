@@ -70,7 +70,7 @@ dokka {
 
     linkMapping {
         dir = "src/main/kotlin"
-        url = "https://github.com/acmerobotics/motion-planner/blob/master/core/src/main/kotlin"
+        url = "https://github.com/acmerobotics/road-runner/blob/master/core/src/main/kotlin"
         suffix = "#L"
     }
 }

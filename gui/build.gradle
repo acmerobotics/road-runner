@@ -31,6 +31,8 @@ detekt {
     config = files("$rootDir/detekt-config.yml")
 }
 
+tasks["detekt"].dependsOn(":custom-detekt-rules:assemble")
+
 shadowJar {
     baseName = 'road-runner-gui'
     destinationDir = buildDir
