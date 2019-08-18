@@ -1,0 +1,151 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>WiggleInterpolator - core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">core</a>&nbsp;/&nbsp;<a href="../index.html">com.acmerobotics.roadrunner.path.heading</a>&nbsp;/&nbsp;<a href="./index.html">WiggleInterpolator</a><br/>
+<br/>
+<h1>WiggleInterpolator</h1>
+<code><span class="keyword">class </span><span class="identifier">WiggleInterpolator</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-heading-interpolator/index.html"><span class="identifier">HeadingInterpolator</span></a></code>
+<p>Heading interpolator that wraps another interpolator and adds sinusoidal oscillations ("wiggles") while preserving
+continuity. More specifically, the wiggle function is composed of a sine wave with a quintic spline on either end.</p>
+<h3>Parameters</h3>
+<p><a name="amplitude"></a>
+<code>amplitude</code> - amplitude of the wiggle oscillations</p>
+<p><a name="desiredPeriod"></a>
+<code>desiredPeriod</code> - period fo the wiggle oscillations</p>
+<p><a name="baseInterpolator"></a>
+<code>baseInterpolator</code> - base interpolator to add oscillations to (e.g., oscillations relative to the tangent)</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">WiggleInterpolator</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.path.heading.WiggleInterpolator$<init>(kotlin.Double, kotlin.Double, com.acmerobotics.roadrunner.path.heading.HeadingInterpolator)/amplitude">amplitude</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.path.heading.WiggleInterpolator$<init>(kotlin.Double, kotlin.Double, com.acmerobotics.roadrunner.path.heading.HeadingInterpolator)/desiredPeriod">desiredPeriod</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.path.heading.WiggleInterpolator$<init>(kotlin.Double, kotlin.Double, com.acmerobotics.roadrunner.path.heading.HeadingInterpolator)/baseInterpolator">baseInterpolator</span><span class="symbol">:</span>&nbsp;<a href="../-heading-interpolator/index.html"><span class="identifier">HeadingInterpolator</span></a>&nbsp;<span class="symbol">=</span>&nbsp;TangentInterpolator()<span class="symbol">)</span></code>
+<p>Heading interpolator that wraps another interpolator and adds sinusoidal oscillations ("wiggles") while preserving
+continuity. More specifically, the wiggle function is composed of a sine wave with a quintic spline on either end.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Inherited Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../-heading-interpolator/curve.html">curve</a></p>
+</td>
+<td>
+<code><span class="keyword">lateinit</span> <span class="keyword">var </span><span class="identifier">curve</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.path/-parametric-curve/index.html"><span class="identifier">ParametricCurve</span></a></code>
+<p>Base parametric curve</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="init.html">init</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">init</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.path.heading.WiggleInterpolator$init(com.acmerobotics.roadrunner.path.ParametricCurve)/curve">curve</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.path/-parametric-curve/index.html"><span class="identifier">ParametricCurve</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Initialize the interpolator with a <a href="../-heading-interpolator/init.html#com.acmerobotics.roadrunner.path.heading.HeadingInterpolator$init(com.acmerobotics.roadrunner.path.ParametricCurve)/curve">curve</a>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Inherited Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../-heading-interpolator/deriv.html">deriv</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">deriv</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.path.heading.HeadingInterpolator$deriv(kotlin.Double, kotlin.Double)/s">s</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.path.heading.HeadingInterpolator$deriv(kotlin.Double, kotlin.Double)/t">t</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a>&nbsp;<span class="symbol">=</span>&nbsp;curve.reparam(s)<span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code>
+<p>Returns the heading derivative at the specified <a href="../-heading-interpolator/deriv.html#com.acmerobotics.roadrunner.path.heading.HeadingInterpolator$deriv(kotlin.Double, kotlin.Double)/s">s</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-heading-interpolator/end.html">end</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">end</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code>
+<p>Returns the end heading.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-heading-interpolator/end-deriv.html">endDeriv</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">endDeriv</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code>
+<p>Returns the end heading derivative.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-heading-interpolator/end-second-deriv.html">endSecondDeriv</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">endSecondDeriv</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code>
+<p>Returns the end heading second derivative.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-heading-interpolator/get.html">get</a></p>
+</td>
+<td>
+<code><span class="keyword">operator</span> <span class="keyword">fun </span><span class="identifier">get</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.path.heading.HeadingInterpolator$get(kotlin.Double, kotlin.Double)/s">s</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.path.heading.HeadingInterpolator$get(kotlin.Double, kotlin.Double)/t">t</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a>&nbsp;<span class="symbol">=</span>&nbsp;curve.reparam(s)<span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code>
+<p>Returns the heading at the specified <a href="../-heading-interpolator/get.html#com.acmerobotics.roadrunner.path.heading.HeadingInterpolator$get(kotlin.Double, kotlin.Double)/s">s</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-heading-interpolator/second-deriv.html">secondDeriv</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">secondDeriv</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.path.heading.HeadingInterpolator$secondDeriv(kotlin.Double, kotlin.Double)/s">s</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.path.heading.HeadingInterpolator$secondDeriv(kotlin.Double, kotlin.Double)/t">t</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a>&nbsp;<span class="symbol">=</span>&nbsp;curve.reparam(s)<span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code>
+<p>Returns the heading second derivative at the specified <a href="../-heading-interpolator/second-deriv.html#com.acmerobotics.roadrunner.path.heading.HeadingInterpolator$secondDeriv(kotlin.Double, kotlin.Double)/s">s</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-heading-interpolator/start.html">start</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">start</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code>
+<p>Returns the start heading.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-heading-interpolator/start-deriv.html">startDeriv</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">startDeriv</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code>
+<p>Returns the start heading derivative.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-heading-interpolator/start-second-deriv.html">startSecondDeriv</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">startSecondDeriv</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code>
+<p>Returns the start heading second derivative.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

@@ -1,0 +1,44 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>TrajectoryConstraints - core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">core</a>&nbsp;/&nbsp;<a href="../index.html">com.acmerobotics.roadrunner.trajectory.constraints</a>&nbsp;/&nbsp;<a href="./index.html">TrajectoryConstraints</a><br/>
+<br/>
+<h1>TrajectoryConstraints</h1>
+<code><span class="keyword">interface </span><span class="identifier">TrajectoryConstraints</span></code>
+<p>Trajectory-specific constraints for motion profile generation.</p>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="get.html">get</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">operator</span> <span class="keyword">fun </span><span class="identifier">get</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryConstraints$get(com.acmerobotics.roadrunner.geometry.Pose2d, com.acmerobotics.roadrunner.geometry.Pose2d, com.acmerobotics.roadrunner.geometry.Pose2d)/pose">pose</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryConstraints$get(com.acmerobotics.roadrunner.geometry.Pose2d, com.acmerobotics.roadrunner.geometry.Pose2d, com.acmerobotics.roadrunner.geometry.Pose2d)/deriv">deriv</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryConstraints$get(com.acmerobotics.roadrunner.geometry.Pose2d, com.acmerobotics.roadrunner.geometry.Pose2d, com.acmerobotics.roadrunner.geometry.Pose2d)/secondDeriv">secondDeriv</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.profile/-simple-motion-constraints/index.html"><span class="identifier">SimpleMotionConstraints</span></a></code>
+<p>Returns the maximum velocity and acceleration for the given pose derivatives.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Inheritors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../-drive-constraints/index.html">DriveConstraints</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">DriveConstraints</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">TrajectoryConstraints</span></a></code>
+<p>This class describes general robot trajectory constraints. More specifically, for paths, the robot velocity,
+robot acceleration, and robot angular velocity are limited.  For point turns, the angular velocity and angular
+acceleration are limited. If <a href="../-drive-constraints/max-jerk.html">maxJerk</a> or <a href="../-drive-constraints/max-ang-jerk.html">maxAngJerk</a> are 0, acceleration-limited fallbacks will be used.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>
