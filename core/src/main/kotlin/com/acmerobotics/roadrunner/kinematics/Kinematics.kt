@@ -42,7 +42,7 @@ object Kinematics {
     fun calculatePoseError(targetFieldPose: Pose2d, currentFieldPose: Pose2d) =
         Pose2d(
             (targetFieldPose - currentFieldPose).vec().rotated(-currentFieldPose.heading),
-            Angle.norm(targetFieldPose.heading - currentFieldPose.heading)
+            Angle.normDelta(targetFieldPose.heading - currentFieldPose.heading)
         )
 
     /**

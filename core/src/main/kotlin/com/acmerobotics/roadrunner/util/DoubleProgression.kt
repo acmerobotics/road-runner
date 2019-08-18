@@ -3,7 +3,6 @@ package com.acmerobotics.roadrunner.util
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.roundToInt
-import kotlin.IndexOutOfBoundsException as IndexOutOfBoundsException1
 
 /**
  * A progression of values of type `Double`.

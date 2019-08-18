@@ -1,24 +1,19 @@
 package com.acmerobotics.roadrunner.localization
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
-import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.kinematics.Kinematics
 import org.apache.commons.math3.linear.Array2DRowRealMatrix
 import org.apache.commons.math3.linear.DecompositionSolver
 import org.apache.commons.math3.linear.LUDecomposition
 import org.apache.commons.math3.linear.MatrixUtils
-import kotlin.math.cos
-import kotlin.math.sin
 
 /**
  * Localizer based on three unpowered tracking omni wheels.
  *
- * @param wheelPositions wheel positions relative to the center of the robot (positive X points forward on the robot)
- * @param wheelOrientations angular orientations of the wheels measured counterclockwise from positive X in radians
+ * @param wheelPoses wheel poses relative to the center of the robot (positive X points forward on the robot)
  */
 abstract class ThreeTrackingWheelLocalizer(
-    wheelPositions: List<Vector2d>,
-    wheelOrientations: List<Double>
+    wheelPoses: List<Pose2d>
 ) : Localizer {
     override var poseEstimate: Pose2d =
         Pose2d()
@@ -31,19 +26,14 @@ abstract class ThreeTrackingWheelLocalizer(
     private val forwardSolver: DecompositionSolver
 
     init {
-        if (wheelPositions.size != 3) {
+        if (wheelPoses.size != 3) {
             throw IllegalArgumentException("3 wheel positions must be provided")
-        }
-
-        if (wheelOrientations.size != 3) {
-            throw IllegalArgumentException("3 wheel orientations must be provided")
         }
 
         val inverseMatrix = Array2DRowRealMatrix(3, 3)
         for (i in 0..2) {
-            val orientationVector =
-                Vector2d(cos(wheelOrientations[i]), sin(wheelOrientations[i]))
-            val positionVector = wheelPositions[i]
+            val orientationVector = wheelPoses[i].headingVec()
+            val positionVector = wheelPoses[i].vec()
             inverseMatrix.setEntry(i, 0, orientationVector.x)
             inverseMatrix.setEntry(i, 1, orientationVector.y)
             inverseMatrix.setEntry(i, 2,

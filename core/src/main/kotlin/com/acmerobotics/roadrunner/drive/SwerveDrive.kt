@@ -57,7 +57,7 @@ abstract class SwerveDrive @JvmOverloads constructor(
                 val robotPoseDelta = SwerveKinematics.wheelToRobotVelocities(
                         wheelDeltas, moduleOrientations, drive.wheelBase, drive.trackWidth)
                 val finalHeadingDelta = if (useExternalHeading)
-                    Angle.norm(extHeading - lastExtHeading)
+                    Angle.normDelta(extHeading - lastExtHeading)
                 else
                     robotPoseDelta.heading
                 poseEstimate = Kinematics.relativeOdometryUpdate(poseEstimate,

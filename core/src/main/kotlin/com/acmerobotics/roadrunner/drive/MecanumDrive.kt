@@ -55,7 +55,7 @@ abstract class MecanumDrive @JvmOverloads constructor(
                     wheelDeltas, drive.wheelBase, drive.trackWidth
                 )
                 val finalHeadingDelta = if (useExternalHeading)
-                    Angle.norm(extHeading - lastExtHeading)
+                    Angle.normDelta(extHeading - lastExtHeading)
                 else
                     robotPoseDelta.heading
                 poseEstimate = Kinematics.relativeOdometryUpdate(

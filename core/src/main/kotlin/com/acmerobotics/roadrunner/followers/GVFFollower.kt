@@ -48,7 +48,7 @@ class GVFFollower @JvmOverloads constructor(
         val gvfResult = gvf.getExtended(currentPose.x, currentPose.y, lastProjDisplacement)
 
         val desiredHeading = atan2(gvfResult.vector.y, gvfResult.vector.x)
-        val headingError = Angle.norm(desiredHeading - currentPose.heading)
+        val headingError = Angle.normDelta(desiredHeading - currentPose.heading)
 
         // TODO: implement this or nah? ref eqs. (18), (23), and (24)
         val desiredOmega = 0.0

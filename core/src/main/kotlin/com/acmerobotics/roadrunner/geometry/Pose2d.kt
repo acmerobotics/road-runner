@@ -1,6 +1,8 @@
 package com.acmerobotics.roadrunner.geometry
 
 import com.acmerobotics.roadrunner.util.epsilonEquals
+import kotlin.math.cos
+import kotlin.math.sin
 
 /**
  * Class for representing 2D robot poses (x, y, and heading) and their derivatives.
@@ -13,6 +15,8 @@ data class Pose2d @JvmOverloads constructor(
     constructor(pos: Vector2d, heading: Double) : this(pos.x, pos.y, heading)
 
     fun vec() = Vector2d(x, y)
+
+    fun headingVec() = Vector2d(cos(heading), sin(heading))
 
     operator fun plus(other: Pose2d) =
         Pose2d(x + other.x, y + other.y, heading + other.heading)

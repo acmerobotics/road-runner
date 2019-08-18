@@ -9,7 +9,7 @@ object Angle {
     private const val TAU = PI * 2
 
     /**
-     * Returns [angle] clamped to `[-pi, pi]`.
+     * Returns [angle] clamped to `[0, 2pi]`.
      *
      * @param angle angle measure in radians
      */
@@ -19,10 +19,22 @@ object Angle {
 
         modifiedAngle = (modifiedAngle + TAU) % TAU
 
-        if (modifiedAngle > PI) {
-            modifiedAngle -= TAU
+        return modifiedAngle
+    }
+
+    /**
+     * Returns [angleDelta] clamped to `[-pi, pi]`.
+     *
+     * @param angleDelta angle delta in radians
+     */
+    @JvmStatic
+    fun normDelta(angleDelta: Double): Double {
+        var modifiedAngleDelta = norm(angleDelta)
+
+        if (modifiedAngleDelta > PI) {
+            modifiedAngleDelta -= TAU
         }
 
-        return modifiedAngle
+        return modifiedAngleDelta
     }
 }
