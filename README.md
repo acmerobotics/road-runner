@@ -15,7 +15,7 @@ A simple Kotlin library for planning 2D mobile robot paths and trajectories desi
 
 1. Open up the Gradle file for the module you'd like to install in (probably `TeamCode/build.release.gradle`).
 
-1. Add `implementation 'com.acmerobotics.roadrunner:core:0.4.4'` to the end of the `dependencies` block.
+1. Add `implementation 'com.acmerobotics.roadrunner:core:0.4.5'` to the end of the `dependencies` block.
 
 1. (Android only) Although Road Runner only has a few dependencies, these may exceed the method reference limit imposed by some versions of Android. Fortunately, there are a few ways around this. For more information, see [this article](https://developer.android.com/studio/build/multidex).
 
