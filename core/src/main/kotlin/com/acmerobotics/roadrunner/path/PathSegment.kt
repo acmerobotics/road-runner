@@ -105,7 +105,7 @@ class PathSegment @JvmOverloads constructor(
 
     internal fun reparam(s: DoubleProgression): DoubleArray {
         return if (reversed) {
-            curve.reparam(curve.length() - s)
+            curve.reparam((curve.length() - s).reversed()).reversedArray()
         } else {
             curve.reparam(s)
         }

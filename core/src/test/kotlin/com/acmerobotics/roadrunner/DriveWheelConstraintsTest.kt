@@ -1,5 +1,3 @@
-@file:Suppress("NoItParamInMultilineLambda")
-
 package com.acmerobotics.roadrunner
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
@@ -9,6 +7,7 @@ import com.acmerobotics.roadrunner.kinematics.SwerveKinematics
 import com.acmerobotics.roadrunner.kinematics.TankKinematics
 import com.acmerobotics.roadrunner.path.heading.SplineInterpolator
 import com.acmerobotics.roadrunner.path.heading.TangentInterpolator
+import com.acmerobotics.roadrunner.trajectory.Trajectory
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import com.acmerobotics.roadrunner.trajectory.constraints.MecanumConstraints
@@ -22,27 +21,47 @@ import kotlin.math.abs
 
 private val BASE_CONSTRAINTS = DriveConstraints(10.0, 25.0, 0.0, PI / 2, PI / 2, 0.0)
 
+@Suppress("UndocumentedPublicClass")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class DriveWheelConstraintsTest {
-    @Test
-    fun testTankWheelVelocityLimiting() {
-        val constraints = TankConstraints(BASE_CONSTRAINTS, 10.0)
-        val trajectory = TrajectoryBuilder(Pose2d(0.0, 0.0, 0.0), constraints)
-                .splineTo(Pose2d(15.0, 15.0, PI))
-                .splineTo(Pose2d(5.0, 35.0, PI / 3))
-                .build()
-
+    private fun testWheelVelocityLimiting(trajectory: Trajectory, maxWheelVel: Double,
+                                          robotToWheelVelocities: (vel: Pose2d) -> List<Double>) {
         val dt = trajectory.duration() / 10000.0
         val t = (0..10000).map { it * dt }
         val maxWheelVelMag = t.map {
             val pose = trajectory[it]
             val poseVel = trajectory.velocity(it)
             val robotVel = Kinematics.fieldToRobotVelocity(pose, poseVel)
-            TankKinematics.robotToWheelVelocities(robotVel, 10.0)
-                    .map(::abs)
-                    .max() ?: 0.0
+            robotToWheelVelocities(robotVel)
+                .map(::abs)
+                .max() ?: 0.0
         }.max() ?: 0.0
-        assertThat(maxWheelVelMag).isLessThan(BASE_CONSTRAINTS.maxVel + 0.1)
+        assertThat(maxWheelVelMag).isLessThan(maxWheelVel + 0.1)
+    }
+
+    @Test
+    fun testTankWheelVelocityLimiting() {
+        val constraints = TankConstraints(BASE_CONSTRAINTS, 10.0)
+        val trajectory = TrajectoryBuilder(Pose2d(0.0, 0.0, 0.0), constraints)
+            .splineTo(Pose2d(15.0, 15.0, PI))
+            .splineTo(Pose2d(5.0, 35.0, PI / 3))
+            .build()
+        testWheelVelocityLimiting(trajectory, BASE_CONSTRAINTS.maxVel) {
+            TankKinematics.robotToWheelVelocities(it, constraints.trackWidth)
+        }
+    }
+
+    @Test
+    fun testTankWheelVelocityLimitingReversed() {
+        val constraints = TankConstraints(BASE_CONSTRAINTS, 10.0)
+        val trajectory = TrajectoryBuilder(Pose2d(0.0, 0.0, 0.0), constraints)
+            .reverse()
+            .splineTo(Pose2d(15.0, 15.0, PI))
+            .splineTo(Pose2d(5.0, 35.0, PI / 3))
+            .build()
+        testWheelVelocityLimiting(trajectory, BASE_CONSTRAINTS.maxVel) {
+            TankKinematics.robotToWheelVelocities(it, constraints.trackWidth)
+        }
     }
 
     @Test
@@ -52,18 +71,9 @@ class DriveWheelConstraintsTest {
                 .splineTo(Pose2d(15.0, 15.0, PI), interpolator = SplineInterpolator(0.0, PI / 2))
                 .splineTo(Pose2d(5.0, 35.0, PI / 3), interpolator = TangentInterpolator())
                 .build()
-
-        val dt = trajectory.duration() / 10000.0
-        val t = (0..10000).map { it * dt }
-        val maxWheelVelMag = t.map {
-            val pose = trajectory[it]
-            val poseVel = trajectory.velocity(it)
-            val robotVel = Kinematics.fieldToRobotVelocity(pose, poseVel)
-            MecanumKinematics.robotToWheelVelocities(robotVel, 10.0, 5.0)
-                    .map(::abs)
-                    .max() ?: 0.0
-        }.max() ?: 0.0
-        assertThat(maxWheelVelMag).isLessThan(BASE_CONSTRAINTS.maxVel + 0.1)
+        testWheelVelocityLimiting(trajectory, BASE_CONSTRAINTS.maxVel) {
+            MecanumKinematics.robotToWheelVelocities(it, constraints.trackWidth, constraints.wheelBase)
+        }
     }
 
     @Test
@@ -73,17 +83,8 @@ class DriveWheelConstraintsTest {
                 .splineTo(Pose2d(15.0, 15.0, PI), interpolator = SplineInterpolator(0.0, PI / 2))
                 .splineTo(Pose2d(5.0, 35.0, PI / 3), interpolator = TangentInterpolator())
                 .build()
-
-        val dt = trajectory.duration() / 10000.0
-        val t = (0..10000).map { it * dt }
-        val maxWheelVelMag = t.map {
-            val pose = trajectory[it]
-            val poseVel = trajectory.velocity(it)
-            val robotVel = Kinematics.fieldToRobotVelocity(pose, poseVel)
-            SwerveKinematics.robotToWheelVelocities(robotVel, 10.0, 5.0)
-                    .map(::abs)
-                    .max() ?: 0.0
-        }.max() ?: 0.0
-        assertThat(maxWheelVelMag).isLessThan(BASE_CONSTRAINTS.maxVel + 0.1)
+        testWheelVelocityLimiting(trajectory, BASE_CONSTRAINTS.maxVel) {
+            SwerveKinematics.robotToWheelVelocities(it, constraints.trackWidth, constraints.wheelBase)
+        }
     }
 }

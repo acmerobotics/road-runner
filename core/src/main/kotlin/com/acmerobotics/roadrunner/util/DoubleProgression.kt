@@ -73,6 +73,8 @@ class DoubleProgression(
     override fun toString() = "DoubleProgression[$start, $end, $step]"
 
     fun items() = range.last - range.first + 1
+
+    fun reversed() = DoubleProgression(end, start, -step)
 }
 
 operator fun Double.plus(progression: DoubleProgression) = progression + this
