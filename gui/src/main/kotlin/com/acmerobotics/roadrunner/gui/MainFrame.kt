@@ -9,6 +9,9 @@ import javax.swing.*
 
 private val COMMAND_MASK = Toolkit.getDefaultToolkit().menuShortcutKeyMask
 
+/**
+ * Main window for standalone GUI application.
+ */
 class MainFrame : JFrame() {
 
     init {

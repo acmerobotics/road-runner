@@ -21,16 +21,18 @@ import kotlin.math.abs
 
 private val BASE_CONSTRAINTS = DriveConstraints(10.0, 25.0, 0.0, PI / 2, PI / 2, 0.0)
 
-@Suppress("UndocumentedPublicClass")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class DriveWheelConstraintsTest {
-    private fun testWheelVelocityLimiting(trajectory: Trajectory, maxWheelVel: Double,
-                                          robotToWheelVelocities: (vel: Pose2d) -> List<Double>) {
+    private fun testWheelVelocityLimiting(
+        trajectory: Trajectory,
+        maxWheelVel: Double,
+        robotToWheelVelocities: (vel: Pose2d) -> List<Double>
+    ) {
         val dt = trajectory.duration() / 10000.0
         val t = (0..10000).map { it * dt }
-        val maxWheelVelMag = t.map {
-            val pose = trajectory[it]
-            val poseVel = trajectory.velocity(it)
+        val maxWheelVelMag = t.map { time ->
+            val pose = trajectory[time]
+            val poseVel = trajectory.velocity(time)
             val robotVel = Kinematics.fieldToRobotVelocity(pose, poseVel)
             robotToWheelVelocities(robotVel)
                 .map(::abs)

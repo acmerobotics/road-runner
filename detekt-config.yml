@@ -9,6 +9,7 @@ test-pattern: # Configure exclusions for test sources
   exclude-rule-sets:
     - 'comments'
   exclude-rules:
+    - 'UndocumentedPublicClass'
     - 'NamingRules'
     - 'WildcardImport'
     - 'MagicNumber'

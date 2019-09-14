@@ -9,6 +9,9 @@ import java.io.File
 import java.nio.file.Files
 import javax.swing.*
 
+/**
+ * Main window for IntelliJ plugin.
+ */
 class PathDesignerPanel(private val project: Project) : JPanel() {
     private val moduleManager = ModuleManager.getInstance(project)
 
