@@ -1,0 +1,45 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>MotionProfileGenerator - core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">core</a>&nbsp;/&nbsp;<a href="../index.html">com.acmerobotics.roadrunner.profile</a>&nbsp;/&nbsp;<a href="./index.html">MotionProfileGenerator</a><br/>
+<br/>
+<h1>MotionProfileGenerator</h1>
+<code><span class="keyword">object </span><span class="identifier">MotionProfileGenerator</span></code>
+<p>Motion profile generator with arbitrary start and end motion states and either dynamic constraints or jerk limiting.</p>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="generate-motion-profile.html">generateMotionProfile</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">generateMotionProfile</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.profile.MotionProfileGenerator$generateMotionProfile(com.acmerobotics.roadrunner.profile.MotionState, com.acmerobotics.roadrunner.profile.MotionState, com.acmerobotics.roadrunner.profile.MotionConstraints, kotlin.Double)/start">start</span><span class="symbol">:</span>&nbsp;<a href="../-motion-state/index.html"><span class="identifier">MotionState</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.profile.MotionProfileGenerator$generateMotionProfile(com.acmerobotics.roadrunner.profile.MotionState, com.acmerobotics.roadrunner.profile.MotionState, com.acmerobotics.roadrunner.profile.MotionConstraints, kotlin.Double)/goal">goal</span><span class="symbol">:</span>&nbsp;<a href="../-motion-state/index.html"><span class="identifier">MotionState</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.profile.MotionProfileGenerator$generateMotionProfile(com.acmerobotics.roadrunner.profile.MotionState, com.acmerobotics.roadrunner.profile.MotionState, com.acmerobotics.roadrunner.profile.MotionConstraints, kotlin.Double)/constraints">constraints</span><span class="symbol">:</span>&nbsp;<a href="../-motion-constraints/index.html"><span class="identifier">MotionConstraints</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.profile.MotionProfileGenerator$generateMotionProfile(com.acmerobotics.roadrunner.profile.MotionState, com.acmerobotics.roadrunner.profile.MotionState, com.acmerobotics.roadrunner.profile.MotionConstraints, kotlin.Double)/resolution">resolution</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a>&nbsp;<span class="symbol">=</span>&nbsp;0.25<span class="symbol">)</span><span class="symbol">: </span><a href="../-motion-profile/index.html"><span class="identifier">MotionProfile</span></a></code>
+<p>Generates a motion profile with dynamic maximum velocity and acceleration. Uses the algorithm described in
+section 3.2 of <a href="http://www2.informatik.uni-freiburg.de/~lau/students/Sprunk2008.pdf">Sprunk2008.pdf</a>. Warning:
+Profiles may be generated incorrectly if the endpoint velocity/acceleration values preclude the obedience of the
+motion constraints. To protect against this, verify the continuity of the generated profile or keep the start and
+goal velocities at 0.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="generate-simple-motion-profile.html">generateSimpleMotionProfile</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">generateSimpleMotionProfile</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.profile.MotionProfileGenerator$generateSimpleMotionProfile(com.acmerobotics.roadrunner.profile.MotionState, com.acmerobotics.roadrunner.profile.MotionState, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Boolean)/start">start</span><span class="symbol">:</span>&nbsp;<a href="../-motion-state/index.html"><span class="identifier">MotionState</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.profile.MotionProfileGenerator$generateSimpleMotionProfile(com.acmerobotics.roadrunner.profile.MotionState, com.acmerobotics.roadrunner.profile.MotionState, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Boolean)/goal">goal</span><span class="symbol">:</span>&nbsp;<a href="../-motion-state/index.html"><span class="identifier">MotionState</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.profile.MotionProfileGenerator$generateSimpleMotionProfile(com.acmerobotics.roadrunner.profile.MotionState, com.acmerobotics.roadrunner.profile.MotionState, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Boolean)/maxVel">maxVel</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.profile.MotionProfileGenerator$generateSimpleMotionProfile(com.acmerobotics.roadrunner.profile.MotionState, com.acmerobotics.roadrunner.profile.MotionState, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Boolean)/maxAccel">maxAccel</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.profile.MotionProfileGenerator$generateSimpleMotionProfile(com.acmerobotics.roadrunner.profile.MotionState, com.acmerobotics.roadrunner.profile.MotionState, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Boolean)/maxJerk">maxJerk</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a>&nbsp;<span class="symbol">=</span>&nbsp;0.0<span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.profile.MotionProfileGenerator$generateSimpleMotionProfile(com.acmerobotics.roadrunner.profile.MotionState, com.acmerobotics.roadrunner.profile.MotionState, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Boolean)/overshoot">overshoot</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a>&nbsp;<span class="symbol">=</span>&nbsp;false<span class="symbol">)</span><span class="symbol">: </span><a href="../-motion-profile/index.html"><span class="identifier">MotionProfile</span></a></code>
+<p>Generates a simple motion profile with constant <a href="generate-simple-motion-profile.html#com.acmerobotics.roadrunner.profile.MotionProfileGenerator$generateSimpleMotionProfile(com.acmerobotics.roadrunner.profile.MotionState, com.acmerobotics.roadrunner.profile.MotionState, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Boolean)/maxVel">maxVel</a>, <a href="generate-simple-motion-profile.html#com.acmerobotics.roadrunner.profile.MotionProfileGenerator$generateSimpleMotionProfile(com.acmerobotics.roadrunner.profile.MotionState, com.acmerobotics.roadrunner.profile.MotionState, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Boolean)/maxAccel">maxAccel</a>, and <a href="generate-simple-motion-profile.html#com.acmerobotics.roadrunner.profile.MotionProfileGenerator$generateSimpleMotionProfile(com.acmerobotics.roadrunner.profile.MotionState, com.acmerobotics.roadrunner.profile.MotionState, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Boolean)/maxJerk">maxJerk</a>. If <a href="generate-simple-motion-profile.html#com.acmerobotics.roadrunner.profile.MotionProfileGenerator$generateSimpleMotionProfile(com.acmerobotics.roadrunner.profile.MotionState, com.acmerobotics.roadrunner.profile.MotionState, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Boolean)/maxJerk">maxJerk</a> is zero, an
+acceleration-limited profile will be generated instead of a jerk-limited one. If constraints can't be obeyed,
+there are two possible fallbacks: If <a href="generate-simple-motion-profile.html#com.acmerobotics.roadrunner.profile.MotionProfileGenerator$generateSimpleMotionProfile(com.acmerobotics.roadrunner.profile.MotionState, com.acmerobotics.roadrunner.profile.MotionState, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Boolean)/overshoot">overshoot</a> is true, then two profiles will be concatenated (the first one
+overshoots the goal and the second one reverses back to reach the goal). Otherwise, the highest order constraint
+(e.g., max jerk for jerk-limited profiles) is repeatedly violated until the goal is achieved.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

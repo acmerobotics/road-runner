@@ -1,0 +1,91 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>com.acmerobotics.roadrunner.util - core</title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">core</a>&nbsp;/&nbsp;<a href="./index.html">com.acmerobotics.roadrunner.util</a><br/>
+<br/>
+<h2>Package com.acmerobotics.roadrunner.util</h2>
+<p>Miscellaneous utilities.</p>
+<h3>Types</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-angle/index.html">Angle</a></p>
+</td>
+<td>
+<code><span class="keyword">object </span><span class="identifier">Angle</span></code>
+<p>Various utilities for working with angles.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-double-progression/index.html">DoubleProgression</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">DoubleProgression</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-iterable/index.html"><span class="identifier">Iterable</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">&gt;</span></code>
+<p>A progression of values of type <code>Double</code>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-guiding-vector-field/index.html">GuidingVectorField</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">GuidingVectorField</span></code>
+<p>Guiding vector field for effective path following described in section III, eq. (9) of
+<a href="https://arxiv.org/pdf/1610.04391.pdf">1610.04391.pdf</a>. Implementation note: 2D parametric curves are used to
+describe paths instead of implicit curves of the form f(x,y) = 0 as described in the paper (which dramatically
+affects the cross track error calculation).</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-math-util/index.html">MathUtil</a></p>
+</td>
+<td>
+<code><span class="keyword">object </span><span class="identifier">MathUtil</span></code>
+<p>Various math utilities.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-nano-clock/index.html">NanoClock</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">NanoClock</span></code>
+<p>Clock interface with nanosecond precision and no guarantee about its origin (that is, this is only suited for
+measuring relative/elapsed time).</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Extensions for External Classes</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="kotlin.-double/index.html">kotlin.Double</a></p>
+</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-e-p-s-i-l-o-n.html">EPSILON</a></p>
+</td>
+<td>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">EPSILON</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

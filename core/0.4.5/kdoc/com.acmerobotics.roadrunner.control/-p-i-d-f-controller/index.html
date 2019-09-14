@@ -1,0 +1,108 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>PIDFController - core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">core</a>&nbsp;/&nbsp;<a href="../index.html">com.acmerobotics.roadrunner.control</a>&nbsp;/&nbsp;<a href="./index.html">PIDFController</a><br/>
+<br/>
+<h1>PIDFController</h1>
+<code><span class="keyword">class </span><span class="identifier">PIDFController</span></code>
+<p>PID controller with various feedforward components. <a href="#">kV</a>, <a href="#">kA</a>, and <a href="#">kStatic</a> are designed for DC motor feedforward
+control (the most common kind of feedforward in FTC). <a href="#">kF</a> provides a custom feedforward term for other plants.</p>
+<h3>Parameters</h3>
+<p><a name="pid"></a>
+<code>pid</code> - traditional PID coefficients</p>
+<p><a name="kV"></a>
+<code>kV</code> - feedforward velocity gain</p>
+<p><a name="kA"></a>
+<code>kA</code> - feedforward acceleration gain</p>
+<p><a name="kStatic"></a>
+<code>kStatic</code> - additive feedforward constant</p>
+<p><a name="kF"></a>
+<code>kF</code> - custom, position-dependent feedforward (e.g., a gravity term for arms)</p>
+<p><a name="clock"></a>
+<code>clock</code> - clock</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">PIDFController</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.control.PIDFController$<init>(com.acmerobotics.roadrunner.control.PIDCoefficients, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Function1((kotlin.Double, )), com.acmerobotics.roadrunner.util.NanoClock)/pid">pid</span><span class="symbol">:</span>&nbsp;<a href="../-p-i-d-coefficients/index.html"><span class="identifier">PIDCoefficients</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.control.PIDFController$<init>(com.acmerobotics.roadrunner.control.PIDCoefficients, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Function1((kotlin.Double, )), com.acmerobotics.roadrunner.util.NanoClock)/kV">kV</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a>&nbsp;<span class="symbol">=</span>&nbsp;0.0<span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.control.PIDFController$<init>(com.acmerobotics.roadrunner.control.PIDCoefficients, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Function1((kotlin.Double, )), com.acmerobotics.roadrunner.util.NanoClock)/kA">kA</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a>&nbsp;<span class="symbol">=</span>&nbsp;0.0<span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.control.PIDFController$<init>(com.acmerobotics.roadrunner.control.PIDCoefficients, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Function1((kotlin.Double, )), com.acmerobotics.roadrunner.util.NanoClock)/kStatic">kStatic</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a>&nbsp;<span class="symbol">=</span>&nbsp;0.0<span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.control.PIDFController$<init>(com.acmerobotics.roadrunner.control.PIDCoefficients, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Function1((kotlin.Double, )), com.acmerobotics.roadrunner.util.NanoClock)/kF">kF</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a>&nbsp;<span class="symbol">=</span>&nbsp;{ 0.0 }<span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.control.PIDFController$<init>(com.acmerobotics.roadrunner.control.PIDCoefficients, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Function1((kotlin.Double, )), com.acmerobotics.roadrunner.util.NanoClock)/clock">clock</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.util/-nano-clock/index.html"><span class="identifier">NanoClock</span></a>&nbsp;<span class="symbol">=</span>&nbsp;NanoClock.system()<span class="symbol">)</span></code>
+<p>PID controller with various feedforward components. <a href="#">kV</a>, <a href="#">kA</a>, and <a href="#">kStatic</a> are designed for DC motor feedforward
+control (the most common kind of feedforward in FTC). <a href="#">kF</a> provides a custom feedforward term for other plants.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="last-error.html">lastError</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">lastError</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code>
+<p>Error computed in the last call to <a href="update.html">update</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="target-position.html">targetPosition</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">targetPosition</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code>
+<p>Target position (that is, the controller setpoint).</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="reset.html">reset</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">reset</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Reset the controller's integral sum.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="set-input-bounds.html">setInputBounds</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">setInputBounds</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.control.PIDFController$setInputBounds(kotlin.Double, kotlin.Double)/min">min</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.control.PIDFController$setInputBounds(kotlin.Double, kotlin.Double)/max">max</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Sets bound on the input of the controller. The min and max values are considered modularly-equivalent (that is,
+the input wraps around).</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="set-output-bounds.html">setOutputBounds</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">setOutputBounds</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.control.PIDFController$setOutputBounds(kotlin.Double, kotlin.Double)/min">min</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.control.PIDFController$setOutputBounds(kotlin.Double, kotlin.Double)/max">max</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Sets bounds on the output of the controller.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="update.html">update</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">update</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.control.PIDFController$update(kotlin.Double, kotlin.Double, kotlin.Double)/position">position</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.control.PIDFController$update(kotlin.Double, kotlin.Double, kotlin.Double)/velocity">velocity</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a>&nbsp;<span class="symbol">=</span>&nbsp;0.0<span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.control.PIDFController$update(kotlin.Double, kotlin.Double, kotlin.Double)/acceleration">acceleration</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a>&nbsp;<span class="symbol">=</span>&nbsp;0.0<span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code>
+<p>Run a single iteration of the controller.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>
