@@ -35,13 +35,14 @@ abstract class SwerveDrive @JvmOverloads constructor(
         private val drive: SwerveDrive,
         private val useExternalHeading: Boolean = true
     ) : Localizer {
-        override var poseEstimate: Pose2d =
-            Pose2d()
+        private var _poseEstimate = Pose2d()
+        override var poseEstimate: Pose2d
+            get() = _poseEstimate
             set(value) {
                 lastWheelPositions = emptyList()
                 lastExtHeading = Double.NaN
                 drive.externalHeading = value.heading
-                field = value
+                _poseEstimate = value
             }
         private var lastWheelPositions = emptyList<Double>()
         private var lastExtHeading = Double.NaN
@@ -60,7 +61,7 @@ abstract class SwerveDrive @JvmOverloads constructor(
                     Angle.normDelta(extHeading - lastExtHeading)
                 else
                     robotPoseDelta.heading
-                poseEstimate = Kinematics.relativeOdometryUpdate(poseEstimate,
+                _poseEstimate = Kinematics.relativeOdometryUpdate(_poseEstimate,
                     Pose2d(robotPoseDelta.vec(), finalHeadingDelta)
                 )
             }

@@ -15,20 +15,19 @@ import org.apache.commons.math3.linear.MatrixUtils
 abstract class ThreeTrackingWheelLocalizer(
     wheelPoses: List<Pose2d>
 ) : Localizer {
-    override var poseEstimate: Pose2d =
-        Pose2d()
+    private var _poseEstimate = Pose2d()
+    override var poseEstimate: Pose2d
+        get() = _poseEstimate
         set(value) {
             lastWheelPositions = emptyList()
-            field = value
+            _poseEstimate = value
         }
     private var lastWheelPositions = emptyList<Double>()
 
     private val forwardSolver: DecompositionSolver
 
     init {
-        if (wheelPoses.size != 3) {
-            throw IllegalArgumentException("3 wheel positions must be provided")
-        }
+        require(wheelPoses.size == 3) { "3 wheel positions must be provided" }
 
         val inverseMatrix = Array2DRowRealMatrix(3, 3)
         for (i in 0..2) {
@@ -42,9 +41,7 @@ abstract class ThreeTrackingWheelLocalizer(
 
         forwardSolver = LUDecomposition(inverseMatrix).solver
 
-        if (!forwardSolver.isNonSingular) {
-            throw IllegalArgumentException("The specified configuration cannot support full localization")
-        }
+        require(forwardSolver.isNonSingular) { "The specified configuration cannot support full localization" }
     }
 
     override fun update() {
@@ -61,8 +58,7 @@ abstract class ThreeTrackingWheelLocalizer(
                 rawPoseDelta.getEntry(1, 0),
                 rawPoseDelta.getEntry(2, 0)
             )
-            poseEstimate =
-                Kinematics.relativeOdometryUpdate(poseEstimate, robotPoseDelta)
+            _poseEstimate = Kinematics.relativeOdometryUpdate(_poseEstimate, robotPoseDelta)
         }
         lastWheelPositions = wheelPositions
     }

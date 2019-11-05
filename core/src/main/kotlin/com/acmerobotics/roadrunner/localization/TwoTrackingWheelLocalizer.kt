@@ -16,12 +16,13 @@ import org.apache.commons.math3.linear.MatrixUtils
 abstract class TwoTrackingWheelLocalizer(
     wheelPoses: List<Pose2d>
 ) : Localizer {
-    override var poseEstimate: Pose2d =
-        Pose2d()
+    private var _poseEstimate = Pose2d()
+    override var poseEstimate: Pose2d
+        get() = _poseEstimate
         set(value) {
             lastWheelPositions = emptyList()
             lastHeading = Double.NaN
-            field = value
+            _poseEstimate = value
         }
     private var lastWheelPositions = emptyList<Double>()
     private var lastHeading = Double.NaN
@@ -29,9 +30,7 @@ abstract class TwoTrackingWheelLocalizer(
     private val forwardSolver: DecompositionSolver
 
     init {
-        if (wheelPoses.size != 2) {
-            throw IllegalArgumentException("2 wheel poses must be provided")
-        }
+        require(wheelPoses.size == 2) { "2 wheel poses must be provided" }
 
         val inverseMatrix = Array2DRowRealMatrix(3, 3)
         for (i in 0..1) {
@@ -46,9 +45,7 @@ abstract class TwoTrackingWheelLocalizer(
 
         forwardSolver = LUDecomposition(inverseMatrix).solver
 
-        if (!forwardSolver.isNonSingular) {
-            throw IllegalArgumentException("The specified configuration cannot support full localization")
-        }
+        require(forwardSolver.isNonSingular) { "The specified configuration cannot support full localization" }
     }
 
     override fun update() {
@@ -67,8 +64,7 @@ abstract class TwoTrackingWheelLocalizer(
                 rawPoseDelta.getEntry(1, 0),
                 rawPoseDelta.getEntry(2, 0)
             )
-            poseEstimate =
-                Kinematics.relativeOdometryUpdate(poseEstimate, robotPoseDelta)
+            _poseEstimate = Kinematics.relativeOdometryUpdate(_poseEstimate, robotPoseDelta)
         }
         lastWheelPositions = wheelPositions
         lastHeading = heading

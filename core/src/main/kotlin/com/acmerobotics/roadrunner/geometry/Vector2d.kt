@@ -1,5 +1,6 @@
 package com.acmerobotics.roadrunner.geometry
 
+import com.acmerobotics.roadrunner.util.Angle
 import com.acmerobotics.roadrunner.util.epsilonEquals
 import kotlin.math.atan2
 import kotlin.math.cos
@@ -15,7 +16,7 @@ data class Vector2d @JvmOverloads constructor(
 ) {
     fun norm() = sqrt(x*x + y*y)
 
-    fun angle() = atan2(y, x)
+    fun angle() = Angle.norm(atan2(y, x))
 
     operator fun plus(other: Vector2d) =
         Vector2d(x + other.x, y + other.y)

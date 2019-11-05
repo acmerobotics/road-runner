@@ -20,9 +20,7 @@ object TankKinematics {
      */
     @JvmStatic
     fun robotToWheelVelocities(robotVel: Pose2d, trackWidth: Double): List<Double> {
-        if (!(robotVel.y epsilonEquals 0.0)) {
-            throw IllegalArgumentException("Lateral (robot y) velocity must be zero for tank drives")
-        }
+        require((robotVel.y epsilonEquals 0.0)) { "Lateral (robot y) velocity must be zero for tank drives" }
 
         return listOf(robotVel.x - trackWidth / 2 * robotVel.heading,
                 robotVel.x + trackWidth / 2 * robotVel.heading)
