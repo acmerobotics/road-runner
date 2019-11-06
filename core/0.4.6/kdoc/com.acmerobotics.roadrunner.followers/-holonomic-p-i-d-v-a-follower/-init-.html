@@ -1,0 +1,30 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>HolonomicPIDVAFollower.<init> - core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">core</a>&nbsp;/&nbsp;<a href="../index.html">com.acmerobotics.roadrunner.followers</a>&nbsp;/&nbsp;<a href="index.html">HolonomicPIDVAFollower</a>&nbsp;/&nbsp;<a href="./-init-.html">&lt;init&gt;</a><br/>
+<br/>
+<h1>&lt;init&gt;</h1>
+<a name="com.acmerobotics.roadrunner.followers.HolonomicPIDVAFollower$&lt;init&gt;(com.acmerobotics.roadrunner.control.PIDCoefficients, com.acmerobotics.roadrunner.control.PIDCoefficients, com.acmerobotics.roadrunner.control.PIDCoefficients, com.acmerobotics.roadrunner.geometry.Pose2d, kotlin.Double, com.acmerobotics.roadrunner.util.NanoClock)"></a>
+<code><span class="identifier">HolonomicPIDVAFollower</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.followers.HolonomicPIDVAFollower$<init>(com.acmerobotics.roadrunner.control.PIDCoefficients, com.acmerobotics.roadrunner.control.PIDCoefficients, com.acmerobotics.roadrunner.control.PIDCoefficients, com.acmerobotics.roadrunner.geometry.Pose2d, kotlin.Double, com.acmerobotics.roadrunner.util.NanoClock)/axialCoeffs">axialCoeffs</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.control/-p-i-d-coefficients/index.html"><span class="identifier">PIDCoefficients</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.followers.HolonomicPIDVAFollower$<init>(com.acmerobotics.roadrunner.control.PIDCoefficients, com.acmerobotics.roadrunner.control.PIDCoefficients, com.acmerobotics.roadrunner.control.PIDCoefficients, com.acmerobotics.roadrunner.geometry.Pose2d, kotlin.Double, com.acmerobotics.roadrunner.util.NanoClock)/lateralCoeffs">lateralCoeffs</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.control/-p-i-d-coefficients/index.html"><span class="identifier">PIDCoefficients</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.followers.HolonomicPIDVAFollower$<init>(com.acmerobotics.roadrunner.control.PIDCoefficients, com.acmerobotics.roadrunner.control.PIDCoefficients, com.acmerobotics.roadrunner.control.PIDCoefficients, com.acmerobotics.roadrunner.geometry.Pose2d, kotlin.Double, com.acmerobotics.roadrunner.util.NanoClock)/headingCoeffs">headingCoeffs</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.control/-p-i-d-coefficients/index.html"><span class="identifier">PIDCoefficients</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.followers.HolonomicPIDVAFollower$<init>(com.acmerobotics.roadrunner.control.PIDCoefficients, com.acmerobotics.roadrunner.control.PIDCoefficients, com.acmerobotics.roadrunner.control.PIDCoefficients, com.acmerobotics.roadrunner.geometry.Pose2d, kotlin.Double, com.acmerobotics.roadrunner.util.NanoClock)/admissibleError">admissibleError</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a>&nbsp;<span class="symbol">=</span>&nbsp;Pose2d()<span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.followers.HolonomicPIDVAFollower$<init>(com.acmerobotics.roadrunner.control.PIDCoefficients, com.acmerobotics.roadrunner.control.PIDCoefficients, com.acmerobotics.roadrunner.control.PIDCoefficients, com.acmerobotics.roadrunner.geometry.Pose2d, kotlin.Double, com.acmerobotics.roadrunner.util.NanoClock)/timeout">timeout</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a>&nbsp;<span class="symbol">=</span>&nbsp;0.0<span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.followers.HolonomicPIDVAFollower$<init>(com.acmerobotics.roadrunner.control.PIDCoefficients, com.acmerobotics.roadrunner.control.PIDCoefficients, com.acmerobotics.roadrunner.control.PIDCoefficients, com.acmerobotics.roadrunner.geometry.Pose2d, kotlin.Double, com.acmerobotics.roadrunner.util.NanoClock)/clock">clock</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.util/-nano-clock/index.html"><span class="identifier">NanoClock</span></a>&nbsp;<span class="symbol">=</span>&nbsp;NanoClock.system()<span class="symbol">)</span></code>
+<p>Traditional PID controller with feedforward velocity and acceleration components to follow a trajectory. More
+specifically, the feedback is applied to the components of the robot's pose (x position, y position, and heading) to
+determine the velocity correction. The feedforward components are instead applied at the wheel level.</p>
+<h3>Parameters</h3>
+<p><a name="axialCoeffs"></a>
+<code>axialCoeffs</code> - PID coefficients for the robot axial controller (robot X)</p>
+<p><a name="lateralCoeffs"></a>
+<code>lateralCoeffs</code> - PID coefficients for the robot lateral controller (robot Y)</p>
+<p><a name="headingCoeffs"></a>
+<code>headingCoeffs</code> - PID coefficients for the robot heading controller</p>
+<p><a name="admissibleError"></a>
+<code>admissibleError</code> - admissible/satisfactory pose error at the end of each move</p>
+<p><a name="timeout"></a>
+<code>timeout</code> - max time to wait for the error to be admissible</p>
+<p><a name="clock"></a>
+<code>clock</code> - clock</p>
+</BODY>
+</HTML>
