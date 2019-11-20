@@ -37,7 +37,7 @@ abstract class TankDrive constructor(
             set(value) {
                 lastWheelPositions = emptyList()
                 lastExtHeading = Double.NaN
-                drive.externalHeading = value.heading
+                if (useExternalHeading) drive.externalHeading = value.heading
                 _poseEstimate = value
             }
         private var lastWheelPositions = emptyList<Double>()
