@@ -17,34 +17,17 @@ import com.acmerobotics.roadrunner.path.heading.TangentInterpolator
 abstract class BaseTrajectoryBuilder protected constructor(
     startPose: Pose2d?,
     trajectory: Trajectory?,
-    t: Double?
+    t: Double?,
+    reversed: Boolean
 ) {
     private var pathBuilder: PathBuilder = if (startPose == null) {
-        PathBuilder(trajectory!!.path, trajectory.profile[t!!].x)
+        PathBuilder(trajectory!!.path, trajectory.profile[t!!].x, reversed)
     } else {
-        PathBuilder(startPose)
+        PathBuilder(startPose, reversed)
     }
 
     private var temporalMarkers = mutableListOf<TemporalMarker>()
     private var spatialMarkers = mutableListOf<SpatialMarker>()
-
-    /**
-     * Reverse the direction of robot travel.
-     */
-    fun reverse(): BaseTrajectoryBuilder {
-        pathBuilder.reverse()
-
-        return this
-    }
-
-    /**
-     * Sets the robot travel direction.
-     */
-    fun setReversed(reversed: Boolean): BaseTrajectoryBuilder {
-        pathBuilder.setReversed(reversed)
-
-        return this
-    }
 
     /**
      * Adds a line path segment.
@@ -123,12 +106,56 @@ abstract class BaseTrajectoryBuilder protected constructor(
      * @param pose end pose
      * @param interpolator heading interpolator
      */
-    @JvmOverloads
+    @Deprecated("raw heading interpolators are no longer permitted in high-level builders")
     fun splineTo(
         pose: Pose2d,
         interpolator: HeadingInterpolator = TangentInterpolator()
     ): BaseTrajectoryBuilder {
         pathBuilder.splineTo(pose, interpolator)
+
+        return this
+    }
+
+    /**
+     * Adds a spline segment with tangent heading interpolation.
+     *
+     * @param end end end
+     */
+    fun splineTo(end: Pose2d): BaseTrajectoryBuilder {
+        pathBuilder.splineTo(end)
+
+        return this
+    }
+
+    /**
+     * Adds a spline segment with constant heading interpolation.
+     *
+     * @param end end end
+     */
+    fun splineToConstantHeading(end: Pose2d): BaseTrajectoryBuilder {
+        pathBuilder.splineToConstantHeading(end)
+
+        return this
+    }
+
+    /**
+     * Adds a spline segment with linear heading interpolation.
+     *
+     * @param end end end
+     */
+    fun splineToLinearHeading(end: Pose2d, heading: Double): BaseTrajectoryBuilder {
+        pathBuilder.splineToLinearHeading(end, heading)
+
+        return this
+    }
+
+    /**
+     * Adds a spline segment with spline heading interpolation.
+     *
+     * @param end end end
+     */
+    fun splineToSplineHeading(end: Pose2d, heading: Double): BaseTrajectoryBuilder {
+        pathBuilder.splineToSplineHeading(end, heading)
 
         return this
     }

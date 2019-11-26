@@ -30,6 +30,7 @@ class TrajectoryConfig @JvmOverloads constructor(
             if (poses.size < 2) {
                 null
             } else {
+                // TODO: fix reversal
                 val builder = TrajectoryBuilder(poses.first(), constraints, resolution = resolution)
                 for (i in 1 until poses.size) {
                     val startPose = poses[i - 1]
@@ -40,8 +41,6 @@ class TrajectoryConfig @JvmOverloads constructor(
                         sin(endPose.heading)
                     ) dot diff.vec()
                     val cosAngle = dot / diff.vec().norm()
-
-                    builder.setReversed(cosAngle < 0)
 
                     if (startPose.heading epsilonEquals endPose.heading && abs(cosAngle) epsilonEquals 1.0) {
                         // this is probably a line

@@ -2,9 +2,8 @@ package com.acmerobotics.roadrunner.path
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
-import com.acmerobotics.roadrunner.path.heading.ConstantInterpolator
-import com.acmerobotics.roadrunner.path.heading.HeadingInterpolator
-import com.acmerobotics.roadrunner.path.heading.TangentInterpolator
+import com.acmerobotics.roadrunner.path.heading.*
+import com.acmerobotics.roadrunner.util.Angle
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
@@ -14,30 +13,78 @@ import kotlin.math.sin
  *
  * @param startPose start pose
  */
-class PathBuilder private constructor(startPose: Pose2d?, internal val path: Path?, internal val s: Double?) {
-    constructor(startPose: Pose2d) : this(startPose, null, null)
+class PathBuilder private constructor(
+    startPose: Pose2d?,
+    internal val path: Path?,
+    internal val s: Double?,
+    private val reversed: Boolean
+) {
+    @JvmOverloads
+    constructor(startPose: Pose2d, reversed: Boolean = false) : this(startPose, null, null, reversed)
 
-    constructor(path: Path, s: Double) : this(null, path, s)
+    @JvmOverloads
+    constructor(path: Path, s: Double, reversed: Boolean = false) : this(null, path, s, reversed)
 
     internal var currentPose: Pose2d? = startPose
-    private var currentReversed = false
 
     private var segments = mutableListOf<PathSegment>()
 
-    /**
-     * Reverse the direction of robot travel.
-     */
-    fun reverse(): PathBuilder {
-        currentReversed = !currentReversed
-        return this
+    private fun makeLine(end: Vector2d): LineSegment {
+        val start = if (currentPose == null) {
+            path!![s!!]
+        } else {
+            currentPose!!
+        }
+
+        return if (reversed) {
+            LineSegment(end, start.vec())
+        } else {
+            LineSegment(start.vec(), end)
+        }
     }
 
-    /**
-     * Sets the robot travel direction.
-     */
-    fun setReversed(reversed: Boolean): PathBuilder {
-        this.currentReversed = reversed
-        return this
+    private fun makeSpline(end: Pose2d): QuinticSpline {
+        val (startWaypoint, endWaypoint) = if (currentPose == null) {
+            val start = path!![s!!].vec()
+            val startDeriv = path.internalDeriv(s).vec()
+            val startSecondDeriv = path.internalSecondDeriv(s).vec()
+            val derivMag = (start distTo end.vec())
+            QuinticSpline.Waypoint(start, startDeriv, startSecondDeriv) to
+                QuinticSpline.Waypoint(end.vec(), Vector2d(cos(end.heading) * derivMag, sin(end.heading)))
+        } else {
+            val derivMag = (currentPose!!.vec() distTo end.vec())
+            QuinticSpline.Waypoint(currentPose!!.x, currentPose!!.y,
+                derivMag * cos(currentPose!!.heading), derivMag * sin(currentPose!!.heading)) to
+                QuinticSpline.Waypoint(end.x, end.y,
+                    derivMag * cos(end.heading), derivMag * sin(end.heading))
+        }
+
+        return if (reversed) {
+            QuinticSpline(endWaypoint, startWaypoint)
+        } else {
+            QuinticSpline(startWaypoint, endWaypoint)
+        }
+    }
+
+    private fun makeConstantInterpolator(): ConstantInterpolator {
+        // TODO
+        return ConstantInterpolator(currentPose!!.heading)
+    }
+
+    private fun makeLinearInterpolator(heading: Double): LinearInterpolator {
+        return if (reversed) {
+            LinearInterpolator(heading, Angle.normDelta(currentPose!!.heading - heading))
+        } else {
+            LinearInterpolator(currentPose!!.heading, Angle.normDelta(heading - currentPose!!.heading))
+        }
+    }
+
+    private fun makeSplineInterpolator(heading: Double): SplineInterpolator {
+        return if (reversed) {
+            SplineInterpolator(heading, currentPose!!.heading)
+        } else {
+            SplineInterpolator(currentPose!!.heading, heading)
+        }
     }
 
     /**
@@ -46,29 +93,25 @@ class PathBuilder private constructor(startPose: Pose2d?, internal val path: Pat
      * @param end end position
      * @param interpolator heading interpolator
      */
-    @JvmOverloads
+    @Deprecated("raw heading interpolators are no longer permitted in high-level builders")
     fun lineTo(end: Vector2d, interpolator: HeadingInterpolator = TangentInterpolator()): PathBuilder {
-        val start = if (currentPose == null) {
-            path!![s!!]
+        val line = makeLine(end)
+
+        segments.add(PathSegment(line, interpolator, reversed))
+
+        val startHeading = if (currentPose == null) {
+            path!![s!!].heading
         } else {
-            currentPose!!
+            currentPose!!.heading
         }
 
-        val line = if (currentReversed) {
-            LineSegment(end, start.vec())
-        } else {
-            LineSegment(start.vec(), end)
-        }
-
-        segments.add(PathSegment(line, interpolator, currentReversed))
-
-        currentPose = Pose2d(end, start.heading)
+        currentPose = Pose2d(end, startHeading)
 
         return this
     }
 
     /**
-     * Adds a strafe path segment.
+     * Adds a strafe path segment (i.e., a line segment with constant heading).
      *
      * @param end end position
      */
@@ -104,9 +147,7 @@ class PathBuilder private constructor(startPose: Pose2d?, internal val path: Pat
      * @param distance distance to travel backward
      */
     fun back(distance: Double): PathBuilder {
-        reverse()
         forward(-distance)
-        reverse()
         return this
     }
 
@@ -143,35 +184,44 @@ class PathBuilder private constructor(startPose: Pose2d?, internal val path: Pat
      * @param end end end
      * @param interpolator heading interpolator
      */
-    @JvmOverloads
+    @Deprecated("raw heading interpolators are no longer permitted in high-level builders")
     fun splineTo(end: Pose2d, interpolator: HeadingInterpolator = TangentInterpolator()): PathBuilder {
-        val (startWaypoint, endWaypoint) = if (currentPose == null) {
-            val start = path!![s!!].vec()
-            val startDeriv = path.internalDeriv(s).vec()
-            val startSecondDeriv = path.internalSecondDeriv(s).vec()
-            val derivMag = (start distTo end.vec())
-            QuinticSpline.Waypoint(start, startDeriv, startSecondDeriv) to
-                QuinticSpline.Waypoint(end.vec(), Vector2d(cos(end.heading) * derivMag, sin(end.heading)))
-        } else {
-            val derivMag = (currentPose!!.vec() distTo end.vec())
-            QuinticSpline.Waypoint(currentPose!!.x, currentPose!!.y,
-                derivMag * cos(currentPose!!.heading), derivMag * sin(currentPose!!.heading)) to
-                QuinticSpline.Waypoint(end.x, end.y,
-                derivMag * cos(end.heading), derivMag * sin(end.heading))
-        }
+        val spline = makeSpline(end)
 
-        val spline = if (currentReversed) {
-            QuinticSpline(endWaypoint, startWaypoint)
-        } else {
-            QuinticSpline(startWaypoint, endWaypoint)
-        }
-
-        segments.add(PathSegment(spline, interpolator, currentReversed))
+        segments.add(PathSegment(spline, interpolator, reversed))
 
         currentPose = end
 
         return this
     }
+
+    /**
+     * Adds a spline segment with tangent heading interpolation.
+     *
+     * @param end end end
+     */
+    fun splineTo(end: Pose2d) = splineTo(end, TangentInterpolator())
+
+    /**
+     * Adds a spline segment with constant heading interpolation.
+     *
+     * @param end end end
+     */
+    fun splineToConstantHeading(end: Pose2d) = splineTo(end, makeConstantInterpolator())
+
+    /**
+     * Adds a spline segment with linear heading interpolation.
+     *
+     * @param end end end
+     */
+    fun splineToLinearHeading(end: Pose2d, heading: Double) = splineTo(end, makeLinearInterpolator(heading))
+
+    /**
+     * Adds a spline segment with linear heading interpolation.
+     *
+     * @param end end end
+     */
+    fun splineToSplineHeading(end: Pose2d, heading: Double) = splineTo(end, makeSplineInterpolator(heading))
 
     /**
      * Constructs the [Path] instance.
