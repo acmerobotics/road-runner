@@ -2,7 +2,6 @@ package com.acmerobotics.roadrunner.drive
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.kinematics.Kinematics
-import com.acmerobotics.roadrunner.kinematics.MecanumKinematics
 import com.acmerobotics.roadrunner.kinematics.SwerveKinematics
 import com.acmerobotics.roadrunner.localization.Localizer
 import com.acmerobotics.roadrunner.util.Angle
@@ -85,8 +84,9 @@ abstract class SwerveDrive @JvmOverloads constructor(
     }
 
     override fun setDrivePower(drivePower: Pose2d) {
-        val powers = MecanumKinematics.robotToWheelVelocities(drivePower, trackWidth, wheelBase)
-        val orientations = SwerveKinematics.robotToModuleOrientations(drivePower, trackWidth, wheelBase)
+        val avg = (trackWidth + wheelBase) / 2.0
+        val powers = SwerveKinematics.robotToWheelVelocities(drivePower, trackWidth / avg, wheelBase / avg)
+        val orientations = SwerveKinematics.robotToModuleOrientations(drivePower, trackWidth / avg, wheelBase / avg)
         setMotorPowers(powers[0], powers[1], powers[2], powers[3])
         setModuleOrientations(orientations[0], orientations[1], orientations[2], orientations[3])
     }
