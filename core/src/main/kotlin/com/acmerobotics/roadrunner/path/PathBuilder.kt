@@ -90,12 +90,12 @@ class PathBuilder private constructor(
     /**
      * Adds a line path segment.
      *
-     * @param end end position
+     * @param position end position
      * @param interpolator heading interpolator
      */
     @Deprecated("raw heading interpolators are no longer permitted in high-level builders")
-    fun lineTo(end: Vector2d, interpolator: HeadingInterpolator = TangentInterpolator()): PathBuilder {
-        val line = makeLine(end)
+    fun lineTo(position: Vector2d, interpolator: HeadingInterpolator = TangentInterpolator()): PathBuilder {
+        val line = makeLine(position)
 
         segments.add(PathSegment(line, interpolator, reversed))
 
@@ -105,10 +105,40 @@ class PathBuilder private constructor(
             currentPose!!.heading
         }
 
-        currentPose = Pose2d(end, startHeading)
+        currentPose = Pose2d(position, startHeading)
 
         return this
     }
+
+    /**
+     * Adds a line segment with tangent heading interpolation.
+     *
+     * @param position end position
+     */
+    fun lineTo(position: Vector2d) = lineTo(position, TangentInterpolator())
+
+    /**
+     * Adds a line segment with constant heading interpolation.
+     *
+     * @param position end position
+     */
+    fun lineToConstantHeading(position: Vector2d) = lineTo(position, makeConstantInterpolator())
+
+    /**
+     * Adds a line segment with linear heading interpolation.
+     *
+     * @param position end position
+     * @param heading end heading
+     */
+    fun lineToLinearHeading(position: Vector2d, heading: Double) = lineTo(position, makeLinearInterpolator(heading))
+
+    /**
+     * Adds a line segment with spline heading interpolation.
+     *
+     * @param position end position
+     * @param heading end heading
+     */
+    fun lineToSplineHeading(position: Vector2d, heading: Double) = lineTo(position, makeSplineInterpolator(heading))
 
     /**
      * Adds a strafe path segment (i.e., a line segment with constant heading).
@@ -198,30 +228,31 @@ class PathBuilder private constructor(
     /**
      * Adds a spline segment with tangent heading interpolation.
      *
-     * @param end end end
+     * @param pose end pose
      */
-    fun splineTo(end: Pose2d) = splineTo(end, TangentInterpolator())
+    fun splineTo(pose: Pose2d) = splineTo(pose, TangentInterpolator())
 
     /**
      * Adds a spline segment with constant heading interpolation.
      *
-     * @param end end end
+     * @param pose end pose
      */
-    fun splineToConstantHeading(end: Pose2d) = splineTo(end, makeConstantInterpolator())
+    fun splineToConstantHeading(pose: Pose2d) = splineTo(pose, makeConstantInterpolator())
 
     /**
      * Adds a spline segment with linear heading interpolation.
      *
-     * @param end end end
+     * @param pose end pose
+     * @param heading end heading
      */
-    fun splineToLinearHeading(end: Pose2d, heading: Double) = splineTo(end, makeLinearInterpolator(heading))
+    fun splineToLinearHeading(pose: Pose2d, heading: Double) = splineTo(pose, makeLinearInterpolator(heading))
 
     /**
-     * Adds a spline segment with linear heading interpolation.
+     * Adds a spline segment with spline heading interpolation.
      *
-     * @param end end end
+     * @param pose end pose
      */
-    fun splineToSplineHeading(end: Pose2d, heading: Double) = splineTo(end, makeSplineInterpolator(heading))
+    fun splineToSplineHeading(pose: Pose2d, heading: Double) = splineTo(pose, makeSplineInterpolator(heading))
 
     /**
      * Constructs the [Path] instance.

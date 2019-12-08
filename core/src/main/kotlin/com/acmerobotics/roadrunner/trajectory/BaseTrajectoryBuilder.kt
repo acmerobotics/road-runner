@@ -35,7 +35,7 @@ abstract class BaseTrajectoryBuilder protected constructor(
      * @param pos end position
      * @param interpolator heading interpolator
      */
-    @JvmOverloads
+    @Deprecated("raw heading interpolators are no longer permitted in high-level builders")
     fun lineTo(
         pos: Vector2d,
         interpolator: HeadingInterpolator = TangentInterpolator()
@@ -46,12 +46,57 @@ abstract class BaseTrajectoryBuilder protected constructor(
     }
 
     /**
+     * Adds a line segment with tangent heading interpolation.
+     *
+     * @param position end position
+     */
+    fun lineTo(position: Vector2d): BaseTrajectoryBuilder {
+        pathBuilder.lineTo(position)
+
+        return this
+    }
+
+    /**
+     * Adds a line segment with constant heading interpolation.
+     *
+     * @param position end position
+     */
+    fun lineToConstantHeading(position: Vector2d): BaseTrajectoryBuilder {
+        pathBuilder.lineToConstantHeading(position)
+
+        return this
+    }
+
+    /**
+     * Adds a line segment with linear heading interpolation.
+     *
+     * @param position end position
+     */
+    fun lineToLinearHeading(position: Vector2d, heading: Double): BaseTrajectoryBuilder {
+        pathBuilder.lineToLinearHeading(position, heading)
+
+        return this
+    }
+
+    /**
+     * Adds a line segment with spline heading interpolation.
+     *
+     * @param position end position
+     */
+    fun lineToSplineHeading(position: Vector2d, heading: Double): BaseTrajectoryBuilder {
+        pathBuilder.lineToSplineHeading(position, heading)
+
+        return this
+    }
+
+
+    /**
      * Adds a strafe path segment.
      *
-     * @param pos end position
+     * @param position end position
      */
-    fun strafeTo(pos: Vector2d): BaseTrajectoryBuilder {
-        pathBuilder.strafeTo(pos)
+    fun strafeTo(position: Vector2d): BaseTrajectoryBuilder {
+        pathBuilder.strafeTo(position)
 
         return this
     }
@@ -119,10 +164,10 @@ abstract class BaseTrajectoryBuilder protected constructor(
     /**
      * Adds a spline segment with tangent heading interpolation.
      *
-     * @param end end end
+     * @param pose end pose
      */
-    fun splineTo(end: Pose2d): BaseTrajectoryBuilder {
-        pathBuilder.splineTo(end)
+    fun splineTo(pose: Pose2d): BaseTrajectoryBuilder {
+        pathBuilder.splineTo(pose)
 
         return this
     }
@@ -130,10 +175,10 @@ abstract class BaseTrajectoryBuilder protected constructor(
     /**
      * Adds a spline segment with constant heading interpolation.
      *
-     * @param end end end
+     * @param pose end pose
      */
-    fun splineToConstantHeading(end: Pose2d): BaseTrajectoryBuilder {
-        pathBuilder.splineToConstantHeading(end)
+    fun splineToConstantHeading(pose: Pose2d): BaseTrajectoryBuilder {
+        pathBuilder.splineToConstantHeading(pose)
 
         return this
     }
@@ -141,10 +186,10 @@ abstract class BaseTrajectoryBuilder protected constructor(
     /**
      * Adds a spline segment with linear heading interpolation.
      *
-     * @param end end end
+     * @param pose end pose
      */
-    fun splineToLinearHeading(end: Pose2d, heading: Double): BaseTrajectoryBuilder {
-        pathBuilder.splineToLinearHeading(end, heading)
+    fun splineToLinearHeading(pose: Pose2d, heading: Double): BaseTrajectoryBuilder {
+        pathBuilder.splineToLinearHeading(pose, heading)
 
         return this
     }
@@ -152,10 +197,10 @@ abstract class BaseTrajectoryBuilder protected constructor(
     /**
      * Adds a spline segment with spline heading interpolation.
      *
-     * @param end end end
+     * @param pose end pose
      */
-    fun splineToSplineHeading(end: Pose2d, heading: Double): BaseTrajectoryBuilder {
-        pathBuilder.splineToSplineHeading(end, heading)
+    fun splineToSplineHeading(pose: Pose2d, heading: Double): BaseTrajectoryBuilder {
+        pathBuilder.splineToSplineHeading(pose, heading)
 
         return this
     }
