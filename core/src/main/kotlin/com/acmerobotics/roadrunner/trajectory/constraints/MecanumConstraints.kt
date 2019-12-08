@@ -13,11 +13,13 @@ import kotlin.math.min
  * @param baseConstraints base drive constraints
  * @param trackWidth track width
  * @param wheelBase wheel base
+ * @param lateralMultiplier lateral multiplier
  */
 open class MecanumConstraints @JvmOverloads constructor(
     baseConstraints: DriveConstraints,
     val trackWidth: Double,
-    val wheelBase: Double = trackWidth
+    val wheelBase: Double = trackWidth,
+    val lateralMultiplier: Double = 1.0
 ) : DriveConstraints(
     baseConstraints.maxVel,
     baseConstraints.maxAccel,
@@ -29,7 +31,7 @@ open class MecanumConstraints @JvmOverloads constructor(
     override operator fun get(pose: Pose2d, deriv: Pose2d, secondDeriv: Pose2d): SimpleMotionConstraints {
         val robotDeriv = Kinematics.fieldToRobotVelocity(pose, deriv)
 
-        val wheelVelocities = MecanumKinematics.robotToWheelVelocities(robotDeriv, trackWidth, wheelBase)
+        val wheelVelocities = MecanumKinematics.robotToWheelVelocities(robotDeriv, trackWidth, wheelBase, lateralMultiplier)
         val maxTrajVel = wheelVelocities.map { maxVel / it }.map(::abs).min() ?: 0.0
 
         val superConstraints = super.get(pose, deriv, secondDeriv)
