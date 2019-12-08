@@ -9,6 +9,12 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 /**
+ * Exception thrown when [PathBuilder] methods are chained illegally. This commonly arises when splicing paths together
+ * and trying to match derivatives to ensure continuity.
+ */
+class IllegalPathContinuationException: Exception()
+
+/**
  * Easy-to-use builder for creating [Path] instances.
  *
  * @param startPose start pose
@@ -66,24 +72,40 @@ class PathBuilder private constructor(
         }
     }
 
+    private fun makeTangentInterpolator(): TangentInterpolator {
+        if (currentPose == null && path!!.segment(s!!).first.interpolator !is TangentInterpolator) {
+            throw IllegalPathContinuationException()
+        }
+        return TangentInterpolator()
+    }
+
     private fun makeConstantInterpolator(): ConstantInterpolator {
-        // TODO
-        return ConstantInterpolator(currentPose!!.heading)
+        val pose = currentPose ?: throw IllegalPathContinuationException()
+        return ConstantInterpolator(pose.heading)
     }
 
     private fun makeLinearInterpolator(heading: Double): LinearInterpolator {
+        val pose = currentPose ?: throw IllegalPathContinuationException()
         return if (reversed) {
-            LinearInterpolator(heading, Angle.normDelta(currentPose!!.heading - heading))
+            LinearInterpolator(heading, Angle.normDelta(pose.heading - heading))
         } else {
-            LinearInterpolator(currentPose!!.heading, Angle.normDelta(heading - currentPose!!.heading))
+            LinearInterpolator(pose.heading, Angle.normDelta(heading - pose.heading))
         }
     }
 
     private fun makeSplineInterpolator(heading: Double): SplineInterpolator {
-        return if (reversed) {
-            SplineInterpolator(heading, currentPose!!.heading)
+        return if (currentPose == null) {
+            if (reversed) {
+                SplineInterpolator(heading, path!![s!!].heading, null, null, path.deriv(s).heading, path.secondDeriv(s).heading)
+            } else {
+                SplineInterpolator(path!![s!!].heading, heading, path.deriv(s).heading, path.secondDeriv(s).heading, null, null)
+            }
         } else {
-            SplineInterpolator(currentPose!!.heading, heading)
+            if (reversed) {
+                SplineInterpolator(heading, currentPose!!.heading)
+            } else {
+                SplineInterpolator(currentPose!!.heading, heading)
+            }
         }
     }
 
@@ -115,7 +137,7 @@ class PathBuilder private constructor(
      *
      * @param position end position
      */
-    fun lineTo(position: Vector2d) = lineTo(position, TangentInterpolator())
+    fun lineTo(position: Vector2d) = lineTo(position, makeTangentInterpolator())
 
     /**
      * Adds a line segment with constant heading interpolation.
@@ -230,7 +252,7 @@ class PathBuilder private constructor(
      *
      * @param pose end pose
      */
-    fun splineTo(pose: Pose2d) = splineTo(pose, TangentInterpolator())
+    fun splineTo(pose: Pose2d) = splineTo(pose, makeTangentInterpolator())
 
     /**
      * Adds a spline segment with constant heading interpolation.

@@ -24,22 +24,27 @@ class Path(val segments: List<PathSegment>) {
      */
     fun length() = segments.sumByDouble { it.length() }
 
+    fun segment(s: Double): Pair<PathSegment, Double> {
+        if (s <= 0.0) {
+            return segments.first() to 0.0
+        }
+        var remainingDisplacement = s
+        for (segment in segments) {
+            if (remainingDisplacement <= segment.length()) {
+                return segment to remainingDisplacement
+            }
+            remainingDisplacement -= segment.length()
+        }
+        return segments.last() to segments.last().length()
+    }
+
     /**
      * Returns the pose [s] units along the path.
      */
     @JvmOverloads
     operator fun get(s: Double, t: Double = reparam(s)): Pose2d {
-        if (s <= 0.0) {
-            return segments.firstOrNull()?.start() ?: return Pose2d()
-        }
-        var remainingDisplacement = s
-        for (segment in segments) {
-            if (remainingDisplacement <= segment.length()) {
-                return segment[remainingDisplacement, t]
-            }
-            remainingDisplacement -= segment.length()
-        }
-        return segments.lastOrNull()?.end() ?: return Pose2d()
+        val (segment, remainingDisplacement) = segment(s)
+        return segment[remainingDisplacement, t]
     }
 
     /**
@@ -47,17 +52,8 @@ class Path(val segments: List<PathSegment>) {
      */
     @JvmOverloads
     fun deriv(s: Double, t: Double = reparam(s)): Pose2d {
-        if (s <= 0.0) {
-            return segments.firstOrNull()?.startDeriv() ?: return Pose2d()
-        }
-        var remainingDisplacement = s
-        for (segment in segments) {
-            if (remainingDisplacement <= segment.length()) {
-                return segment.deriv(remainingDisplacement, t)
-            }
-            remainingDisplacement -= segment.length()
-        }
-        return segments.lastOrNull()?.endDeriv() ?: return Pose2d()
+        val (segment, remainingDisplacement) = segment(s)
+        return segment.deriv(remainingDisplacement, t)
     }
 
     /**
@@ -65,61 +61,25 @@ class Path(val segments: List<PathSegment>) {
      */
     @JvmOverloads
     fun secondDeriv(s: Double, t: Double = reparam(s)): Pose2d {
-        if (s <= 0.0) {
-            return segments.firstOrNull()?.startSecondDeriv() ?: return Pose2d()
-        }
-        var remainingDisplacement = s
-        for (segment in segments) {
-            if (remainingDisplacement <= segment.length()) {
-                return segment.secondDeriv(remainingDisplacement, t)
-            }
-            remainingDisplacement -= segment.length()
-        }
-        return segments.lastOrNull()?.endSecondDeriv() ?: return Pose2d()
+        val (segment, remainingDisplacement) = segment(s)
+        return segment.secondDeriv(remainingDisplacement, t)
     }
 
     @JvmOverloads
     internal fun internalDeriv(s: Double, t: Double = reparam(s)): Pose2d {
-        if (s <= 0.0) {
-            return segments.firstOrNull()?.startInternalDeriv() ?: return Pose2d()
-        }
-        var remainingDisplacement = s
-        for (segment in segments) {
-            if (remainingDisplacement <= segment.length()) {
-                return segment.internalDeriv(remainingDisplacement, t)
-            }
-            remainingDisplacement -= segment.length()
-        }
-        return segments.lastOrNull()?.endInternalDeriv() ?: return Pose2d()
+        val (segment, remainingDisplacement) = segment(s)
+        return segment.internalDeriv(remainingDisplacement, t)
     }
 
     @JvmOverloads
     internal fun internalSecondDeriv(s: Double, t: Double = reparam(s)): Pose2d {
-        if (s <= 0.0) {
-            return segments.firstOrNull()?.startInternalSecondDeriv() ?: return Pose2d()
-        }
-        var remainingDisplacement = s
-        for (segment in segments) {
-            if (remainingDisplacement <= segment.length()) {
-                return segment.internalSecondDeriv(remainingDisplacement, t)
-            }
-            remainingDisplacement -= segment.length()
-        }
-        return segments.lastOrNull()?.endInternalSecondDeriv() ?: return Pose2d()
+        val (segment, remainingDisplacement) = segment(s)
+        return segment.internalSecondDeriv(remainingDisplacement, t)
     }
 
     internal fun reparam(s: Double): Double {
-        if (s <= 0.0) {
-            return 0.0
-        }
-        var remainingDisplacement = s
-        for (segment in segments) {
-            if (remainingDisplacement <= segment.length()) {
-                return segment.reparam(remainingDisplacement)
-            }
-            remainingDisplacement -= segment.length()
-        }
-        return 1.0
+        val (segment, remainingDisplacement) = segment(s)
+        return segment.reparam(remainingDisplacement)
     }
 
     internal fun reparam(s: DoubleProgression): DoubleArray {

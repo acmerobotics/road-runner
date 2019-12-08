@@ -1,6 +1,7 @@
 package com.acmerobotics.roadrunner
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
+import com.acmerobotics.roadrunner.path.IllegalPathContinuationException
 import com.acmerobotics.roadrunner.trajectory.Trajectory
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
@@ -50,7 +51,7 @@ class TrajectorySpliceTest {
     }
 
     @Test
-    fun spliceTest() {
+    fun testSpliceTangentHeading() {
         val constraints = DriveConstraints(25.0, 50.0, 50.0, 1.0, 1.0, 1.0)
 
         val traj1 = TrajectoryBuilder(Pose2d(), constraints)
@@ -63,6 +64,43 @@ class TrajectorySpliceTest {
             .splineTo(Pose2d(50.0, 60.0))
             .build()
 
-        saveSplicedTrajectory("splice/test", traj1, traj2, t)
+        saveSplicedTrajectory("splice/tangentHeading", traj1, traj2, t)
+    }
+
+    @Test
+    fun testSpliceSplineHeading() {
+        val constraints = DriveConstraints(25.0, 50.0, 50.0, 1.0, 1.0, 1.0)
+
+        val traj1 = TrajectoryBuilder(Pose2d(), constraints)
+            .splineTo(Pose2d(40.0, 50.0))
+            .build()
+
+        val t = 0.6 * traj1.duration()
+
+        val traj2 = TrajectoryBuilder(traj1, t, constraints)
+            .splineToSplineHeading(Pose2d(50.0, 60.0), Math.toRadians(15.0))
+            .build()
+
+        saveSplicedTrajectory("splice/splineHeading", traj1, traj2, t)
+    }
+
+    @Test
+    fun testSpliceTangentHeadingException() {
+        val constraints = DriveConstraints(25.0, 50.0, 50.0, 1.0, 1.0, 1.0)
+
+        val traj1 = TrajectoryBuilder(Pose2d(), constraints)
+            .splineToConstantHeading(Pose2d(40.0, 50.0))
+            .build()
+
+        val t = 0.6 * traj1.duration()
+
+        try {
+            TrajectoryBuilder(traj1, t, constraints)
+                .splineTo(Pose2d(50.0, 60.0))
+                .build()
+            assert(false)
+        } catch (e: IllegalPathContinuationException) {
+            assert(true)
+        }
     }
 }

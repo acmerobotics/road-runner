@@ -9,9 +9,20 @@ import com.acmerobotics.roadrunner.path.QuinticPolynomial
  *
  * @param startHeading start heading
  * @param endHeading end heading
+ * @param startHeadingDeriv start heading deriv (advanced)
+ * @param startHeadingSecondDeriv start heading second deriv (advanced)
+ * @param endHeadingDeriv start heading deriv (advanced)
+ * @param endHeadingSecondDeriv start heading second deriv (advanced)
  */
 // note: the spline parameter is transformed linearly into a pseudo-arclength parameter
-class SplineInterpolator(private val startHeading: Double, private val endHeading: Double) : HeadingInterpolator() {
+class SplineInterpolator @JvmOverloads constructor(
+    private val startHeading: Double,
+    private val endHeading: Double,
+    private val startHeadingDeriv: Double? = null,
+    private val startHeadingSecondDeriv: Double? = null,
+    private val endHeadingDeriv: Double? = null,
+    private val endHeadingSecondDeriv: Double? = null
+) : HeadingInterpolator() {
     private val tangentInterpolator = TangentInterpolator()
     private lateinit var headingSpline: QuinticPolynomial
 
@@ -23,12 +34,12 @@ class SplineInterpolator(private val startHeading: Double, private val endHeadin
         val len = curve.length()
 
         headingSpline = QuinticPolynomial(
-                startHeading,
-                curve.tangentAngleDeriv(0.0, 0.0) * len,
-                curve.tangentAngleSecondDeriv(0.0, 0.0) * len * len,
-                endHeading,
-                curve.tangentAngleDeriv(len, 1.0) * len,
-                curve.tangentAngleSecondDeriv(len, 1.0) * len * len
+            startHeading,
+            (startHeadingDeriv ?: curve.tangentAngleDeriv(0.0, 0.0)) * len,
+            (startHeadingSecondDeriv ?: curve.tangentAngleSecondDeriv(0.0, 0.0)) * len * len,
+            endHeading,
+            (endHeadingDeriv ?: curve.tangentAngleDeriv(len, 1.0)) * len,
+            (endHeadingSecondDeriv ?: curve.tangentAngleSecondDeriv(len, 1.0)) * len * len
         )
     }
 
