@@ -171,6 +171,13 @@ class PathBuilder private constructor(
     fun lineToConstantHeading(position: Vector2d) = lineTo(position, makeConstantInterpolator())
 
     /**
+     * Adds a strafe segment (i.e., a line segment with constant heading interpolation).
+     *
+     * @param position end position
+     */
+    fun strafeTo(position: Vector2d) = lineToConstantHeading(position)
+
+    /**
      * Adds a line segment with linear heading interpolation.
      *
      * @param position end position
@@ -185,19 +192,6 @@ class PathBuilder private constructor(
      * @param heading end heading
      */
     fun lineToSplineHeading(position: Vector2d, heading: Double) = lineTo(position, makeSplineInterpolator(heading))
-
-    /**
-     * Adds a strafe path segment (i.e., a line segment with constant heading).
-     *
-     * @param end end position
-     */
-    fun strafeTo(end: Vector2d) = lineTo(end, ConstantInterpolator(
-            if (currentPose == null) {
-                path!![s!!].heading
-            } else {
-                currentPose!!.heading
-            }
-        ))
 
     /**
      * Adds a line straight forward.
