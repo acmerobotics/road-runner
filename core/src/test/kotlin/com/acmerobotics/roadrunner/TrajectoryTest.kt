@@ -16,7 +16,7 @@ class TrajectoryTest {
     fun testTrajectoryDerivatives() {
         val cryptoColWidth = 7.5
         val stonePose = Pose2d(48.0, -47.5, PI)
-        val trajectory = TrajectoryBuilder(stonePose, DriveConstraints(5.0, 10.0, 0.0, 2.0, 3.0, 0.0))
+        val trajectory = TrajectoryBuilder(stonePose, constraints = DriveConstraints(5.0, 10.0, 0.0, 2.0, 3.0, 0.0))
                 .lineTo(Vector2d(12 - cryptoColWidth, -44.0))
                 .splineTo(Pose2d(16.0, -24.0, PI / 3))
                 .splineTo(
@@ -47,7 +47,7 @@ class TrajectoryTest {
     @Test
     fun testTrajectory() {
         val constraints = DriveConstraints(5.0, 10.0, 0.0, 2.0, 3.0, 0.0)
-        val trajectory = TrajectoryBuilder(Pose2d(), constraints)
+        val trajectory = TrajectoryBuilder(Pose2d(), constraints = constraints)
             .lineTo(Vector2d())
             .build()
         println(trajectory.profile[0.0])

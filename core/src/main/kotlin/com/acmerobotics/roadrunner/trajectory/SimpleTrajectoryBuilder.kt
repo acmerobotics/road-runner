@@ -14,22 +14,24 @@ private fun zeroPosition(state: MotionState) = MotionState(0.0, state.v, state.a
  */
 class SimpleTrajectoryBuilder private constructor(
     startPose: Pose2d?,
+    startHeading: Double?,
     trajectory: Trajectory?,
     t: Double?,
     reversed: Boolean,
     private val driveConstraints: DriveConstraints,
     private val start: MotionState
-) : BaseTrajectoryBuilder(startPose, trajectory, t, reversed) {
+) : BaseTrajectoryBuilder(startPose, startHeading, trajectory, t, reversed) {
     /**
      * Create a builder from a start pose and motion state. This is the recommended constructor for creating
      * trajectories from rest.
      */
     @JvmOverloads constructor(
         startPose: Pose2d,
+        startHeading: Double = startPose.heading,
         driveConstraints: DriveConstraints,
         start: MotionState = MotionState(0.0, 0.0, 0.0),
         reversed: Boolean = false
-    ) : this(startPose, null, null, reversed, driveConstraints, start)
+    ) : this(startPose, startHeading, null, null, reversed, driveConstraints, start)
 
     /**
      * Create a builder from an active trajectory. This is useful for interrupting a live trajectory and smoothly
@@ -40,7 +42,7 @@ class SimpleTrajectoryBuilder private constructor(
         t: Double,
         driveConstraints: DriveConstraints,
         reversed: Boolean = false
-    ) : this(null, trajectory, t, reversed, driveConstraints, zeroPosition(trajectory.profile[t]))
+    ) : this(null, null, trajectory, t, reversed, driveConstraints, zeroPosition(trajectory.profile[t]))
 
     override fun buildTrajectory(
         path: Path,

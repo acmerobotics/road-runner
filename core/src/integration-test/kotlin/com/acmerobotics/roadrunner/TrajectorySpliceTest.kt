@@ -54,7 +54,7 @@ class TrajectorySpliceTest {
     fun testSpliceTangentHeading() {
         val constraints = DriveConstraints(25.0, 50.0, 50.0, 1.0, 1.0, 1.0)
 
-        val traj1 = TrajectoryBuilder(Pose2d(), constraints)
+        val traj1 = TrajectoryBuilder(Pose2d(), constraints = constraints)
             .splineTo(Pose2d(40.0, 50.0))
             .build()
 
@@ -71,7 +71,7 @@ class TrajectorySpliceTest {
     fun testSpliceSplineHeading() {
         val constraints = DriveConstraints(25.0, 50.0, 50.0, 1.0, 1.0, 1.0)
 
-        val traj1 = TrajectoryBuilder(Pose2d(), constraints)
+        val traj1 = TrajectoryBuilder(Pose2d(), constraints = constraints)
             .splineTo(Pose2d(40.0, 50.0))
             .build()
 
@@ -88,7 +88,7 @@ class TrajectorySpliceTest {
     fun testSpliceTangentHeadingException() {
         val constraints = DriveConstraints(25.0, 50.0, 50.0, 1.0, 1.0, 1.0)
 
-        val traj1 = TrajectoryBuilder(Pose2d(), constraints)
+        val traj1 = TrajectoryBuilder(Pose2d(), constraints = constraints)
             .splineToConstantHeading(Pose2d(40.0, 50.0))
             .build()
 

@@ -12,24 +12,26 @@ private fun zeroPosition(state: MotionState) = MotionState(0.0, state.v, state.a
  */
 class TrajectoryBuilder private constructor(
     startPose: Pose2d?,
+    startHeading: Double?,
     trajectory: Trajectory?,
     t: Double?,
     reversed: Boolean,
-    private val trajectoryConstraints: TrajectoryConstraints,
+    private val constraints: TrajectoryConstraints,
     private val start: MotionState,
     private val resolution: Double
-) : BaseTrajectoryBuilder(startPose, trajectory, t, reversed) {
+) : BaseTrajectoryBuilder(startPose, startHeading, trajectory, t, reversed) {
     /**
      * Create a builder from a start pose and motion state. This is the recommended constructor for creating
      * trajectories from rest.
      */
     @JvmOverloads constructor(
         startPose: Pose2d,
-        trajectoryConstraints: TrajectoryConstraints,
+        startHeading: Double = startPose.heading,
+        constraints: TrajectoryConstraints,
         start: MotionState = MotionState(0.0, 0.0, 0.0),
         resolution: Double = 0.25,
         reversed: Boolean = false
-    ) : this(startPose, null, null, reversed, trajectoryConstraints, start, resolution)
+    ) : this(startPose, startHeading, null, null, reversed, constraints, start, resolution)
 
     /**
      * Create a builder from an active trajectory. This is useful for interrupting a live trajectory and smoothly
@@ -38,10 +40,10 @@ class TrajectoryBuilder private constructor(
     @JvmOverloads constructor(
         trajectory: Trajectory,
         t: Double,
-        trajectoryConstraints: TrajectoryConstraints,
+        constraints: TrajectoryConstraints,
         resolution: Double = 0.25,
         reversed: Boolean = false
-    ) : this(null, trajectory, t, reversed, trajectoryConstraints, zeroPosition(trajectory.profile[t]), resolution)
+    ) : this(null, null, trajectory, t, reversed, constraints, zeroPosition(trajectory.profile[t]), resolution)
 
     override fun buildTrajectory(
         path: Path,
@@ -51,7 +53,7 @@ class TrajectoryBuilder private constructor(
         val goal = MotionState(path.length(), 0.0, 0.0)
         return TrajectoryGenerator.generateTrajectory(
             path,
-            trajectoryConstraints,
+            constraints,
             start,
             goal,
             temporalMarkers,

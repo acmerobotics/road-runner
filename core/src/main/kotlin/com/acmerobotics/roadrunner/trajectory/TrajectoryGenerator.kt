@@ -15,7 +15,7 @@ object TrajectoryGenerator {
 
     private fun generateProfile(
         path: Path,
-        trajectoryConstraints: TrajectoryConstraints,
+        constraints: TrajectoryConstraints,
         start: MotionState,
         goal: MotionState,
         resolution: Double
@@ -23,7 +23,7 @@ object TrajectoryGenerator {
         return MotionProfileGenerator.generateMotionProfile(start, goal, object : MotionConstraints() {
             override fun get(s: Double): SimpleMotionConstraints {
                 val t = path.reparam(s)
-                return trajectoryConstraints[
+                return constraints[
                     path[s, t],
                     path.deriv(s, t),
                     path.secondDeriv(s, t)
@@ -33,7 +33,7 @@ object TrajectoryGenerator {
             override fun get(s: DoubleProgression) =
                 s.zip(path.reparam(s).asIterable())
                     .map { (s, t) ->
-                        trajectoryConstraints[
+                        constraints[
                             path[s, t],
                             path.deriv(s, t),
                             path.secondDeriv(s, t)
@@ -43,12 +43,12 @@ object TrajectoryGenerator {
     }
 
     private fun generateSimpleProfile(
-        driveConstraints: DriveConstraints,
+        constraints: DriveConstraints,
         start: MotionState,
         goal: MotionState
     ): MotionProfile {
         return MotionProfileGenerator.generateSimpleMotionProfile(start, goal,
-            driveConstraints.maxVel, driveConstraints.maxAccel, driveConstraints.maxJerk)
+            constraints.maxVel, constraints.maxAccel, constraints.maxJerk)
     }
 
     private fun pointToTime(path: Path, profile: MotionProfile, point: Vector2d): Double {
@@ -82,7 +82,7 @@ object TrajectoryGenerator {
     /**
      * Generate a dynamic constraint trajectory.
      * @param path path
-     * @param trajectoryConstraints trajectory constraints
+     * @param constraints trajectory constraints
      * @param start start motion state
      * @param goal goal motion state
      * @param temporalMarkers temporal markers
@@ -93,14 +93,14 @@ object TrajectoryGenerator {
     @JvmOverloads
     fun generateTrajectory(
         path: Path,
-        trajectoryConstraints: TrajectoryConstraints,
+        constraints: TrajectoryConstraints,
         start: MotionState = MotionState(0.0, 0.0, 0.0),
         goal: MotionState = MotionState(path.length(), 0.0, 0.0),
         temporalMarkers: List<TemporalMarker> = emptyList(),
         spatialMarkers: List<SpatialMarker> = emptyList(),
         resolution: Double = 0.25
     ): Trajectory {
-        val profile = generateProfile(path, trajectoryConstraints, start, goal, resolution)
+        val profile = generateProfile(path, constraints, start, goal, resolution)
         val markers = mergeMarkers(path, profile, temporalMarkers, spatialMarkers)
         return Trajectory(path, profile, markers)
     }
@@ -108,7 +108,7 @@ object TrajectoryGenerator {
     /**
      * Generate a simple constraint trajectory.
      * @param path path
-     * @param driveConstraints drive constraints
+     * @param constraints drive constraints
      * @param start start motion state
      * @param goal goal motion state
      * @param temporalMarkers temporal markers
@@ -118,13 +118,13 @@ object TrajectoryGenerator {
     @JvmOverloads
     fun generateSimpleTrajectory(
         path: Path,
-        driveConstraints: DriveConstraints,
+        constraints: DriveConstraints,
         start: MotionState = MotionState(0.0, 0.0, 0.0, 0.0),
         goal: MotionState = MotionState(path.length(), 0.0, 0.0, 0.0),
         temporalMarkers: List<TemporalMarker> = emptyList(),
         spatialMarkers: List<SpatialMarker> = emptyList()
     ): Trajectory {
-        val profile = generateSimpleProfile(driveConstraints, start, goal)
+        val profile = generateSimpleProfile(constraints, start, goal)
         val markers = mergeMarkers(path, profile, temporalMarkers, spatialMarkers)
         return Trajectory(path, profile, markers)
     }

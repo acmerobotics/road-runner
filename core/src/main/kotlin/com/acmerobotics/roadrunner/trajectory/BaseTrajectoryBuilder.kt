@@ -16,6 +16,7 @@ import com.acmerobotics.roadrunner.path.heading.TangentInterpolator
  */
 abstract class BaseTrajectoryBuilder protected constructor(
     startPose: Pose2d?,
+    startHeading: Double?,
     trajectory: Trajectory?,
     t: Double?,
     reversed: Boolean
@@ -23,7 +24,7 @@ abstract class BaseTrajectoryBuilder protected constructor(
     private var pathBuilder: PathBuilder = if (startPose == null) {
         PathBuilder(trajectory!!.path, trajectory.profile[t!!].x, reversed)
     } else {
-        PathBuilder(startPose, reversed)
+        PathBuilder(startPose, startHeading!!, reversed)
     }
 
     private var temporalMarkers = mutableListOf<TemporalMarker>()

@@ -31,7 +31,7 @@ class TrajectoryConfig @JvmOverloads constructor(
                 null
             } else {
                 // TODO: fix reversal
-                val builder = TrajectoryBuilder(poses.first(), constraints, resolution = resolution)
+                val builder = TrajectoryBuilder(poses.first(), constraints = constraints, resolution = resolution)
                 for (i in 1 until poses.size) {
                     val startPose = poses[i - 1]
                     val endPose = poses[i]

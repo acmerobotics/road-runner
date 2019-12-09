@@ -66,7 +66,7 @@ class SwerveFollowerTest {
     fun simulatePIDVAFollower() {
         val dt = 1.0 / SIMULATION_HZ
 
-        val trajectory = TrajectoryBuilder(Pose2d(0.0, 0.0, 0.0), CONSTRAINTS)
+        val trajectory = TrajectoryBuilder(Pose2d(0.0, 0.0, 0.0), constraints = CONSTRAINTS)
                 .splineTo(Pose2d(15.0, 15.0, PI))
                 .splineTo(Pose2d(5.0, 35.0, PI / 3))
                 .build()

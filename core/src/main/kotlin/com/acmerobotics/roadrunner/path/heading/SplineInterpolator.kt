@@ -2,6 +2,7 @@ package com.acmerobotics.roadrunner.path.heading
 
 import com.acmerobotics.roadrunner.path.ParametricCurve
 import com.acmerobotics.roadrunner.path.QuinticPolynomial
+import com.acmerobotics.roadrunner.util.Angle
 
 /**
  * Spline heading interpolator for transitioning smoothly between headings without violating continuity (and hence
@@ -34,16 +35,16 @@ class SplineInterpolator @JvmOverloads constructor(
         val len = curve.length()
 
         headingSpline = QuinticPolynomial(
-            startHeading,
+            Angle.norm(startHeading),
             (startHeadingDeriv ?: curve.tangentAngleDeriv(0.0, 0.0)) * len,
             (startHeadingSecondDeriv ?: curve.tangentAngleSecondDeriv(0.0, 0.0)) * len * len,
-            endHeading,
+            Angle.norm(endHeading),
             (endHeadingDeriv ?: curve.tangentAngleDeriv(len, 1.0)) * len,
             (endHeadingSecondDeriv ?: curve.tangentAngleSecondDeriv(len, 1.0)) * len * len
         )
     }
 
-    override fun internalGet(s: Double, t: Double) = headingSpline[s / curve.length()]
+    override fun internalGet(s: Double, t: Double) = Angle.norm(headingSpline[s / curve.length()])
 
     override fun internalDeriv(s: Double, t: Double): Double {
         val len = curve.length()
