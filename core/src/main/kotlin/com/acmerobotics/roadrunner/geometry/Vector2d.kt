@@ -14,6 +14,11 @@ data class Vector2d @JvmOverloads constructor(
     val x: Double = 0.0,
     val y: Double = 0.0
 ) {
+    companion object {
+        @JvmStatic
+        fun polar(r: Double, theta: Double) = Vector2d(r * cos(theta), r * sin(theta))
+    }
+
     fun norm() = sqrt(x*x + y*y)
 
     fun angle() = Angle.norm(atan2(y, x))

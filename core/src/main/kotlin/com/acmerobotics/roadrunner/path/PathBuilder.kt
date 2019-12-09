@@ -6,12 +6,10 @@ import com.acmerobotics.roadrunner.path.heading.*
 import com.acmerobotics.roadrunner.util.Angle
 import com.acmerobotics.roadrunner.util.epsilonEquals
 import kotlin.math.PI
-import kotlin.math.cos
-import kotlin.math.sin
 
 /**
- * Exception thrown when [PathBuilder] methods are chained illegally. This commonly arises when splicing paths together
- * and trying to match derivatives to ensure continuity.
+ * Exception thrown when [PathBuilder] methods are chained illegally. This commonly arises when switching from
+ * non-tangent interpolation back to tangent interpolation and when splicing paths.
  */
 class IllegalPathContinuationException: Exception()
 
@@ -63,13 +61,11 @@ class PathBuilder private constructor(
             val startSecondDeriv = path.internalSecondDeriv(s).vec()
             val derivMag = (start distTo end.vec())
             QuinticSpline.Waypoint(start, startDeriv, startSecondDeriv) to
-                QuinticSpline.Waypoint(end.vec(), Vector2d(cos(end.heading) * derivMag, sin(end.heading)))
+                QuinticSpline.Waypoint(end.vec(), Vector2d.polar(derivMag, end.heading))
         } else {
             val derivMag = (currentPose!!.vec() distTo end.vec())
-            QuinticSpline.Waypoint(currentPose!!.x, currentPose!!.y,
-                derivMag * cos(currentPose!!.heading), derivMag * sin(currentPose!!.heading)) to
-                QuinticSpline.Waypoint(end.x, end.y,
-                    derivMag * cos(end.heading), derivMag * sin(end.heading))
+            QuinticSpline.Waypoint(currentPose!!.vec(), Vector2d.polar(derivMag, currentPose!!.heading)) to
+                QuinticSpline.Waypoint(end.vec(), Vector2d.polar(derivMag, end.heading))
         }
 
         val spline = if (reversed) {
@@ -90,7 +86,7 @@ class PathBuilder private constructor(
             curve.tangentAngle(0.0, 0.0)
         }
         if ((currentPose == null && path!!.segment(s!!).first.interpolator !is TangentInterpolator) ||
-            !(startHeading epsilonEquals currentHeading!!)) {
+            !(Angle.normDelta(startHeading - currentHeading!!) epsilonEquals 0.0)) {
             throw IllegalPathContinuationException()
         }
         currentHeading = if (reversed) {
@@ -205,10 +201,7 @@ class PathBuilder private constructor(
             currentPose!!
         }
 
-        return lineTo(start.vec() + Vector2d(
-            distance * cos(start.heading),
-            distance * sin(start.heading)
-        ))
+        return lineTo(start.vec() + Vector2d.polar(distance, start.heading))
     }
 
     /**
@@ -233,10 +226,7 @@ class PathBuilder private constructor(
             currentPose!!
         }
 
-        return strafeTo(start.vec() + Vector2d(
-            distance * cos(start.heading + PI / 2),
-            distance * sin(start.heading + PI / 2)
-        ))
+        return strafeTo(start.vec() + Vector2d.polar(distance, start.heading + PI / 2))
     }
 
     /**
