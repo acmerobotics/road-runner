@@ -37,7 +37,6 @@ class PoseEditorPanel : JPanel() {
             } else {
                 BorderFactory.createLineBorder(Color.red)
             }
-            invalidate()
             field = value
         }
 
@@ -62,6 +61,8 @@ class PoseEditorPanel : JPanel() {
 
         add(headerPanel)
         add(scrollPane)
+
+        addPose(Pose2d())
     }
 
     private fun fireUpdate() {

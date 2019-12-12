@@ -147,10 +147,16 @@ class QuinticSpline(
         while (lo <= hi) {
             val mid = (hi + lo) / 2
 
-            if (s < sSamples[mid]) {
-                hi = mid - 1
-            } else if (s > sSamples[mid]) {
-                lo = mid + 1
+            when {
+                s < sSamples[mid] -> {
+                    hi = mid - 1
+                }
+                s > sSamples[mid] -> {
+                    lo = mid + 1
+                }
+                else -> {
+                    return tSamples[mid]
+                }
             }
         }
 
