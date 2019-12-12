@@ -63,14 +63,19 @@ class MainPanel : JPanel() {
         this.constraints = constraints
         this.resolution = min(MIN_RESOLUTION, max(MAX_RESOLUTION, resolution))
 
-        val trajectory = TrajectoryConfig(this.poses, this.constraints, this.resolution).toTrajectory()
-            ?: return
+        Thread {
+            val trajectory = TrajectoryConfig(this.poses, this.constraints, this.resolution).toTrajectory()
 
-        fieldPanel.updateTrajectoryAndPoses(trajectory, poses)
-        trajectoryInfoPanel.updateTrajectory(trajectory)
-        trajectoryGraphPanel.updateTrajectory(trajectory)
+            poseEditorPanel.trajectoryValid = trajectory != null
 
-        onTrajectoryUpdateListener?.invoke()
+            if (trajectory != null) {
+                fieldPanel.updateTrajectoryAndPoses(trajectory, poses)
+                trajectoryInfoPanel.updateTrajectory(trajectory)
+                trajectoryGraphPanel.updateTrajectory(trajectory)
+
+                onTrajectoryUpdateListener?.invoke()
+            }
+        }.start()
     }
 
     fun clearTrajectory() {

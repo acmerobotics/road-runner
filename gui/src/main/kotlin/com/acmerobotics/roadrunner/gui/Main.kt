@@ -4,7 +4,7 @@ import javax.swing.SwingUtilities
 import javax.swing.UIManager
 
 /**
- * Entrypoint fro the GUI.
+ * Entrypoint for the GUI.
  */
 object Main {
     @JvmStatic

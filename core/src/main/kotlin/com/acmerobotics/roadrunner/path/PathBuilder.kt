@@ -8,10 +8,20 @@ import com.acmerobotics.roadrunner.util.epsilonEquals
 import kotlin.math.PI
 
 /**
+ * Exception thrown by [PathBuilder].
+ */
+abstract class PathBuilderException: Exception()
+
+/**
  * Exception thrown when [PathBuilder] methods are chained illegally. This commonly arises when switching from
  * non-tangent interpolation back to tangent interpolation and when splicing paths.
  */
-class IllegalPathContinuationException: Exception()
+class PathContinuityViolationException: PathBuilderException()
+
+/**
+ * Exception thrown when empty path segments are requested.
+ */
+class EmptyPathSegmentException: PathBuilderException()
 
 /**
  * Easy-to-use builder for creating [Path] instances.
@@ -43,6 +53,10 @@ class PathBuilder private constructor(
             currentPose!!
         }
 
+        if (start.vec() epsilonEquals end) {
+            throw EmptyPathSegmentException()
+        }
+
         val line = if (reversed) {
             LineSegment(end, start.vec())
         } else {
@@ -55,16 +69,25 @@ class PathBuilder private constructor(
     }
 
     private fun makeSpline(end: Pose2d): QuinticSpline {
+        val start = if (currentPose == null) {
+            path!![s!!]
+        } else {
+            currentPose!!
+        }
+
+        if (start.vec() epsilonEquals end.vec()) {
+            throw EmptyPathSegmentException()
+        }
+
         val (startWaypoint, endWaypoint) = if (currentPose == null) {
-            val start = path!![s!!].vec()
-            val startDeriv = path.internalDeriv(s).vec()
+            val startDeriv = path!!.internalDeriv(s!!).vec()
             val startSecondDeriv = path.internalSecondDeriv(s).vec()
-            val derivMag = (start distTo end.vec())
-            QuinticSpline.Waypoint(start, startDeriv, startSecondDeriv) to
+            val derivMag = (start.vec() distTo end.vec())
+            QuinticSpline.Waypoint(start.vec(), startDeriv, startSecondDeriv) to
                 QuinticSpline.Waypoint(end.vec(), Vector2d.polar(derivMag, end.heading))
         } else {
-            val derivMag = (currentPose!!.vec() distTo end.vec())
-            QuinticSpline.Waypoint(currentPose!!.vec(), Vector2d.polar(derivMag, currentPose!!.heading)) to
+            val derivMag = (start.vec() distTo end.vec())
+            QuinticSpline.Waypoint(start.vec(), Vector2d.polar(derivMag, start.heading)) to
                 QuinticSpline.Waypoint(end.vec(), Vector2d.polar(derivMag, end.heading))
         }
 
@@ -85,9 +108,10 @@ class PathBuilder private constructor(
         } else {
             curve.tangentAngle(0.0, 0.0)
         }
+
         if ((currentPose == null && path!!.segment(s!!).first.interpolator !is TangentInterpolator) ||
             !(Angle.normDelta(startHeading - currentHeading!!) epsilonEquals 0.0)) {
-            throw IllegalPathContinuationException()
+            throw PathContinuityViolationException()
         }
         currentHeading = if (reversed) {
             curve.tangentAngle(0.0, 0.0)
@@ -98,12 +122,12 @@ class PathBuilder private constructor(
     }
 
     private fun makeConstantInterpolator(): ConstantInterpolator {
-        val currentHeading = currentHeading ?: throw IllegalPathContinuationException()
+        val currentHeading = currentHeading ?: throw PathContinuityViolationException()
         return ConstantInterpolator(currentHeading)
     }
 
     private fun makeLinearInterpolator(endHeading: Double): LinearInterpolator {
-        val startHeading = currentHeading ?: throw IllegalPathContinuationException()
+        val startHeading = currentHeading ?: throw PathContinuityViolationException()
         currentHeading = endHeading
         return if (reversed) {
             LinearInterpolator(endHeading, Angle.normDelta(startHeading - endHeading))

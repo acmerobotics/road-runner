@@ -1,7 +1,7 @@
 package com.acmerobotics.roadrunner
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
-import com.acmerobotics.roadrunner.path.IllegalPathContinuationException
+import com.acmerobotics.roadrunner.path.PathContinuityViolationException
 import com.acmerobotics.roadrunner.trajectory.Trajectory
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
@@ -99,7 +99,7 @@ class TrajectorySpliceTest {
                 .splineTo(Pose2d(50.0, 60.0))
                 .build()
             assert(false)
-        } catch (e: IllegalPathContinuationException) {
+        } catch (e: PathContinuityViolationException) {
             assert(true)
         }
     }

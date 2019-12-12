@@ -2,6 +2,7 @@ package com.acmerobotics.roadrunner.trajectory
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
+import com.acmerobotics.roadrunner.path.PathBuilderException
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import com.acmerobotics.roadrunner.util.epsilonEquals
 import kotlin.math.abs
@@ -30,26 +31,30 @@ class TrajectoryConfig @JvmOverloads constructor(
             if (poses.size < 2) {
                 null
             } else {
-                // TODO: fix reversal
-                val builder = TrajectoryBuilder(poses.first(), constraints = constraints, resolution = resolution)
-                for (i in 1 until poses.size) {
-                    val startPose = poses[i - 1]
-                    val endPose = poses[i]
-                    val diff = endPose - startPose
-                    val dot = Vector2d(
-                        cos(endPose.heading),
-                        sin(endPose.heading)
-                    ) dot diff.vec()
-                    val cosAngle = dot / diff.vec().norm()
+                try {
+                    // TODO: fix reversal
+                    val builder = TrajectoryBuilder(poses.first(), constraints = constraints, resolution = resolution)
+                    for (i in 1 until poses.size) {
+                        val startPose = poses[i - 1]
+                        val endPose = poses[i]
+                        val diff = endPose - startPose
+                        val dot = Vector2d(
+                            cos(endPose.heading),
+                            sin(endPose.heading)
+                        ) dot diff.vec()
+                        val cosAngle = dot / diff.vec().norm()
 
-                    if (startPose.heading epsilonEquals endPose.heading && abs(cosAngle) epsilonEquals 1.0) {
-                        // this is probably a line
-                        builder.lineTo(endPose.vec())
-                    } else {
-                        // this is probably a spline
-                        builder.splineTo(endPose)
+                        if (startPose.heading epsilonEquals endPose.heading && abs(cosAngle) epsilonEquals 1.0) {
+                            // this is probably a line
+                            builder.lineTo(endPose.vec())
+                        } else {
+                            // this is probably a spline
+                            builder.splineTo(endPose)
+                        }
                     }
+                    builder.build()
+                } catch (e: PathBuilderException) {
+                    null
                 }
-                builder.build()
             }
 }

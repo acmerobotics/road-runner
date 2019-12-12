@@ -1,6 +1,7 @@
 package com.acmerobotics.roadrunner.gui
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
+import java.awt.Color
 import java.awt.Dimension
 import java.awt.GridLayout
 import javax.swing.*
@@ -29,6 +30,17 @@ class PoseEditorPanel : JPanel() {
     private val poses = mutableListOf<MutablePose2d>()
     private val poseComponents = mutableListOf<List<JComponent>>()
 
+    var trajectoryValid: Boolean = false
+        set(value) {
+            border = if (value) {
+                null
+            } else {
+                BorderFactory.createLineBorder(Color.red)
+            }
+            invalidate()
+            field = value
+        }
+
     init {
         headerPanel.layout = GridLayout(1, 5, 5, 0)
         scrollPanel.layout = GridLayout(0, 5, 5, 0)
@@ -38,12 +50,9 @@ class PoseEditorPanel : JPanel() {
         headerPanel.add(JLabel("Y", SwingConstants.CENTER))
         headerPanel.add(JLabel("Heading", SwingConstants.CENTER))
         val addButton = JButton("Add")
-        addButton.addActionListener { addPose(poses.lastOrNull()?.immutable() ?: Pose2d(
-            0.0,
-            0.0,
-            0.0
-        )
-        ) }
+        addButton.addActionListener {
+            addPose(poses.lastOrNull()?.immutable() ?: Pose2d())
+        }
         headerPanel.add(addButton)
 
         layout = BoxLayout(this, BoxLayout.PAGE_AXIS)
