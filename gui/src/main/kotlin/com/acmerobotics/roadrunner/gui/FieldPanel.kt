@@ -39,11 +39,14 @@ class FieldPanel : JPanel() {
 
     private val fieldTransform = AffineTransform()
     private val robotTransform = AffineTransform()
+    private val robotPath: Path2D.Double = Path2D.Double()
+
+    private val updateLock = Object()
+
     private var poses = listOf<Pose2d>()
     private var trajectory: Trajectory? = null
-    private val path: Path2D.Double = Path2D.Double()
-    private val area: Area = Area()
-    private val robotPath: Path2D.Double = Path2D.Double()
+    private var path: Path2D.Double = Path2D.Double()
+    private var area: Area = Area()
 
     private var timer: Timer? = null
     private var startTime: Double = 0.0
@@ -85,10 +88,9 @@ class FieldPanel : JPanel() {
         })
     }
 
-    @Synchronized
     fun updateTrajectoryAndPoses(trajectory: Trajectory, poses: List<Pose2d>) {
-        this.poses = poses
-        this.trajectory = trajectory
+        val newPath = Path2D.Double()
+        val newArea = Area()
 
         // compute path samples
         val displacementSamples = (trajectory.path.length() / SPATIAL_RESOLUTION).roundToInt()
@@ -97,14 +99,15 @@ class FieldPanel : JPanel() {
         }
 
         // compute the path segments and area swept by the robot
-        path.reset()
         var first = true
         for (displacement in displacements) {
+            if (Thread.currentThread().isInterrupted) return
+
             val pose = trajectory.path[displacement]
             if (first) {
-                path.moveTo(pose.vec().awt())
+                newPath.moveTo(pose.vec().awt())
             } else {
-                path.lineTo(pose.vec().awt())
+                newPath.lineTo(pose.vec().awt())
             }
             first = false
         }
@@ -115,13 +118,25 @@ class FieldPanel : JPanel() {
             it / timeSamples.toDouble() * trajectory.duration()
         }
 
-        area.reset()
+        // TODO: is this procedure quadratic?
+        // is it better to divide and conquer (at the cost of additional memory)?
         for (time in times) {
+            if (Thread.currentThread().isInterrupted) return
+
             val pose = trajectory[time]
             robotTransform.setToTranslation(pose.x, pose.y)
             robotTransform.rotate(pose.heading)
-            area.add(Area(robotTransform.createTransformedShape(ROBOT_RECT)))
+            newArea.add(Area(robotTransform.createTransformedShape(ROBOT_RECT)))
         }
+
+        synchronized(updateLock) {
+            this.poses = poses
+            this.trajectory = trajectory
+            this.path = newPath
+            this.area = newArea
+        }
+
+        startTime = clock.seconds()
 
         repaint()
     }
@@ -167,34 +182,36 @@ class FieldPanel : JPanel() {
         g2d.color = SERIES_COLORS[2]
         g2d.paint = SERIES_COLORS[2]
 
-        // draw poses
-        for (pose in poses) {
-            g2d.fill(fieldTransform.createTransformedShape(circle(pose.vec(), 3.0)))
-        }
-
-        if (trajectory == null) return
-
-        // draw path
-        g2d.stroke = BasicStroke(3F)
-        g2d.draw(fieldTransform.createTransformedShape(path))
-
-        // draw trajectory
-        if (timer != null) {
-            val elapsedTime = clock.seconds() - startTime
-            if (elapsedTime > trajectory?.duration() ?: 0.0) {
-                startTime = clock.seconds()
-                return
+        synchronized(updateLock) {
+            // draw poses
+            for (pose in poses) {
+                g2d.fill(fieldTransform.createTransformedShape(circle(pose.vec(), 3.0)))
             }
-            val currentPose = trajectory?.get(elapsedTime) ?: Pose2d()
-            g2d.paint = Color.black
-            robotTransform.setTransform(fieldTransform)
-            robotTransform.translate(currentPose.x, currentPose.y)
-            robotTransform.rotate(currentPose.heading)
-            g2d.draw(robotTransform.createTransformedShape(robotPath))
-            g2d.fill(fieldTransform.createTransformedShape(circle(currentPose.vec(), 3.0)))
-        } else {
-            g2d.paint = Color(SERIES_COLORS[2].red, SERIES_COLORS[2].green, SERIES_COLORS[2].blue, 120)
-            g2d.fill(fieldTransform.createTransformedShape(area))
+
+            if (trajectory == null) return
+
+            // draw path
+            g2d.stroke = BasicStroke(3F)
+            g2d.draw(fieldTransform.createTransformedShape(path))
+
+            // draw trajectory
+            if (timer != null) {
+                val elapsedTime = clock.seconds() - startTime
+                if (elapsedTime > trajectory?.duration() ?: 0.0) {
+                    startTime = clock.seconds()
+                    return
+                }
+                val currentPose = trajectory?.get(elapsedTime) ?: Pose2d()
+                g2d.paint = Color.black
+                robotTransform.setTransform(fieldTransform)
+                robotTransform.translate(currentPose.x, currentPose.y)
+                robotTransform.rotate(currentPose.heading)
+                g2d.draw(robotTransform.createTransformedShape(robotPath))
+                g2d.fill(fieldTransform.createTransformedShape(circle(currentPose.vec(), 3.0)))
+            } else {
+                g2d.paint = Color(SERIES_COLORS[2].red, SERIES_COLORS[2].green, SERIES_COLORS[2].blue, 120)
+                g2d.fill(fieldTransform.createTransformedShape(area))
+            }
         }
     }
 }

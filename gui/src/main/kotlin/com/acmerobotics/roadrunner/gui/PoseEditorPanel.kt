@@ -95,7 +95,7 @@ class PoseEditorPanel : JPanel() {
             fireUpdate()
         }
         yField.addChangeListener {
-            mutablePose.x = yField.text.toDoubleOrNull() ?: return@addChangeListener
+            mutablePose.y = yField.text.toDoubleOrNull() ?: return@addChangeListener
 
             fireUpdate()
         }
@@ -115,7 +115,11 @@ class PoseEditorPanel : JPanel() {
         poses.add(mutablePose)
         poseComponents.add(uiComponents)
 
-        removeButton.addActionListener { removePose(mutablePose) }
+        removeButton.addActionListener {
+            removePose(mutablePose)
+
+            fireUpdate()
+        }
 
         revalidate()
     }
@@ -144,6 +148,7 @@ class PoseEditorPanel : JPanel() {
     fun updatePoses(newPoses: List<Pose2d>) {
         poses.clear()
         poseComponents.clear()
+        scrollPanel.removeAll()
 
         for (pose in newPoses) {
             addPose(pose)

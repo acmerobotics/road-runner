@@ -1,5 +1,6 @@
 package com.acmerobotics.roadrunner.gui
 
+import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.FileDialog
 import java.awt.Toolkit
@@ -23,6 +24,7 @@ class MainFrame : JFrame() {
         val mainPanel = MainPanel()
 
         contentPane = JPanel()
+        contentPane.layout = BorderLayout()
         contentPane.add(mainPanel)
 
         val fileMenu = JMenu("File")
