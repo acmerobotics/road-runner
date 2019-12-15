@@ -51,6 +51,8 @@ class PoseEditorPanel : JPanel() {
         val addButton = JButton("Add")
         addButton.addActionListener {
             addPose(poses.lastOrNull()?.immutable() ?: Pose2d())
+
+            fireUpdate()
         }
         headerPanel.add(addButton)
 
@@ -63,6 +65,8 @@ class PoseEditorPanel : JPanel() {
         add(scrollPane)
 
         addPose(Pose2d())
+
+        fireUpdate()
     }
 
     private fun fireUpdate() {
@@ -86,15 +90,18 @@ class PoseEditorPanel : JPanel() {
         val headingField = makeNumField(pose.heading.toDegrees())
 
         xField.addChangeListener {
-            mutablePose.x = xField.text.toDoubleOrNull() ?: mutablePose.x
+            mutablePose.x = xField.text.toDoubleOrNull() ?: return@addChangeListener
+
             fireUpdate()
         }
         yField.addChangeListener {
-            mutablePose.y = yField.text.toDoubleOrNull() ?: mutablePose.y
+            mutablePose.x = yField.text.toDoubleOrNull() ?: return@addChangeListener
+
             fireUpdate()
         }
         headingField.addChangeListener {
-            mutablePose.heading = headingField.text.toDoubleOrNull()?.toRadians() ?: mutablePose.heading
+            mutablePose.heading = headingField.text.toDoubleOrNull()?.toRadians() ?: return@addChangeListener
+
             fireUpdate()
         }
 
@@ -111,8 +118,6 @@ class PoseEditorPanel : JPanel() {
         removeButton.addActionListener { removePose(mutablePose) }
 
         revalidate()
-
-        fireUpdate()
     }
 
     private fun removePose(pose: MutablePose2d) {
@@ -136,18 +141,14 @@ class PoseEditorPanel : JPanel() {
         fireUpdate()
     }
 
-    private fun clearPoses() {
-        while (poses.size > 0) {
-            removePoseAt(0)
-        }
-    }
+    fun updatePoses(newPoses: List<Pose2d>) {
+        poses.clear()
+        poseComponents.clear()
 
-    // TODO: implement more efficient pose updates
-    fun updatePoses(poses: List<Pose2d>) {
-        clearPoses()
-
-        for (pose in poses) {
+        for (pose in newPoses) {
             addPose(pose)
         }
+
+        fireUpdate()
     }
 }
