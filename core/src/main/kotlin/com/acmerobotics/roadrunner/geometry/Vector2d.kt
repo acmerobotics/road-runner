@@ -2,10 +2,7 @@ package com.acmerobotics.roadrunner.geometry
 
 import com.acmerobotics.roadrunner.util.Angle
 import com.acmerobotics.roadrunner.util.epsilonEquals
-import kotlin.math.atan2
-import kotlin.math.cos
-import kotlin.math.sin
-import kotlin.math.sqrt
+import kotlin.math.*
 
 /**
  * Class for representing 2D vectors (x and y).
@@ -22,6 +19,8 @@ data class Vector2d @JvmOverloads constructor(
     fun norm() = sqrt(x*x + y*y)
 
     fun angle() = Angle.norm(atan2(y, x))
+
+    infix fun angleBetween(other: Vector2d) = acos((this dot other) / (norm() * other.norm()))
 
     operator fun plus(other: Vector2d) =
         Vector2d(x + other.x, y + other.y)

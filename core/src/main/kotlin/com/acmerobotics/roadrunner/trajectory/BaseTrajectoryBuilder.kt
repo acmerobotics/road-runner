@@ -27,6 +27,11 @@ abstract class BaseTrajectoryBuilder protected constructor(
         PathBuilder(startPose, startHeading!!, reversed)
     }
 
+    val currentPose
+        get() = pathBuilder.currentPose
+    val currentHeading
+        get() = pathBuilder.currentHeading
+
     private var temporalMarkers = mutableListOf<TemporalMarker>()
     private var spatialMarkers = mutableListOf<SpatialMarker>()
 

@@ -1,8 +1,8 @@
 package com.acmerobotics.roadrunner.gui
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
-import com.acmerobotics.roadrunner.trajectory.TrajectoryConfig
-import com.acmerobotics.roadrunner.trajectory.TrajectoryLoader
+import com.acmerobotics.roadrunner.trajectory.config.TrajectoryConfigManager
+import com.acmerobotics.roadrunner.trajectory.config.TrajectoryConfigV1
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import java.awt.BorderLayout
 import java.awt.Dimension
@@ -102,7 +102,11 @@ class MainPanel : JPanel() {
         trajGenFuture = trajGenExecutor.submit {
             status = "generating trajectory..."
 
-            val trajectory = TrajectoryConfig(this.poses, this.constraints, this.resolution).toTrajectory()
+            val trajectory = TrajectoryConfigV1(
+                this.poses,
+                this.constraints,
+                this.resolution
+            ).toTrajectory()
 
             poseEditorPanel.trajectoryValid = trajectory != null
 
@@ -123,11 +127,16 @@ class MainPanel : JPanel() {
     }
 
     fun save(file: File) {
-        TrajectoryLoader.saveConfig(TrajectoryConfig(poses, constraints, resolution), file)
+        TrajectoryConfigManager.saveConfig(
+            TrajectoryConfigV1(
+                poses,
+                constraints,
+                resolution
+            ), file)
     }
 
     fun load(file: File) {
-        val trajectoryConfig = TrajectoryLoader.loadConfig(file)
+        val trajectoryConfig = TrajectoryConfigManager.loadConfig(file) as TrajectoryConfigV1
         updateTrajectoryInBackground(trajectoryConfig.poses, trajectoryConfig.constraints, trajectoryConfig.resolution)
         poseEditorPanel.updatePoses(poses)
         constraintsPanel.updateConstraints(constraints)

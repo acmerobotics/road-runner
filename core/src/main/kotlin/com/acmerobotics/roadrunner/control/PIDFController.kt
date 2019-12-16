@@ -8,7 +8,11 @@ import kotlin.math.min
 import kotlin.math.sign
 
 /**
- * PID controller with various feedforward components. [kV], [kA], and [kStatic] are designed for DC motor feedforward
+ * PID controller with various feedforward components.
+ */
+class PIDFController
+/**
+ * Constructor for [PIDFController]. [kV], [kA], and [kStatic] are designed for DC motor feedforward
  * control (the most common kind of feedforward in FTC). [kF] provides a custom feedforward term for other plants.
  *
  * @param pid traditional PID coefficients
@@ -18,7 +22,7 @@ import kotlin.math.sign
  * @param kF custom, position-dependent feedforward (e.g., a gravity term for arms)
  * @param clock clock
  */
-class PIDFController @JvmOverloads constructor(
+@JvmOverloads constructor(
     private val pid: PIDCoefficients,
     private val kV: Double = 0.0,
     private val kA: Double = 0.0,

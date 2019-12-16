@@ -4,7 +4,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "org.jetbrains.dokka:dokka-gradle-plugin:0.9.18"
+        classpath "org.jetbrains.dokka:dokka-gradle-plugin:0.10.0"
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
         classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.4'
         classpath "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:$detekt_version"
@@ -60,18 +60,19 @@ detekt {
 tasks["detekt"].dependsOn(":custom-detekt-rules:assemble")
 
 dokka {
-    moduleName = 'core'
     outputFormat = 'html'
     outputDirectory = "$buildDir/kdoc"
 
-    includes = ['packages.md']
+    configuration {
+        moduleName = 'core'
 
-    jdkVersion = 8
+        includes = ['packages.md']
 
-    linkMapping {
-        dir = "src/main/kotlin"
-        url = "https://github.com/acmerobotics/road-runner/blob/master/core/src/main/kotlin"
-        suffix = "#L"
+        sourceLink {
+            path = "core/src/main/kotlin"
+            url = "https://github.com/acmerobotics/road-runner/blob/master/core/src/main/kotlin"
+            lineSuffix = "#L"
+        }
     }
 }
 

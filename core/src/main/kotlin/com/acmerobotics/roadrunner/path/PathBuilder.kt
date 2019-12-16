@@ -41,8 +41,10 @@ class PathBuilder private constructor(
     @JvmOverloads
     constructor(path: Path, s: Double, reversed: Boolean = false) : this(null, null, path, s, reversed)
 
-    internal var currentPose: Pose2d? = startPose
-    private var currentHeading: Double? = startHeading
+    var currentPose: Pose2d? = startPose
+        private set
+    var currentHeading: Double? = startHeading
+        private set
 
     private var segments = mutableListOf<PathSegment>()
 

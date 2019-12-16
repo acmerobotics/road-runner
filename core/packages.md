@@ -51,6 +51,10 @@ Types for representing 2D robot trajectories, including time parametrizations of
 
 Specific constraints for trajectories and different drive types.
 
+# Package com.acmerobotics.roadrunner.trajectory.config
+
+Serializable configurations for GUIs.
+
 # Package com.acmerobotics.roadrunner.tuning
 
 Basic regression analysis for tuning feedforward parameters.
