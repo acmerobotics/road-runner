@@ -1,8 +1,11 @@
 package com.acmerobotics.roadrunner.gui
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
-import com.acmerobotics.roadrunner.trajectory.config.TrajectoryConfigManager
-import com.acmerobotics.roadrunner.trajectory.config.TrajectoryConfigV1
+import com.acmerobotics.roadrunner.path.EmptyPathException
+import com.acmerobotics.roadrunner.path.EmptyPathSegmentException
+import com.acmerobotics.roadrunner.path.PathContinuityViolationException
+import com.acmerobotics.roadrunner.trajectory.config.TrajectoryConfig
+import com.acmerobotics.roadrunner.trajectory.config.TrajectoryGroupConfig
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import java.awt.BorderLayout
 import java.awt.Dimension
@@ -29,8 +32,8 @@ class MainPanel : JPanel() {
     private val fieldPanel = FieldPanel()
     private val trajectoryGraphPanel = TrajectoryGraphPanel()
     private val trajectoryInfoPanel = TrajectoryInfoPanel()
-    private val poseEditorPanel = PoseEditorPanel()
-    private val constraintsPanel = ConstraintsPanel()
+    private val pathStepPanel = PathStepEditorPanel()
+    private val configPanel = ConfigPanel()
     private val statusLabel = JLabel()
 
     private var status: String = ""
@@ -39,20 +42,47 @@ class MainPanel : JPanel() {
             field = value
         }
 
-    private var poses = listOf<Pose2d>()
-    private var constraints = DEFAULT_CONSTRAINTS
-    private var resolution = DEFAULT_RESOLUTION
+    private var trajectoryConfig: TrajectoryConfig = TrajectoryConfig(
+        Pose2d(),
+        null,
+        emptyList(),
+        DEFAULT_RESOLUTION,
+        false
+    )
+    private var groupConfig: TrajectoryGroupConfig = TrajectoryGroupConfig(
+        DEFAULT_CONSTRAINTS,
+        TrajectoryGroupConfig.DistanceUnit.INCH,
+        TrajectoryGroupConfig.DriveType.GENERIC,
+        null,
+        null,
+        null
+    )
 
     private var trajGenExecutor = Executors.newSingleThreadExecutor()
     private var trajGenFuture: Future<*>? = null
 
     init {
-        poseEditorPanel.onPosesUpdateListener = { updateTrajectoryInBackground(it, constraints, resolution) }
-        constraintsPanel.onConstraintsUpdateListener = { updateTrajectoryInBackground(poses, it, resolution) }
-        trajectoryInfoPanel.onResolutionUpdateListener = { updateTrajectoryInBackground(poses, constraints, it) }
+        pathStepPanel.onUpdateListener = { startPose, startHeading, steps ->
+            trajectoryConfig.startPose = startPose
+            trajectoryConfig.startHeading = startHeading
+            trajectoryConfig.steps = steps
 
-        constraintsPanel.updateConstraints(DEFAULT_CONSTRAINTS)
-        trajectoryInfoPanel.updateResolution(DEFAULT_RESOLUTION)
+            updateTrajectoryInBackground()
+        }
+        trajectoryInfoPanel.onResolutionUpdateListener = {
+            trajectoryConfig.resolution = min(MIN_RESOLUTION, max(it, MAX_RESOLUTION))
+
+            updateTrajectoryInBackground()
+        }
+        configPanel.onUpdateListener = {
+            groupConfig = it
+
+            updateTrajectoryInBackground()
+        }
+
+        pathStepPanel.update(trajectoryConfig.startPose, trajectoryConfig.startHeading, trajectoryConfig.steps)
+        trajectoryInfoPanel.updateResolution(trajectoryConfig.resolution)
+        configPanel.update(groupConfig)
 
         layout = BorderLayout()
 
@@ -68,9 +98,9 @@ class MainPanel : JPanel() {
 
         val lowerTabbedPane = JTabbedPane()
         val panel = JPanel()
-        panel.add(poseEditorPanel)
-        lowerTabbedPane.addTab("Poses", panel)
-        lowerTabbedPane.addTab("Constraints", constraintsPanel)
+        panel.add(pathStepPanel)
+        lowerTabbedPane.addTab("Path", panel)
+        lowerTabbedPane.addTab("Config", configPanel)
         content.add(lowerTabbedPane)
 
         add(content, BorderLayout.CENTER)
@@ -83,15 +113,9 @@ class MainPanel : JPanel() {
         statusPanel.add(statusLabel)
 
         add(statusPanel, BorderLayout.SOUTH)
-
-        status = "ready"
     }
 
-    private fun updateTrajectoryInBackground(poses: List<Pose2d>, constraints: DriveConstraints, resolution: Double) {
-        this.poses = poses
-        this.constraints = constraints
-        this.resolution = min(MIN_RESOLUTION, max(MAX_RESOLUTION, resolution))
-
+    private fun updateTrajectoryInBackground() {
         if (trajGenFuture?.isDone == false) {
             trajGenExecutor.shutdownNow()
             status = "interrupted"
@@ -102,44 +126,65 @@ class MainPanel : JPanel() {
         trajGenFuture = trajGenExecutor.submit {
             status = "generating trajectory..."
 
-            val trajectory = TrajectoryConfigV1(
-                this.poses,
-                this.constraints,
-                this.resolution
-            ).toTrajectory()
+            try {
+                val trajectory = trajectoryConfig.toTrajectory(groupConfig)
 
-            poseEditorPanel.trajectoryValid = trajectory != null
+                pathStepPanel.trajectoryValid = trajectory != null
 
-            if (trajectory != null) {
-                fieldPanel.updateTrajectoryAndPoses(trajectory, poses)
-                trajectoryInfoPanel.updateTrajectory(trajectory)
-                trajectoryGraphPanel.updateTrajectory(trajectory)
+                if (trajectory != null) {
+                    fieldPanel.updateTrajectoryAndConfig(trajectory, trajectoryConfig)
+                    trajectoryInfoPanel.updateTrajectory(trajectory)
+                    trajectoryGraphPanel.updateTrajectory(trajectory)
 
-                onTrajectoryUpdateListener?.invoke()
+                    onTrajectoryUpdateListener?.invoke()
+                }
+
+                status = "done"
+            } catch (e: EmptyPathException) {
+                status = "error: empty path"
+
+                pathStepPanel.trajectoryValid = false
+            } catch (e: EmptyPathSegmentException) {
+                status = "error: empty path segment"
+
+                pathStepPanel.trajectoryValid = false
+            } catch (e: PathContinuityViolationException) {
+                status = "error: invalid sequence of heading interpolators"
+
+                pathStepPanel.trajectoryValid = false
+            } catch (e: IllegalArgumentException) {
+                status = "error: tank is constrained to tangent heading interpolation"
+
+                pathStepPanel.trajectoryValid = false
+            } catch (t: Throwable) {
+                status = "error: ${t.javaClass}"
+
+                t.printStackTrace()
+
+                pathStepPanel.trajectoryValid = false
             }
-
-            status = "done"
         }
     }
 
     fun clearTrajectory() {
-        updateTrajectoryInBackground(listOf(), DEFAULT_CONSTRAINTS, DEFAULT_RESOLUTION)
+//        updateTrajectoryInBackground(listOf(), DEFAULT_CONSTRAINTS, DEFAULT_RESOLUTION)
     }
 
     fun save(file: File) {
-        TrajectoryConfigManager.saveConfig(
-            TrajectoryConfigV1(
-                poses,
-                constraints,
-                resolution
-            ), file)
+//        TrajectoryConfigManager.saveConfig(
+//            LegacyTrajectoryConfig(
+//                poses,
+//                constraints,
+//                resolution
+//            ), file)
     }
 
     fun load(file: File) {
-        val trajectoryConfig = TrajectoryConfigManager.loadConfig(file) as TrajectoryConfigV1
-        updateTrajectoryInBackground(trajectoryConfig.poses, trajectoryConfig.constraints, trajectoryConfig.resolution)
-        poseEditorPanel.updatePoses(poses)
-        constraintsPanel.updateConstraints(constraints)
-        trajectoryInfoPanel.updateResolution(resolution)
+//        val trajectoryConfig = TrajectoryConfigManager.loadConfig(file) ?: return
+//        val trajectoryGroupConfig = TrajectoryConfigManager.loadGroupConfig(file) ?: return
+//        updateTrajectoryInBackground(trajectoryConfig.steps.map { it.pose }, trajectoryGroupConfig.specificConstraints, trajectoryConfig.resolution)
+//        poseEditorPanel.update(trajectoryConfig.startPose, trajectoryConfig.startHeading, trajectoryConfig.steps)
+//        configPanel.update(trajectoryGroupConfig)
+//        trajectoryInfoPanel.updateResolution(resolution)
     }
 }

@@ -17,7 +17,7 @@ class MainFrame : JFrame() {
 
     init {
         title = "Path Designer"
-        size = Dimension(600, 800)
+        size = Dimension(1000, 800)
         defaultCloseOperation = JFrame.EXIT_ON_CLOSE
         isResizable = false
 

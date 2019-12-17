@@ -10,7 +10,7 @@ import kotlin.math.PI
 /**
  * Exception thrown by [PathBuilder].
  */
-abstract class PathBuilderException: Exception()
+abstract class PathBuilderException(): Exception()
 
 /**
  * Exception thrown when [PathBuilder] methods are chained illegally. This commonly arises when switching from
@@ -22,6 +22,11 @@ class PathContinuityViolationException: PathBuilderException()
  * Exception thrown when empty path segments are requested.
  */
 class EmptyPathSegmentException: PathBuilderException()
+
+/**
+ * Exception thrown when an empty builder (i.e., no segments) is built.
+ */
+class EmptyPathException: PathBuilderException()
 
 /**
  * Easy-to-use builder for creating [Path] instances.
@@ -318,5 +323,10 @@ class PathBuilder private constructor(
     /**
      * Constructs the [Path] instance.
      */
-    fun build() = Path(segments)
+    fun build(): Path {
+        if (segments.size < 1) {
+            throw EmptyPathException()
+        }
+        return Path(segments)
+    }
 }

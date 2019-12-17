@@ -3,6 +3,7 @@ package com.acmerobotics.roadrunner.gui
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.trajectory.Trajectory
+import com.acmerobotics.roadrunner.trajectory.config.TrajectoryConfig
 import com.acmerobotics.roadrunner.util.NanoClock
 import java.awt.*
 import java.awt.event.MouseEvent
@@ -43,7 +44,7 @@ class FieldPanel : JPanel() {
 
     private val updateLock = Object()
 
-    private var poses = listOf<Pose2d>()
+    private var knots = listOf<Vector2d>()
     private var trajectory: Trajectory? = null
     private var path: Path2D.Double = Path2D.Double()
     private var area: Area = Area()
@@ -88,7 +89,7 @@ class FieldPanel : JPanel() {
         })
     }
 
-    fun updateTrajectoryAndPoses(trajectory: Trajectory, poses: List<Pose2d>) {
+    fun updateTrajectoryAndConfig(trajectory: Trajectory, config: TrajectoryConfig) {
         val newPath = Path2D.Double()
         val newArea = Area()
 
@@ -130,7 +131,7 @@ class FieldPanel : JPanel() {
         }
 
         synchronized(updateLock) {
-            this.poses = poses
+            this.knots = listOf(config.startPose.vec()) + config.steps.map { it.pose.vec() }
             this.trajectory = trajectory
             this.path = newPath
             this.area = newArea
@@ -184,8 +185,8 @@ class FieldPanel : JPanel() {
 
         synchronized(updateLock) {
             // draw poses
-            for (pose in poses) {
-                g2d.fill(fieldTransform.createTransformedShape(circle(pose.vec(), 3.0)))
+            for (knot in knots) {
+                g2d.fill(fieldTransform.createTransformedShape(circle(knot, 3.0)))
             }
 
             if (trajectory == null) return

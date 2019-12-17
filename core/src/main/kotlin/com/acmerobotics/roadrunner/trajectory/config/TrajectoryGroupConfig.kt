@@ -5,12 +5,12 @@ import com.acmerobotics.roadrunner.trajectory.constraints.MecanumConstraints
 import com.acmerobotics.roadrunner.trajectory.constraints.TankConstraints
 
 class TrajectoryGroupConfig(
-    val driveType: DriveType,
-    val distanceUnit: DistanceUnit,
-    val constraints: DriveConstraints,
-    val trackWidth: Double,
-    val wheelBase: Double?,
-    val lateralMultiplier: Double?
+    var constraints: DriveConstraints,
+    var distanceUnit: DistanceUnit,
+    var driveType: DriveType,
+    var trackWidth: Double?,
+    var wheelBase: Double?,
+    var lateralMultiplier: Double?
 ) {
     enum class DistanceUnit {
         FOOT,
@@ -30,7 +30,7 @@ class TrajectoryGroupConfig(
     val specificConstraints: DriveConstraints
         get() = when (driveType) {
             DriveType.GENERIC -> constraints
-            DriveType.MECANUM -> MecanumConstraints(constraints, trackWidth, wheelBase!!)
-            DriveType.TANK -> TankConstraints(constraints, trackWidth)
+            DriveType.MECANUM -> MecanumConstraints(constraints, trackWidth!!, wheelBase ?: trackWidth!!)
+            DriveType.TANK -> TankConstraints(constraints, trackWidth!!)
         }
 }

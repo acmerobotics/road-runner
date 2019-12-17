@@ -25,44 +25,61 @@ object TrajectoryConfigManager {
     }
 
     /**
-     * Saves a [TrajectoryConfigV1] to [file].
+     * Saves a [LegacyTrajectoryConfig] to [file].
      */
     @JvmStatic
-    fun saveConfig(trajectoryConfig: TrajectoryConfigV1, file: File) {
+    fun saveConfig(trajectoryConfig: LegacyTrajectoryConfig, file: File) {
         MAPPER.writerWithDefaultPrettyPrinter().writeValue(file, trajectoryConfig)
+    }
+
+    /**
+     * Saves a [TrajectoryConfig] to [file].
+     */
+    @JvmStatic
+    fun saveConfig(trajectoryConfig: TrajectoryConfig, file: File) {
+        MAPPER.writerWithDefaultPrettyPrinter().writeValue(file, trajectoryConfig)
+    }
+
+    /**
+     * Saves a [TrajectoryGroupConfig] to [dir].
+     */
+    @JvmStatic
+    fun saveGroupConfig(trajectoryConfig: TrajectoryGroupConfig, dir: File) {
+        MAPPER.writerWithDefaultPrettyPrinter().writeValue(File(dir, GROUP_FILENAME), trajectoryConfig)
     }
 
     /**
      * Loads a [TrajectoryConfig] from [file].
      */
     @JvmStatic
-    fun loadConfig(file: File) = MAPPER.readValue(file, TrajectoryConfig::class.java)
+    fun loadConfig(file: File): TrajectoryConfig? = MAPPER.readValue(file, TrajectoryConfig::class.java)
 
     /**
-     * Loads a [Trajectory] from [file]. In newer trajectory config formats, the constraints and other important data is
-     * stored separately (for the purpose of sharing with other trajectories). This method recursively examines parent
-     * directories until the requisite files are found.
+     * Loads the [TrajectoryGroupConfig] corresponding to the [TrajectoryConfig] file [file]. This method recursively
+     * examines parent directories until the group config file is found.
+     */
+    @JvmStatic
+    fun loadGroupConfig(file: File): TrajectoryGroupConfig? {
+        var dir = file.parentFile
+        var groupFile: File? = null
+        while (dir != null) {
+            val groupFileCand = File(dir, GROUP_FILENAME)
+            if (groupFileCand.exists()) {
+                groupFile = groupFileCand
+                break
+            }
+            dir = dir.parentFile
+        }
+        return MAPPER.readValue(groupFile, TrajectoryGroupConfig::class.java)
+    }
+
+    /**
+     * Loads a [Trajectory] from [file].
      */
     @JvmStatic
     fun loadBuilder(file: File): TrajectoryBuilder? {
         val config = loadConfig(file) ?: return null
-        if (config is TrajectoryConfigV1) {
-            return config.toTrajectoryBuilder()
-        } else if (config is TrajectoryConfigV2) {
-            var dir = file.parentFile
-            var groupFile: File? = null
-            while (dir != null) {
-                val groupFileCand = File(dir, GROUP_FILENAME)
-                if (groupFileCand.exists()) {
-                    groupFile = groupFileCand
-                    break
-                }
-                dir = dir.parentFile
-            }
-            val groupConfig = MAPPER.readValue(groupFile, TrajectoryGroupConfig::class.java)
-            return config.toTrajectoryBuilder(groupConfig)
-        }
-        return null
+        return config.toTrajectoryBuilder(loadGroupConfig(file) ?: return null)
     }
 
     /**

@@ -12,13 +12,13 @@ class TrajectoryConfigDeserializer : StdDeserializer<TrajectoryConfig>(Trajector
         return if (node.has("version")) {
             val version = node["version"].intValue()
             if (version == 2) {
-                p.codec.treeToValue(node, TrajectoryConfigV2::class.java)
+                p.codec.treeToValue(node, TrajectoryConfig::class.java)
             } else {
                 null
             }
         } else {
             // legacy V1
-            p.codec.treeToValue(node, TrajectoryConfigV1::class.java)
+            p.codec.treeToValue(node, LegacyTrajectoryConfig::class.java).toTrajectoryConfig()
         }
     }
 }
