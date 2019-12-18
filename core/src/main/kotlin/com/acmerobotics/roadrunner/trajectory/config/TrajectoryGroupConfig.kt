@@ -27,11 +27,10 @@ class TrajectoryGroupConfig(
         TANK
     }
 
-    // TODO: incorporate the lateral multiplier
     val specificConstraints: DriveConstraints
         @JsonIgnore get() = when (driveType) {
             DriveType.GENERIC -> constraints
-            DriveType.MECANUM -> MecanumConstraints(constraints, trackWidth!!, wheelBase ?: trackWidth!!)
+            DriveType.MECANUM -> MecanumConstraints(constraints, trackWidth!!, wheelBase ?: trackWidth!!, lateralMultiplier!!)
             DriveType.TANK -> TankConstraints(constraints, trackWidth!!)
         }
 }

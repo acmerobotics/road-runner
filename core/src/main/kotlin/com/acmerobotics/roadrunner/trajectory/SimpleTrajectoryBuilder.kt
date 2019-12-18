@@ -7,8 +7,6 @@ import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 
 private fun zeroPosition(state: MotionState) = MotionState(0.0, state.v, state.a, state.j)
 
-// TODO: where should reversed go in the ctor argument order
-
 /**
  * Builder for trajectories with *static* constraints.
  */

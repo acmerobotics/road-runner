@@ -238,19 +238,22 @@ class ConfigPanel : JPanel() {
         val constraints = groupConfig.constraints
         this.mutableConstraints = MutableDriveConstraints(constraints)
 
+        driveTypeComboBox.selectedItem = DRIVE_MAP.entries.first { it.value == driveType }.key
+
         distanceUnit = groupConfig.distanceUnit
         driveType = groupConfig.driveType
         trackWidth = groupConfig.trackWidth
         wheelBase = groupConfig.wheelBase
-        lateralMultiplier = groupConfig.lateralMultiplier ?: 1.0
+        lateralMultiplier = groupConfig.lateralMultiplier
 
         distanceUnitComboBox.selectedItem = UNIT_MAP.entries.first { it.value == distanceUnit }.key
-        driveTypeComboBox.selectedItem = DRIVE_MAP.entries.first { it.value == driveType }.key
         trackWidthField.text = String.format("%.2f", trackWidth)
         if (wheelBase != null) {
             wheelBaseField.text = String.format("%.2f", wheelBase!!)
         }
-        lateralMultiplierField.text = String.format("%.2f", lateralMultiplier)
+        if (lateralMultiplier != null) {
+            lateralMultiplierField.text = String.format("%.2f", lateralMultiplier)
+        }
 
         maxVelTextField.text = String.format("%.2f", constraints.maxVel)
         maxAccelTextField.text = String.format("%.2f", constraints.maxAccel)
