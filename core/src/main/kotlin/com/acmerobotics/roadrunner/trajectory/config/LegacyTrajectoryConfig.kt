@@ -4,6 +4,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.trajectory.Trajectory
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
+import com.acmerobotics.roadrunner.util.Angle
 import kotlin.math.PI
 
 /**
@@ -30,10 +31,14 @@ class LegacyTrajectoryConfig @JvmOverloads constructor(
         } else {
             val firstPose = poses.first()
             val secondPose = poses.drop(1).first()
-            val reversed = (secondPose - firstPose).vec() angleBetween secondPose.headingVec() > PI / 4
+            val startHeading = if ((secondPose - firstPose).vec() angleBetween secondPose.headingVec() > PI / 4) {
+                Angle.norm(firstPose.heading + PI)
+            } else {
+                null
+            }
             val steps = poses.drop(1).map {
                 TrajectoryConfig.Step(it, TrajectoryConfig.HeadingInterpolationType.TANGENT)
             }
-            TrajectoryConfig(firstPose, startHeading = null, steps = steps, resolution = resolution, reversed = reversed)
+            TrajectoryConfig(firstPose, startHeading = startHeading, steps = steps, resolution = resolution)
         }
 }

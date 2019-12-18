@@ -8,8 +8,7 @@ class TrajectoryConfig @JvmOverloads constructor(
     var startPose: Pose2d,
     var startHeading: Double?,
     var steps: List<Step>,
-    var resolution: Double,
-    var reversed: Boolean
+    var resolution: Double
 ) {
     private val version = 2
 
@@ -31,8 +30,7 @@ class TrajectoryConfig @JvmOverloads constructor(
             startPose,
             startHeading ?: startPose.heading,
             groupConfig.specificConstraints,
-            resolution = resolution,
-            reversed = reversed
+            resolution = resolution
         )
 
         for (step in steps) {

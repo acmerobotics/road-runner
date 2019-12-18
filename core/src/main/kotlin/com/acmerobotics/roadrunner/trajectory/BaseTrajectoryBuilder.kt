@@ -18,13 +18,12 @@ abstract class BaseTrajectoryBuilder protected constructor(
     startPose: Pose2d?,
     startHeading: Double?,
     trajectory: Trajectory?,
-    t: Double?,
-    reversed: Boolean
+    t: Double?
 ) {
     private var pathBuilder: PathBuilder = if (startPose == null) {
-        PathBuilder(trajectory!!.path, trajectory.profile[t!!].x, reversed)
+        PathBuilder(trajectory!!.path, trajectory.profile[t!!].x)
     } else {
-        PathBuilder(startPose, startHeading!!, reversed)
+        PathBuilder(startPose, startHeading!!)
     }
 
     val currentPose

@@ -15,11 +15,10 @@ class TrajectoryBuilder private constructor(
     startHeading: Double?,
     trajectory: Trajectory?,
     t: Double?,
-    reversed: Boolean,
     private val constraints: TrajectoryConstraints,
     private val start: MotionState,
     private val resolution: Double
-) : BaseTrajectoryBuilder(startPose, startHeading, trajectory, t, reversed) {
+) : BaseTrajectoryBuilder(startPose, startHeading, trajectory, t) {
     /**
      * Create a builder from a start pose and motion state. This is the recommended constructor for creating
      * trajectories from rest.
@@ -29,9 +28,8 @@ class TrajectoryBuilder private constructor(
         startHeading: Double = startPose.heading,
         constraints: TrajectoryConstraints,
         start: MotionState = MotionState(0.0, 0.0, 0.0),
-        resolution: Double = 0.25,
-        reversed: Boolean = false
-    ) : this(startPose, startHeading, null, null, reversed, constraints, start, resolution)
+        resolution: Double = 0.25
+    ) : this(startPose, startHeading, null, null, constraints, start, resolution)
 
     /**
      * Create a builder from an active trajectory. This is useful for interrupting a live trajectory and smoothly
@@ -41,9 +39,8 @@ class TrajectoryBuilder private constructor(
         trajectory: Trajectory,
         t: Double,
         constraints: TrajectoryConstraints,
-        resolution: Double = 0.25,
-        reversed: Boolean = false
-    ) : this(null, null, trajectory, t, reversed, constraints, zeroPosition(trajectory.profile[t]), resolution)
+        resolution: Double = 0.25
+    ) : this(null, null, trajectory, t, constraints, zeroPosition(trajectory.profile[t]), resolution)
 
     override fun buildTrajectory(
         path: Path,

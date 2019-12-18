@@ -46,8 +46,7 @@ class MainPanel : JPanel() {
         Pose2d(),
         null,
         emptyList(),
-        DEFAULT_RESOLUTION,
-        false
+        DEFAULT_RESOLUTION
     )
     private var groupConfig: TrajectoryGroupConfig = TrajectoryGroupConfig(
         DEFAULT_CONSTRAINTS,
