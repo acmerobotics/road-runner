@@ -103,7 +103,7 @@ class PathBuilder private constructor(
     private fun makeTangentInterpolator(curve: ParametricCurve): TangentInterpolator {
         val startHeading = curve.tangentAngle(0.0, 0.0)
 
-        if (currentPose == null) {
+        if (currentHeading == null) {
             val prevInterpolator = path!!.segment(s!!).first.interpolator
             if (prevInterpolator !is TangentInterpolator) {
                 throw PathContinuityViolationException()

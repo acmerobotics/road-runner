@@ -19,8 +19,8 @@ class PathBuilderTest {
     @Test
     fun testLines() {
         testPath("lines", PathBuilder(Pose2d())
-                .lineTo(Vector2d(10.0, 20.0))
-                .lineTo(Vector2d(-23.0, 43.0))
+                .lineToConstantHeading(Vector2d(10.0, 20.0))
+                .lineToConstantHeading(Vector2d(-23.0, 43.0))
                 .build())
     }
 

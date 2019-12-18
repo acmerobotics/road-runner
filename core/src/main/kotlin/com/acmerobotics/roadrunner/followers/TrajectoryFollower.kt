@@ -59,7 +59,7 @@ abstract class TrajectoryFollower @JvmOverloads constructor(
     /**
      * Returns true if the current trajectory has finished executing.
      */
-    fun isFollowing() = executedFinalUpdate && internalIsFollowing()
+    fun isFollowing() = !executedFinalUpdate && internalIsFollowing()
 
     /**
      * Returns the elapsed time since the last [followTrajectory] call.
