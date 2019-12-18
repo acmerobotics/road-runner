@@ -2,7 +2,7 @@ package com.acmerobotics.roadrunner.followers
 
 import com.acmerobotics.roadrunner.drive.DriveSignal
 import com.acmerobotics.roadrunner.geometry.Pose2d
-import com.acmerobotics.roadrunner.trajectory.TemporalMarker
+import com.acmerobotics.roadrunner.trajectory.AbsoluteTemporalMarker
 import com.acmerobotics.roadrunner.trajectory.Trajectory
 import com.acmerobotics.roadrunner.util.NanoClock
 import kotlin.math.abs
@@ -21,7 +21,8 @@ abstract class TrajectoryFollower @JvmOverloads constructor(
 ) {
     private var startTimestamp: Double = 0.0
     private var admissible = false
-    private var remainingMarkers = mutableListOf<TemporalMarker>()
+    private var remainingMarkers = mutableListOf<AbsoluteTemporalMarker>()
+    private var executedFinalUpdate = false
 
     /**
      * Trajectory being followed if [isFollowing] is true.
@@ -46,15 +47,19 @@ abstract class TrajectoryFollower @JvmOverloads constructor(
         remainingMarkers.clear()
         remainingMarkers.addAll(trajectory.markers)
         remainingMarkers.sortBy { it.time }
+
+        executedFinalUpdate = false
+    }
+
+    private fun internalIsFollowing(): Boolean {
+        val timeRemaining = trajectory.duration() - elapsedTime()
+        return timeRemaining > 0 || (!admissible && timeRemaining > -timeout)
     }
 
     /**
      * Returns true if the current trajectory has finished executing.
      */
-    fun isFollowing(): Boolean {
-        val timeRemaining = trajectory.duration() - elapsedTime()
-        return timeRemaining > 0 || (!admissible && timeRemaining > -timeout)
-    }
+    fun isFollowing() = executedFinalUpdate && internalIsFollowing()
 
     /**
      * Returns the elapsed time since the last [followTrajectory] call.
@@ -75,9 +80,16 @@ abstract class TrajectoryFollower @JvmOverloads constructor(
         admissible = abs(trajEndError.x) < admissibleError.x &&
                 abs(trajEndError.y) < admissibleError.y &&
                 abs(trajEndError.heading) < admissibleError.heading
-        return if (isFollowing()) {
+        return if (internalIsFollowing()) {
             internalUpdate(currentPose)
         } else {
+            if (!executedFinalUpdate) {
+                for (marker in remainingMarkers) {
+                    marker.callback()
+                }
+                remainingMarkers.clear()
+                executedFinalUpdate = true
+            }
             DriveSignal()
         }
     }

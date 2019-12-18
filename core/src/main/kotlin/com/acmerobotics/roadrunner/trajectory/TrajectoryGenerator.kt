@@ -72,11 +72,13 @@ object TrajectoryGenerator {
     private fun mergeMarkers(
         path: Path,
         profile: MotionProfile,
-        temporalMarkers: List<TemporalMarker>,
+        temporalMarkers: List<RelativeTemporalMarker>,
         spatialMarkers: List<SpatialMarker>
-    ): List<TemporalMarker> {
-        return temporalMarkers + spatialMarkers.map {
-                (point, callback) -> TemporalMarker(pointToTime(path, profile, point), callback) }
+    ): List<AbsoluteTemporalMarker> {
+        return temporalMarkers.map { (time, callback) ->
+            AbsoluteTemporalMarker(time(profile.duration()), callback) } +
+            spatialMarkers.map { (point, callback) ->
+                AbsoluteTemporalMarker(pointToTime(path, profile, point), callback) }
     }
 
     /**
@@ -96,7 +98,7 @@ object TrajectoryGenerator {
         constraints: TrajectoryConstraints,
         start: MotionState = MotionState(0.0, 0.0, 0.0),
         goal: MotionState = MotionState(path.length(), 0.0, 0.0),
-        temporalMarkers: List<TemporalMarker> = emptyList(),
+        temporalMarkers: List<RelativeTemporalMarker> = emptyList(),
         spatialMarkers: List<SpatialMarker> = emptyList(),
         resolution: Double = 0.25
     ): Trajectory {
@@ -121,7 +123,7 @@ object TrajectoryGenerator {
         constraints: DriveConstraints,
         start: MotionState = MotionState(0.0, 0.0, 0.0, 0.0),
         goal: MotionState = MotionState(path.length(), 0.0, 0.0, 0.0),
-        temporalMarkers: List<TemporalMarker> = emptyList(),
+        temporalMarkers: List<RelativeTemporalMarker> = emptyList(),
         spatialMarkers: List<SpatialMarker> = emptyList()
     ): Trajectory {
         val profile = generateSimpleProfile(constraints, start, goal)

@@ -56,7 +56,7 @@ class DriveWheelConstraintsTest {
     @Test
     fun testTankWheelVelocityLimitingReversed() {
         val constraints = TankConstraints(BASE_CONSTRAINTS, 10.0)
-        val trajectory = TrajectoryBuilder(Pose2d(0.0, 0.0, 0.0), constraints = constraints, reversed = true)
+        val trajectory = TrajectoryBuilder(Pose2d(0.0, 0.0, 0.0), startHeading = PI, constraints = constraints)
             .splineTo(Pose2d(15.0, 15.0, PI))
             .splineTo(Pose2d(5.0, 35.0, PI / 3))
             .build()

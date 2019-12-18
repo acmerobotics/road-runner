@@ -44,7 +44,7 @@ class TrajectoryBuilder private constructor(
 
     override fun buildTrajectory(
         path: Path,
-        temporalMarkers: List<TemporalMarker>,
+        temporalMarkers: List<RelativeTemporalMarker>,
         spatialMarkers: List<SpatialMarker>
     ): Trajectory {
         val goal = MotionState(path.length(), 0.0, 0.0)

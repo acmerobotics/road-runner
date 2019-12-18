@@ -31,7 +31,7 @@ abstract class BaseTrajectoryBuilder protected constructor(
     val currentHeading
         get() = pathBuilder.currentHeading
 
-    private var temporalMarkers = mutableListOf<TemporalMarker>()
+    private var temporalMarkers = mutableListOf<RelativeTemporalMarker>()
     private var spatialMarkers = mutableListOf<SpatialMarker>()
 
     /**
@@ -213,8 +213,12 @@ abstract class BaseTrajectoryBuilder protected constructor(
     /**
      * Adds a marker to the trajectory at [time].
      */
-    fun addMarker(time: Double, callback: () -> Unit): BaseTrajectoryBuilder {
-        temporalMarkers.add(TemporalMarker(time, callback))
+    fun addMarker(time: Double, callback: () -> Unit) = addMarker(0.0, time, callback)
+
+    fun addMarker(scale: Double, offset: Double, callback: () -> Unit) = addMarker({ scale * it + offset }, callback)
+
+    fun addMarker(time: (Double) -> Double, callback: () -> Unit): BaseTrajectoryBuilder {
+        temporalMarkers.add(RelativeTemporalMarker(time, callback))
 
         return this
     }
@@ -244,7 +248,7 @@ abstract class BaseTrajectoryBuilder protected constructor(
      */
     protected abstract fun buildTrajectory(
         path: Path,
-        temporalMarkers: List<TemporalMarker>,
+        temporalMarkers: List<RelativeTemporalMarker>,
         spatialMarkers: List<SpatialMarker>
     ): Trajectory
 }
