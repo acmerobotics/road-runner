@@ -4,13 +4,13 @@ import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
 import com.acmerobotics.roadrunner.util.epsilonEquals
 
-class TrajectoryConfig @JvmOverloads constructor(
+class TrajectoryConfig(
     var startPose: Pose2d,
     var startHeading: Double?,
     var steps: List<Step>,
     var resolution: Double
 ) {
-    private val version = 2
+    val version = 2
 
     enum class HeadingInterpolationType {
         TANGENT,

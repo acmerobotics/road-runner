@@ -175,7 +175,6 @@ class PathDesignerPanel(private val project: Project) : JPanel() {
 
     private fun addTrajectory(nameArg: String? = null) {
         val comboBoxModule = comboBoxModule ?: return
-        mainPanel.clearTrajectory()
         val trajectories = listTrajectoryAssets(comboBoxModule).toMutableList()
         val name = nameArg ?: nextUntitledName()
         trajectories.add(name)
@@ -216,7 +215,6 @@ class PathDesignerPanel(private val project: Project) : JPanel() {
         val comboBoxModule = comboBoxModule ?: return
         val comboBoxTrajectory = comboBoxTrajectory
         if (comboBoxTrajectory == null) {
-            mainPanel.clearTrajectory()
             trajectoryNameField.text = ""
         } else {
             mainPanel.load(File(getTrajectoryAssetsDir(comboBoxModule), "$comboBoxTrajectory.yaml"))

@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.path.EmptyPathException
 import com.acmerobotics.roadrunner.path.EmptyPathSegmentException
 import com.acmerobotics.roadrunner.path.PathContinuityViolationException
 import com.acmerobotics.roadrunner.trajectory.config.TrajectoryConfig
+import com.acmerobotics.roadrunner.trajectory.config.TrajectoryConfigManager
 import com.acmerobotics.roadrunner.trajectory.config.TrajectoryGroupConfig
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import java.awt.BorderLayout
@@ -165,25 +166,21 @@ class MainPanel : JPanel() {
         }
     }
 
-    fun clearTrajectory() {
-//        updateTrajectoryInBackground(listOf(), DEFAULT_CONSTRAINTS, DEFAULT_RESOLUTION)
-    }
-
     fun save(file: File) {
-//        TrajectoryConfigManager.saveConfig(
-//            LegacyTrajectoryConfig(
-//                poses,
-//                constraints,
-//                resolution
-//            ), file)
+        val newFile = File(file.parentFile, file.nameWithoutExtension.trimStart { it == '_' } + ".yaml")
+
+        TrajectoryConfigManager.saveConfig(trajectoryConfig, newFile)
+        TrajectoryConfigManager.saveGroupConfig(groupConfig, newFile.parentFile)
     }
 
     fun load(file: File) {
-//        val trajectoryConfig = TrajectoryConfigManager.loadConfig(file) ?: return
-//        val trajectoryGroupConfig = TrajectoryConfigManager.loadGroupConfig(file) ?: return
-//        updateTrajectoryInBackground(trajectoryConfig.steps.map { it.pose }, trajectoryGroupConfig.specificConstraints, trajectoryConfig.resolution)
-//        poseEditorPanel.update(trajectoryConfig.startPose, trajectoryConfig.startHeading, trajectoryConfig.steps)
-//        configPanel.update(trajectoryGroupConfig)
-//        trajectoryInfoPanel.updateResolution(resolution)
+        val trajectoryConfig = TrajectoryConfigManager.loadConfig(file) ?: return
+        val trajectoryGroupConfig = TrajectoryConfigManager.loadGroupConfig(file) ?: return
+
+        pathStepPanel.update(trajectoryConfig.startPose, trajectoryConfig.startHeading, trajectoryConfig.steps)
+        configPanel.update(trajectoryGroupConfig)
+        trajectoryInfoPanel.updateResolution(trajectoryConfig.resolution)
+
+        updateTrajectoryInBackground()
     }
 }

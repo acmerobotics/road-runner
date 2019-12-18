@@ -128,7 +128,7 @@ class PathBuilder private constructor(
     private fun makeConstantInterpolator(curve: ParametricCurve): ConstantInterpolator {
         val currentHeading = currentHeading ?: throw PathContinuityViolationException()
 
-        if (!(curve.tangentAngleDeriv(0.0, 0.0) epsilonEquals 0.0)) {
+        if (segments.isNotEmpty() && !(curve.tangentAngleDeriv(0.0, 0.0) epsilonEquals 0.0)) {
             throw PathContinuityViolationException()
         }
 
@@ -142,7 +142,7 @@ class PathBuilder private constructor(
         val interpolator = LinearInterpolator(startHeading, Angle.normDelta(endHeading - startHeading))
         interpolator.init(curve)
 
-        if (!(interpolator.startDeriv() epsilonEquals curve.tangentAngleDeriv(0.0, 0.0))) {
+        if (segments.isNotEmpty() && !(interpolator.startDeriv() epsilonEquals curve.tangentAngleDeriv(0.0, 0.0))) {
             throw PathContinuityViolationException()
         }
 

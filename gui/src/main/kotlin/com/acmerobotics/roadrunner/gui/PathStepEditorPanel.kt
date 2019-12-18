@@ -51,7 +51,7 @@ class PathStepEditorPanel : JPanel() {
     private var startHeading: Double? = null
     private val steps = mutableListOf<MutableStep>()
 
-    var onUpdateListener: ((Pose2d, Double, List<TrajectoryConfig.Step>) -> Unit)? = null
+    var onUpdateListener: ((Pose2d, Double?, List<TrajectoryConfig.Step>) -> Unit)? = null
 
     private val headerPanel = JPanel()
     private val scrollPanel = JPanel()
@@ -149,7 +149,7 @@ class PathStepEditorPanel : JPanel() {
     }
 
     private fun fireUpdate() {
-        onUpdateListener?.invoke(startPose.immutable(), startHeading ?: startPose.heading, steps.map { it.immutable() })
+        onUpdateListener?.invoke(startPose.immutable(), startHeading, steps.map { it.immutable() })
     }
 
     private fun addStep(step: TrajectoryConfig.Step) {
@@ -163,7 +163,7 @@ class PathStepEditorPanel : JPanel() {
         val tangentField = makeNumField(step.pose.heading.toDegrees())
         val interpComboBox = JComboBox(INTERP_MAP.keys.toTypedArray())
         interpComboBox.selectedItem = INTERP_MAP.entries.first { it.value == step.interpolationType }.key
-        val headingField = makeNumField(step.heading?.toDegrees() ?: 0.0)
+        val headingField = makeNumField(step.heading?.toDegrees() ?: step.pose.heading.toDegrees())
 
         xField.addChangeListener {
             mutableStep.pose.x = xField.text.toDoubleOrNull() ?: return@addChangeListener
@@ -183,8 +183,29 @@ class PathStepEditorPanel : JPanel() {
 
         interpComboBox.addActionListener {
             mutableStep.interpolationType = INTERP_MAP.getValue(interpComboBox.selectedItem as String)
-            headingField.isVisible = mutableStep.interpolationType == TrajectoryConfig.HeadingInterpolationType.LINEAR ||
-                mutableStep.interpolationType == TrajectoryConfig.HeadingInterpolationType.SPLINE
+
+            when (mutableStep.interpolationType) {
+                TrajectoryConfig.HeadingInterpolationType.TANGENT -> {
+                    headingField.isVisible = false
+                }
+                TrajectoryConfig.HeadingInterpolationType.CONSTANT -> {
+                    headingField.isVisible = false
+                }
+                TrajectoryConfig.HeadingInterpolationType.LINEAR -> {
+                    headingField.isVisible = true
+
+                    mutableStep.heading = 0.0
+
+                    headingField.text = "0.00"
+                }
+                TrajectoryConfig.HeadingInterpolationType.SPLINE -> {
+                    headingField.isVisible = true
+
+                    mutableStep.heading = 0.0
+
+                    headingField.text = "0.00"
+                }
+            }
 
             fireUpdate()
 
@@ -258,8 +279,10 @@ class PathStepEditorPanel : JPanel() {
 
         startXField.text = String.format("%.2f", startPose.x)
         startYField.text = String.format("%.2f", startPose.y)
-        startTangentField.text = String.format("%.2f", startPose.heading)
-        startHeadingField.text= String.format("%.2f", startHeading ?: startPose.heading)
+        startTangentField.text = String.format("%.2f", startPose.heading.toDegrees())
+        if (startHeading != null) {
+            startHeadingField.text = String.format("%.2f", startHeading!!.toDegrees())
+        }
 
         fireUpdate()
     }

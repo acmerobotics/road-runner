@@ -3,6 +3,7 @@ package com.acmerobotics.roadrunner.trajectory.config
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import com.acmerobotics.roadrunner.trajectory.constraints.MecanumConstraints
 import com.acmerobotics.roadrunner.trajectory.constraints.TankConstraints
+import com.fasterxml.jackson.annotation.JsonIgnore
 
 class TrajectoryGroupConfig(
     var constraints: DriveConstraints,
@@ -28,7 +29,7 @@ class TrajectoryGroupConfig(
 
     // TODO: incorporate the lateral multiplier
     val specificConstraints: DriveConstraints
-        get() = when (driveType) {
+        @JsonIgnore get() = when (driveType) {
             DriveType.GENERIC -> constraints
             DriveType.MECANUM -> MecanumConstraints(constraints, trackWidth!!, wheelBase ?: trackWidth!!)
             DriveType.TANK -> TankConstraints(constraints, trackWidth!!)

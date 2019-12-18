@@ -18,7 +18,7 @@ class MainFrame : JFrame() {
     init {
         title = "Path Designer"
         size = Dimension(1000, 800)
-        defaultCloseOperation = JFrame.EXIT_ON_CLOSE
+        defaultCloseOperation = EXIT_ON_CLOSE
         isResizable = false
 
         val mainPanel = MainPanel()
@@ -35,24 +35,19 @@ class MainFrame : JFrame() {
             fileDialog.isVisible = true
 
             if (fileDialog.file != null) {
-                val filename = fileDialog.directory + fileDialog.file
-                mainPanel.load(File(filename))
+                val file = File(fileDialog.directory, fileDialog.file)
+                mainPanel.load(file)
             }
         }
         openMenuItem.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_O, COMMAND_MASK)
         val saveMenuItem = JMenuItem("Save")
         saveMenuItem.addActionListener {
             val fileDialog = FileDialog(this, "Choose a file", FileDialog.SAVE)
-            fileDialog.setFilenameFilter { _, name -> name.endsWith(".yaml") }
+            fileDialog.setFilenameFilter { _, name -> name.endsWith(".yaml") && !name.startsWith("_") }
             fileDialog.isVisible = true
 
             if (fileDialog.file != null) {
-                val filename = fileDialog.directory + if (fileDialog.file.contains("\\.")) {
-                    fileDialog.file.split("\\.").dropLast(1).joinToString(".") + ".yaml"
-                } else {
-                    fileDialog.file + ".yaml"
-                }
-
+                val filename = fileDialog.directory + fileDialog.file
                 mainPanel.save(File(filename))
             }
         }

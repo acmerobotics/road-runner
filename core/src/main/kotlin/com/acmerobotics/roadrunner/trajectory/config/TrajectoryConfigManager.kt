@@ -2,6 +2,7 @@ package com.acmerobotics.roadrunner.trajectory.config
 
 import com.acmerobotics.roadrunner.trajectory.Trajectory
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
@@ -13,7 +14,7 @@ import java.io.File
  */
 object TrajectoryConfigManager {
     @JvmStatic
-    val GROUP_FILENAME = "group.yaml"
+    val GROUP_FILENAME = "_group.yaml"
 
     private val MAPPER = ObjectMapper(YAMLFactory())
 
@@ -22,6 +23,7 @@ object TrajectoryConfigManager {
         module.addDeserializer(TrajectoryConfig::class.java, TrajectoryConfigDeserializer())
         MAPPER.registerModule(module)
         MAPPER.registerKotlinModule()
+        MAPPER.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
 
     /**
