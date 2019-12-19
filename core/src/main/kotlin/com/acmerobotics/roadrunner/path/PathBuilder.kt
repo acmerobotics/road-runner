@@ -111,9 +111,15 @@ class PathBuilder private constructor(
             return TangentInterpolator(prevInterpolator.reversed)
         }
 
-        val reversed = !(startHeading epsilonEquals currentHeading!!)
-        val valid = (!reversed && Angle.norm(startHeading - currentHeading!!) epsilonEquals 0.0) ||
-            (reversed && Angle.norm(startHeading - currentHeading!! + PI) epsilonEquals 0.0)
+        val (valid, reversed) = if (Angle.normDelta(startHeading - currentHeading!!) epsilonEquals 0.0) {
+            true to false
+        } else {
+            if (Angle.normDelta(startHeading - currentHeading!! + PI) epsilonEquals 0.0) {
+                true to true
+            } else {
+                false to false
+            }
+        }
 
         if (!valid) {
             throw PathContinuityViolationException()

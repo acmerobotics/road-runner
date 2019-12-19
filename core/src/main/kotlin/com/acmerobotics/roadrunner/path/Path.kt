@@ -116,22 +116,22 @@ class Path(val segments: List<PathSegment>) {
     fun project(queryPoint: Vector2d, projectGuess: Double = length() / 2.0): Double {
         // we use the first-order method (since we already compute the arc length param
         var s = projectGuess
-        while (true) {
+        repeat (500) {
             val pathPoint = get(s).vec()
             val deriv = deriv(s).vec()
             val ds = (queryPoint - pathPoint) dot deriv
 
-            if (ds epsilonEquals 0.0) break
-
             // there are occasional oscillations if the full ds is used
-            // this should guarantee convergence with a minor performance penalty
-            s += ds / 2.0
+            // this "learning rate" scheduling helps convergence
+            val update = ds / (1.0 + it / 500.0)
 
-            if (s <= 0.0 || s >= length()) {
-                s = max(0.0, min(s, length()))
-                break
-            }
+            if (update epsilonEquals 0.0) return@repeat
+
+            s += update
+
+            s = max(0.0, min(s, length()))
         }
+
         return s
     }
 
