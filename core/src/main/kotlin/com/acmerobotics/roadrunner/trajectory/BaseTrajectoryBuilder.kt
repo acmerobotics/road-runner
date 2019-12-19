@@ -55,7 +55,7 @@ abstract class BaseTrajectoryBuilder protected constructor(
      *
      * @param position end position
      */
-    fun lineTo(position: Vector2d): BaseTrajectoryBuilder {
+    open fun lineTo(position: Vector2d): BaseTrajectoryBuilder {
         pathBuilder.lineTo(position)
 
         return this
@@ -66,7 +66,7 @@ abstract class BaseTrajectoryBuilder protected constructor(
      *
      * @param position end position
      */
-    fun lineToConstantHeading(position: Vector2d): BaseTrajectoryBuilder {
+    open fun lineToConstantHeading(position: Vector2d): BaseTrajectoryBuilder {
         pathBuilder.lineToConstantHeading(position)
 
         return this
@@ -77,7 +77,7 @@ abstract class BaseTrajectoryBuilder protected constructor(
      *
      * @param position end position
      */
-    fun lineToLinearHeading(position: Vector2d, heading: Double): BaseTrajectoryBuilder {
+    open fun lineToLinearHeading(position: Vector2d, heading: Double): BaseTrajectoryBuilder {
         pathBuilder.lineToLinearHeading(position, heading)
 
         return this
@@ -88,7 +88,7 @@ abstract class BaseTrajectoryBuilder protected constructor(
      *
      * @param position end position
      */
-    fun lineToSplineHeading(position: Vector2d, heading: Double): BaseTrajectoryBuilder {
+    open fun lineToSplineHeading(position: Vector2d, heading: Double): BaseTrajectoryBuilder {
         pathBuilder.lineToSplineHeading(position, heading)
 
         return this
@@ -100,7 +100,7 @@ abstract class BaseTrajectoryBuilder protected constructor(
      *
      * @param position end position
      */
-    fun strafeTo(position: Vector2d): BaseTrajectoryBuilder {
+    open fun strafeTo(position: Vector2d): BaseTrajectoryBuilder {
         pathBuilder.strafeTo(position)
 
         return this
@@ -111,7 +111,7 @@ abstract class BaseTrajectoryBuilder protected constructor(
      *
      * @param distance distance to travel forward
      */
-    fun forward(distance: Double): BaseTrajectoryBuilder {
+    open fun forward(distance: Double): BaseTrajectoryBuilder {
         pathBuilder.forward(distance)
 
         return this
@@ -122,7 +122,7 @@ abstract class BaseTrajectoryBuilder protected constructor(
      *
      * @param distance distance to travel backward
      */
-    fun back(distance: Double): BaseTrajectoryBuilder {
+    open fun back(distance: Double): BaseTrajectoryBuilder {
         pathBuilder.back(distance)
 
         return this
@@ -133,7 +133,7 @@ abstract class BaseTrajectoryBuilder protected constructor(
      *
      * @param distance distance to strafe left
      */
-    fun strafeLeft(distance: Double): BaseTrajectoryBuilder {
+    open fun strafeLeft(distance: Double): BaseTrajectoryBuilder {
         pathBuilder.strafeLeft(distance)
 
         return this
@@ -144,7 +144,7 @@ abstract class BaseTrajectoryBuilder protected constructor(
      *
      * @param distance distance to strafe right
      */
-    fun strafeRight(distance: Double): BaseTrajectoryBuilder {
+    open fun strafeRight(distance: Double): BaseTrajectoryBuilder {
         pathBuilder.strafeRight(distance)
 
         return this
@@ -171,7 +171,7 @@ abstract class BaseTrajectoryBuilder protected constructor(
      *
      * @param pose end pose
      */
-    fun splineTo(pose: Pose2d): BaseTrajectoryBuilder {
+    open fun splineTo(pose: Pose2d): BaseTrajectoryBuilder {
         pathBuilder.splineTo(pose)
 
         return this
@@ -182,7 +182,7 @@ abstract class BaseTrajectoryBuilder protected constructor(
      *
      * @param pose end pose
      */
-    fun splineToConstantHeading(pose: Pose2d): BaseTrajectoryBuilder {
+    open fun splineToConstantHeading(pose: Pose2d): BaseTrajectoryBuilder {
         pathBuilder.splineToConstantHeading(pose)
 
         return this
@@ -193,7 +193,7 @@ abstract class BaseTrajectoryBuilder protected constructor(
      *
      * @param pose end pose
      */
-    fun splineToLinearHeading(pose: Pose2d, heading: Double): BaseTrajectoryBuilder {
+    open fun splineToLinearHeading(pose: Pose2d, heading: Double): BaseTrajectoryBuilder {
         pathBuilder.splineToLinearHeading(pose, heading)
 
         return this
@@ -204,7 +204,7 @@ abstract class BaseTrajectoryBuilder protected constructor(
      *
      * @param pose end pose
      */
-    fun splineToSplineHeading(pose: Pose2d, heading: Double): BaseTrajectoryBuilder {
+    open fun splineToSplineHeading(pose: Pose2d, heading: Double): BaseTrajectoryBuilder {
         pathBuilder.splineToSplineHeading(pose, heading)
 
         return this
@@ -213,11 +213,11 @@ abstract class BaseTrajectoryBuilder protected constructor(
     /**
      * Adds a marker to the trajectory at [time].
      */
-    fun addMarker(time: Double, callback: () -> Unit) = addMarker(0.0, time, callback)
+    open fun addMarker(time: Double, callback: () -> Unit) = addMarker(0.0, time, callback)
 
-    fun addMarker(scale: Double, offset: Double, callback: () -> Unit) = addMarker({ scale * it + offset }, callback)
+    open fun addMarker(scale: Double, offset: Double, callback: () -> Unit) = addMarker({ scale * it + offset }, callback)
 
-    fun addMarker(time: (Double) -> Double, callback: () -> Unit): BaseTrajectoryBuilder {
+    open fun addMarker(time: (Double) -> Double, callback: () -> Unit): BaseTrajectoryBuilder {
         temporalMarkers.add(RelativeTemporalMarker(time, callback))
 
         return this
@@ -226,7 +226,7 @@ abstract class BaseTrajectoryBuilder protected constructor(
     /**
      * Adds a marker that will be triggered at the closest trajectory point to [point].
      */
-    fun addMarker(point: Vector2d, callback: () -> Unit): BaseTrajectoryBuilder {
+    open fun addMarker(point: Vector2d, callback: () -> Unit): BaseTrajectoryBuilder {
         spatialMarkers.add(SpatialMarker(point, callback))
 
         return this
@@ -235,7 +235,7 @@ abstract class BaseTrajectoryBuilder protected constructor(
     /**
      * Adds a marker at the current position of the trajectory.
      */
-    fun addMarker(callback: () -> Unit) =
+    open fun addMarker(callback: () -> Unit) =
         addMarker((pathBuilder.currentPose ?: pathBuilder.path!![pathBuilder.s!!]).vec(), callback)
 
     /**
