@@ -164,11 +164,11 @@ class QuinticSpline(
     }
 
     override fun reparam(s: DoubleProgression): DoubleArray {
-        val t = DoubleArray(s.items())
+        val t = DoubleArray(s.size())
         var i = 0
         var sampleIndex = 0
         var currS = s.start
-        while (currS <= s.end) {
+        while (i < t.size) {
             t[i++] = when {
                 currS <= 0.0 -> 0.0
                 currS >= length -> 1.0

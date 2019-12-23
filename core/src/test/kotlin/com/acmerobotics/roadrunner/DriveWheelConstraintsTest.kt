@@ -44,7 +44,7 @@ class DriveWheelConstraintsTest {
     @Test
     fun testTankWheelVelocityLimiting() {
         val constraints = TankConstraints(BASE_CONSTRAINTS, 10.0)
-        val trajectory = TrajectoryBuilder(Pose2d(0.0, 0.0, 0.0), constraints = constraints)
+        val trajectory = TrajectoryBuilder(Pose2d(0.0, 0.0, 0.0), constraints = constraints, resolution = 0.01)
             .splineTo(Pose2d(15.0, 15.0, PI))
             .splineTo(Pose2d(5.0, 35.0, PI / 3))
             .build()
@@ -56,7 +56,7 @@ class DriveWheelConstraintsTest {
     @Test
     fun testTankWheelVelocityLimitingReversed() {
         val constraints = TankConstraints(BASE_CONSTRAINTS, 10.0)
-        val trajectory = TrajectoryBuilder(Pose2d(0.0, 0.0, 0.0), startHeading = PI, constraints = constraints)
+        val trajectory = TrajectoryBuilder(Pose2d(0.0, 0.0, 0.0), startHeading = PI, constraints = constraints, resolution = 0.01)
             .splineTo(Pose2d(15.0, 15.0, PI))
             .splineTo(Pose2d(5.0, 35.0, PI / 3))
             .build()
@@ -68,7 +68,7 @@ class DriveWheelConstraintsTest {
     @Test
     fun testMecanumWheelVelocityLimiting() {
         val constraints = MecanumConstraints(BASE_CONSTRAINTS, 10.0, 5.0)
-        val trajectory = TrajectoryBuilder(Pose2d(0.0, 0.0, 0.0), constraints = constraints)
+        val trajectory = TrajectoryBuilder(Pose2d(0.0, 0.0, 0.0), constraints = constraints, resolution = 0.01)
                 .splineTo(Pose2d(15.0, 15.0, PI), interpolator = SplineInterpolator(0.0, PI / 2))
                 .splineTo(Pose2d(5.0, 35.0, PI / 3), interpolator = TangentInterpolator())
                 .build()
@@ -80,7 +80,7 @@ class DriveWheelConstraintsTest {
     @Test
     fun testSwerveWheelVelocityLimiting() {
         val constraints = SwerveConstraints(BASE_CONSTRAINTS, 10.0, 5.0)
-        val trajectory = TrajectoryBuilder(Pose2d(0.0, 0.0, 0.0), constraints = constraints)
+        val trajectory = TrajectoryBuilder(Pose2d(0.0, 0.0, 0.0), constraints = constraints, resolution = 0.01)
                 .splineTo(Pose2d(15.0, 15.0, PI), interpolator = SplineInterpolator(0.0, PI / 2))
                 .splineTo(Pose2d(5.0, 35.0, PI / 3), interpolator = TangentInterpolator())
                 .build()

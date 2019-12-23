@@ -329,9 +329,8 @@ object MotionProfileGenerator {
         val length = goal.x - start.x
         // dx is an adjusted resolution that fits nicely within length
         val samples = ceil(length / resolution).toInt()
-        val dx = length / samples
 
-        val s = DoubleProgression(0.0, length, dx)
+        val s = DoubleProgression.fromClosedInterval(0.0, length, samples)
         val constraintsList = constraints[s + start.x]
 
         // compute the forward states

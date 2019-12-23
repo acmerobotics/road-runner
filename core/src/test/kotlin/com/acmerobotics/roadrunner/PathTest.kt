@@ -56,7 +56,7 @@ class PathTest {
             ))
         ))
 
-        val dispProg = DoubleProgression(0.0, path.length(), 5.0)
+        val dispProg = DoubleProgression.fromClosedInterval(0.0, path.length(), 20)
         val indiv = dispProg.map(path::reparam)
         val seq = path.reparam(dispProg).toList()
         indiv.zip(seq).forEach { (a, b) ->

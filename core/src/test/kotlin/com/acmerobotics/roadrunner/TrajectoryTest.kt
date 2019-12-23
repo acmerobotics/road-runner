@@ -2,9 +2,13 @@ package com.acmerobotics.roadrunner
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
+import com.acmerobotics.roadrunner.path.Path
+import com.acmerobotics.roadrunner.path.PathSegment
+import com.acmerobotics.roadrunner.path.QuinticSpline
 import com.acmerobotics.roadrunner.path.heading.TangentInterpolator
 import com.acmerobotics.roadrunner.path.heading.WiggleInterpolator
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
+import com.acmerobotics.roadrunner.trajectory.TrajectoryGenerator
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -42,5 +46,17 @@ class TrajectoryTest {
 
         TestUtil.assertDerivEquals(y, velY, dt, 0.05, 0.1)
         TestUtil.assertDerivEquals(velY, accelY, dt, 0.05, 0.1)
+    }
+
+    @Test
+    fun testShortTrajectory() {
+        val path = Path(listOf(PathSegment(QuinticSpline(
+            QuinticSpline.Waypoint(0.0, 0.0, 0.0, -1.0),
+            QuinticSpline.Waypoint(1e-4, 1e-4, 0.707, 0.707)
+        )), PathSegment(QuinticSpline(
+            QuinticSpline.Waypoint(1e-4, 1e-4, 0.707, 0.707),
+            QuinticSpline.Waypoint(2e-4, 0.0, -1.0, 0.0)
+        ))))
+        TrajectoryGenerator.generateTrajectory(path, DriveConstraints(5.0, 10.0, 0.0, 2.0, 3.0, 0.0), resolution = 1.0)
     }
 }

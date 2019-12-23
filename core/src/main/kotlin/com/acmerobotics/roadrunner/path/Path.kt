@@ -83,10 +83,10 @@ class Path(val segments: List<PathSegment>) {
     }
 
     internal fun reparam(s: DoubleProgression): DoubleArray {
-        val t = DoubleArray(s.items())
+        val t = DoubleArray(s.size())
         // skip any negative s entries (the corresponding array entries are already 0.0)
         var (ignore, remainingDisplacement) = s.split(0.0)
-        var offset = ignore.items()
+        var offset = ignore.size()
         for (segment in segments) {
             if (offset == t.size) {
                 break
@@ -96,7 +96,7 @@ class Path(val segments: List<PathSegment>) {
             val segmentDisplacement = pair.first
             if (!segmentDisplacement.isEmpty()) {
                 segment.reparam(segmentDisplacement).copyInto(t, offset, 0)
-                offset += segmentDisplacement.items()
+                offset += segmentDisplacement.size()
             }
             remainingDisplacement = pair.second - segment.length()
         }

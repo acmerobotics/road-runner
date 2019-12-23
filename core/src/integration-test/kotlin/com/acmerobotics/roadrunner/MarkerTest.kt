@@ -29,7 +29,8 @@ class MarkerTest {
             .splineTo(Pose2d(random.nextDouble(), random.nextDouble(), 2 * PI * random.nextDouble()))
             .build()
         repeat (trials) {
-            val position = path[path.length() * random.nextDouble()].vec()
+            val displacement = path.length() * random.nextDouble()
+            val position = path[displacement].vec()
             val trajectory = TrajectoryGenerator.generateTrajectory(path, constraints, spatialMarkers = listOf(
                 SpatialMarker(position) { }
             ), resolution = 0.01)
@@ -42,6 +43,6 @@ class MarkerTest {
             hist.getxAxisData(), hist.getyAxisData())
         GraphUtil.saveGraph("markerError", chart)
 
-        assert(distances.max()!! < 1e-4)
+        assert(distances.max()!! < 0.01)
     }
 }
