@@ -40,7 +40,7 @@ class GuidingVectorField(
      */
     fun getExtended(x: Double, y: Double, projectGuess: Double = path.length() / 2.0): GVFResult {
         val point = Vector2d(x, y)
-        val displacement = path.project(Vector2d(x, y), projectGuess)
+        val displacement = path.fastProject(Vector2d(x, y), projectGuess)
         val pathPoint = path[displacement].vec()
         val tangent = path.deriv(displacement).vec()
         val pathToPoint = point - pathPoint

@@ -52,10 +52,10 @@ object TrajectoryGenerator {
     }
 
     private fun pointToTime(path: Path, profile: MotionProfile, point: Vector2d): Double {
-        val distToStart = path.start().vec() distTo point
-        val distToEnd = path.end().vec() distTo point
-        val s0 = path.length() * distToStart / (distToStart + distToEnd)
-        val s = path.project(point, s0)
+//        val distToStart = path.start().vec() distTo point
+//        val distToEnd = path.end().vec() distTo point
+//        val s0 = path.length() * distToStart / (distToStart + distToEnd)
+        val s = path.project(point)
         var tLo = 0.0
         var tHi = profile.duration()
         while (!(tLo epsilonEquals tHi)) {
