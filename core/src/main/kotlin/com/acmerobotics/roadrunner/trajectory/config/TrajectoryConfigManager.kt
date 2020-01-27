@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import java.io.File
+import java.io.InputStream
 
 /**
  * Class containing methods for saving (loading) trajectory configurations to (from) YAML files.
@@ -55,6 +56,13 @@ object TrajectoryConfigManager {
      */
     @JvmStatic
     fun loadConfig(file: File): TrajectoryConfig? = MAPPER.readValue(file, TrajectoryConfig::class.java)
+
+    /**
+     * Loads a [TrajectoryConfig] from [inputStream].
+     */
+    @JvmStatic
+    fun loadConfig(inputStream: InputStream): TrajectoryConfig? =
+        MAPPER.readValue(inputStream, TrajectoryConfig::class.java)
 
     /**
      * Loads the [TrajectoryGroupConfig] corresponding to the [TrajectoryConfig] file [file]. This method recursively
