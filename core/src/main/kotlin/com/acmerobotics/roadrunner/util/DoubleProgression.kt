@@ -17,7 +17,7 @@ data class DoubleProgression(
             val step = if (count == 0) {
                 0.0
             } else {
-                (endInclusive - start) / count
+                (endInclusive - start) / (count - 1)
             }
             return DoubleProgression(start, step, count)
         }
@@ -50,7 +50,7 @@ data class DoubleProgression(
         }
     }
 
-    fun size()= size
+    fun size() = size
 
     fun split(sep: Double): Pair<DoubleProgression, DoubleProgression> {
         val sepIndex = ceilIndex(sep)
@@ -72,7 +72,6 @@ data class DoubleProgression(
 
         override fun next() = get(iterator.next())
     }
-
 
     override fun iterator() = IteratorImpl()
 }
