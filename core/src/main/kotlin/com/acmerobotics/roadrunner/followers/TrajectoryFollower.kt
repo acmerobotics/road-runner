@@ -73,7 +73,7 @@ abstract class TrajectoryFollower @JvmOverloads constructor(
      */
     fun update(currentPose: Pose2d): DriveSignal {
         while (remainingMarkers.size > 0 && elapsedTime() > remainingMarkers[0].time) {
-            remainingMarkers.removeAt(0).callback()
+            remainingMarkers.removeAt(0).callback.onMarkerReached()
         }
 
         val trajEndError = trajectory.end() - currentPose
@@ -85,7 +85,7 @@ abstract class TrajectoryFollower @JvmOverloads constructor(
         } else {
             if (!executedFinalUpdate) {
                 for (marker in remainingMarkers) {
-                    marker.callback()
+                    marker.callback.onMarkerReached()
                 }
                 remainingMarkers.clear()
                 executedFinalUpdate = true

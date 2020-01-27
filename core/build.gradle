@@ -13,6 +13,7 @@ buildscript {
 
 plugins {
     id 'kotlin'
+    id 'java'
     id 'maven-publish'
 }
 apply plugin: 'org.jetbrains.dokka'
@@ -35,6 +36,12 @@ test {
 }
 
 sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/kotlin']
+        }
+    }
+
     integrationTest {
         java {
             compileClasspath += main.output + test.output

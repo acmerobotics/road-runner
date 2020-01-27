@@ -213,11 +213,11 @@ abstract class BaseTrajectoryBuilder protected constructor(
     /**
      * Adds a marker to the trajectory at [time].
      */
-    fun addMarker(time: Double, callback: () -> Unit) = addMarker(0.0, time, callback)
+    fun addMarker(time: Double, callback: MarkerCallback) = addMarker(0.0, time, callback)
 
-    fun addMarker(scale: Double, offset: Double, callback: () -> Unit) = addMarker({ scale * it + offset }, callback)
+    fun addMarker(scale: Double, offset: Double, callback: MarkerCallback) = addMarker({ scale * it + offset }, callback)
 
-    fun addMarker(time: (Double) -> Double, callback: () -> Unit): BaseTrajectoryBuilder {
+    fun addMarker(time: (Double) -> Double, callback: MarkerCallback): BaseTrajectoryBuilder {
         temporalMarkers.add(RelativeTemporalMarker(time, callback))
 
         return this
@@ -226,7 +226,7 @@ abstract class BaseTrajectoryBuilder protected constructor(
     /**
      * Adds a marker that will be triggered at the closest trajectory point to [point].
      */
-    fun addMarker(point: Vector2d, callback: () -> Unit): BaseTrajectoryBuilder {
+    fun addMarker(point: Vector2d, callback: MarkerCallback): BaseTrajectoryBuilder {
         spatialMarkers.add(SpatialMarker(point, callback))
 
         return this
@@ -235,7 +235,7 @@ abstract class BaseTrajectoryBuilder protected constructor(
     /**
      * Adds a marker at the current position of the trajectory.
      */
-    fun addMarker(callback: () -> Unit) =
+    fun addMarker(callback: MarkerCallback) =
         addMarker((pathBuilder.currentPose ?: pathBuilder.path!![pathBuilder.s!!]).vec(), callback)
 
     /**
