@@ -13,7 +13,7 @@ import com.acmerobotics.roadrunner.profile.MotionProfile
 class Trajectory @JvmOverloads constructor(
     val path: Path,
     val profile: MotionProfile,
-    val markers: List<AbsoluteTemporalMarker> = emptyList()
+    val markers: List<TrajectoryMarker> = emptyList()
 ) {
     fun duration() = profile.duration()
 

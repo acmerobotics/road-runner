@@ -31,8 +31,9 @@ abstract class BaseTrajectoryBuilder protected constructor(
     val currentHeading
         get() = pathBuilder.currentHeading
 
-    private var temporalMarkers = mutableListOf<RelativeTemporalMarker>()
-    private var spatialMarkers = mutableListOf<SpatialMarker>()
+    private val temporalMarkers = mutableListOf<TemporalMarker>()
+    private val displacementMarkers = mutableListOf<DisplacementMarker>()
+    private val spatialMarkers = mutableListOf<SpatialMarker>()
 
     /**
      * Adds a line path segment.
@@ -213,12 +214,20 @@ abstract class BaseTrajectoryBuilder protected constructor(
     /**
      * Adds a marker to the trajectory at [time].
      */
-    fun addMarker(time: Double, callback: MarkerCallback) = addMarker(0.0, time, callback)
+    fun addTemporalMarker(time: Double, callback: MarkerCallback) =
+        addTemporalMarker(0.0, time, callback)
 
-    fun addMarker(scale: Double, offset: Double, callback: MarkerCallback) = addMarker({ scale * it + offset }, callback)
+    /**
+     * Adds a marker to the trajectory at [scale] * trajectory duration + [offset].
+     */
+    fun addTemporalMarker(scale: Double, offset: Double, callback: MarkerCallback) =
+        addTemporalMarker({ scale * it + offset }, callback)
 
-    fun addMarker(time: (Double) -> Double, callback: MarkerCallback): BaseTrajectoryBuilder {
-        temporalMarkers.add(RelativeTemporalMarker(time, callback))
+    /**
+     * Adds a marker to the trajectory at [time] evaluated with the trajectory duration.
+     */
+    fun addTemporalMarker(time: (Double) -> Double, callback: MarkerCallback): BaseTrajectoryBuilder {
+        temporalMarkers.add(TemporalMarker(time, callback))
 
         return this
     }
@@ -226,7 +235,7 @@ abstract class BaseTrajectoryBuilder protected constructor(
     /**
      * Adds a marker that will be triggered at the closest trajectory point to [point].
      */
-    fun addMarker(point: Vector2d, callback: MarkerCallback): BaseTrajectoryBuilder {
+    fun addSpatialMarker(point: Vector2d, callback: MarkerCallback): BaseTrajectoryBuilder {
         spatialMarkers.add(SpatialMarker(point, callback))
 
         return this
@@ -235,20 +244,42 @@ abstract class BaseTrajectoryBuilder protected constructor(
     /**
      * Adds a marker at the current position of the trajectory.
      */
-    fun addMarker(callback: MarkerCallback) =
-        addMarker((pathBuilder.currentPose ?: pathBuilder.path!![pathBuilder.s!!]).vec(), callback)
+    fun addDisplacementMarker(callback: MarkerCallback) =
+        addDisplacementMarker(pathBuilder.build().length(), callback)
+
+    /**
+     * Adds a marker to the trajectory at [displacement].
+     */
+    fun addDisplacementMarker(displacement: Double, callback: MarkerCallback) =
+        addDisplacementMarker(0.0, displacement, callback)
+
+    /**
+     * Adds a marker to the trajectory at [scale] * path length + [offset].
+     */
+    fun addDisplacementMarker(scale: Double, offset: Double, callback: MarkerCallback) =
+        addDisplacementMarker({ scale * it + offset}, callback)
+
+    /**
+     * Adds a marker to the trajectory at [displacement] evaluated with path length.
+     */
+    fun addDisplacementMarker(displacement: (Double) -> Double, callback: MarkerCallback): BaseTrajectoryBuilder {
+        displacementMarkers.add(DisplacementMarker(displacement, callback))
+
+        return this
+    }
 
     /**
      * Constructs the [Trajectory] instance.
      */
-    fun build() = buildTrajectory(pathBuilder.build(), temporalMarkers, spatialMarkers)
+    fun build() = buildTrajectory(pathBuilder.build(), temporalMarkers, displacementMarkers, spatialMarkers)
 
     /**
      * Build a trajectory from [path].
      */
     protected abstract fun buildTrajectory(
         path: Path,
-        temporalMarkers: List<RelativeTemporalMarker>,
+        temporalMarkers: List<TemporalMarker>,
+        displacementMarkers: List<DisplacementMarker>,
         spatialMarkers: List<SpatialMarker>
     ): Trajectory
 }

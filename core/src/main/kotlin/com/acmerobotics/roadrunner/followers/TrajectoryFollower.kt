@@ -2,7 +2,7 @@ package com.acmerobotics.roadrunner.followers
 
 import com.acmerobotics.roadrunner.drive.DriveSignal
 import com.acmerobotics.roadrunner.geometry.Pose2d
-import com.acmerobotics.roadrunner.trajectory.AbsoluteTemporalMarker
+import com.acmerobotics.roadrunner.trajectory.TrajectoryMarker
 import com.acmerobotics.roadrunner.trajectory.Trajectory
 import com.acmerobotics.roadrunner.util.NanoClock
 import kotlin.math.abs
@@ -21,7 +21,7 @@ abstract class TrajectoryFollower @JvmOverloads constructor(
 ) {
     private var startTimestamp: Double = 0.0
     private var admissible = false
-    private var remainingMarkers = mutableListOf<AbsoluteTemporalMarker>()
+    private var remainingMarkers = mutableListOf<TrajectoryMarker>()
     private var executedFinalUpdate = false
 
     /**

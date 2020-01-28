@@ -42,7 +42,6 @@ class PathBuilder private constructor(
     @JvmOverloads
     constructor(startPose: Pose2d, startHeading: Double = startPose.heading) : this(startPose, startHeading, null, null)
 
-    @JvmOverloads
     constructor(path: Path, s: Double) : this(null, null, path, s)
 
     var currentPose: Pose2d? = startPose

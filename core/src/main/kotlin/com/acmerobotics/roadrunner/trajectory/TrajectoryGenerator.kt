@@ -51,11 +51,8 @@ object TrajectoryGenerator {
             constraints.maxVel, constraints.maxAccel, constraints.maxJerk)
     }
 
-    private fun pointToTime(path: Path, profile: MotionProfile, point: Vector2d): Double {
-//        val distToStart = path.start().vec() distTo point
-//        val distToEnd = path.end().vec() distTo point
-//        val s0 = path.length() * distToStart / (distToStart + distToEnd)
-        val s = path.project(point)
+    // note: this assumes that the profile position is monotonic increasing
+    private fun displacementToTime(profile: MotionProfile, s: Double): Double {
         var tLo = 0.0
         var tHi = profile.duration()
         while (!(tLo epsilonEquals tHi)) {
@@ -69,16 +66,22 @@ object TrajectoryGenerator {
         return 0.5 * (tLo + tHi)
     }
 
-    private fun mergeMarkers(
+    private fun pointToTime(path: Path, profile: MotionProfile, point: Vector2d) =
+        displacementToTime(profile, path.project(point))
+
+    private fun convertMarkers(
         path: Path,
         profile: MotionProfile,
-        temporalMarkers: List<RelativeTemporalMarker>,
+        temporalMarkers: List<TemporalMarker>,
+        displacementMarkers: List<DisplacementMarker>,
         spatialMarkers: List<SpatialMarker>
-    ): List<AbsoluteTemporalMarker> {
+    ): List<TrajectoryMarker> {
         return temporalMarkers.map { (time, callback) ->
-            AbsoluteTemporalMarker(time(profile.duration()), callback) } +
+            TrajectoryMarker(time(profile.duration()), callback) } +
+            displacementMarkers.map { (displacement, callback) ->
+                TrajectoryMarker(displacementToTime(profile, displacement(path.length())), callback) } +
             spatialMarkers.map { (point, callback) ->
-                AbsoluteTemporalMarker(pointToTime(path, profile, point), callback) }
+                TrajectoryMarker(pointToTime(path, profile, point), callback) }
     }
 
     /**
@@ -98,12 +101,13 @@ object TrajectoryGenerator {
         constraints: TrajectoryConstraints,
         start: MotionState = MotionState(0.0, 0.0, 0.0),
         goal: MotionState = MotionState(path.length(), 0.0, 0.0),
-        temporalMarkers: List<RelativeTemporalMarker> = emptyList(),
+        temporalMarkers: List<TemporalMarker> = emptyList(),
+        displacementMarkers: List<DisplacementMarker> = emptyList(),
         spatialMarkers: List<SpatialMarker> = emptyList(),
         resolution: Double = 0.25
     ): Trajectory {
         val profile = generateProfile(path, constraints, start, goal, resolution)
-        val markers = mergeMarkers(path, profile, temporalMarkers, spatialMarkers)
+        val markers = convertMarkers(path, profile, temporalMarkers, displacementMarkers, spatialMarkers)
         return Trajectory(path, profile, markers)
     }
 
@@ -123,11 +127,12 @@ object TrajectoryGenerator {
         constraints: DriveConstraints,
         start: MotionState = MotionState(0.0, 0.0, 0.0, 0.0),
         goal: MotionState = MotionState(path.length(), 0.0, 0.0, 0.0),
-        temporalMarkers: List<RelativeTemporalMarker> = emptyList(),
+        temporalMarkers: List<TemporalMarker> = emptyList(),
+        displacementMarkers: List<DisplacementMarker> = emptyList(),
         spatialMarkers: List<SpatialMarker> = emptyList()
     ): Trajectory {
         val profile = generateSimpleProfile(constraints, start, goal)
-        val markers = mergeMarkers(path, profile, temporalMarkers, spatialMarkers)
+        val markers = convertMarkers(path, profile, temporalMarkers, displacementMarkers, spatialMarkers)
         return Trajectory(path, profile, markers)
     }
 }
