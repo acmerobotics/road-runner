@@ -40,7 +40,11 @@ class PathBuilder private constructor(
     internal val s: Double?
 ) {
     @JvmOverloads
-    constructor(startPose: Pose2d, startHeading: Double = startPose.heading) : this(startPose, startHeading, null, null)
+    constructor(startPose: Pose2d, startHeading: Double = startPose.heading) :
+        this(startPose, startHeading, null, null)
+
+    constructor(startPose: Pose2d, reversed: Boolean) :
+        this(startPose, Angle.norm(startPose.heading + if (reversed) PI else 0.0))
 
     constructor(path: Path, s: Double) : this(null, null, path, s)
 
@@ -100,31 +104,17 @@ class PathBuilder private constructor(
     }
 
     private fun makeTangentInterpolator(curve: ParametricCurve): TangentInterpolator {
-        val startHeading = curve.tangentAngle(0.0, 0.0)
-
         if (currentHeading == null) {
             val prevInterpolator = path!!.segment(s!!).first.interpolator
             if (prevInterpolator !is TangentInterpolator) {
                 throw PathContinuityViolationException()
             }
-            return TangentInterpolator(prevInterpolator.reversed)
+            return TangentInterpolator(prevInterpolator.offset)
         }
 
-        val (valid, reversed) = if (Angle.normDelta(startHeading - currentHeading!!) epsilonEquals 0.0) {
-            true to false
-        } else {
-            if (Angle.normDelta(startHeading - currentHeading!! + PI) epsilonEquals 0.0) {
-                true to true
-            } else {
-                false to false
-            }
-        }
+        val startHeading = curve.tangentAngle(0.0, 0.0)
 
-        if (!valid) {
-            throw PathContinuityViolationException()
-        }
-
-        val interpolator = TangentInterpolator(reversed)
+        val interpolator = TangentInterpolator(currentHeading!! - startHeading)
         interpolator.init(curve)
         currentHeading = interpolator.end()
         return interpolator
