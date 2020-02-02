@@ -1,5 +1,6 @@
 package com.acmerobotics.roadrunner.geometry
 
+import com.acmerobotics.roadrunner.util.Angle
 import com.acmerobotics.roadrunner.util.epsilonEquals
 import kotlin.math.cos
 import kotlin.math.sin
@@ -33,7 +34,7 @@ data class Pose2d @JvmOverloads constructor(
     operator fun unaryMinus() = Pose2d(-x, -y, -heading)
 
     infix fun epsilonEquals(other: Pose2d) =
-        x epsilonEquals other.x && y epsilonEquals other.y && heading epsilonEquals other.heading
+        x epsilonEquals other.x && y epsilonEquals other.y && Angle.normDelta(heading - other.heading) epsilonEquals 0.0
 
     override fun toString() = String.format("(%.3f, %.3f, %.3f°)", x, y, Math.toDegrees(heading))
 }

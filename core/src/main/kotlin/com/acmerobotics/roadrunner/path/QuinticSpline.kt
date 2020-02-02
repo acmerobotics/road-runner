@@ -16,12 +16,14 @@ import kotlin.math.sqrt
  * @param end end waypoint
  * @param maxDeltaK maximum change in curvature between arc length param segments
  * @param maxSegmentLength maximum length of a single param segment
+ * @param maxDepth maximum stack depth
  */
 class QuinticSpline(
     start: Waypoint,
     end: Waypoint,
     private val maxDeltaK: Double = 0.01,
-    private val maxSegmentLength: Double = 0.25
+    private val maxSegmentLength: Double = 0.25,
+    private val maxDepth: Int = 30
 ) : ParametricCurve() {
 
     /**
@@ -106,8 +108,13 @@ class QuinticSpline(
         tLo: Double,
         tHi: Double,
         vLo: Vector2d = internalGet(tLo),
-        vHi: Vector2d = internalGet(tHi)
+        vHi: Vector2d = internalGet(tHi),
+        depth: Int = 0
     ) {
+        if (depth >= maxDepth) {
+            return
+        }
+
         val tMid = 0.5 * (tLo + tHi)
         val vMid = internalGet(tMid)
 
@@ -115,8 +122,8 @@ class QuinticSpline(
         val segmentLength = approxLength(vLo, vMid, vHi)
 
         if (deltaK > maxDeltaK || segmentLength > maxSegmentLength) {
-            parametrize(tLo, tMid, vLo, vMid)
-            parametrize(tMid, tHi, vMid, vHi)
+            parametrize(tLo, tMid, vLo, vMid, depth + 1)
+            parametrize(tMid, tHi, vMid, vHi, depth + 1)
         } else {
             length += segmentLength
             sSamples.add(length)
