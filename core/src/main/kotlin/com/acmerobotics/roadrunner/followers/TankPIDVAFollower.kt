@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.control.PIDFController
 import com.acmerobotics.roadrunner.drive.DriveSignal
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.kinematics.Kinematics
+import com.acmerobotics.roadrunner.trajectory.Trajectory
 import com.acmerobotics.roadrunner.util.NanoClock
 
 /**
@@ -30,6 +31,13 @@ class TankPIDVAFollower @JvmOverloads constructor(
     private val crossTrackController = PIDFController(crossTrackCoeffs)
 
     override var lastError: Pose2d = Pose2d()
+
+    override fun followTrajectory(trajectory: Trajectory) {
+        axialController.reset()
+        crossTrackController.reset()
+
+        super.followTrajectory(trajectory)
+    }
 
     override fun internalUpdate(currentPose: Pose2d): DriveSignal {
         val t = elapsedTime()

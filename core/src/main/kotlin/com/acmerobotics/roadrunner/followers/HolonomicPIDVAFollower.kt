@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.control.PIDFController
 import com.acmerobotics.roadrunner.drive.DriveSignal
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.kinematics.Kinematics
+import com.acmerobotics.roadrunner.trajectory.Trajectory
 import com.acmerobotics.roadrunner.util.NanoClock
 
 /**
@@ -35,6 +36,14 @@ class HolonomicPIDVAFollower @JvmOverloads constructor(
 
     init {
         headingController.setInputBounds(-Math.PI, Math.PI)
+    }
+
+    override fun followTrajectory(trajectory: Trajectory) {
+        axialController.reset()
+        lateralController.reset()
+        headingController.reset()
+
+        super.followTrajectory(trajectory)
     }
 
     override fun internalUpdate(currentPose: Pose2d): DriveSignal {
