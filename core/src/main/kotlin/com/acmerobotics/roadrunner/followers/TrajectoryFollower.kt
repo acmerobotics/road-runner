@@ -2,8 +2,8 @@ package com.acmerobotics.roadrunner.followers
 
 import com.acmerobotics.roadrunner.drive.DriveSignal
 import com.acmerobotics.roadrunner.geometry.Pose2d
-import com.acmerobotics.roadrunner.trajectory.TrajectoryMarker
 import com.acmerobotics.roadrunner.trajectory.Trajectory
+import com.acmerobotics.roadrunner.trajectory.TrajectoryMarker
 import com.acmerobotics.roadrunner.util.NanoClock
 import kotlin.math.abs
 
@@ -80,16 +80,14 @@ abstract class TrajectoryFollower @JvmOverloads constructor(
         admissible = abs(trajEndError.x) < admissibleError.x &&
                 abs(trajEndError.y) < admissibleError.y &&
                 abs(trajEndError.heading) < admissibleError.heading
-        return if (internalIsFollowing()) {
+        return if (internalIsFollowing() || executedFinalUpdate) {
             internalUpdate(currentPose)
         } else {
-            if (!executedFinalUpdate) {
-                for (marker in remainingMarkers) {
-                    marker.callback.onMarkerReached()
-                }
-                remainingMarkers.clear()
-                executedFinalUpdate = true
+            for (marker in remainingMarkers) {
+                marker.callback.onMarkerReached()
             }
+            remainingMarkers.clear()
+            executedFinalUpdate = true
             DriveSignal()
         }
     }
