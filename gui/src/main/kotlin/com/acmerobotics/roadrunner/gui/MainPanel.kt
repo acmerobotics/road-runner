@@ -8,6 +8,7 @@ import com.acmerobotics.roadrunner.trajectory.config.TrajectoryConfig
 import com.acmerobotics.roadrunner.trajectory.config.TrajectoryConfigManager
 import com.acmerobotics.roadrunner.trajectory.config.TrajectoryGroupConfig
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
+import com.acmerobotics.roadrunner.util.epsilonEquals
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.io.File
@@ -115,6 +116,12 @@ class MainPanel : JPanel() {
     }
 
     private fun updateTrajectoryInBackground() {
+        val c = groupConfig.constraints
+        if (c.maxVel epsilonEquals 0.0 || c.maxAccel epsilonEquals 0.0 ||
+            c.maxAngVel epsilonEquals 0.0 || c.maxAngAccel epsilonEquals 0.0) {
+            return
+        }
+
         if (trajGenFuture?.isDone == false) {
             trajGenExecutor.shutdownNow()
             status = "interrupted"
