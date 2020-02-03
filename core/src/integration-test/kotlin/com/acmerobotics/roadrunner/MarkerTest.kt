@@ -28,7 +28,7 @@ class MarkerTest {
         val path = PathBuilder(Pose2d(random.nextDouble(), random.nextDouble(), 2 * PI * random.nextDouble()))
             .splineTo(Pose2d(random.nextDouble(), random.nextDouble(), 2 * PI * random.nextDouble()))
             .build()
-        repeat (trials) {
+        repeat(trials) {
             val displacement = path.length() * random.nextDouble()
             val position = path[displacement].vec()
             val trajectory = TrajectoryGenerator.generateTrajectory(path, constraints, spatialMarkers = listOf(

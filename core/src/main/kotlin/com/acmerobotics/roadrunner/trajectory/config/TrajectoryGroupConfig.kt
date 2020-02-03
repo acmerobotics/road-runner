@@ -7,20 +7,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 
 class TrajectoryGroupConfig(
     var constraints: DriveConstraints,
-    var distanceUnit: DistanceUnit,
     var driveType: DriveType,
     var trackWidth: Double?,
     var wheelBase: Double?,
     var lateralMultiplier: Double?
 ) {
-    enum class DistanceUnit {
-        FOOT,
-        INCH,
-        METER,
-        CENTIMETER,
-        MILLIMETER
-    }
-
     enum class DriveType {
         GENERIC,
         MECANUM,

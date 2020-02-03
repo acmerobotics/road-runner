@@ -24,7 +24,7 @@ object TrajectoryConfigManager {
         module.addDeserializer(TrajectoryConfig::class.java, TrajectoryConfigDeserializer())
         MAPPER.registerModule(module)
         MAPPER.registerKotlinModule()
-        MAPPER.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        MAPPER.setSerializationInclusion(JsonInclude.Include.NON_NULL)
     }
 
     /**

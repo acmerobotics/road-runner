@@ -51,7 +51,6 @@ class MainPanel : JPanel() {
     )
     private var groupConfig: TrajectoryGroupConfig = TrajectoryGroupConfig(
         DEFAULT_CONSTRAINTS,
-        TrajectoryGroupConfig.DistanceUnit.INCH,
         TrajectoryGroupConfig.DriveType.GENERIC,
         null,
         null,

@@ -10,23 +10,23 @@ import kotlin.math.PI
 /**
  * Exception thrown by [PathBuilder].
  */
-abstract class PathBuilderException: Exception()
+abstract class PathBuilderException : Exception()
 
 /**
  * Exception thrown when [PathBuilder] methods are chained illegally. This commonly arises when switching from
  * non-tangent interpolation back to tangent interpolation and when splicing paths.
  */
-class PathContinuityViolationException: PathBuilderException()
+class PathContinuityViolationException : PathBuilderException()
 
 /**
  * Exception thrown when empty path segments are requested.
  */
-class EmptyPathSegmentException: PathBuilderException()
+class EmptyPathSegmentException : PathBuilderException()
 
 /**
  * Exception thrown when an empty builder (i.e., no segments) is built.
  */
-class EmptyPathException: PathBuilderException()
+class EmptyPathException : PathBuilderException()
 
 /**
  * Easy-to-use builder for creating [Path] instances.
@@ -160,7 +160,7 @@ class PathBuilder private constructor(
      * @param position end position
      * @param interpolator heading interpolator
      */
-    @Deprecated("raw heading interpolators are no longer permitted in high-level builders")
+    @Deprecated("raw heading interpolators are overly verbose in high-level builders")
     fun lineTo(position: Vector2d, interpolator: HeadingInterpolator = TangentInterpolator()): PathBuilder {
         val line = makeLine(position)
 
@@ -282,7 +282,7 @@ class PathBuilder private constructor(
      * @param pose end pose
      * @param interpolator heading interpolator
      */
-    @Deprecated("raw heading interpolators are no longer permitted in high-level builders")
+    @Deprecated("raw heading interpolators are overly verbose in high-level builders")
     fun splineTo(pose: Pose2d, interpolator: HeadingInterpolator = TangentInterpolator()): PathBuilder {
         val spline = makeSpline(pose)
 

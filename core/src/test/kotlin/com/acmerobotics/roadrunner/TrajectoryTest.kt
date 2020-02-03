@@ -63,7 +63,7 @@ class TrajectoryTest {
     @Test
     fun testTrajectoryEnd() {
         val endPose = Pose2d(25.0, 25.0, 0.0)
-        repeat (50) {
+        repeat(50) {
             val traj = TrajectoryBuilder(Pose2d(), constraints = DriveConstraints(5.0, 10.0, 0.0, 2.0, 3.0, 0.0))
                 .splineTo(Pose2d(50 * Math.random(), 50 * Math.random(), 2 * PI * Math.random()))
                 .splineTo(Pose2d(50 * Math.random(), 50 * Math.random(), 2 * PI * Math.random()))

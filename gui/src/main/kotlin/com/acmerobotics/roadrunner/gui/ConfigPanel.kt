@@ -11,14 +11,6 @@ private val DRIVE_MAP = mapOf(
     "tank" to TrajectoryGroupConfig.DriveType.TANK
 )
 
-private val UNIT_MAP = mapOf(
-    "foot" to TrajectoryGroupConfig.DistanceUnit.FOOT,
-    "inch" to TrajectoryGroupConfig.DistanceUnit.INCH,
-    "meter" to TrajectoryGroupConfig.DistanceUnit.METER,
-    "centimeter" to TrajectoryGroupConfig.DistanceUnit.CENTIMETER,
-    "millimeter" to TrajectoryGroupConfig.DistanceUnit.MILLIMETER
-)
-
 // TODO: make some kind of wrapper around JTextField for numeric fields
 private fun makeNumField(initialVal: Double) = JTextField(String.format("%.2f", initialVal))
 
@@ -49,7 +41,6 @@ class ConfigPanel : JPanel() {
         )
     }
 
-    private var distanceUnit = TrajectoryGroupConfig.DistanceUnit.INCH
     private var driveType = TrajectoryGroupConfig.DriveType.GENERIC
     private var trackWidth: Double? = null
     private var wheelBase: Double? = null
@@ -59,7 +50,6 @@ class ConfigPanel : JPanel() {
 
     var onUpdateListener: ((TrajectoryGroupConfig) -> Unit)? = null
 
-    private val distanceUnitComboBox = JComboBox(UNIT_MAP.keys.toTypedArray())
     private val driveTypeComboBox = JComboBox(DRIVE_MAP.keys.toTypedArray())
     private val trackWidthLabel = JLabel("Track Width", SwingConstants.RIGHT)
     private val trackWidthField = makeNumField(0.0)
@@ -81,14 +71,6 @@ class ConfigPanel : JPanel() {
 
         val leftPanel = JPanel()
         leftPanel.layout = GridLayout(0, 2, 5, 5)
-
-        leftPanel.add(JLabel("Distance Unit", SwingConstants.RIGHT))
-        leftPanel.add(distanceUnitComboBox)
-        distanceUnitComboBox.addActionListener {
-            distanceUnit = UNIT_MAP.getValue(distanceUnitComboBox.selectedItem as String)
-
-            fireUpdate()
-        }
 
         leftPanel.add(JLabel("Drive Type", SwingConstants.RIGHT))
         leftPanel.add(driveTypeComboBox)
@@ -231,7 +213,7 @@ class ConfigPanel : JPanel() {
     }
 
     private fun fireUpdate() {
-        onUpdateListener?.invoke(TrajectoryGroupConfig(mutableConstraints.immutable(), distanceUnit, driveType, trackWidth, wheelBase, lateralMultiplier))
+        onUpdateListener?.invoke(TrajectoryGroupConfig(mutableConstraints.immutable(), driveType, trackWidth, wheelBase, lateralMultiplier))
     }
 
     fun update(groupConfig: TrajectoryGroupConfig) {
@@ -240,13 +222,11 @@ class ConfigPanel : JPanel() {
 
         driveTypeComboBox.selectedItem = DRIVE_MAP.entries.first { it.value == driveType }.key
 
-        distanceUnit = groupConfig.distanceUnit
         driveType = groupConfig.driveType
         trackWidth = groupConfig.trackWidth
         wheelBase = groupConfig.wheelBase
         lateralMultiplier = groupConfig.lateralMultiplier
 
-        distanceUnitComboBox.selectedItem = UNIT_MAP.entries.first { it.value == distanceUnit }.key
         trackWidthField.text = String.format("%.2f", trackWidth)
         if (wheelBase != null) {
             wheelBaseField.text = String.format("%.2f", wheelBase!!)

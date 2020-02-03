@@ -117,7 +117,7 @@ class Path(val segments: List<PathSegment>) {
     fun fastProject(queryPoint: Vector2d, projectGuess: Double = length() / 2.0): Double {
         // we use the first-order method (since we already compute the arc length param
         var s = projectGuess
-        repeat (200) {
+        repeat(200) {
             val t = reparam(s)
             val pathPoint = get(s, t).vec()
             val deriv = deriv(s, t).vec()

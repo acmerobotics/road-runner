@@ -95,7 +95,6 @@ abstract class BaseTrajectoryBuilder protected constructor(
         return this
     }
 
-
     /**
      * Adds a strafe path segment.
      *
@@ -257,7 +256,7 @@ abstract class BaseTrajectoryBuilder protected constructor(
      * Adds a marker to the trajectory at [scale] * path length + [offset].
      */
     fun addDisplacementMarker(scale: Double, offset: Double, callback: MarkerCallback) =
-        addDisplacementMarker({ scale * it + offset}, callback)
+        addDisplacementMarker({ scale * it + offset }, callback)
 
     /**
      * Adds a marker to the trajectory at [displacement] evaluated with path length.
