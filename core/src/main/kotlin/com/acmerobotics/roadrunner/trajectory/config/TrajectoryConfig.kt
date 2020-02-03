@@ -2,6 +2,7 @@ package com.acmerobotics.roadrunner.trajectory.config
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
+import com.acmerobotics.roadrunner.util.Angle
 import com.acmerobotics.roadrunner.util.epsilonEquals
 
 class TrajectoryConfig(
@@ -21,8 +22,8 @@ class TrajectoryConfig(
 
     class Step @JvmOverloads constructor(
         val pose: Pose2d,
-        val interpolationType: HeadingInterpolationType,
-        val heading: Double? = null
+        val heading: Double? = null,
+        val interpolationType: HeadingInterpolationType
     )
 
     fun toTrajectoryBuilder(groupConfig: TrajectoryGroupConfig): TrajectoryBuilder? {
@@ -34,9 +35,8 @@ class TrajectoryConfig(
         )
 
         for (step in steps) {
-            val currentPose = builder.currentPose!!
-            val line = currentPose.heading epsilonEquals step.pose.heading &&
-                currentPose.heading epsilonEquals (step.pose - currentPose).vec().angle()
+            val line = Angle.normDelta(startPose.heading - step.pose.heading) epsilonEquals 0.0 &&
+                startPose.heading epsilonEquals (step.pose - startPose).vec().angle()
             when (step.interpolationType) {
                 HeadingInterpolationType.TANGENT -> if (line) {
                     builder.lineTo(step.pose.vec())

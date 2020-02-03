@@ -7,6 +7,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 
 class TrajectoryGroupConfig(
     var constraints: DriveConstraints,
+    var robotLength: Double,
+    var robotWidth: Double,
     var driveType: DriveType,
     var trackWidth: Double?,
     var wheelBase: Double?,

@@ -39,12 +39,12 @@ class PathStepEditorPanel : JPanel() {
 
     private class MutableStep(
         var pose: MutablePose2d,
-        var interpolationType: TrajectoryConfig.HeadingInterpolationType,
-        var heading: Double?
+        var heading: Double?,
+        var interpolationType: TrajectoryConfig.HeadingInterpolationType
     ) {
-        constructor(step: TrajectoryConfig.Step) : this(MutablePose2d(step.pose), step.interpolationType, step.heading)
+        constructor(step: TrajectoryConfig.Step) : this(MutablePose2d(step.pose), step.heading, step.interpolationType)
 
-        fun immutable() = TrajectoryConfig.Step(pose.immutable(), interpolationType, heading)
+        fun immutable() = TrajectoryConfig.Step(pose.immutable(), heading, interpolationType)
     }
 
     private var startPose = MutablePose2d(0.0, 0.0, 0.0)
@@ -86,8 +86,8 @@ class PathStepEditorPanel : JPanel() {
         val addButton = JButton("Add")
         addButton.addActionListener {
             addStep(steps.lastOrNull()?.immutable()
-                ?: TrajectoryConfig.Step(startPose.immutable(),
-                    TrajectoryConfig.HeadingInterpolationType.TANGENT, startHeading))
+                ?: TrajectoryConfig.Step(startPose.immutable(), startHeading,
+                    TrajectoryConfig.HeadingInterpolationType.TANGENT))
 
             fireUpdate()
         }
@@ -211,6 +211,7 @@ class PathStepEditorPanel : JPanel() {
 
             revalidate()
         }
+
         if (step.interpolationType == TrajectoryConfig.HeadingInterpolationType.TANGENT ||
             step.interpolationType == TrajectoryConfig.HeadingInterpolationType.CONSTANT) {
             headingField.isVisible = false
@@ -224,7 +225,8 @@ class PathStepEditorPanel : JPanel() {
 
         val removeButton = JButton("Remove")
 
-        val uiComponents = listOf<JComponent>(stepNumber, xField, yField, tangentField, interpComboBox, headingField, removeButton)
+        val uiComponents = listOf<JComponent>(
+            stepNumber, xField, yField, tangentField, interpComboBox, headingField, removeButton)
         for (comp in uiComponents) {
             scrollPanel.add(comp)
         }

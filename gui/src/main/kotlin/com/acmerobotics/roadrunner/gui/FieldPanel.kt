@@ -4,6 +4,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.trajectory.Trajectory
 import com.acmerobotics.roadrunner.trajectory.config.TrajectoryConfig
+import com.acmerobotics.roadrunner.trajectory.config.TrajectoryGroupConfig
 import com.acmerobotics.roadrunner.util.NanoClock
 import java.awt.*
 import java.awt.event.MouseEvent
@@ -17,8 +18,6 @@ import kotlin.math.roundToInt
 
 private const val SPATIAL_RESOLUTION = 0.25  // in
 private const val TEMPORAL_RESOLUTION = 0.025  // sec
-private const val ROBOT_SIZE = 18.0
-private val ROBOT_RECT = Rectangle2D.Double(-ROBOT_SIZE / 2, -ROBOT_SIZE / 2, ROBOT_SIZE, ROBOT_SIZE)
 private val FIELD_IMAGE = ImageIO.read(FieldPanel::class.java.getResource("/field.png"))
 
 fun Vector2d.awt() = Point2D.Double(x, y)
@@ -40,7 +39,9 @@ class FieldPanel : JPanel() {
 
     private val fieldTransform = AffineTransform()
     private val robotTransform = AffineTransform()
-    private val robotPath: Path2D.Double = Path2D.Double()
+
+    private var robotPath: Path2D.Double = Path2D.Double()
+    private var robotRect = Rectangle2D.Double()
 
     private val updateLock = Object()
 
@@ -55,15 +56,6 @@ class FieldPanel : JPanel() {
 
     init {
         preferredSize = Dimension(500, 500)
-
-        robotPath.moveTo(ROBOT_SIZE / 2, 0.0)
-        robotPath.lineTo(0.0, 0.0)
-        robotPath.lineTo(ROBOT_SIZE / 2, 0.0)
-        robotPath.lineTo(ROBOT_SIZE / 2, ROBOT_SIZE / 2)
-        robotPath.lineTo(-ROBOT_SIZE / 2, ROBOT_SIZE / 2)
-        robotPath.lineTo(-ROBOT_SIZE / 2, -ROBOT_SIZE / 2)
-        robotPath.lineTo(ROBOT_SIZE / 2, -ROBOT_SIZE / 2)
-        robotPath.closePath()
 
         addMouseListener(object : MouseListener {
             override fun mouseReleased(e: MouseEvent?) {
@@ -85,13 +77,27 @@ class FieldPanel : JPanel() {
             override fun mousePressed(e: MouseEvent?) {
 
             }
-
         })
     }
 
-    fun updateTrajectoryAndConfig(trajectory: Trajectory, config: TrajectoryConfig) {
+    fun updateTrajectoryAndConfig(trajectory: Trajectory, config: TrajectoryConfig, groupConfig: TrajectoryGroupConfig) {
         val newPath = Path2D.Double()
         val newArea = Area()
+
+        // compute robot path and rect
+        val length = groupConfig.robotLength
+        val width = groupConfig.robotWidth
+        robotPath = Path2D.Double()
+        robotPath.moveTo(length / 2, 0.0)
+        robotPath.lineTo(0.0, 0.0)
+        robotPath.lineTo(length / 2, 0.0)
+        robotPath.lineTo(length / 2, width / 2)
+        robotPath.lineTo(-length / 2, width / 2)
+        robotPath.lineTo(-length / 2, -width / 2)
+        robotPath.lineTo(length / 2, -width / 2)
+        robotPath.closePath()
+
+        robotRect = Rectangle2D.Double(-length / 2, -width / 2, length, width)
 
         // compute path samples
         val displacementSamples = (trajectory.path.length() / SPATIAL_RESOLUTION).roundToInt()
@@ -100,17 +106,12 @@ class FieldPanel : JPanel() {
         }
 
         // compute the path segments and area swept by the robot
-        var first = true
-        for (displacement in displacements) {
+        val poses = displacements.map { trajectory.path[it] }
+        newPath.moveTo(poses.first().vec().awt())
+        for (pose in poses.drop(1)) {
             if (Thread.currentThread().isInterrupted) return
 
-            val pose = trajectory.path[displacement]
-            if (first) {
-                newPath.moveTo(pose.vec().awt())
-            } else {
-                newPath.lineTo(pose.vec().awt())
-            }
-            first = false
+            newPath.lineTo(pose.vec().awt())
         }
 
         // compute time samples
@@ -127,7 +128,7 @@ class FieldPanel : JPanel() {
             val pose = trajectory[time]
             robotTransform.setToTranslation(pose.x, pose.y)
             robotTransform.rotate(pose.heading)
-            newArea.add(Area(robotTransform.createTransformedShape(ROBOT_RECT)))
+            newArea.add(Area(robotTransform.createTransformedShape(robotRect)))
         }
 
         synchronized(updateLock) {

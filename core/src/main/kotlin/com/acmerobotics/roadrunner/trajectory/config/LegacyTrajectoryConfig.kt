@@ -37,7 +37,7 @@ class LegacyTrajectoryConfig @JvmOverloads constructor(
                 null
             }
             val steps = poses.drop(1).map {
-                TrajectoryConfig.Step(it, TrajectoryConfig.HeadingInterpolationType.TANGENT)
+                TrajectoryConfig.Step(it, interpolationType = TrajectoryConfig.HeadingInterpolationType.TANGENT)
             }
             TrajectoryConfig(firstPose, startHeading = startHeading, steps = steps, resolution = resolution)
         }

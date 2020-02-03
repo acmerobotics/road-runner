@@ -41,6 +41,8 @@ class ConfigPanel : JPanel() {
         )
     }
 
+    private var robotLength: Double = 0.0
+    private var robotWidth: Double = 0.0
     private var driveType = TrajectoryGroupConfig.DriveType.GENERIC
     private var trackWidth: Double? = null
     private var wheelBase: Double? = null
@@ -50,6 +52,8 @@ class ConfigPanel : JPanel() {
 
     var onUpdateListener: ((TrajectoryGroupConfig) -> Unit)? = null
 
+    private val robotLengthField = makeNumField(0.0)
+    private val robotWidthField = makeNumField(0.0)
     private val driveTypeComboBox = JComboBox(DRIVE_MAP.keys.toTypedArray())
     private val trackWidthLabel = JLabel("Track Width", SwingConstants.RIGHT)
     private val trackWidthField = makeNumField(0.0)
@@ -71,6 +75,22 @@ class ConfigPanel : JPanel() {
 
         val leftPanel = JPanel()
         leftPanel.layout = GridLayout(0, 2, 5, 5)
+
+        leftPanel.add(JLabel("Robot Length", SwingConstants.RIGHT))
+        leftPanel.add(robotLengthField)
+        robotLengthField.addChangeListener {
+            robotLength = robotLengthField.text.toDoubleOrNull() ?: return@addChangeListener
+
+            fireUpdate()
+        }
+
+        leftPanel.add(JLabel("Robot Width", SwingConstants.RIGHT))
+        leftPanel.add(robotWidthField)
+        robotWidthField.addChangeListener {
+            robotWidth = robotWidthField.text.toDoubleOrNull() ?: return@addChangeListener
+
+            fireUpdate()
+        }
 
         leftPanel.add(JLabel("Drive Type", SwingConstants.RIGHT))
         leftPanel.add(driveTypeComboBox)
@@ -139,8 +159,6 @@ class ConfigPanel : JPanel() {
                 wheelBaseField.text = String.format("%.2f", trackWidth)
 
                 ignoreWheelBaseChanges = false
-
-                revalidate()
             }
 
             fireUpdate()
@@ -168,6 +186,9 @@ class ConfigPanel : JPanel() {
 
         val rightPanel = JPanel()
         rightPanel.layout = GridLayout(0, 2, 5, 5)
+
+        rightPanel.add(JLabel())
+        rightPanel.add(JLabel())
 
         rightPanel.add(JLabel("Max Velocity", SwingConstants.RIGHT))
         maxVelTextField.addChangeListener {
@@ -205,6 +226,9 @@ class ConfigPanel : JPanel() {
         }
         rightPanel.add(maxAngAccelTextField)
 
+        rightPanel.add(JLabel())
+        rightPanel.add(JLabel())
+
         add(Box.createHorizontalGlue())
         add(leftPanel)
         add(Box.createHorizontalGlue())
@@ -213,7 +237,8 @@ class ConfigPanel : JPanel() {
     }
 
     private fun fireUpdate() {
-        onUpdateListener?.invoke(TrajectoryGroupConfig(mutableConstraints.immutable(), driveType, trackWidth, wheelBase, lateralMultiplier))
+        onUpdateListener?.invoke(TrajectoryGroupConfig(mutableConstraints.immutable(), robotLength, robotWidth,
+            driveType, trackWidth, wheelBase, lateralMultiplier))
     }
 
     fun update(groupConfig: TrajectoryGroupConfig) {
@@ -221,6 +246,11 @@ class ConfigPanel : JPanel() {
         this.mutableConstraints = MutableDriveConstraints(constraints)
 
         driveTypeComboBox.selectedItem = DRIVE_MAP.entries.first { it.value == driveType }.key
+
+        robotLength = groupConfig.robotLength
+        robotLengthField.text = String.format("%.2f", robotLength)
+        robotWidth = groupConfig.robotWidth
+        robotWidthField.text = String.format("%.2f", robotWidth)
 
         driveType = groupConfig.driveType
         trackWidth = groupConfig.trackWidth

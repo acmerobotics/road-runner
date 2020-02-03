@@ -20,6 +20,7 @@ import kotlin.math.min
 
 private val DEFAULT_CONSTRAINTS = DriveConstraints(25.0, 40.0, 0.0,
     Math.toRadians(180.0), Math.toRadians(360.0), 0.0)
+private const val DEFAULT_ROBOT_SIZE = 18.0
 private const val DEFAULT_RESOLUTION = 0.25
 private const val MIN_RESOLUTION = 5.0
 private const val MAX_RESOLUTION = 0.01
@@ -52,6 +53,8 @@ class MainPanel : JPanel() {
     )
     private var groupConfig: TrajectoryGroupConfig = TrajectoryGroupConfig(
         DEFAULT_CONSTRAINTS,
+        DEFAULT_ROBOT_SIZE,
+        DEFAULT_ROBOT_SIZE,
         TrajectoryGroupConfig.DriveType.GENERIC,
         null,
         null,
@@ -138,7 +141,7 @@ class MainPanel : JPanel() {
                 pathStepPanel.trajectoryValid = trajectory != null
 
                 if (trajectory != null) {
-                    fieldPanel.updateTrajectoryAndConfig(trajectory, trajectoryConfig)
+                    fieldPanel.updateTrajectoryAndConfig(trajectory, trajectoryConfig, groupConfig)
                     trajectoryInfoPanel.updateTrajectory(trajectory)
                     trajectoryGraphPanel.updateTrajectory(trajectory)
 
