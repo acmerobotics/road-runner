@@ -63,6 +63,8 @@ class PathStepEditorPanel : JPanel() {
 
     private var ignoreHeadingChange = false
 
+    private var updating = false
+
     var trajectoryValid: Boolean = false
         set(value) {
             border = if (value) {
@@ -149,7 +151,9 @@ class PathStepEditorPanel : JPanel() {
     }
 
     private fun fireUpdate() {
-        onUpdateListener?.invoke(startPose.immutable(), startHeading, steps.map { it.immutable() })
+        if (!updating) {
+            onUpdateListener?.invoke(startPose.immutable(), startHeading, steps.map { it.immutable() })
+        }
     }
 
     private fun addStep(step: TrajectoryConfig.Step) {
@@ -265,6 +269,8 @@ class PathStepEditorPanel : JPanel() {
     }
 
     fun update(newStartPose: Pose2d, newStartHeading: Double?, newSteps: List<TrajectoryConfig.Step>) {
+        updating = true
+
         steps.clear()
 
         for (component in stepComponents.flatten()) {
@@ -286,6 +292,6 @@ class PathStepEditorPanel : JPanel() {
             startHeadingField.text = String.format("%.2f", startHeading!!.toDegrees())
         }
 
-        fireUpdate()
+        updating = false
     }
 }

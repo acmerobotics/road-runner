@@ -69,6 +69,8 @@ class ConfigPanel : JPanel() {
 
     private var ignoreWheelBaseChanges = false
 
+    private var updating = false
+
     // TODO: make some helpers to make Swing less awful
     init {
         layout = BoxLayout(this, BoxLayout.LINE_AXIS)
@@ -237,15 +239,23 @@ class ConfigPanel : JPanel() {
     }
 
     private fun fireUpdate() {
-        onUpdateListener?.invoke(TrajectoryGroupConfig(mutableConstraints.immutable(), robotLength, robotWidth,
-            driveType, trackWidth, wheelBase, lateralMultiplier))
+        if (!updating) {
+            onUpdateListener?.invoke(
+                TrajectoryGroupConfig(
+                    mutableConstraints.immutable(), robotLength, robotWidth,
+                    driveType, trackWidth, wheelBase, lateralMultiplier
+                )
+            )
+        }
     }
 
     fun update(groupConfig: TrajectoryGroupConfig) {
+        updating = true
+
         val constraints = groupConfig.constraints
         this.mutableConstraints = MutableDriveConstraints(constraints)
 
-        driveTypeComboBox.selectedItem = DRIVE_MAP.entries.first { it.value == driveType }.key
+        driveTypeComboBox.selectedItem = DRIVE_MAP.entries.first { it.value == groupConfig.driveType }.key
 
         robotLength = groupConfig.robotLength
         robotLengthField.text = String.format("%.2f", robotLength)
@@ -269,5 +279,7 @@ class ConfigPanel : JPanel() {
         maxAccelTextField.text = String.format("%.2f", constraints.maxAccel)
         maxAngVelTextField.text = String.format("%.2f", constraints.maxAngVel.toDegrees())
         maxAngAccelTextField.text = String.format("%.2f", constraints.maxAngAccel.toDegrees())
+
+        updating = false
     }
 }

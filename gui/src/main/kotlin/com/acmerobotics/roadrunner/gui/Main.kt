@@ -13,8 +13,8 @@ object Main {
             System.setProperty("apple.laf.useScreenMenuBar", "true")
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
 
-            val mainFrame = MainFrame()
-            mainFrame.isVisible = true
+            OpenFrame().isVisible = true
+//            MainFrame(File("")).isVisible = true
         }
     }
 }

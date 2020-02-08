@@ -15,6 +15,8 @@ class TrajectoryInfoPanel : JPanel() {
     private val resolutionTextField: JTextField
     private var resolution = 0.0
 
+    private var updating = false
+
     var onResolutionUpdateListener: ((Double) -> Unit)? = null
 
     init {
@@ -28,7 +30,9 @@ class TrajectoryInfoPanel : JPanel() {
         resolutionTextField = JTextField(resolution.toString(), SwingConstants.LEFT)
         resolutionTextField.addChangeListener {
             resolution = resolutionTextField.text.toDoubleOrNull() ?: resolution
-            onResolutionUpdateListener?.invoke(resolution)
+            if (!updating) {
+                onResolutionUpdateListener?.invoke(resolution)
+            }
         }
         panel.add(resolutionTextField)
 
@@ -44,6 +48,8 @@ class TrajectoryInfoPanel : JPanel() {
     }
 
     fun updateResolution(resolution: Double) {
+        updating = true
         resolutionTextField.text = resolution.toString()
+        updating = false
     }
 }

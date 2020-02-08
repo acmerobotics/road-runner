@@ -5,7 +5,7 @@ import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
 import com.acmerobotics.roadrunner.util.Angle
 import com.acmerobotics.roadrunner.util.epsilonEquals
 
-class TrajectoryConfig(
+data class TrajectoryConfig(
     var startPose: Pose2d,
     var startHeading: Double?,
     var steps: List<Step>,

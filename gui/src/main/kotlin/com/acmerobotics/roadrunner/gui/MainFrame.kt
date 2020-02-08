@@ -2,58 +2,82 @@ package com.acmerobotics.roadrunner.gui
 
 import java.awt.BorderLayout
 import java.awt.Dimension
-import java.awt.FileDialog
 import java.awt.Toolkit
 import java.awt.event.KeyEvent
+import java.awt.event.WindowEvent
+import java.awt.event.WindowListener
 import java.io.File
 import javax.swing.*
+import kotlin.system.exitProcess
 
 private val COMMAND_MASK = Toolkit.getDefaultToolkit().menuShortcutKeyMask
 
 /**
  * Main window for standalone GUI application.
  */
-class MainFrame : JFrame() {
-
+class MainFrame(
+    dir: File
+) : JFrame() {
     init {
         title = "Path Designer"
         size = Dimension(1000, 800)
-        defaultCloseOperation = EXIT_ON_CLOSE
+        defaultCloseOperation = DO_NOTHING_ON_CLOSE
         isResizable = false
 
         val mainPanel = MainPanel()
+        mainPanel.setProjectDir(dir)
+
+        addWindowListener(object : WindowListener {
+            override fun windowDeiconified(e: WindowEvent?) {
+
+            }
+
+            override fun windowClosing(e: WindowEvent?) {
+                if (mainPanel.close()) {
+                    exitProcess(0)
+                }
+            }
+
+            override fun windowClosed(e: WindowEvent?) {
+
+            }
+
+            override fun windowActivated(e: WindowEvent?) {
+
+            }
+
+            override fun windowDeactivated(e: WindowEvent?) {
+
+            }
+
+            override fun windowOpened(e: WindowEvent?) {
+
+            }
+
+            override fun windowIconified(e: WindowEvent?) {
+
+            }
+        })
 
         contentPane = JPanel()
         contentPane.layout = BorderLayout()
         contentPane.add(mainPanel)
 
         val fileMenu = JMenu("File")
-        val openMenuItem = JMenuItem("Open")
-        openMenuItem.addActionListener {
-            val fileDialog = FileDialog(this, "Choose a file", FileDialog.LOAD)
-            fileDialog.setFilenameFilter { _, name -> name.endsWith(".yaml") }
-            fileDialog.isVisible = true
 
-            if (fileDialog.file != null) {
-                val file = File(fileDialog.directory, fileDialog.file)
-                mainPanel.load(file)
-            }
-        }
-        openMenuItem.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_O, COMMAND_MASK)
-        val saveMenuItem = JMenuItem("Save")
+        val saveMenuItem = JMenuItem("Save All")
         saveMenuItem.addActionListener {
-            val fileDialog = FileDialog(this, "Choose a file", FileDialog.SAVE)
-            fileDialog.setFilenameFilter { _, name -> name.endsWith(".yaml") && !name.startsWith("_") }
-            fileDialog.isVisible = true
-
-            if (fileDialog.file != null) {
-                val filename = fileDialog.directory + fileDialog.file
-                mainPanel.save(File(filename))
-            }
+            mainPanel.saveAll()
         }
         saveMenuItem.accelerator = KeyStroke.getKeyStroke(KeyEvent.VK_S, COMMAND_MASK)
-        fileMenu.add(openMenuItem)
         fileMenu.add(saveMenuItem)
+
+        val closeMenuItem = JMenuItem("Close")
+        closeMenuItem.addActionListener {
+            if (mainPanel.close()) {
+                exitProcess(0)
+            }
+        }
 
         val menuBar = JMenuBar()
         menuBar.add(fileMenu)

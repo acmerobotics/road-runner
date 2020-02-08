@@ -65,20 +65,13 @@ object TrajectoryConfigManager {
         MAPPER.readValue(inputStream, TrajectoryConfig::class.java)
 
     /**
-     * Loads the [TrajectoryGroupConfig] corresponding to the [TrajectoryConfig] file [file]. This method recursively
-     * examines parent directories until the group config file is found.
+     * Loads the [TrajectoryGroupConfig] inside [dir].
      */
     @JvmStatic
-    fun loadGroupConfig(file: File): TrajectoryGroupConfig? {
-        var dir = file.parentFile
-        var groupFile: File? = null
-        while (dir != null) {
-            val groupFileCand = File(dir, GROUP_FILENAME)
-            if (groupFileCand.exists()) {
-                groupFile = groupFileCand
-                break
-            }
-            dir = dir.parentFile
+    fun loadGroupConfig(dir: File): TrajectoryGroupConfig? {
+        val groupFile = File(dir, GROUP_FILENAME)
+        if (!groupFile.exists()) {
+            return null
         }
         return MAPPER.readValue(groupFile, TrajectoryGroupConfig::class.java)
     }
