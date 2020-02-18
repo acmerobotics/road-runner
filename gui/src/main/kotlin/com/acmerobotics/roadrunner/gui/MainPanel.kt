@@ -226,6 +226,7 @@ class MainPanel : JPanel() {
         if (newGroupConfig != null) {
             groupConfig = newGroupConfig
         }
+        trajListModel.clear()
         for (file in fileList) {
             trajListModel.addElement(DiskTrajectoryConfig(
                 TrajectoryConfigManager.loadConfig(file) ?: return false,
@@ -241,6 +242,8 @@ class MainPanel : JPanel() {
         val c = groupConfig.constraints
         if (c.maxVel epsilonEquals 0.0 || c.maxAccel epsilonEquals 0.0 ||
             c.maxAngVel epsilonEquals 0.0 || c.maxAngAccel epsilonEquals 0.0) {
+            status = "bad constraints"
+
             return
         }
 

@@ -3,7 +3,7 @@
     <id>com.acmerobotics.roadrunner</id>
 
     <description><![CDATA[
-    Convenient UI for ACME Robotics' <a href="https://github.com/acmerobotics/road-runner">motion planning library</a>.
+    Graphical trajectory designer for <a href="https://github.com/acmerobotics/road-runner">Road Runner</a>.
     ]]></description>
 
     <version>0.1-SNAPSHOT</version>
@@ -13,6 +13,6 @@
     <depends>com.intellij.modules.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow id="Path Designer" anchor="right" factoryClass="com.acmerobotics.roadrunner.plugin.PathDesignerToolWindowFactory"/>
+        <toolWindow id="Road Runner" anchor="right" factoryClass="com.acmerobotics.roadrunner.plugin.PluginToolWindowFactory"/>
     </extensions>
 </idea-plugin>

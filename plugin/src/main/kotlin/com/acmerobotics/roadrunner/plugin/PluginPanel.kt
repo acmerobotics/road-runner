@@ -9,7 +9,7 @@ import javax.swing.*
 /**
  * Main window for IntelliJ plugin.
  */
-class PathDesignerPanel(private val project: Project) : JPanel() {
+class PluginPanel(private val project: Project) : JPanel() {
     private val moduleManager = ModuleManager.getInstance(project)
 
     private val moduleComboBox = JComboBox<String>()
@@ -64,8 +64,11 @@ class PathDesignerPanel(private val project: Project) : JPanel() {
     private fun updateModuleSelection() {
         if (currentModule == comboBoxModule) return
         val comboBoxModule = comboBoxModule ?: return
-        mainPanel.setProjectDir(getTrajectoryAssetsDir(comboBoxModule) ?: return)
-        currentModule = comboBoxModule
+        if (mainPanel.setProjectDir(getTrajectoryAssetsDir(comboBoxModule) ?: return)) {
+            currentModule = comboBoxModule
+        } else {
+            moduleComboBox.selectedItem = currentModule
+        }
     }
 
     private fun getTrajectoryAssetsDir(moduleString: String): File? {

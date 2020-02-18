@@ -7,9 +7,9 @@ import com.intellij.openapi.wm.ToolWindowFactory
 /**
  * Factory for constructing the path designer panel.
  */
-class PathDesignerToolWindowFactory : ToolWindowFactory {
+class PluginToolWindowFactory : ToolWindowFactory {
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
-        val content = toolWindow.contentManager.factory.createContent(PathDesignerPanel(project), "", true)
+        val content = toolWindow.contentManager.factory.createContent(PluginPanel(project), "", true)
         toolWindow.contentManager.addContent(content)
     }
 }

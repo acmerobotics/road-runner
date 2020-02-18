@@ -118,6 +118,10 @@ class PathStepPanel : JPanel() {
             }
         }
 
+        headingTextField.addValueChangeListener<Number> {
+            _step = _step.copy(heading = it.toDouble().toRadians())
+        }
+
         removeButton.addActionListener {
             onStepRemove?.invoke()
         }
