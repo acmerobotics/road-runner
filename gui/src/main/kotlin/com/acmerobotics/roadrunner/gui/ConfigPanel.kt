@@ -1,104 +1,64 @@
 package com.acmerobotics.roadrunner.gui
 
+import DEFAULT_GROUP_CONFIG
+import DEFAULT_TRACK_WIDTH
 import com.acmerobotics.roadrunner.trajectory.config.TrajectoryGroupConfig
-import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
+import java.awt.Dimension
 import java.awt.GridLayout
 import javax.swing.*
-
-private val DRIVE_MAP = mapOf(
-    "generic" to TrajectoryGroupConfig.DriveType.GENERIC,
-    "mecanum" to TrajectoryGroupConfig.DriveType.MECANUM,
-    "tank" to TrajectoryGroupConfig.DriveType.TANK
-)
-
-// TODO: make some kind of wrapper around JTextField for numeric fields
-private fun makeNumField(initialVal: Double) = JTextField(String.format("%.2f", initialVal))
-
 /**
  * Panel for specifying the robot kinematic constraints.
  */
 class ConfigPanel : JPanel() {
-    private class MutableDriveConstraints(
-        var maximumVelocity: Double,
-        var maximumAcceleration: Double,
-        var maximumAngularVelocity: Double,
-        var maximumAngularAcceleration: Double
-    ) {
-        constructor(constraints: DriveConstraints) : this(
-            constraints.maxVel,
-            constraints.maxAccel,
-            constraints.maxAngVel,
-            constraints.maxAngAccel
-        )
-
-        fun immutable(): DriveConstraints = DriveConstraints(
-            maximumVelocity,
-            maximumAcceleration,
-            0.0,
-            maximumAngularVelocity,
-            maximumAngularAcceleration,
-            0.0
-        )
-    }
-
-    private var robotLength: Double = 0.0
-    private var robotWidth: Double = 0.0
-    private var driveType = TrajectoryGroupConfig.DriveType.GENERIC
-    private var trackWidth: Double? = null
-    private var wheelBase: Double? = null
-    private var lateralMultiplier: Double? = null
-
-    private var mutableConstraints: MutableDriveConstraints = MutableDriveConstraints(0.0, 0.0, 0.0, 0.0)
-
-    var onUpdateListener: ((TrajectoryGroupConfig) -> Unit)? = null
-
-    private val robotLengthField = makeNumField(0.0)
-    private val robotWidthField = makeNumField(0.0)
-    private val driveTypeComboBox = JComboBox(DRIVE_MAP.keys.toTypedArray())
+    private val maxVelTextField = makeFormattedDoubleField()
+    private val maxAccelTextField = makeFormattedDoubleField()
+    private val maxAngVelTextField = makeFormattedDoubleField()
+    private val maxAngAccelTextField = makeFormattedDoubleField()
+    private val robotLengthField = makeFormattedDoubleField()
+    private val robotWidthField = makeFormattedDoubleField()
+    private val driveTypeComboBox = JComboBox(TrajectoryGroupConfig.DriveType.values())
     private val trackWidthLabel = JLabel("Track Width", SwingConstants.RIGHT)
-    private val trackWidthField = makeNumField(0.0)
+    private val trackWidthField = makeFormattedDoubleField()
     private val wheelBaseLabel = JLabel("Wheel Base", SwingConstants.RIGHT)
-    private val wheelBaseField = makeNumField(0.0)
+    private val wheelBaseField = makeFormattedDoubleField()
     private val lateralMultiplierLabel = JLabel("Lateral Multiplier", SwingConstants.RIGHT)
-    private val lateralMultiplierField = makeNumField(0.0)
+    private val lateralMultiplierField = makeFormattedDoubleField()
 
-    private val maxVelTextField = makeNumField(0.0)
-    private val maxAccelTextField = makeNumField(0.0)
-    private val maxAngVelTextField = makeNumField(0.0)
-    private val maxAngAccelTextField = makeNumField(0.0)
-
-    private var ignoreWheelBaseChanges = false
-
+    var onConfigUpdate: ((TrajectoryGroupConfig) -> Unit)? = null
+    private var externalUpdate = false
     private var updating = false
+    private var _config: TrajectoryGroupConfig = DEFAULT_GROUP_CONFIG
+        set(value) {
+            if (updating) {
+                return
+            }
 
-    // TODO: make some helpers to make Swing less awful
-    init {
-        layout = BoxLayout(this, BoxLayout.LINE_AXIS)
+            updating = true
 
-        val leftPanel = JPanel()
-        leftPanel.layout = GridLayout(0, 2, 5, 5)
+            if (maxVelTextField.doubleValue != value.maxVel) {
+                maxVelTextField.value = value.maxVel
+            }
+            if (maxAccelTextField.doubleValue != value.maxAccel) {
+                maxAccelTextField.value = value.maxAccel
+            }
+            if (maxAngVelTextField.doubleValue != value.maxAngVel.toDegrees()) {
+                maxAngVelTextField.value = value.maxAngVel.toDegrees()
+            }
+            if (maxAngAccelTextField.doubleValue != value.maxAngAccel.toDegrees()) {
+                maxAngAccelTextField.value = value.maxAngAccel.toDegrees()
+            }
 
-        leftPanel.add(JLabel("Robot Length", SwingConstants.RIGHT))
-        leftPanel.add(robotLengthField)
-        robotLengthField.addChangeListener {
-            robotLength = robotLengthField.text.toDoubleOrNull() ?: return@addChangeListener
+            if (robotLengthField.doubleValue != value.robotLength) {
+                robotLengthField.value = value.robotLength
+            }
+            if (robotWidthField.doubleValue != value.robotWidth) {
+                robotWidthField.value = value.robotWidth
+            }
 
-            fireUpdate()
-        }
-
-        leftPanel.add(JLabel("Robot Width", SwingConstants.RIGHT))
-        leftPanel.add(robotWidthField)
-        robotWidthField.addChangeListener {
-            robotWidth = robotWidthField.text.toDoubleOrNull() ?: return@addChangeListener
-
-            fireUpdate()
-        }
-
-        leftPanel.add(JLabel("Drive Type", SwingConstants.RIGHT))
-        leftPanel.add(driveTypeComboBox)
-        driveTypeComboBox.addActionListener {
-            driveType = DRIVE_MAP.getValue(driveTypeComboBox.selectedItem as String)
-            when (driveType) {
+            if (driveTypeComboBox.selectedItemTyped != value.driveType) {
+                driveTypeComboBox.selectedItem = value.driveType
+            }
+            when (value.driveType) {
                 TrajectoryGroupConfig.DriveType.GENERIC -> {
                     trackWidthLabel.isVisible = false
                     trackWidthField.isVisible = false
@@ -106,10 +66,6 @@ class ConfigPanel : JPanel() {
                     wheelBaseField.isVisible = false
                     lateralMultiplierLabel.isVisible = false
                     lateralMultiplierField.isVisible = false
-
-                    trackWidth = null
-                    wheelBase = null
-                    lateralMultiplier = null
                 }
                 TrajectoryGroupConfig.DriveType.MECANUM -> {
                     trackWidthLabel.isVisible = true
@@ -118,18 +74,6 @@ class ConfigPanel : JPanel() {
                     wheelBaseField.isVisible = true
                     lateralMultiplierLabel.isVisible = true
                     lateralMultiplierField.isVisible = true
-
-                    trackWidth = 18.0
-                    wheelBase = null
-                    lateralMultiplier = 1.0
-
-                    trackWidthField.text = "18.00"
-
-                    ignoreWheelBaseChanges = true
-                    wheelBaseField.text = "18.00"
-                    ignoreWheelBaseChanges = false
-
-                    lateralMultiplierField.text = "1.00"
                 }
                 TrajectoryGroupConfig.DriveType.TANK -> {
                     trackWidthLabel.isVisible = true
@@ -138,148 +82,148 @@ class ConfigPanel : JPanel() {
                     wheelBaseField.isVisible = false
                     lateralMultiplierLabel.isVisible = false
                     lateralMultiplierField.isVisible = false
-
-                    trackWidth = 18.0
-                    wheelBase = null
-                    lateralMultiplier = null
-
-                    trackWidthField.text = "18.00"
                 }
             }
 
-            fireUpdate()
+            if (trackWidthField.doubleValue != value.trackWidth) {
+                trackWidthField.value = value.trackWidth
+            }
+            if (value.wheelBase == null) {
+                if (wheelBaseField.doubleValue != value.trackWidth) {
+                    wheelBaseField.value = value.trackWidth
+                }
+            } else {
+                if (wheelBaseField.doubleValue != value.wheelBase) {
+                    wheelBaseField.value = value.wheelBase
+                }
+            }
+            if (value.lateralMultiplier != null) {
+                if (lateralMultiplierField.doubleValue != value.lateralMultiplier) {
+                    lateralMultiplierField.value = value.lateralMultiplier
+                }
+            }
+
+            field = value
+
+            if (!externalUpdate) {
+                onConfigUpdate?.invoke(value)
+            }
+
+            updating = false
+        }
+    var config
+        get() = _config
+        set(value) {
+            externalUpdate = true
+
+            _config = value
+
+            externalUpdate = false
+        }
+
+    init {
+        layout = BoxLayout(this, BoxLayout.LINE_AXIS)
+
+        val leftPanel = JPanel()
+        leftPanel.layout = GridLayout(0, 2, 5, 5)
+
+        leftPanel.add(JLabel("Robot Length", SwingConstants.RIGHT))
+        leftPanel.add(robotLengthField)
+        robotLengthField.addValueChangeListener<Number> {
+            _config = _config.copy(robotLength = it.toDouble())
+        }
+
+        leftPanel.add(JLabel("Robot Width", SwingConstants.RIGHT))
+        leftPanel.add(robotWidthField)
+        robotWidthField.addValueChangeListener<Number> {
+            _config = _config.copy(robotWidth = it.toDouble())
+        }
+
+        leftPanel.add(JLabel("Drive Type", SwingConstants.RIGHT))
+        leftPanel.add(driveTypeComboBox)
+        driveTypeComboBox.addActionListener {
+            val newDriveType = driveTypeComboBox.selectedItemTyped ?: return@addActionListener
+            if (_config.driveType != newDriveType) {
+                _config = when (newDriveType) {
+                    TrajectoryGroupConfig.DriveType.GENERIC -> {
+                        _config.copy(
+                            driveType = TrajectoryGroupConfig.DriveType.GENERIC,
+                            trackWidth = null, wheelBase = null, lateralMultiplier = null
+                        )
+                    }
+                    TrajectoryGroupConfig.DriveType.TANK -> {
+                        _config.copy(
+                            driveType = TrajectoryGroupConfig.DriveType.TANK,
+                            trackWidth = DEFAULT_TRACK_WIDTH, wheelBase = null, lateralMultiplier = null
+                        )
+                    }
+                    TrajectoryGroupConfig.DriveType.MECANUM -> {
+                        _config.copy(
+                            driveType = TrajectoryGroupConfig.DriveType.MECANUM,
+                            trackWidth = DEFAULT_TRACK_WIDTH, wheelBase = null, lateralMultiplier = 1.0
+                        )
+                    }
+                }
+            }
         }
 
         leftPanel.add(trackWidthLabel)
         leftPanel.add(trackWidthField)
-        trackWidthField.addChangeListener {
-            trackWidth = trackWidthField.text.toDoubleOrNull() ?: return@addChangeListener
-
-            if (wheelBase == null) {
-                ignoreWheelBaseChanges = true
-
-                wheelBaseField.text = String.format("%.2f", trackWidth)
-
-                ignoreWheelBaseChanges = false
-            }
-
-            fireUpdate()
+        trackWidthField.addValueChangeListener<Number> {
+            _config = _config.copy(trackWidth = it.toDouble())
         }
 
         leftPanel.add(wheelBaseLabel)
         leftPanel.add(wheelBaseField)
-        wheelBaseField.addChangeListener {
-            if (ignoreWheelBaseChanges) {
-                return@addChangeListener
-            }
-
-            wheelBase = wheelBaseField.text.toDoubleOrNull() ?: return@addChangeListener
-
-            fireUpdate()
+        wheelBaseField.addValueChangeListener<Number> {
+            _config = _config.copy(wheelBase = it.toDouble())
         }
 
         leftPanel.add(lateralMultiplierLabel)
         leftPanel.add(lateralMultiplierField)
-        lateralMultiplierField.addChangeListener {
-            lateralMultiplier = lateralMultiplierField.text.toDoubleOrNull() ?: return@addChangeListener
-
-            fireUpdate()
+        lateralMultiplierField.addValueChangeListener<Number> {
+            _config = _config.copy(lateralMultiplier = it.toDouble())
         }
+
+        leftPanel.maximumSize = leftPanel.preferredSize
+        leftPanel.minimumSize = Dimension(0, leftPanel.minimumSize.height)
 
         val rightPanel = JPanel()
         rightPanel.layout = GridLayout(0, 2, 5, 5)
 
-        rightPanel.add(JLabel())
-        rightPanel.add(JLabel())
-
         rightPanel.add(JLabel("Max Velocity", SwingConstants.RIGHT))
-        maxVelTextField.addChangeListener {
-            mutableConstraints.maximumVelocity = maxVelTextField.text.toDoubleOrNull()
-                ?: return@addChangeListener
-
-            fireUpdate()
+        maxVelTextField.addValueChangeListener<Number> {
+            _config = _config.copy(maxVel = it.toDouble())
         }
         rightPanel.add(maxVelTextField)
 
         rightPanel.add(JLabel("Max Accel", SwingConstants.RIGHT))
-        maxAccelTextField.addChangeListener {
-            mutableConstraints.maximumAcceleration = maxAccelTextField.text.toDoubleOrNull()
-                ?: return@addChangeListener
-
-            fireUpdate()
+        maxAccelTextField.addValueChangeListener<Number> {
+            _config = _config.copy(maxAccel = it.toDouble())
         }
         rightPanel.add(maxAccelTextField)
 
         rightPanel.add(JLabel("Max Ang Velocity", SwingConstants.RIGHT))
-        maxAngVelTextField.addChangeListener {
-            mutableConstraints.maximumAngularVelocity = maxAngVelTextField.text.toDoubleOrNull()?.toRadians()
-                ?: return@addChangeListener
-
-            fireUpdate()
+        maxAngVelTextField.addValueChangeListener<Number> {
+            _config = _config.copy(maxAngVel = it.toDouble().toRadians())
         }
         rightPanel.add(maxAngVelTextField)
 
         rightPanel.add(JLabel("Max Ang Accel", SwingConstants.RIGHT))
-        maxAngAccelTextField.addChangeListener {
-            mutableConstraints.maximumAngularAcceleration = maxAngAccelTextField.text.toDoubleOrNull()?.toRadians()
-                ?: return@addChangeListener
-
-            fireUpdate()
+        maxAngAccelTextField.addValueChangeListener<Number> {
+            _config = _config.copy(maxAngAccel = it.toDouble().toRadians())
         }
         rightPanel.add(maxAngAccelTextField)
 
-        rightPanel.add(JLabel())
-        rightPanel.add(JLabel())
+        rightPanel.maximumSize = rightPanel.preferredSize
+        rightPanel.minimumSize = Dimension(0, rightPanel.minimumSize.height)
 
         add(Box.createHorizontalGlue())
         add(leftPanel)
         add(Box.createHorizontalGlue())
         add(rightPanel)
         add(Box.createHorizontalGlue())
-    }
 
-    private fun fireUpdate() {
-        if (!updating) {
-            onUpdateListener?.invoke(
-                TrajectoryGroupConfig(
-                    mutableConstraints.immutable(), robotLength, robotWidth,
-                    driveType, trackWidth, wheelBase, lateralMultiplier
-                )
-            )
-        }
-    }
-
-    fun update(groupConfig: TrajectoryGroupConfig) {
-        updating = true
-
-        val constraints = groupConfig.constraints
-        this.mutableConstraints = MutableDriveConstraints(constraints)
-
-        driveTypeComboBox.selectedItem = DRIVE_MAP.entries.first { it.value == groupConfig.driveType }.key
-
-        robotLength = groupConfig.robotLength
-        robotLengthField.text = String.format("%.2f", robotLength)
-        robotWidth = groupConfig.robotWidth
-        robotWidthField.text = String.format("%.2f", robotWidth)
-
-        driveType = groupConfig.driveType
-        trackWidth = groupConfig.trackWidth
-        wheelBase = groupConfig.wheelBase
-        lateralMultiplier = groupConfig.lateralMultiplier
-
-        trackWidthField.text = String.format("%.2f", trackWidth)
-        if (wheelBase != null) {
-            wheelBaseField.text = String.format("%.2f", wheelBase!!)
-        }
-        if (lateralMultiplier != null) {
-            lateralMultiplierField.text = String.format("%.2f", lateralMultiplier)
-        }
-
-        maxVelTextField.text = String.format("%.2f", constraints.maxVel)
-        maxAccelTextField.text = String.format("%.2f", constraints.maxAccel)
-        maxAngVelTextField.text = String.format("%.2f", constraints.maxAngVel.toDegrees())
-        maxAngAccelTextField.text = String.format("%.2f", constraints.maxAngAccel.toDegrees())
-
-        updating = false
+        config = DEFAULT_GROUP_CONFIG
     }
 }

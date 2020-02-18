@@ -6,10 +6,10 @@ import com.acmerobotics.roadrunner.util.Angle
 import com.acmerobotics.roadrunner.util.epsilonEquals
 
 data class TrajectoryConfig(
-    var startPose: Pose2d,
-    var startHeading: Double?,
-    var steps: List<Step>,
-    var resolution: Double
+    val startPose: Pose2d,
+    val startHeading: Double?,
+    val steps: List<Step>,
+    val resolution: Double
 ) {
     val version = 2
 
@@ -20,7 +20,7 @@ data class TrajectoryConfig(
         SPLINE
     }
 
-    class Step @JvmOverloads constructor(
+    data class Step @JvmOverloads constructor(
         val pose: Pose2d,
         val heading: Double? = null,
         val interpolationType: HeadingInterpolationType
@@ -30,7 +30,7 @@ data class TrajectoryConfig(
         val builder = TrajectoryBuilder(
             startPose,
             startHeading ?: startPose.heading,
-            groupConfig.specificConstraints,
+            groupConfig.constraints,
             resolution = resolution
         )
 

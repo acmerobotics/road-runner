@@ -14,7 +14,6 @@ object Main {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
 
             OpenFrame().isVisible = true
-//            MainFrame(File("")).isVisible = true
         }
     }
 }

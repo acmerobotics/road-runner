@@ -1,13 +1,13 @@
 package com.acmerobotics.roadrunner.gui
 
-import com.acmerobotics.roadrunner.geometry.Pose2d
+import DEFAULT_GROUP_CONFIG
+import DEFAULT_TRAJECTORY_CONFIG
 import com.acmerobotics.roadrunner.path.EmptyPathException
 import com.acmerobotics.roadrunner.path.EmptyPathSegmentException
 import com.acmerobotics.roadrunner.path.PathContinuityViolationException
 import com.acmerobotics.roadrunner.trajectory.config.TrajectoryConfig
 import com.acmerobotics.roadrunner.trajectory.config.TrajectoryConfigManager
 import com.acmerobotics.roadrunner.trajectory.config.TrajectoryGroupConfig
-import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import com.acmerobotics.roadrunner.util.epsilonEquals
 import java.awt.BorderLayout
 import java.awt.Dimension
@@ -18,18 +18,8 @@ import javax.swing.*
 import kotlin.math.max
 import kotlin.math.min
 
-private val DEFAULT_CONSTRAINTS = DriveConstraints(25.0, 40.0, 0.0,
-    Math.toRadians(180.0), Math.toRadians(360.0), 0.0)
-private const val DEFAULT_ROBOT_SIZE = 18.0
-private const val DEFAULT_RESOLUTION = 0.25
-private const val MIN_RESOLUTION = 5.0
-private const val MAX_RESOLUTION = 0.01
-private val DEFAULT_TRAJECTORY_CONFIG = TrajectoryConfig(
-    Pose2d(),
-    null,
-    emptyList(),
-    DEFAULT_RESOLUTION
-)
+const val MIN_RESOLUTION = 5.0
+const val MAX_RESOLUTION = 0.01
 
 /**
  * Main GUI window panel.
@@ -46,16 +36,16 @@ class MainPanel : JPanel() {
 
     private val trajListModel = DefaultListModel<DiskTrajectoryConfig>()
     private val dirty: Boolean
-        get() = trajListModel.toArray().any { (it as DiskTrajectoryConfig).dirty }
+        get() = trajListModel.asList().any { it.dirty }
 
-    var onTrajectoryUpdateListener: (() -> Unit)? = null
+    var onTrajectoryUpdate: (() -> Unit)? = null
 
     private val trajList = JList(trajListModel)
     private val trajTextField = JTextField()
     private val fieldPanel = FieldPanel()
     private val trajectoryGraphPanel = TrajectoryGraphPanel()
     private val trajectoryInfoPanel = TrajectoryInfoPanel()
-    private val pathStepPanel = PathStepEditorPanel()
+    private val pathEditorPanel = PathEditorPanel()
     private val configPanel = ConfigPanel()
     private val statusLabel = JLabel()
 
@@ -67,22 +57,18 @@ class MainPanel : JPanel() {
 
     private var trajectoryConfig: TrajectoryConfig = DEFAULT_TRAJECTORY_CONFIG
         set(value) {
-            pathStepPanel.update(value.startPose, value.startHeading, value.steps)
-            trajectoryInfoPanel.updateResolution(value.resolution)
+            pathEditorPanel.config = PathConfig(value.startPose, value.startHeading, value.steps)
+            trajectoryInfoPanel.resolution = value.resolution
+
+            val i = trajList.selectedIndex
+            trajListModel.setElementAt(trajListModel[i].copy(config = value), i)
+
             field = value
         }
 
-    private var groupConfig: TrajectoryGroupConfig = TrajectoryGroupConfig(
-        DEFAULT_CONSTRAINTS,
-        DEFAULT_ROBOT_SIZE,
-        DEFAULT_ROBOT_SIZE,
-        TrajectoryGroupConfig.DriveType.GENERIC,
-        null,
-        null,
-        null
-    )
+    private var groupConfig: TrajectoryGroupConfig = DEFAULT_GROUP_CONFIG
         set(value) {
-            configPanel.update(value)
+            configPanel.config = value
             field = value
         }
 
@@ -110,30 +96,22 @@ class MainPanel : JPanel() {
             updating = false
         }
 
-        pathStepPanel.onUpdateListener = { startPose, startHeading, steps ->
-            trajectoryConfig.startPose = startPose
-            trajectoryConfig.startHeading = startHeading
-            trajectoryConfig.steps = steps
+        pathEditorPanel.onConfigUpdate = { (startPose, startHeading, steps) ->
+            trajectoryConfig = trajectoryConfig.copy(startPose = startPose, startHeading = startHeading, steps = steps)
 
             markCurrentTrajDirty()
 
             updateTrajectoryInBackground()
         }
-        trajectoryInfoPanel.onResolutionUpdateListener = {
-            trajectoryConfig.resolution = min(MIN_RESOLUTION, max(it, MAX_RESOLUTION))
+        trajectoryInfoPanel.onResolutionUpdate = {
+            trajectoryConfig = trajectoryConfig.copy(resolution = min(MIN_RESOLUTION, max(it, MAX_RESOLUTION)))
 
             markCurrentTrajDirty()
 
             updateTrajectoryInBackground()
         }
-        configPanel.onUpdateListener = {
-            groupConfig.constraints = it.constraints
-            groupConfig.driveType = it.driveType
-            groupConfig.lateralMultiplier = it.lateralMultiplier
-            groupConfig.robotLength = it.robotLength
-            groupConfig.robotWidth = it.robotWidth
-            groupConfig.trackWidth = it.trackWidth
-            groupConfig.wheelBase = it.wheelBase
+        configPanel.onConfigUpdate = {
+            groupConfig = it
 
             markCurrentTrajDirty()
 
@@ -164,6 +142,9 @@ class MainPanel : JPanel() {
         buttonPanel.layout = BoxLayout(buttonPanel, BoxLayout.LINE_AXIS)
         val saveButton = JButton("Save")
         saveButton.addActionListener {
+            if (trajList.selectedIndex == -1) {
+                return@addActionListener
+            }
             if (trajTextField.text != trajList.selectedValue.file.nameWithoutExtension) {
                 rename(trajList.selectedIndex, trajTextField.text)
             } else {
@@ -207,9 +188,8 @@ class MainPanel : JPanel() {
         content.add(upperContent)
 
         val lowerTabbedPane = JTabbedPane()
-        val panel = JPanel()
-        panel.add(pathStepPanel)
-        lowerTabbedPane.addTab("Path", panel)
+        lowerTabbedPane.minimumSize = Dimension(0, 0)
+        lowerTabbedPane.addTab("Path", pathEditorPanel)
         lowerTabbedPane.addTab("Config", configPanel)
         content.add(lowerTabbedPane)
 
@@ -232,12 +212,10 @@ class MainPanel : JPanel() {
     }
 
     fun setProjectDir(dir: File): Boolean {
+        dir.mkdirs()
         val fileList = dir.listFiles { file ->
             file.extension == "yaml" && !file.name.startsWith("_")
         } ?: return false
-        if (fileList.isEmpty()) {
-            return false
-        }
         if (!trajListModel.isEmpty && dirty) {
             val result = JOptionPane.showConfirmDialog(this, "Discard unsaved changes?")
             if (result != JOptionPane.OK_OPTION) {
@@ -279,44 +257,48 @@ class MainPanel : JPanel() {
             try {
                 val trajectory = trajectoryConfig.toTrajectory(groupConfig)
 
-                pathStepPanel.trajectoryValid = trajectory != null
+                pathEditorPanel.valid = trajectory != null
 
                 if (trajectory != null) {
                     fieldPanel.updateTrajectoryAndConfig(trajectory, trajectoryConfig, groupConfig)
-                    trajectoryInfoPanel.updateTrajectory(trajectory)
+                    trajectoryInfoPanel.duration = trajectory.duration()
                     trajectoryGraphPanel.updateTrajectory(trajectory)
 
-                    onTrajectoryUpdateListener?.invoke()
+                    onTrajectoryUpdate?.invoke()
                 }
 
                 status = "done"
             } catch (e: EmptyPathException) {
                 status = "error: empty path"
 
-                pathStepPanel.trajectoryValid = false
+                pathEditorPanel.valid = false
             } catch (e: EmptyPathSegmentException) {
                 status = "error: empty path segment"
 
-                pathStepPanel.trajectoryValid = false
+                pathEditorPanel.valid = false
             } catch (e: PathContinuityViolationException) {
                 status = "error: invalid sequence of heading interpolators"
 
-                pathStepPanel.trajectoryValid = false
+                pathEditorPanel.valid = false
             } catch (e: IllegalArgumentException) {
                 status = "error: tank is constrained to tangent heading interpolation"
 
-                pathStepPanel.trajectoryValid = false
+                pathEditorPanel.valid = false
             } catch (t: Throwable) {
                 status = "error: ${t.javaClass}"
 
                 t.printStackTrace()
 
-                pathStepPanel.trajectoryValid = false
+                pathEditorPanel.valid = false
             }
         }
     }
 
     fun delete(trajIndex: Int) {
+        if (trajIndex == -1) {
+            return
+        }
+
         val diskTrajectoryConfig = trajListModel[trajIndex]
         diskTrajectoryConfig.file.delete()
         trajListModel.remove(trajIndex)
@@ -328,6 +310,10 @@ class MainPanel : JPanel() {
     }
 
     fun rename(trajIndex: Int, newName: String) {
+        if (trajIndex == -1) {
+            return
+        }
+
         val diskTraj = trajListModel[trajIndex]
         val newFile = File(diskTraj.file.parent, "$newName.${diskTraj.file.extension}")
         diskTraj.file.delete()
@@ -336,6 +322,10 @@ class MainPanel : JPanel() {
     }
 
     fun save(trajIndex: Int, saveGroupConfig: Boolean = true) {
+        if (trajIndex == -1) {
+            return
+        }
+
         val diskTrajectoryConfig = trajListModel[trajIndex]
         if (diskTrajectoryConfig.dirty) {
             TrajectoryConfigManager.saveConfig(diskTrajectoryConfig.config, diskTrajectoryConfig.file)
@@ -347,9 +337,7 @@ class MainPanel : JPanel() {
     }
 
     fun add() {
-        val trajectories = trajListModel.toArray()
-            .map { it as DiskTrajectoryConfig }
-            .map { it.file.nameWithoutExtension }
+        val trajectories = trajListModel.asList().map { it.file.nameWithoutExtension }
         val prefix = "untitled"
         var name = prefix
         var i = 1
@@ -371,17 +359,6 @@ class MainPanel : JPanel() {
         trajList.setSelectedValue(config, true)
     }
 
-    fun load(file: File) {
-        val trajectoryConfig = TrajectoryConfigManager.loadConfig(file) ?: return
-        val trajectoryGroupConfig = TrajectoryConfigManager.loadGroupConfig(file) ?: return
-
-        pathStepPanel.update(trajectoryConfig.startPose, trajectoryConfig.startHeading, trajectoryConfig.steps)
-        configPanel.update(trajectoryGroupConfig)
-        trajectoryInfoPanel.updateResolution(trajectoryConfig.resolution)
-
-        updateTrajectoryInBackground()
-    }
-
     fun saveAll() {
         for (i in 0 until trajListModel.size()) {
             save(i, i == 0)
@@ -389,7 +366,10 @@ class MainPanel : JPanel() {
     }
 
     fun close(): Boolean {
-//        JOptionPane.showMessageDialog(this, "Are you sure you want to close?")
+        if (dirty) {
+            val result = JOptionPane.showConfirmDialog(this, "You have unsaved changes. Are you sure you want to close?")
+            return result == JOptionPane.YES_OPTION
+        }
         return true
     }
 }

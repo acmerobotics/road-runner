@@ -19,10 +19,10 @@ class MainFrame(
     dir: File
 ) : JFrame() {
     init {
-        title = "Path Designer"
+        title = "Road Runner GUI - $dir"
         size = Dimension(1000, 800)
         defaultCloseOperation = DO_NOTHING_ON_CLOSE
-        isResizable = false
+        setLocationRelativeTo(null)
 
         val mainPanel = MainPanel()
         mainPanel.setProjectDir(dir)

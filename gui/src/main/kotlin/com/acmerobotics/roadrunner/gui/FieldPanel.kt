@@ -9,7 +9,10 @@ import com.acmerobotics.roadrunner.util.NanoClock
 import java.awt.*
 import java.awt.event.MouseEvent
 import java.awt.event.MouseListener
-import java.awt.geom.*
+import java.awt.geom.AffineTransform
+import java.awt.geom.Area
+import java.awt.geom.Path2D
+import java.awt.geom.Rectangle2D
 import javax.imageio.ImageIO
 import javax.swing.JPanel
 import javax.swing.Timer
@@ -20,23 +23,10 @@ private const val SPATIAL_RESOLUTION = 0.25  // in
 private const val TEMPORAL_RESOLUTION = 0.025  // sec
 private val FIELD_IMAGE = ImageIO.read(FieldPanel::class.java.getResource("/field.png"))
 
-fun Vector2d.awt() = Point2D.Double(x, y)
-
-fun Path2D.Double.moveTo(point: Point2D.Double) {
-    moveTo(point.x, point.y)
-}
-
-fun Path2D.Double.lineTo(point: Point2D.Double) {
-    lineTo(point.x, point.y)
-}
-
-fun circle(center: Vector2d, radius: Double) = Ellipse2D.Double(center.x - radius / 2, center.y - radius / 2, radius, radius)
-
 /**
  * Panel displaying an image of the field with the trajectory/path superimposed.
  */
 class FieldPanel : JPanel() {
-
     private val fieldTransform = AffineTransform()
     private val robotTransform = AffineTransform()
 
@@ -55,6 +45,7 @@ class FieldPanel : JPanel() {
     private val clock = NanoClock.system()
 
     init {
+        minimumSize = Dimension(250, 250)
         preferredSize = Dimension(500, 500)
 
         addMouseListener(object : MouseListener {

@@ -5,14 +5,17 @@ import com.acmerobotics.roadrunner.trajectory.constraints.MecanumConstraints
 import com.acmerobotics.roadrunner.trajectory.constraints.TankConstraints
 import com.fasterxml.jackson.annotation.JsonIgnore
 
-class TrajectoryGroupConfig(
-    var constraints: DriveConstraints,
-    var robotLength: Double,
-    var robotWidth: Double,
-    var driveType: DriveType,
-    var trackWidth: Double?,
-    var wheelBase: Double?,
-    var lateralMultiplier: Double?
+data class TrajectoryGroupConfig(
+    val maxVel: Double,
+    val maxAccel: Double,
+    val maxAngVel: Double,
+    val maxAngAccel: Double,
+    val robotLength: Double,
+    val robotWidth: Double,
+    val driveType: DriveType,
+    val trackWidth: Double?,
+    val wheelBase: Double?,
+    val lateralMultiplier: Double?
 ) {
     enum class DriveType {
         GENERIC,
@@ -20,10 +23,18 @@ class TrajectoryGroupConfig(
         TANK
     }
 
-    val specificConstraints: DriveConstraints
-        @JsonIgnore get() = when (driveType) {
-            DriveType.GENERIC -> constraints
-            DriveType.MECANUM -> MecanumConstraints(constraints, trackWidth!!, wheelBase ?: trackWidth!!, lateralMultiplier!!)
-            DriveType.TANK -> TankConstraints(constraints, trackWidth!!)
-        }
+    @JsonIgnore private val baseConstraints = DriveConstraints(
+        maxVel = maxVel,
+        maxAccel = maxAccel,
+        maxAngVel = maxAngVel,
+        maxAngAccel = maxAngAccel,
+        maxJerk = 0.0,
+        maxAngJerk = 0.0
+    )
+
+    @JsonIgnore val constraints = when (driveType) {
+        DriveType.GENERIC -> baseConstraints
+        DriveType.MECANUM -> MecanumConstraints(baseConstraints, trackWidth!!, wheelBase ?: trackWidth, lateralMultiplier!!)
+        DriveType.TANK -> TankConstraints(baseConstraints, trackWidth!!)
+    }
 }
