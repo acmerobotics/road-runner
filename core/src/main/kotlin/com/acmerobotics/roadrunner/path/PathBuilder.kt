@@ -26,11 +26,6 @@ class PathContinuityViolationException : PathBuilderException()
 class EmptyPathSegmentException : PathBuilderException()
 
 /**
- * Exception thrown when an empty builder (i.e., no segments) is built.
- */
-class EmptyPathException : PathBuilderException()
-
-/**
  * Easy-to-use builder for creating [Path] instances.
  *
  * @param startPose start pose
@@ -50,10 +45,8 @@ class PathBuilder private constructor(
 
     constructor(path: Path, s: Double) : this(null, null, path, s)
 
-    var currentPose: Pose2d? = startPose
-        private set
-    var currentHeading: Double? = startHeading
-        private set
+    private var currentPose: Pose2d? = startPose
+    private var currentHeading: Double? = startHeading
 
     private var segments = mutableListOf<PathSegment>()
 
@@ -304,9 +297,6 @@ class PathBuilder private constructor(
      * Constructs the [Path] instance.
      */
     fun build(): Path {
-        if (segments.size < 1) {
-            throw EmptyPathException()
-        }
         return Path(segments)
     }
 }

@@ -2,7 +2,6 @@ package com.acmerobotics.roadrunner.gui
 
 import DEFAULT_GROUP_CONFIG
 import DEFAULT_TRAJECTORY_CONFIG
-import com.acmerobotics.roadrunner.path.EmptyPathException
 import com.acmerobotics.roadrunner.path.EmptyPathSegmentException
 import com.acmerobotics.roadrunner.path.PathContinuityViolationException
 import com.acmerobotics.roadrunner.trajectory.config.TrajectoryConfig
@@ -262,6 +261,14 @@ class MainPanel : JPanel() {
         trajGenFuture = trajGenExecutor.submit {
             status = "generating trajectory..."
 
+            if (trajectoryConfig.steps.isEmpty()) {
+                status = "error: empty path"
+
+                pathEditorPanel.valid = false
+
+                return@submit
+            }
+
             try {
                 val newTrajectory = trajectoryConfig.toTrajectory(groupConfig)
 
@@ -281,10 +288,6 @@ class MainPanel : JPanel() {
                 }
 
                 status = "done"
-            } catch (e: EmptyPathException) {
-                status = "error: empty path"
-
-                pathEditorPanel.valid = false
             } catch (e: EmptyPathSegmentException) {
                 status = "error: empty path segment"
 

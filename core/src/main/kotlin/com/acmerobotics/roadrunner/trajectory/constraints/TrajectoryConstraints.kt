@@ -9,11 +9,12 @@ import com.acmerobotics.roadrunner.profile.SimpleMotionConstraints
 interface TrajectoryConstraints {
 
     /**
-     * Returns the maximum velocity and acceleration for the given pose derivatives.
+     * Returns the maximum velocity and acceleration for the given path displacement and pose derivatives.
      *
+     * @param s path displacement
      * @param pose pose
      * @param deriv pose derivative
      * @param secondDeriv pose second derivative
      */
-    operator fun get(pose: Pose2d, deriv: Pose2d, secondDeriv: Pose2d): SimpleMotionConstraints
+    operator fun get(s: Double, pose: Pose2d, deriv: Pose2d, secondDeriv: Pose2d): SimpleMotionConstraints
 }

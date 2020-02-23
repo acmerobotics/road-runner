@@ -17,7 +17,7 @@ class SimpleTrajectoryBuilder private constructor(
     t: Double?,
     private val driveConstraints: DriveConstraints,
     private val start: MotionState
-) : BaseTrajectoryBuilder(startPose, startHeading, trajectory, t) {
+) : BaseTrajectoryBuilder<SimpleTrajectoryBuilder>(startPose, startHeading, trajectory, t) {
     /**
      * Create a builder from a start pose and motion state. This is the recommended constructor for creating
      * trajectories from rest.

@@ -24,6 +24,7 @@ object TrajectoryGenerator {
             override fun get(s: Double): SimpleMotionConstraints {
                 val t = path.reparam(s)
                 return constraints[
+                    s,
                     path[s, t],
                     path.deriv(s, t),
                     path.secondDeriv(s, t)
@@ -34,6 +35,7 @@ object TrajectoryGenerator {
                 s.zip(path.reparam(s).asIterable())
                     .map { (s, t) ->
                         constraints[
+                            s,
                             path[s, t],
                             path.deriv(s, t),
                             path.secondDeriv(s, t)

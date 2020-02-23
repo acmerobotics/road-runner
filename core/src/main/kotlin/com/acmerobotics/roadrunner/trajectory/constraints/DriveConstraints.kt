@@ -24,7 +24,7 @@ open class DriveConstraints(
     @JvmField var maxAngAccel: Double,
     @JvmField var maxAngJerk: Double
 ) : TrajectoryConstraints {
-    override fun get(pose: Pose2d, deriv: Pose2d, secondDeriv: Pose2d): SimpleMotionConstraints {
+    override fun get(s: Double, pose: Pose2d, deriv: Pose2d, secondDeriv: Pose2d): SimpleMotionConstraints {
         val maxVels = mutableListOf(maxVel)
 
         if (!(deriv.heading epsilonEquals 0.0)) {
