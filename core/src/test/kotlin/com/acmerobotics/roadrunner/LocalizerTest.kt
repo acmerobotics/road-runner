@@ -27,6 +27,6 @@ class LocalizerTest {
             localizer.update()
         }
 
-        assert(localizer.poseEstimate epsilonEquals INITIAL_POSE)
+        assert(localizer.poseEstimate epsilonEqualsHeading INITIAL_POSE)
     }
 }

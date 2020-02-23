@@ -5,8 +5,6 @@ import com.acmerobotics.roadrunner.kinematics.Kinematics
 import com.acmerobotics.roadrunner.kinematics.MecanumKinematics
 import com.acmerobotics.roadrunner.kinematics.SwerveKinematics
 import com.acmerobotics.roadrunner.kinematics.TankKinematics
-import com.acmerobotics.roadrunner.path.heading.SplineInterpolator
-import com.acmerobotics.roadrunner.path.heading.TangentInterpolator
 import com.acmerobotics.roadrunner.trajectory.Trajectory
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
@@ -69,9 +67,9 @@ class DriveWheelConstraintsTest {
     fun testMecanumWheelVelocityLimiting() {
         val constraints = MecanumConstraints(BASE_CONSTRAINTS, 10.0, 5.0)
         val trajectory = TrajectoryBuilder(Pose2d(0.0, 0.0, 0.0), constraints = constraints)
-                .splineTo(Pose2d(15.0, 15.0, PI), interpolator = SplineInterpolator(0.0, PI / 2))
-                .splineTo(Pose2d(5.0, 35.0, PI / 3), interpolator = TangentInterpolator())
-                .build()
+            .splineToSplineHeading(Pose2d(15.0, 15.0, PI), PI / 2)
+            .splineTo(Pose2d(5.0, 35.0, PI / 3))
+            .build()
         testWheelVelocityLimiting(trajectory, BASE_CONSTRAINTS.maxVel) {
             MecanumKinematics.robotToWheelVelocities(it, constraints.trackWidth, constraints.wheelBase)
         }
@@ -81,9 +79,9 @@ class DriveWheelConstraintsTest {
     fun testSwerveWheelVelocityLimiting() {
         val constraints = SwerveConstraints(BASE_CONSTRAINTS, 10.0, 5.0)
         val trajectory = TrajectoryBuilder(Pose2d(0.0, 0.0, 0.0), constraints = constraints)
-                .splineTo(Pose2d(15.0, 15.0, PI), interpolator = SplineInterpolator(0.0, PI / 2))
-                .splineTo(Pose2d(5.0, 35.0, PI / 3), interpolator = TangentInterpolator())
-                .build()
+            .splineToSplineHeading(Pose2d(15.0, 15.0, PI), PI / 2)
+            .splineTo(Pose2d(5.0, 35.0, PI / 3))
+            .build()
         testWheelVelocityLimiting(trajectory, BASE_CONSTRAINTS.maxVel) {
             SwerveKinematics.robotToWheelVelocities(it, constraints.trackWidth, constraints.wheelBase)
         }

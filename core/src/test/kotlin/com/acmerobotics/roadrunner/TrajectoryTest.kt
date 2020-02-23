@@ -5,8 +5,6 @@ import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.path.Path
 import com.acmerobotics.roadrunner.path.PathSegment
 import com.acmerobotics.roadrunner.path.QuinticSpline
-import com.acmerobotics.roadrunner.path.heading.TangentInterpolator
-import com.acmerobotics.roadrunner.path.heading.WiggleInterpolator
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
 import com.acmerobotics.roadrunner.trajectory.TrajectoryGenerator
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
@@ -23,9 +21,6 @@ class TrajectoryTest {
         val trajectory = TrajectoryBuilder(stonePose, constraints = DriveConstraints(5.0, 10.0, 0.0, 2.0, 3.0, 0.0))
                 .lineTo(Vector2d(12 - cryptoColWidth, -47.5))
                 .splineTo(Pose2d(16.0, -24.0, PI / 3))
-                .splineTo(
-                    Pose2d(24.0, -10.0, PI / 4),
-                        WiggleInterpolator(Math.toRadians(15.0), 6.0, TangentInterpolator()))
                 .build()
 
         val dt = trajectory.duration() / 10000.0
@@ -69,7 +64,7 @@ class TrajectoryTest {
                 .splineTo(Pose2d(50 * Math.random(), 50 * Math.random(), 2 * PI * Math.random()))
                 .splineTo(endPose)
                 .build()
-            assert(traj.end() epsilonEquals endPose)
+            assert(traj.end() epsilonEqualsHeading endPose)
         }
     }
 }

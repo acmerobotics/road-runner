@@ -380,7 +380,7 @@ class MainPanel : JPanel() {
 
     fun close(): Boolean {
         return if (dirty) {
-            val result = JOptionPane.showConfirmDialog(this, "Save unsaved changes??")
+            val result = JOptionPane.showConfirmDialog(this, "Save unsaved changes?")
             when (result) {
                 JOptionPane.YES_OPTION -> {
                     saveAll()

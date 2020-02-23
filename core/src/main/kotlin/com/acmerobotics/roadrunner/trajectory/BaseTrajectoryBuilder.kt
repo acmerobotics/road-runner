@@ -4,8 +4,6 @@ import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.path.Path
 import com.acmerobotics.roadrunner.path.PathBuilder
-import com.acmerobotics.roadrunner.path.heading.HeadingInterpolator
-import com.acmerobotics.roadrunner.path.heading.TangentInterpolator
 
 /**
  * Easy-to-use builder for creating [Trajectory] instances.
@@ -26,30 +24,9 @@ abstract class BaseTrajectoryBuilder protected constructor(
         PathBuilder(startPose, startHeading!!)
     }
 
-    val currentPose
-        get() = pathBuilder.currentPose
-    val currentHeading
-        get() = pathBuilder.currentHeading
-
     private val temporalMarkers = mutableListOf<TemporalMarker>()
     private val displacementMarkers = mutableListOf<DisplacementMarker>()
     private val spatialMarkers = mutableListOf<SpatialMarker>()
-
-    /**
-     * Adds a line path segment.
-     *
-     * @param pos end position
-     * @param interpolator heading interpolator
-     */
-    @Deprecated("raw heading interpolators are no longer permitted in high-level builders")
-    fun lineTo(
-        pos: Vector2d,
-        interpolator: HeadingInterpolator = TangentInterpolator()
-    ): BaseTrajectoryBuilder {
-        pathBuilder.lineTo(pos, interpolator)
-
-        return this
-    }
 
     /**
      * Adds a line segment with tangent heading interpolation.
@@ -146,22 +123,6 @@ abstract class BaseTrajectoryBuilder protected constructor(
      */
     fun strafeRight(distance: Double): BaseTrajectoryBuilder {
         pathBuilder.strafeRight(distance)
-
-        return this
-    }
-
-    /**
-     * Adds a spline segment.
-     *
-     * @param pose end pose
-     * @param interpolator heading interpolator
-     */
-    @Deprecated("raw heading interpolators are no longer permitted in high-level builders")
-    fun splineTo(
-        pose: Pose2d,
-        interpolator: HeadingInterpolator = TangentInterpolator()
-    ): BaseTrajectoryBuilder {
-        pathBuilder.splineTo(pose, interpolator)
 
         return this
     }
