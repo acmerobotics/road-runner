@@ -263,14 +263,19 @@ class MainPanel : JPanel() {
             status = "generating trajectory..."
 
             try {
-                val trajectory = trajectoryConfig.toTrajectory(groupConfig)
+                val newTrajectory = trajectoryConfig.toTrajectory(groupConfig)
 
-                pathEditorPanel.valid = trajectory != null
+                pathEditorPanel.valid = newTrajectory != null
 
-                if (trajectory != null) {
-                    fieldPanel.updateTrajectoryAndConfig(trajectory, trajectoryConfig, groupConfig)
-                    trajectoryInfoPanel.duration = trajectory.duration()
-                    trajectoryGraphPanel.updateTrajectory(trajectory)
+                if (newTrajectory != null) {
+                    fieldPanel.apply {
+                        knots = listOf(trajectoryConfig.startPose.vec()) +
+                            trajectoryConfig.steps.map { it.pose.vec() }
+                        robotDimensions = RobotDimensions(groupConfig.robotLength, groupConfig.robotWidth)
+                        trajectory = newTrajectory
+                    }
+                    trajectoryInfoPanel.duration = newTrajectory.duration()
+                    trajectoryGraphPanel.updateTrajectory(newTrajectory)
 
                     onTrajectoryUpdate?.invoke()
                 }

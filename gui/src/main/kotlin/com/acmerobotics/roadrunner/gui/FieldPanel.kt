@@ -3,8 +3,6 @@ package com.acmerobotics.roadrunner.gui
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.trajectory.Trajectory
-import com.acmerobotics.roadrunner.trajectory.config.TrajectoryConfig
-import com.acmerobotics.roadrunner.trajectory.config.TrajectoryGroupConfig
 import com.acmerobotics.roadrunner.util.NanoClock
 import java.awt.*
 import java.awt.event.MouseEvent
@@ -23,6 +21,11 @@ private const val SPATIAL_RESOLUTION = 0.25  // in
 private const val TEMPORAL_RESOLUTION = 0.025  // sec
 private val FIELD_IMAGE = ImageIO.read(FieldPanel::class.java.getResource("/field.png"))
 
+data class RobotDimensions(
+    val length: Double,
+    val width: Double
+)
+
 /**
  * Panel displaying an image of the field with the trajectory/path superimposed.
  */
@@ -35,14 +38,99 @@ class FieldPanel : JPanel() {
 
     private val updateLock = Object()
 
-    private var knots = listOf<Vector2d>()
-    private var trajectory: Trajectory? = null
     private var path: Path2D.Double = Path2D.Double()
     private var area: Area = Area()
 
     private var timer: Timer? = null
     private var startTime: Double = 0.0
     private val clock = NanoClock.system()
+
+    var knots: List<Vector2d> = emptyList()
+        set(value) {
+            field = value
+
+            repaint()
+        }
+
+    var robotDimensions = RobotDimensions(0.0, 0.0)
+        set(value) {
+            // compute path samples
+            val (length, width) = value
+            robotPath = Path2D.Double()
+            robotPath.moveTo(length / 2, 0.0)
+            robotPath.lineTo(0.0, 0.0)
+            robotPath.lineTo(length / 2, 0.0)
+            robotPath.lineTo(length / 2, width / 2)
+            robotPath.lineTo(-length / 2, width / 2)
+            robotPath.lineTo(-length / 2, -width / 2)
+            robotPath.lineTo(length / 2, -width / 2)
+            robotPath.closePath()
+
+            robotRect = Rectangle2D.Double(-length / 2, -width / 2, length, width)
+
+            field = value
+
+            repaint()
+        }
+
+    var trajectory: Trajectory? = null
+        set(value) {
+            val newPath = Path2D.Double()
+            val newArea = Area()
+
+            if (value == null) {
+                synchronized(updateLock) {
+                    knots = emptyList()
+                    path = newPath
+                    area = newArea
+                    field = value
+                }
+
+                return
+            }
+
+            // compute path samples
+            val displacementSamples = (value.path.length() / SPATIAL_RESOLUTION).roundToInt()
+            val displacements = (0..displacementSamples).map {
+                it / displacementSamples.toDouble() * value.path.length()
+            }
+
+            // compute the path segments and area swept by the robot
+            val poses = displacements.map { value.path[it] }
+            newPath.moveTo(poses.first().vec().awt())
+            for (pose in poses.drop(1)) {
+                if (Thread.currentThread().isInterrupted) return
+
+                newPath.lineTo(pose.vec().awt())
+            }
+
+            // compute time samples
+            val timeSamples = (value.duration() / TEMPORAL_RESOLUTION).roundToInt()
+            val times = (0..timeSamples).map {
+                it / timeSamples.toDouble() * value.duration()
+            }
+
+            // TODO: is this procedure quadratic?
+            // is it better to divide and conquer (at the cost of additional memory)?
+            for (time in times) {
+                if (Thread.currentThread().isInterrupted) return
+
+                val pose = value[time]
+                robotTransform.setToTranslation(pose.x, pose.y)
+                robotTransform.rotate(pose.heading)
+                newArea.add(Area(robotTransform.createTransformedShape(robotRect)))
+            }
+
+            synchronized(updateLock) {
+                this.path = newPath
+                this.area = newArea
+                field = value
+            }
+
+            startTime = clock.seconds()
+
+            repaint()
+        }
 
     init {
         minimumSize = Dimension(250, 250)
@@ -69,69 +157,6 @@ class FieldPanel : JPanel() {
 
             }
         })
-    }
-
-    fun updateTrajectoryAndConfig(trajectory: Trajectory, config: TrajectoryConfig, groupConfig: TrajectoryGroupConfig) {
-        val newPath = Path2D.Double()
-        val newArea = Area()
-
-        // compute robot path and rect
-        val length = groupConfig.robotLength
-        val width = groupConfig.robotWidth
-        robotPath = Path2D.Double()
-        robotPath.moveTo(length / 2, 0.0)
-        robotPath.lineTo(0.0, 0.0)
-        robotPath.lineTo(length / 2, 0.0)
-        robotPath.lineTo(length / 2, width / 2)
-        robotPath.lineTo(-length / 2, width / 2)
-        robotPath.lineTo(-length / 2, -width / 2)
-        robotPath.lineTo(length / 2, -width / 2)
-        robotPath.closePath()
-
-        robotRect = Rectangle2D.Double(-length / 2, -width / 2, length, width)
-
-        // compute path samples
-        val displacementSamples = (trajectory.path.length() / SPATIAL_RESOLUTION).roundToInt()
-        val displacements = (0..displacementSamples).map {
-            it / displacementSamples.toDouble() * trajectory.path.length()
-        }
-
-        // compute the path segments and area swept by the robot
-        val poses = displacements.map { trajectory.path[it] }
-        newPath.moveTo(poses.first().vec().awt())
-        for (pose in poses.drop(1)) {
-            if (Thread.currentThread().isInterrupted) return
-
-            newPath.lineTo(pose.vec().awt())
-        }
-
-        // compute time samples
-        val timeSamples = (trajectory.duration() / TEMPORAL_RESOLUTION).roundToInt()
-        val times = (0..timeSamples).map {
-            it / timeSamples.toDouble() * trajectory.duration()
-        }
-
-        // TODO: is this procedure quadratic?
-        // is it better to divide and conquer (at the cost of additional memory)?
-        for (time in times) {
-            if (Thread.currentThread().isInterrupted) return
-
-            val pose = trajectory[time]
-            robotTransform.setToTranslation(pose.x, pose.y)
-            robotTransform.rotate(pose.heading)
-            newArea.add(Area(robotTransform.createTransformedShape(robotRect)))
-        }
-
-        synchronized(updateLock) {
-            this.knots = listOf(config.startPose.vec()) + config.steps.map { it.pose.vec() }
-            this.trajectory = trajectory
-            this.path = newPath
-            this.area = newArea
-        }
-
-        startTime = clock.seconds()
-
-        repaint()
     }
 
     private fun startAnimation() {
