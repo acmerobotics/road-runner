@@ -217,9 +217,14 @@ class MainPanel : JPanel() {
             file.extension == "yaml" && !file.name.startsWith("_")
         } ?: return false
         if (!trajListModel.isEmpty && dirty) {
-            val result = JOptionPane.showConfirmDialog(this, "Discard unsaved changes?")
-            if (result != JOptionPane.OK_OPTION) {
-                return false
+            val result = JOptionPane.showConfirmDialog(this, "Save unsaved changes?")
+            when (result) {
+                JOptionPane.YES_OPTION -> {
+                    saveAll()
+                }
+                else -> {
+                    return false
+                }
             }
         }
         val newGroupConfig = TrajectoryConfigManager.loadGroupConfig(dir)
@@ -369,10 +374,22 @@ class MainPanel : JPanel() {
     }
 
     fun close(): Boolean {
-        if (dirty) {
-            val result = JOptionPane.showConfirmDialog(this, "You have unsaved changes. Are you sure you want to close?")
-            return result == JOptionPane.YES_OPTION
+        return if (dirty) {
+            val result = JOptionPane.showConfirmDialog(this, "Save unsaved changes??")
+            when (result) {
+                JOptionPane.YES_OPTION -> {
+                    saveAll()
+                    true
+                }
+                JOptionPane.NO_OPTION -> {
+                    true
+                }
+                else -> {
+                    false
+                }
+            }
+        } else {
+            true
         }
-        return true
     }
 }
