@@ -1,0 +1,226 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>BaseTrajectoryBuilder - core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">core</a>&nbsp;/&nbsp;<a href="../index.html">com.acmerobotics.roadrunner.trajectory</a>&nbsp;/&nbsp;<a href="./index.html">BaseTrajectoryBuilder</a><br/>
+<br/>
+<h1>BaseTrajectoryBuilder</h1>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">BaseTrajectoryBuilder</span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">BaseTrajectoryBuilder</span></a><span class="symbol">&lt;</span><span class="identifier">T</span><span class="symbol">&gt;</span><span class="symbol">&gt;</span></code> <a href="https://github.com/acmerobotics/road-runner/blob/master/core/src/main/kotlin/com/acmerobotics/roadrunner/trajectory/BaseTrajectoryBuilder.kt#L16">(source)</a>
+<p>Easy-to-use builder for creating <a href="../-trajectory/index.html">Trajectory</a> instances.</p>
+<h3>Parameters</h3>
+<p><a name="startPose"></a>
+<code>startPose</code> - start pose</p>
+<p><a name="trajectory"></a>
+<code>trajectory</code> - initial trajectory (for splicing)</p>
+<p><a name="t"></a>
+<code>t</code> - time index in previous trajectory to begin new trajectory</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="-init-.html">&lt;init&gt;</a></h4>
+</td>
+<td>
+<p>Easy-to-use builder for creating <a href="../-trajectory/index.html">Trajectory</a> instances.</p>
+<code><span class="identifier">BaseTrajectoryBuilder</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$<init>(com.acmerobotics.roadrunner.geometry.Pose2d, kotlin.Double, com.acmerobotics.roadrunner.trajectory.Trajectory, kotlin.Double)/startPose">startPose</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$<init>(com.acmerobotics.roadrunner.geometry.Pose2d, kotlin.Double, com.acmerobotics.roadrunner.trajectory.Trajectory, kotlin.Double)/startHeading">startHeading</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$<init>(com.acmerobotics.roadrunner.geometry.Pose2d, kotlin.Double, com.acmerobotics.roadrunner.trajectory.Trajectory, kotlin.Double)/trajectory">trajectory</span><span class="symbol">:</span>&nbsp;<a href="../-trajectory/index.html"><span class="identifier">Trajectory</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$<init>(com.acmerobotics.roadrunner.geometry.Pose2d, kotlin.Double, com.acmerobotics.roadrunner.trajectory.Trajectory, kotlin.Double)/t">t</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">?</span><span class="symbol">)</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="path-builder.html">pathBuilder</a></h4>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">pathBuilder</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.path/-path-builder/index.html"><span class="identifier">PathBuilder</span></a></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="add-displacement-marker.html">addDisplacementMarker</a></h4>
+</td>
+<td>
+<p>Adds a marker at the current position of the trajectory.</p>
+<code><span class="keyword">fun </span><span class="identifier">addDisplacementMarker</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$addDisplacementMarker(com.acmerobotics.roadrunner.trajectory.MarkerCallback)/callback">callback</span><span class="symbol">:</span>&nbsp;<a href="../-marker-callback/index.html"><span class="identifier">MarkerCallback</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">T</span></code>
+<p>Adds a marker to the trajectory at <a href="add-displacement-marker.html#com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$addDisplacementMarker(kotlin.Double, com.acmerobotics.roadrunner.trajectory.MarkerCallback)/displacement">displacement</a>.</p>
+<code><span class="keyword">fun </span><span class="identifier">addDisplacementMarker</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$addDisplacementMarker(kotlin.Double, com.acmerobotics.roadrunner.trajectory.MarkerCallback)/displacement">displacement</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$addDisplacementMarker(kotlin.Double, com.acmerobotics.roadrunner.trajectory.MarkerCallback)/callback">callback</span><span class="symbol">:</span>&nbsp;<a href="../-marker-callback/index.html"><span class="identifier">MarkerCallback</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">T</span></code>
+<p>Adds a marker to the trajectory at <a href="add-displacement-marker.html#com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$addDisplacementMarker(kotlin.Double, kotlin.Double, com.acmerobotics.roadrunner.trajectory.MarkerCallback)/scale">scale</a> * path length + <a href="add-displacement-marker.html#com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$addDisplacementMarker(kotlin.Double, kotlin.Double, com.acmerobotics.roadrunner.trajectory.MarkerCallback)/offset">offset</a>.</p>
+<code><span class="keyword">fun </span><span class="identifier">addDisplacementMarker</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$addDisplacementMarker(kotlin.Double, kotlin.Double, com.acmerobotics.roadrunner.trajectory.MarkerCallback)/scale">scale</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$addDisplacementMarker(kotlin.Double, kotlin.Double, com.acmerobotics.roadrunner.trajectory.MarkerCallback)/offset">offset</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$addDisplacementMarker(kotlin.Double, kotlin.Double, com.acmerobotics.roadrunner.trajectory.MarkerCallback)/callback">callback</span><span class="symbol">:</span>&nbsp;<a href="../-marker-callback/index.html"><span class="identifier">MarkerCallback</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">T</span></code>
+<p>Adds a marker to the trajectory at <a href="add-displacement-marker.html#com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$addDisplacementMarker(kotlin.Function1((kotlin.Double, )), com.acmerobotics.roadrunner.trajectory.MarkerCallback)/displacement">displacement</a> evaluated with path length.</p>
+<code><span class="keyword">fun </span><span class="identifier">addDisplacementMarker</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$addDisplacementMarker(kotlin.Function1((kotlin.Double, )), com.acmerobotics.roadrunner.trajectory.MarkerCallback)/displacement">displacement</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$addDisplacementMarker(kotlin.Function1((kotlin.Double, )), com.acmerobotics.roadrunner.trajectory.MarkerCallback)/callback">callback</span><span class="symbol">:</span>&nbsp;<a href="../-marker-callback/index.html"><span class="identifier">MarkerCallback</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">T</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="add-spatial-marker.html">addSpatialMarker</a></h4>
+</td>
+<td>
+<p>Adds a marker that will be triggered at the closest trajectory point to <a href="add-spatial-marker.html#com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$addSpatialMarker(com.acmerobotics.roadrunner.geometry.Vector2d, com.acmerobotics.roadrunner.trajectory.MarkerCallback)/point">point</a>.</p>
+<code><span class="keyword">fun </span><span class="identifier">addSpatialMarker</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$addSpatialMarker(com.acmerobotics.roadrunner.geometry.Vector2d, com.acmerobotics.roadrunner.trajectory.MarkerCallback)/point">point</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.geometry/-vector2d/index.html"><span class="identifier">Vector2d</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$addSpatialMarker(com.acmerobotics.roadrunner.geometry.Vector2d, com.acmerobotics.roadrunner.trajectory.MarkerCallback)/callback">callback</span><span class="symbol">:</span>&nbsp;<a href="../-marker-callback/index.html"><span class="identifier">MarkerCallback</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">T</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="add-temporal-marker.html">addTemporalMarker</a></h4>
+</td>
+<td>
+<p>Adds a marker to the trajectory at <a href="add-temporal-marker.html#com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$addTemporalMarker(kotlin.Double, com.acmerobotics.roadrunner.trajectory.MarkerCallback)/time">time</a>.</p>
+<code><span class="keyword">fun </span><span class="identifier">addTemporalMarker</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$addTemporalMarker(kotlin.Double, com.acmerobotics.roadrunner.trajectory.MarkerCallback)/time">time</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$addTemporalMarker(kotlin.Double, com.acmerobotics.roadrunner.trajectory.MarkerCallback)/callback">callback</span><span class="symbol">:</span>&nbsp;<a href="../-marker-callback/index.html"><span class="identifier">MarkerCallback</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">T</span></code>
+<p>Adds a marker to the trajectory at <a href="add-temporal-marker.html#com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$addTemporalMarker(kotlin.Double, kotlin.Double, com.acmerobotics.roadrunner.trajectory.MarkerCallback)/scale">scale</a> * trajectory duration + <a href="add-temporal-marker.html#com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$addTemporalMarker(kotlin.Double, kotlin.Double, com.acmerobotics.roadrunner.trajectory.MarkerCallback)/offset">offset</a>.</p>
+<code><span class="keyword">fun </span><span class="identifier">addTemporalMarker</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$addTemporalMarker(kotlin.Double, kotlin.Double, com.acmerobotics.roadrunner.trajectory.MarkerCallback)/scale">scale</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$addTemporalMarker(kotlin.Double, kotlin.Double, com.acmerobotics.roadrunner.trajectory.MarkerCallback)/offset">offset</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$addTemporalMarker(kotlin.Double, kotlin.Double, com.acmerobotics.roadrunner.trajectory.MarkerCallback)/callback">callback</span><span class="symbol">:</span>&nbsp;<a href="../-marker-callback/index.html"><span class="identifier">MarkerCallback</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">T</span></code>
+<p>Adds a marker to the trajectory at <a href="add-temporal-marker.html#com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$addTemporalMarker(kotlin.Function1((kotlin.Double, )), com.acmerobotics.roadrunner.trajectory.MarkerCallback)/time">time</a> evaluated with the trajectory duration.</p>
+<code><span class="keyword">fun </span><span class="identifier">addTemporalMarker</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$addTemporalMarker(kotlin.Function1((kotlin.Double, )), com.acmerobotics.roadrunner.trajectory.MarkerCallback)/time">time</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$addTemporalMarker(kotlin.Function1((kotlin.Double, )), com.acmerobotics.roadrunner.trajectory.MarkerCallback)/callback">callback</span><span class="symbol">:</span>&nbsp;<a href="../-marker-callback/index.html"><span class="identifier">MarkerCallback</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">T</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="back.html">back</a></h4>
+</td>
+<td>
+<p>Adds a line straight backward.</p>
+<code><span class="keyword">fun </span><span class="identifier">back</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$back(kotlin.Double)/distance">distance</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">T</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="build.html">build</a></h4>
+</td>
+<td>
+<p>Constructs the <a href="../-trajectory/index.html">Trajectory</a> instance.</p>
+<code><span class="keyword">fun </span><span class="identifier">build</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../-trajectory/index.html"><span class="identifier">Trajectory</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="build-trajectory.html">buildTrajectory</a></h4>
+</td>
+<td>
+<p>Build a trajectory from <a href="build-trajectory.html#com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$buildTrajectory(com.acmerobotics.roadrunner.path.Path, kotlin.collections.List((com.acmerobotics.roadrunner.trajectory.TemporalMarker)), kotlin.collections.List((com.acmerobotics.roadrunner.trajectory.DisplacementMarker)), kotlin.collections.List((com.acmerobotics.roadrunner.trajectory.SpatialMarker)))/path">path</a>.</p>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">buildTrajectory</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$buildTrajectory(com.acmerobotics.roadrunner.path.Path, kotlin.collections.List((com.acmerobotics.roadrunner.trajectory.TemporalMarker)), kotlin.collections.List((com.acmerobotics.roadrunner.trajectory.DisplacementMarker)), kotlin.collections.List((com.acmerobotics.roadrunner.trajectory.SpatialMarker)))/path">path</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.path/-path/index.html"><span class="identifier">Path</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$buildTrajectory(com.acmerobotics.roadrunner.path.Path, kotlin.collections.List((com.acmerobotics.roadrunner.trajectory.TemporalMarker)), kotlin.collections.List((com.acmerobotics.roadrunner.trajectory.DisplacementMarker)), kotlin.collections.List((com.acmerobotics.roadrunner.trajectory.SpatialMarker)))/temporalMarkers">temporalMarkers</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-temporal-marker/index.html"><span class="identifier">TemporalMarker</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$buildTrajectory(com.acmerobotics.roadrunner.path.Path, kotlin.collections.List((com.acmerobotics.roadrunner.trajectory.TemporalMarker)), kotlin.collections.List((com.acmerobotics.roadrunner.trajectory.DisplacementMarker)), kotlin.collections.List((com.acmerobotics.roadrunner.trajectory.SpatialMarker)))/displacementMarkers">displacementMarkers</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-displacement-marker/index.html"><span class="identifier">DisplacementMarker</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$buildTrajectory(com.acmerobotics.roadrunner.path.Path, kotlin.collections.List((com.acmerobotics.roadrunner.trajectory.TemporalMarker)), kotlin.collections.List((com.acmerobotics.roadrunner.trajectory.DisplacementMarker)), kotlin.collections.List((com.acmerobotics.roadrunner.trajectory.SpatialMarker)))/spatialMarkers">spatialMarkers</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-spatial-marker/index.html"><span class="identifier">SpatialMarker</span></a><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="../-trajectory/index.html"><span class="identifier">Trajectory</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="forward.html">forward</a></h4>
+</td>
+<td>
+<p>Adds a line straight forward.</p>
+<code><span class="keyword">fun </span><span class="identifier">forward</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$forward(kotlin.Double)/distance">distance</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">T</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="line-to.html">lineTo</a></h4>
+</td>
+<td>
+<p>Adds a line segment with tangent heading interpolation.</p>
+<code><span class="keyword">fun </span><span class="identifier">lineTo</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$lineTo(com.acmerobotics.roadrunner.geometry.Vector2d)/endPosition">endPosition</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.geometry/-vector2d/index.html"><span class="identifier">Vector2d</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">T</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="line-to-constant-heading.html">lineToConstantHeading</a></h4>
+</td>
+<td>
+<p>Adds a line segment with constant heading interpolation.</p>
+<code><span class="keyword">fun </span><span class="identifier">lineToConstantHeading</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$lineToConstantHeading(com.acmerobotics.roadrunner.geometry.Vector2d)/endPosition">endPosition</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.geometry/-vector2d/index.html"><span class="identifier">Vector2d</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">T</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="line-to-linear-heading.html">lineToLinearHeading</a></h4>
+</td>
+<td>
+<p>Adds a line segment with linear heading interpolation.</p>
+<code><span class="keyword">fun </span><span class="identifier">lineToLinearHeading</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$lineToLinearHeading(com.acmerobotics.roadrunner.geometry.Vector2d, kotlin.Double)/endPosition">endPosition</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.geometry/-vector2d/index.html"><span class="identifier">Vector2d</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$lineToLinearHeading(com.acmerobotics.roadrunner.geometry.Vector2d, kotlin.Double)/endHeading">endHeading</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">T</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="line-to-spline-heading.html">lineToSplineHeading</a></h4>
+</td>
+<td>
+<p>Adds a line segment with spline heading interpolation.</p>
+<code><span class="keyword">fun </span><span class="identifier">lineToSplineHeading</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$lineToSplineHeading(com.acmerobotics.roadrunner.geometry.Vector2d, kotlin.Double)/endPosition">endPosition</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.geometry/-vector2d/index.html"><span class="identifier">Vector2d</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$lineToSplineHeading(com.acmerobotics.roadrunner.geometry.Vector2d, kotlin.Double)/endHeading">endHeading</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">T</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="spline-to.html">splineTo</a></h4>
+</td>
+<td>
+<p>Adds a spline segment with tangent heading interpolation.</p>
+<code><span class="keyword">fun </span><span class="identifier">splineTo</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$splineTo(com.acmerobotics.roadrunner.geometry.Pose2d)/endPose">endPose</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">T</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="spline-to-constant-heading.html">splineToConstantHeading</a></h4>
+</td>
+<td>
+<p>Adds a spline segment with constant heading interpolation.</p>
+<code><span class="keyword">fun </span><span class="identifier">splineToConstantHeading</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$splineToConstantHeading(com.acmerobotics.roadrunner.geometry.Pose2d)/endPose">endPose</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">T</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="spline-to-linear-heading.html">splineToLinearHeading</a></h4>
+</td>
+<td>
+<p>Adds a spline segment with linear heading interpolation.</p>
+<code><span class="keyword">fun </span><span class="identifier">splineToLinearHeading</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$splineToLinearHeading(com.acmerobotics.roadrunner.geometry.Pose2d, kotlin.Double)/endPose">endPose</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$splineToLinearHeading(com.acmerobotics.roadrunner.geometry.Pose2d, kotlin.Double)/endHeading">endHeading</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">T</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="spline-to-spline-heading.html">splineToSplineHeading</a></h4>
+</td>
+<td>
+<p>Adds a spline segment with spline heading interpolation.</p>
+<code><span class="keyword">fun </span><span class="identifier">splineToSplineHeading</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$splineToSplineHeading(com.acmerobotics.roadrunner.geometry.Pose2d, kotlin.Double)/endPose">endPose</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$splineToSplineHeading(com.acmerobotics.roadrunner.geometry.Pose2d, kotlin.Double)/endHeading">endHeading</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">T</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="strafe-left.html">strafeLeft</a></h4>
+</td>
+<td>
+<p>Adds a segment that strafes left in the robot reference frame.</p>
+<code><span class="keyword">fun </span><span class="identifier">strafeLeft</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$strafeLeft(kotlin.Double)/distance">distance</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">T</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="strafe-right.html">strafeRight</a></h4>
+</td>
+<td>
+<p>Adds a segment that strafes right in the robot reference frame.</p>
+<code><span class="keyword">fun </span><span class="identifier">strafeRight</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$strafeRight(kotlin.Double)/distance">distance</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">T</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="strafe-to.html">strafeTo</a></h4>
+</td>
+<td>
+<p>Adds a strafe path segment.</p>
+<code><span class="keyword">fun </span><span class="identifier">strafeTo</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder$strafeTo(com.acmerobotics.roadrunner.geometry.Vector2d)/endPosition">endPosition</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.geometry/-vector2d/index.html"><span class="identifier">Vector2d</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">T</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Inheritors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="../-simple-trajectory-builder/index.html">SimpleTrajectoryBuilder</a></h4>
+</td>
+<td>
+<p>Builder for trajectories with <em>static</em> constraints.</p>
+<code><span class="keyword">class </span><span class="identifier">SimpleTrajectoryBuilder</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">BaseTrajectoryBuilder</span></a><span class="symbol">&lt;</span><a href="../-simple-trajectory-builder/index.html"><span class="identifier">SimpleTrajectoryBuilder</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="../-trajectory-builder/index.html">TrajectoryBuilder</a></h4>
+</td>
+<td>
+<p>Builder for trajectories with <em>dynamic</em> constraints.</p>
+<code><span class="keyword">class </span><span class="identifier">TrajectoryBuilder</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">BaseTrajectoryBuilder</span></a><span class="symbol">&lt;</span><a href="../-trajectory-builder/index.html"><span class="identifier">TrajectoryBuilder</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

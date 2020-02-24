@@ -1,0 +1,127 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>Drive - core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">core</a>&nbsp;/&nbsp;<a href="../index.html">com.acmerobotics.roadrunner.drive</a>&nbsp;/&nbsp;<a href="./index.html">Drive</a><br/>
+<br/>
+<h1>Drive</h1>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">Drive</span></code> <a href="https://github.com/acmerobotics/road-runner/blob/master/core/src/main/kotlin/com/acmerobotics/roadrunner/drive/Drive.kt#L12">(source)</a>
+<p>Abstraction for generic robot drive motion and localization. Robot poses are specified in a coordinate system with
+positive x pointing forward, positive y pointing left, and positive heading measured counter-clockwise from the
+x-axis.</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="-init-.html">&lt;init&gt;</a></h4>
+</td>
+<td>
+<p>Abstraction for generic robot drive motion and localization. Robot poses are specified in a coordinate system with
+positive x pointing forward, positive y pointing left, and positive heading measured counter-clockwise from the
+x-axis.</p>
+<code><span class="identifier">Drive</span><span class="symbol">(</span><span class="symbol">)</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="external-heading.html">externalHeading</a></h4>
+</td>
+<td>
+<p>The robot's heading in radians as measured by an external sensor (e.g., IMU, gyroscope).</p>
+<code><span class="keyword">var </span><span class="identifier">externalHeading</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="localizer.html">localizer</a></h4>
+</td>
+<td>
+<p>Localizer used to determine the evolution of <a href="pose-estimate.html">poseEstimate</a>.</p>
+<code><span class="keyword">abstract</span> <span class="keyword">var </span><span class="identifier">localizer</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.localization/-localizer/index.html"><span class="identifier">Localizer</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="pose-estimate.html">poseEstimate</a></h4>
+</td>
+<td>
+<p>The robot's current pose estimate.</p>
+<code><span class="keyword">var </span><span class="identifier">poseEstimate</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="raw-external-heading.html">rawExternalHeading</a></h4>
+</td>
+<td>
+<p>The raw heading used for computing <a href="external-heading.html">externalHeading</a>. Not affected by <a href="external-heading.html">externalHeading</a> setter.</p>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">rawExternalHeading</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="set-drive-power.html">setDrivePower</a></h4>
+</td>
+<td>
+<p>Sets the current commanded drive state of the robot. Feedforward is <em>not</em> applied to <a href="set-drive-power.html#com.acmerobotics.roadrunner.drive.Drive$setDrivePower(com.acmerobotics.roadrunner.geometry.Pose2d)/drivePower">drivePower</a>.</p>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">setDrivePower</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.drive.Drive$setDrivePower(com.acmerobotics.roadrunner.geometry.Pose2d)/drivePower">drivePower</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="set-drive-signal.html">setDriveSignal</a></h4>
+</td>
+<td>
+<p>Sets the current commanded drive state of the robot. Feedforward is applied to <a href="set-drive-signal.html#com.acmerobotics.roadrunner.drive.Drive$setDriveSignal(com.acmerobotics.roadrunner.drive.DriveSignal)/driveSignal">driveSignal</a> before it reaches
+the motors.</p>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">setDriveSignal</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.drive.Drive$setDriveSignal(com.acmerobotics.roadrunner.drive.DriveSignal)/driveSignal">driveSignal</span><span class="symbol">:</span>&nbsp;<a href="../-drive-signal/index.html"><span class="identifier">DriveSignal</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="update-pose-estimate.html">updatePoseEstimate</a></h4>
+</td>
+<td>
+<p>Updates <a href="pose-estimate.html">poseEstimate</a> with the most recent positional change.</p>
+<code><span class="keyword">fun </span><span class="identifier">updatePoseEstimate</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Inheritors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="../-mecanum-drive/index.html">MecanumDrive</a></h4>
+</td>
+<td>
+<p>This class provides the basic functionality of a mecanum drive using <a href="../../com.acmerobotics.roadrunner.kinematics/-mecanum-kinematics/index.html">MecanumKinematics</a>.</p>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">MecanumDrive</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">Drive</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="../-swerve-drive/index.html">SwerveDrive</a></h4>
+</td>
+<td>
+<p>This class provides the basic functionality of a swerve drive using <a href="../../com.acmerobotics.roadrunner.kinematics/-swerve-kinematics/index.html">SwerveKinematics</a>.</p>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">SwerveDrive</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">Drive</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="../-tank-drive/index.html">TankDrive</a></h4>
+</td>
+<td>
+<p>This class provides the basic functionality of a tank/differential drive using <a href="../../com.acmerobotics.roadrunner.kinematics/-tank-kinematics/index.html">TankKinematics</a>.</p>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">TankDrive</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">Drive</span></a></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

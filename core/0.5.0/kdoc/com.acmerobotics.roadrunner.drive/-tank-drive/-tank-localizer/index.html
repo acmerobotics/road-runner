@@ -1,0 +1,58 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>TankDrive.TankLocalizer - core</title>
+<link rel="stylesheet" href="../../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../../index.html">core</a>&nbsp;/&nbsp;<a href="../../index.html">com.acmerobotics.roadrunner.drive</a>&nbsp;/&nbsp;<a href="../index.html">TankDrive</a>&nbsp;/&nbsp;<a href="./index.html">TankLocalizer</a><br/>
+<br/>
+<h1>TankLocalizer</h1>
+<code><span class="keyword">class </span><span class="identifier">TankLocalizer</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../../com.acmerobotics.roadrunner.localization/-localizer/index.html"><span class="identifier">Localizer</span></a></code> <a href="https://github.com/acmerobotics/road-runner/blob/master/core/src/main/kotlin/com/acmerobotics/roadrunner/drive/TankDrive.kt#L30">(source)</a>
+<p>Default localizer for tank drives based on the drive encoders and (optionally) a heading sensor.</p>
+<h3>Parameters</h3>
+<p><a name="drive"></a>
+<code>drive</code> - drive</p>
+<p><a name="useExternalHeading"></a>
+<code>useExternalHeading</code> - use external heading provided by an external sensor (e.g., IMU, gyroscope)</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="-init-.html">&lt;init&gt;</a></h4>
+</td>
+<td>
+<p>Default localizer for tank drives based on the drive encoders and (optionally) a heading sensor.</p>
+<code><span class="identifier">TankLocalizer</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.drive.TankDrive.TankLocalizer$<init>(com.acmerobotics.roadrunner.drive.TankDrive, kotlin.Boolean)/drive">drive</span><span class="symbol">:</span>&nbsp;<a href="../index.html"><span class="identifier">TankDrive</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.drive.TankDrive.TankLocalizer$<init>(com.acmerobotics.roadrunner.drive.TankDrive, kotlin.Boolean)/useExternalHeading">useExternalHeading</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a>&nbsp;<span class="symbol">=</span>&nbsp;true<span class="symbol">)</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="pose-estimate.html">poseEstimate</a></h4>
+</td>
+<td>
+<p>Current robot pose estimate.</p>
+<code><span class="keyword">var </span><span class="identifier">poseEstimate</span><span class="symbol">: </span><a href="../../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="update.html">update</a></h4>
+</td>
+<td>
+<p>Completes a single localization update.</p>
+<code><span class="keyword">fun </span><span class="identifier">update</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

@@ -1,0 +1,59 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>com.acmerobotics.roadrunner.trajectory.config - core</title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">core</a>&nbsp;/&nbsp;<a href="./index.html">com.acmerobotics.roadrunner.trajectory.config</a><br/>
+<br/>
+<h2>Package com.acmerobotics.roadrunner.trajectory.config</h2>
+<p>Serializable configurations for GUIs.</p>
+<h3>Types</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="-legacy-trajectory-config/index.html">LegacyTrajectoryConfig</a></h4>
+</td>
+<td>
+<p>Legacy trajectory configuration intended for serialization. Intentionally more simplistic and less flexible than
+<a href="../com.acmerobotics.roadrunner.trajectory/-trajectory-builder/index.html">TrajectoryBuilder</a>.</p>
+<code><span class="keyword">class </span><span class="identifier">LegacyTrajectoryConfig</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-trajectory-config/index.html">TrajectoryConfig</a></h4>
+</td>
+<td>
+<p>Configuration describing a basic trajectory (a simpler frontend alternative to <a href="../com.acmerobotics.roadrunner.trajectory/-base-trajectory-builder/index.html">BaseTrajectoryBuilder</a>).</p>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">TrajectoryConfig</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-trajectory-config-deserializer/index.html">TrajectoryConfigDeserializer</a></h4>
+</td>
+<td>
+<p>Deserializer for all manner of trajectory configurations.</p>
+<code><span class="keyword">class </span><span class="identifier">TrajectoryConfigDeserializer</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">StdDeserializer</span><span class="symbol">&lt;</span><a href="-trajectory-config/index.html"><span class="identifier">TrajectoryConfig</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-trajectory-config-manager/index.html">TrajectoryConfigManager</a></h4>
+</td>
+<td>
+<p>Class containing methods for saving (loading) trajectory configurations to (from) YAML files.</p>
+<code><span class="keyword">object </span><span class="identifier">TrajectoryConfigManager</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-trajectory-group-config/index.html">TrajectoryGroupConfig</a></h4>
+</td>
+<td>
+<p>Configuration describing constraints and other robot-specific parameters that are shared by a group of trajectories.</p>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">TrajectoryGroupConfig</span></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

@@ -1,0 +1,83 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>TrajectoryConfigManager - core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">core</a>&nbsp;/&nbsp;<a href="../index.html">com.acmerobotics.roadrunner.trajectory.config</a>&nbsp;/&nbsp;<a href="./index.html">TrajectoryConfigManager</a><br/>
+<br/>
+<h1>TrajectoryConfigManager</h1>
+<code><span class="keyword">object </span><span class="identifier">TrajectoryConfigManager</span></code> <a href="https://github.com/acmerobotics/road-runner/blob/master/core/src/main/kotlin/com/acmerobotics/roadrunner/trajectory/config/TrajectoryConfigManager.kt#L16">(source)</a>
+<p>Class containing methods for saving (loading) trajectory configurations to (from) YAML files.</p>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="-g-r-o-u-p_-f-i-l-e-n-a-m-e.html">GROUP_FILENAME</a></h4>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">GROUP_FILENAME</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="load.html">load</a></h4>
+</td>
+<td>
+<p>Convenience wrapper around <a href="load-builder.html">loadBuilder</a>.</p>
+<code><span class="keyword">fun </span><span class="identifier">load</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.config.TrajectoryConfigManager$load(java.io.File)/file">file</span><span class="symbol">:</span>&nbsp;<a href="https://docs.oracle.com/javase/6/docs/api/java/io/File.html"><span class="identifier">File</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.trajectory/-trajectory/index.html"><span class="identifier">Trajectory</span></a><span class="symbol">?</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="load-builder.html">loadBuilder</a></h4>
+</td>
+<td>
+<p>Loads a <a href="../../com.acmerobotics.roadrunner.trajectory/-trajectory/index.html">Trajectory</a> from <a href="load-builder.html#com.acmerobotics.roadrunner.trajectory.config.TrajectoryConfigManager$loadBuilder(java.io.File)/file">file</a>.</p>
+<code><span class="keyword">fun </span><span class="identifier">loadBuilder</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.config.TrajectoryConfigManager$loadBuilder(java.io.File)/file">file</span><span class="symbol">:</span>&nbsp;<a href="https://docs.oracle.com/javase/6/docs/api/java/io/File.html"><span class="identifier">File</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.trajectory/-trajectory-builder/index.html"><span class="identifier">TrajectoryBuilder</span></a><span class="symbol">?</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="load-config.html">loadConfig</a></h4>
+</td>
+<td>
+<p>Loads a <a href="../-trajectory-config/index.html">TrajectoryConfig</a> from <a href="load-config.html#com.acmerobotics.roadrunner.trajectory.config.TrajectoryConfigManager$loadConfig(java.io.File)/file">file</a>.</p>
+<code><span class="keyword">fun </span><span class="identifier">loadConfig</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.config.TrajectoryConfigManager$loadConfig(java.io.File)/file">file</span><span class="symbol">:</span>&nbsp;<a href="https://docs.oracle.com/javase/6/docs/api/java/io/File.html"><span class="identifier">File</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../-trajectory-config/index.html"><span class="identifier">TrajectoryConfig</span></a><span class="symbol">?</span></code>
+<p>Loads a <a href="../-trajectory-config/index.html">TrajectoryConfig</a> from <a href="load-config.html#com.acmerobotics.roadrunner.trajectory.config.TrajectoryConfigManager$loadConfig(java.io.InputStream)/inputStream">inputStream</a>.</p>
+<code><span class="keyword">fun </span><span class="identifier">loadConfig</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.config.TrajectoryConfigManager$loadConfig(java.io.InputStream)/inputStream">inputStream</span><span class="symbol">:</span>&nbsp;<a href="https://docs.oracle.com/javase/6/docs/api/java/io/InputStream.html"><span class="identifier">InputStream</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../-trajectory-config/index.html"><span class="identifier">TrajectoryConfig</span></a><span class="symbol">?</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="load-group-config.html">loadGroupConfig</a></h4>
+</td>
+<td>
+<p>Loads the <a href="../-trajectory-group-config/index.html">TrajectoryGroupConfig</a> inside <a href="load-group-config.html#com.acmerobotics.roadrunner.trajectory.config.TrajectoryConfigManager$loadGroupConfig(java.io.File)/dir">dir</a>.</p>
+<code><span class="keyword">fun </span><span class="identifier">loadGroupConfig</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.config.TrajectoryConfigManager$loadGroupConfig(java.io.File)/dir">dir</span><span class="symbol">:</span>&nbsp;<a href="https://docs.oracle.com/javase/6/docs/api/java/io/File.html"><span class="identifier">File</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../-trajectory-group-config/index.html"><span class="identifier">TrajectoryGroupConfig</span></a><span class="symbol">?</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="save-config.html">saveConfig</a></h4>
+</td>
+<td>
+<p>Saves a <a href="../-legacy-trajectory-config/index.html">LegacyTrajectoryConfig</a> to <a href="save-config.html#com.acmerobotics.roadrunner.trajectory.config.TrajectoryConfigManager$saveConfig(com.acmerobotics.roadrunner.trajectory.config.LegacyTrajectoryConfig, java.io.File)/file">file</a>.</p>
+<code><span class="keyword">fun </span><span class="identifier">saveConfig</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.config.TrajectoryConfigManager$saveConfig(com.acmerobotics.roadrunner.trajectory.config.LegacyTrajectoryConfig, java.io.File)/trajectoryConfig">trajectoryConfig</span><span class="symbol">:</span>&nbsp;<a href="../-legacy-trajectory-config/index.html"><span class="identifier">LegacyTrajectoryConfig</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.config.TrajectoryConfigManager$saveConfig(com.acmerobotics.roadrunner.trajectory.config.LegacyTrajectoryConfig, java.io.File)/file">file</span><span class="symbol">:</span>&nbsp;<a href="https://docs.oracle.com/javase/6/docs/api/java/io/File.html"><span class="identifier">File</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Saves a <a href="../-trajectory-config/index.html">TrajectoryConfig</a> to <a href="save-config.html#com.acmerobotics.roadrunner.trajectory.config.TrajectoryConfigManager$saveConfig(com.acmerobotics.roadrunner.trajectory.config.TrajectoryConfig, java.io.File)/file">file</a>.</p>
+<code><span class="keyword">fun </span><span class="identifier">saveConfig</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.config.TrajectoryConfigManager$saveConfig(com.acmerobotics.roadrunner.trajectory.config.TrajectoryConfig, java.io.File)/trajectoryConfig">trajectoryConfig</span><span class="symbol">:</span>&nbsp;<a href="../-trajectory-config/index.html"><span class="identifier">TrajectoryConfig</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.config.TrajectoryConfigManager$saveConfig(com.acmerobotics.roadrunner.trajectory.config.TrajectoryConfig, java.io.File)/file">file</span><span class="symbol">:</span>&nbsp;<a href="https://docs.oracle.com/javase/6/docs/api/java/io/File.html"><span class="identifier">File</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="save-group-config.html">saveGroupConfig</a></h4>
+</td>
+<td>
+<p>Saves a <a href="../-trajectory-group-config/index.html">TrajectoryGroupConfig</a> to <a href="save-group-config.html#com.acmerobotics.roadrunner.trajectory.config.TrajectoryConfigManager$saveGroupConfig(com.acmerobotics.roadrunner.trajectory.config.TrajectoryGroupConfig, java.io.File)/dir">dir</a>.</p>
+<code><span class="keyword">fun </span><span class="identifier">saveGroupConfig</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.config.TrajectoryConfigManager$saveGroupConfig(com.acmerobotics.roadrunner.trajectory.config.TrajectoryGroupConfig, java.io.File)/trajectoryConfig">trajectoryConfig</span><span class="symbol">:</span>&nbsp;<a href="../-trajectory-group-config/index.html"><span class="identifier">TrajectoryGroupConfig</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.config.TrajectoryConfigManager$saveGroupConfig(com.acmerobotics.roadrunner.trajectory.config.TrajectoryGroupConfig, java.io.File)/dir">dir</span><span class="symbol">:</span>&nbsp;<a href="https://docs.oracle.com/javase/6/docs/api/java/io/File.html"><span class="identifier">File</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

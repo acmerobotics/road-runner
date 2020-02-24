@@ -1,0 +1,60 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>com.acmerobotics.roadrunner.trajectory.constraints - core</title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">core</a>&nbsp;/&nbsp;<a href="./index.html">com.acmerobotics.roadrunner.trajectory.constraints</a><br/>
+<br/>
+<h2>Package com.acmerobotics.roadrunner.trajectory.constraints</h2>
+<p>Specific constraints for trajectories and different drive types.</p>
+<h3>Types</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="-drive-constraints/index.html">DriveConstraints</a></h4>
+</td>
+<td>
+<p>This class describes general robot trajectory constraints. More specifically, for paths, the robot velocity,
+robot acceleration, and robot angular velocity are limited.  For point turns, the angular velocity and angular
+acceleration are limited. If <a href="-drive-constraints/max-jerk.html">maxJerk</a> or <a href="-drive-constraints/max-ang-jerk.html">maxAngJerk</a> are 0, acceleration-limited fallbacks will be used.</p>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">DriveConstraints</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-trajectory-constraints/index.html"><span class="identifier">TrajectoryConstraints</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-mecanum-constraints/index.html">MecanumConstraints</a></h4>
+</td>
+<td>
+<p>Mecanum-specific drive constraints that also limit maximum wheel velocities.</p>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">MecanumConstraints</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-drive-constraints/index.html"><span class="identifier">DriveConstraints</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-swerve-constraints/index.html">SwerveConstraints</a></h4>
+</td>
+<td>
+<p>Mecanum-specific drive constraints that also limit maximum wheel velocities.</p>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">SwerveConstraints</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-drive-constraints/index.html"><span class="identifier">DriveConstraints</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-tank-constraints/index.html">TankConstraints</a></h4>
+</td>
+<td>
+<p>Tank-specific drive constraints that also limit maximum wheel velocities.</p>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">TankConstraints</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-drive-constraints/index.html"><span class="identifier">DriveConstraints</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-trajectory-constraints/index.html">TrajectoryConstraints</a></h4>
+</td>
+<td>
+<p>Trajectory-specific constraints for motion profile generation.</p>
+<code><span class="keyword">interface </span><span class="identifier">TrajectoryConstraints</span></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

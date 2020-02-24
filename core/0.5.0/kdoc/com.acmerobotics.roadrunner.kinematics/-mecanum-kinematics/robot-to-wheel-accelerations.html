@@ -1,0 +1,26 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>MecanumKinematics.robotToWheelAccelerations - core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">core</a>&nbsp;/&nbsp;<a href="../index.html">com.acmerobotics.roadrunner.kinematics</a>&nbsp;/&nbsp;<a href="index.html">MecanumKinematics</a>&nbsp;/&nbsp;<a href="./robot-to-wheel-accelerations.html">robotToWheelAccelerations</a><br/>
+<br/>
+<h1>robotToWheelAccelerations</h1>
+<a name="com.acmerobotics.roadrunner.kinematics.MecanumKinematics$robotToWheelAccelerations(com.acmerobotics.roadrunner.geometry.Pose2d, kotlin.Double, kotlin.Double, kotlin.Double)"></a>
+<code><span class="identifier">@JvmStatic</span> <span class="identifier">@JvmOverloads</span> <span class="keyword">fun </span><span class="identifier">robotToWheelAccelerations</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.kinematics.MecanumKinematics$robotToWheelAccelerations(com.acmerobotics.roadrunner.geometry.Pose2d, kotlin.Double, kotlin.Double, kotlin.Double)/robotAccel">robotAccel</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.kinematics.MecanumKinematics$robotToWheelAccelerations(com.acmerobotics.roadrunner.geometry.Pose2d, kotlin.Double, kotlin.Double, kotlin.Double)/trackWidth">trackWidth</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.kinematics.MecanumKinematics$robotToWheelAccelerations(com.acmerobotics.roadrunner.geometry.Pose2d, kotlin.Double, kotlin.Double, kotlin.Double)/wheelBase">wheelBase</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a>&nbsp;<span class="symbol">=</span>&nbsp;trackWidth<span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.kinematics.MecanumKinematics$robotToWheelAccelerations(com.acmerobotics.roadrunner.geometry.Pose2d, kotlin.Double, kotlin.Double, kotlin.Double)/lateralMultiplier">lateralMultiplier</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a>&nbsp;<span class="symbol">=</span>&nbsp;1.0<span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">&gt;</span></code> <a href="https://github.com/acmerobotics/road-runner/blob/master/core/src/main/kotlin/com/acmerobotics/roadrunner/kinematics/MecanumKinematics.kt#L55">(source)</a>
+<p>Computes the wheel accelerations corresponding to <a href="robot-to-wheel-accelerations.html#com.acmerobotics.roadrunner.kinematics.MecanumKinematics$robotToWheelAccelerations(com.acmerobotics.roadrunner.geometry.Pose2d, kotlin.Double, kotlin.Double, kotlin.Double)/robotAccel">robotAccel</a> given the provided <a href="robot-to-wheel-accelerations.html#com.acmerobotics.roadrunner.kinematics.MecanumKinematics$robotToWheelAccelerations(com.acmerobotics.roadrunner.geometry.Pose2d, kotlin.Double, kotlin.Double, kotlin.Double)/trackWidth">trackWidth</a> and
+<a href="robot-to-wheel-accelerations.html#com.acmerobotics.roadrunner.kinematics.MecanumKinematics$robotToWheelAccelerations(com.acmerobotics.roadrunner.geometry.Pose2d, kotlin.Double, kotlin.Double, kotlin.Double)/wheelBase">wheelBase</a>.</p>
+<h3>Parameters</h3>
+<p><a name="robotAccel"></a>
+<code>robotAccel</code> - acceleration of the robot in its reference frame</p>
+<p><a name="trackWidth"></a>
+<code>trackWidth</code> - lateral distance between pairs of wheels on different sides of the robot</p>
+<p><a name="wheelBase"></a>
+<code>wheelBase</code> - distance between pairs of wheels on the same side of the robot</p>
+<p><a name="lateralMultiplier"></a>
+<code>lateralMultiplier</code> - multiplicative gain to adjust for systematic, proportional lateral error (gain greater
+than 1.0 corresponds to overcompensation).</p>
+</BODY>
+</HTML>

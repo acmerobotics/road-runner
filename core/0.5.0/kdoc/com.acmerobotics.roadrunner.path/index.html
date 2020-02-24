@@ -1,0 +1,107 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>com.acmerobotics.roadrunner.path - core</title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">core</a>&nbsp;/&nbsp;<a href="./index.html">com.acmerobotics.roadrunner.path</a><br/>
+<br/>
+<h2>Package com.acmerobotics.roadrunner.path</h2>
+<p>Type hierarchy for representing 2D holonomic robot paths (x, y, and heading components).</p>
+<h3>Types</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="-line-segment/index.html">LineSegment</a></h4>
+</td>
+<td>
+<p>Parametric representation of a line.</p>
+<code><span class="keyword">class </span><span class="identifier">LineSegment</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-parametric-curve/index.html"><span class="identifier">ParametricCurve</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-parametric-curve/index.html">ParametricCurve</a></h4>
+</td>
+<td>
+<p>Parametric curve with two components (x and y). These curves are reparametrized from an internal parameter (t) to the
+arc length parameter (s).</p>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">ParametricCurve</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-path/index.html">Path</a></h4>
+</td>
+<td>
+<p>Path composed of a list of parametric curves and heading interpolators.</p>
+<code><span class="keyword">class </span><span class="identifier">Path</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-path-builder/index.html">PathBuilder</a></h4>
+</td>
+<td>
+<p>Easy-to-use builder for creating <a href="-path/index.html">Path</a> instances.</p>
+<code><span class="keyword">class </span><span class="identifier">PathBuilder</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-path-segment/index.html">PathSegment</a></h4>
+</td>
+<td>
+<p>Path segment composed of a parametric curve and heading interpolator.</p>
+<code><span class="keyword">class </span><span class="identifier">PathSegment</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-quintic-polynomial/index.html">QuinticPolynomial</a></h4>
+</td>
+<td>
+<p>Quintic polynomial interpolated according to the provided derivatives.</p>
+<code><span class="keyword">class </span><span class="identifier">QuinticPolynomial</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-quintic-spline/index.html">QuinticSpline</a></h4>
+</td>
+<td>
+<p>Combination of two quintic polynomials into a 2D quintic spline. See
+<a href="https://github.com/acmerobotics/road-runner/blob/master/doc/pdf/Quintic_Splines_for_FTC.pdf">this short paper</a> for
+some motivation and implementation details.</p>
+<code><span class="keyword">class </span><span class="identifier">QuinticSpline</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-parametric-curve/index.html"><span class="identifier">ParametricCurve</span></a></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Exceptions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="-empty-path-segment-exception/index.html">EmptyPathSegmentException</a></h4>
+</td>
+<td>
+<p>Exception thrown when empty path segments are requested.</p>
+<code><span class="keyword">class </span><span class="identifier">EmptyPathSegmentException</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-path-builder-exception/index.html"><span class="identifier">PathBuilderException</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-path-builder-exception/index.html">PathBuilderException</a></h4>
+</td>
+<td>
+<p>Exception thrown by <a href="-path-builder/index.html">PathBuilder</a>.</p>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">PathBuilderException</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-exception/index.html"><span class="identifier">Exception</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-path-continuity-violation-exception/index.html">PathContinuityViolationException</a></h4>
+</td>
+<td>
+<p>Exception thrown when <a href="-path-builder/index.html">PathBuilder</a> methods are chained illegally. This commonly arises when switching from
+non-tangent interpolation back to tangent interpolation and when splicing paths.</p>
+<code><span class="keyword">class </span><span class="identifier">PathContinuityViolationException</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-path-builder-exception/index.html"><span class="identifier">PathBuilderException</span></a></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>
