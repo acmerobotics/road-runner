@@ -131,7 +131,8 @@ class PathBuilder private constructor(
 
     private fun makeSplineInterpolator(endHeading: Double): SplineInterpolator {
         val interpolator = if (currentHeading == null) {
-            SplineInterpolator(path!![s!!].heading, endHeading, path.deriv(s).heading, path.secondDeriv(s).heading, null, null)
+            SplineInterpolator(path!![s!!].heading, endHeading,
+                path.deriv(s).heading, path.secondDeriv(s).heading, null, null)
         } else {
             SplineInterpolator(currentHeading!!, endHeading)
         }

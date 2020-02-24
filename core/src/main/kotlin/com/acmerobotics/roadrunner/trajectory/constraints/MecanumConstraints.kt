@@ -31,7 +31,8 @@ open class MecanumConstraints @JvmOverloads constructor(
     override operator fun get(s: Double, pose: Pose2d, deriv: Pose2d, secondDeriv: Pose2d): SimpleMotionConstraints {
         val robotDeriv = Kinematics.fieldToRobotVelocity(pose, deriv)
 
-        val wheelVelocities = MecanumKinematics.robotToWheelVelocities(robotDeriv, trackWidth, wheelBase, lateralMultiplier)
+        val wheelVelocities = MecanumKinematics.robotToWheelVelocities(
+            robotDeriv, trackWidth, wheelBase, lateralMultiplier)
         val maxTrajVel = wheelVelocities.map { maxVel / it }.map(::abs).min() ?: 0.0
 
         val superConstraints = super.get(s, pose, deriv, secondDeriv)

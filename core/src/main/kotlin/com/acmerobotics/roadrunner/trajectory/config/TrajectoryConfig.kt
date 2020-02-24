@@ -1,10 +1,14 @@
 package com.acmerobotics.roadrunner.trajectory.config
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
+import com.acmerobotics.roadrunner.trajectory.BaseTrajectoryBuilder
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
 import com.acmerobotics.roadrunner.util.Angle
 import com.acmerobotics.roadrunner.util.epsilonEquals
 
+/**
+ * Configuration describing a basic trajectory (a simpler frontend alternative to [BaseTrajectoryBuilder]).
+ */
 data class TrajectoryConfig(
     val startPose: Pose2d,
     val startHeading: Double?,
@@ -13,6 +17,9 @@ data class TrajectoryConfig(
 ) {
     val version = 2
 
+    /**
+     * Heading interpolation for a specific trajectory configuration step.
+     */
     enum class HeadingInterpolationType {
         TANGENT,
         CONSTANT,
@@ -20,12 +27,16 @@ data class TrajectoryConfig(
         SPLINE
     }
 
+    /**
+     * Description of a single segment of a composite trajectory.
+     */
     data class Step @JvmOverloads constructor(
         val pose: Pose2d,
         val heading: Double? = null,
         val interpolationType: HeadingInterpolationType
     )
 
+    @Suppress("ComplexMethod")
     fun toTrajectoryBuilder(groupConfig: TrajectoryGroupConfig): TrajectoryBuilder? {
         val builder = TrajectoryBuilder(
             startPose,

@@ -118,7 +118,11 @@ class TrajectoryBuilder private constructor(
      * @param endHeading end heading
      * @param constraintsOverride segment-specific constraints
      */
-    fun lineToLinearHeading(endPosition: Vector2d, endHeading: Double, constraintsOverride: TrajectoryConstraints): TrajectoryBuilder {
+    fun lineToLinearHeading(
+        endPosition: Vector2d,
+        endHeading: Double,
+        constraintsOverride: TrajectoryConstraints
+    ): TrajectoryBuilder {
         val start = pathBuilder.build().length()
 
         lineToLinearHeading(endPosition, endHeading)
@@ -137,7 +141,11 @@ class TrajectoryBuilder private constructor(
      * @param endHeading end heading
      * @param constraintsOverride segment-specific constraints
      */
-    fun lineToSplineHeading(endPosition: Vector2d, endHeading: Double, constraintsOverride: TrajectoryConstraints): TrajectoryBuilder {
+    fun lineToSplineHeading(
+        endPosition: Vector2d,
+        endHeading: Double,
+        constraintsOverride: TrajectoryConstraints
+    ): TrajectoryBuilder {
         val start = pathBuilder.build().length()
 
         lineToLinearHeading(endPosition, endHeading)
@@ -263,7 +271,11 @@ class TrajectoryBuilder private constructor(
      * @param endPose end pose
      * @param constraintsOverride segment-specific constraints
      */
-    fun splineToLinearHeading(endPose: Pose2d, endHeading: Double, constraintsOverride: TrajectoryConstraints): TrajectoryBuilder {
+    fun splineToLinearHeading(
+        endPose: Pose2d,
+        endHeading: Double,
+        constraintsOverride: TrajectoryConstraints
+    ): TrajectoryBuilder {
         val start = pathBuilder.build().length()
 
         splineToLinearHeading(endPose, endHeading)
@@ -281,7 +293,11 @@ class TrajectoryBuilder private constructor(
      * @param endPose end pose
      * @param constraintsOverride segment-specific constraints
      */
-    fun splineToSplineHeading(endPose: Pose2d, endHeading: Double, constraintsOverride: TrajectoryConstraints): TrajectoryBuilder {
+    fun splineToSplineHeading(
+        endPose: Pose2d,
+        endHeading: Double,
+        constraintsOverride: TrajectoryConstraints
+    ): TrajectoryBuilder {
         val start = pathBuilder.build().length()
 
         splineToSplineHeading(endPose, endHeading)

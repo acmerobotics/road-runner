@@ -7,6 +7,9 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 
+/**
+ * Deserializer for all manner of trajectory configurations.
+ */
 class TrajectoryConfigDeserializer : StdDeserializer<TrajectoryConfig>(TrajectoryConfig::class.java) {
     // TODO: this isn't a great solution
     private val mapper = ObjectMapper().registerKotlinModule()

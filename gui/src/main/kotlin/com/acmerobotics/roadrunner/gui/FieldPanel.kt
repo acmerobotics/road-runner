@@ -17,8 +17,8 @@ import javax.swing.Timer
 import kotlin.math.min
 import kotlin.math.roundToInt
 
-private const val SPATIAL_RESOLUTION = 0.25  // in
-private const val TEMPORAL_RESOLUTION = 0.025  // sec
+private const val SPATIAL_RESOLUTION = 0.25 // in
+private const val TEMPORAL_RESOLUTION = 0.025 // sec
 private val FIELD_IMAGE = ImageIO.read(FieldPanel::class.java.getResource("/field.png"))
 
 data class RobotDimensions(
@@ -138,7 +138,6 @@ class FieldPanel : JPanel() {
 
         addMouseListener(object : MouseListener {
             override fun mouseReleased(e: MouseEvent?) {
-
             }
 
             override fun mouseEntered(e: MouseEvent?) {
@@ -146,7 +145,6 @@ class FieldPanel : JPanel() {
             }
 
             override fun mouseClicked(e: MouseEvent?) {
-
             }
 
             override fun mouseExited(e: MouseEvent?) {
@@ -154,7 +152,6 @@ class FieldPanel : JPanel() {
             }
 
             override fun mousePressed(e: MouseEvent?) {
-
             }
         })
     }

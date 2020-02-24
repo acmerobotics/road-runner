@@ -10,7 +10,6 @@ import java.awt.GridLayout
 import javax.swing.*
 import kotlin.math.min
 
-
 class WidthAgnosticPanel : JPanel() {
     override fun getPreferredSize(): Dimension {
         val baseSize = super.getPreferredSize()
@@ -66,8 +65,8 @@ class PathStepPanel : JPanel() {
             if (interpComboBox.selectedItemTyped != value.interpolationType) {
                 interpComboBox.selectedItem = value.interpolationType
             }
-            headingTextField.isVisible = value.interpolationType == TrajectoryConfig.HeadingInterpolationType.LINEAR
-                || value.interpolationType == TrajectoryConfig.HeadingInterpolationType.SPLINE
+            headingTextField.isVisible = value.interpolationType == TrajectoryConfig.HeadingInterpolationType.LINEAR ||
+                value.interpolationType == TrajectoryConfig.HeadingInterpolationType.SPLINE
 
             field = value
 

@@ -28,13 +28,16 @@ class PathSegment @JvmOverloads constructor(
     fun deriv(s: Double, t: Double = reparam(s)) = Pose2d(curve.deriv(s, t), interpolator.deriv(s, t))
 
     @JvmOverloads
-    fun secondDeriv(s: Double, t: Double = reparam(s)) = Pose2d(curve.secondDeriv(s, t), interpolator.secondDeriv(s, t))
+    fun secondDeriv(s: Double, t: Double = reparam(s)) =
+        Pose2d(curve.secondDeriv(s, t), interpolator.secondDeriv(s, t))
 
     @JvmOverloads
-    internal fun internalDeriv(s: Double, t: Double = reparam(s)) = Pose2d(curve.internalDeriv(t), interpolator.internalDeriv(s, t))
+    internal fun internalDeriv(s: Double, t: Double = reparam(s)) =
+        Pose2d(curve.internalDeriv(t), interpolator.internalDeriv(s, t))
 
     @JvmOverloads
-    internal fun internalSecondDeriv(s: Double, t: Double = reparam(s)) = Pose2d(curve.internalSecondDeriv(t), interpolator.internalDeriv(s, t))
+    internal fun internalSecondDeriv(s: Double, t: Double = reparam(s)) =
+        Pose2d(curve.internalSecondDeriv(t), interpolator.internalDeriv(s, t))
 
     fun reparam(s: Double) = curve.reparam(s)
 
