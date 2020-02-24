@@ -39,7 +39,7 @@ class TankPIDVAFollower @JvmOverloads constructor(
         super.followTrajectory(trajectory)
     }
 
-    override fun internalUpdate(currentPose: Pose2d): DriveSignal {
+    override fun internalUpdate(currentPose: Pose2d, currentRobotVel: Pose2d?): DriveSignal {
         val t = elapsedTime()
 
         val targetPose = trajectory[t]
@@ -51,13 +51,15 @@ class TankPIDVAFollower @JvmOverloads constructor(
 
         val poseError = Kinematics.calculatePoseError(targetPose, currentPose)
 
-        // you can pass the error directly to PIDFController by setting setpoint = error and position = 0
+        // you can pass the error directly to PIDFController by setting setpoint = error and measurement = 0
         axialController.targetPosition = poseError.x
         crossTrackController.targetPosition = poseError.y
 
-        // note: feedforward is processed at the wheel level; velocity is only passed here to adjust the derivative term
-        val axialCorrection = axialController.update(0.0, targetRobotVel.x)
-        val headingCorrection = crossTrackController.update(0.0, targetRobotVel.y)
+        axialController.targetVelocity = targetRobotVel.x
+
+        // note: feedforward is processed at the wheel level
+        val axialCorrection = axialController.update(0.0, currentRobotVel?.x)
+        val headingCorrection = crossTrackController.update(0.0)
 
         val correctedVelocity = targetRobotVel + Pose2d(
             axialCorrection,

@@ -69,9 +69,11 @@ abstract class TrajectoryFollower @JvmOverloads constructor(
     /**
      * Run a single iteration of the trajectory follower.
      *
-     * @param currentPose current robot pose
+     * @param currentPose current field frame pose
+     * @param currentRobotVel current robot frame velocity
      */
-    fun update(currentPose: Pose2d): DriveSignal {
+    @JvmOverloads
+    fun update(currentPose: Pose2d, currentRobotVel: Pose2d? = null): DriveSignal {
         while (remainingMarkers.size > 0 && elapsedTime() > remainingMarkers[0].time) {
             remainingMarkers.removeAt(0).callback.onMarkerReached()
         }
@@ -81,7 +83,7 @@ abstract class TrajectoryFollower @JvmOverloads constructor(
                 abs(trajEndError.y) < admissibleError.y &&
                 abs(trajEndError.heading) < admissibleError.heading
         return if (internalIsFollowing() || executedFinalUpdate) {
-            internalUpdate(currentPose)
+            internalUpdate(currentPose, currentRobotVel)
         } else {
             for (marker in remainingMarkers) {
                 marker.callback.onMarkerReached()
@@ -92,5 +94,5 @@ abstract class TrajectoryFollower @JvmOverloads constructor(
         }
     }
 
-    protected abstract fun internalUpdate(currentPose: Pose2d): DriveSignal
+    protected abstract fun internalUpdate(currentPose: Pose2d, currentRobotVel: Pose2d?): DriveSignal
 }
