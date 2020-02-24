@@ -56,10 +56,11 @@ class TankPIDVAFollower @JvmOverloads constructor(
         crossTrackController.targetPosition = poseError.y
 
         axialController.targetVelocity = targetRobotVel.x
+        crossTrackController.targetVelocity = targetRobotVel.y
 
         // note: feedforward is processed at the wheel level
         val axialCorrection = axialController.update(0.0, currentRobotVel?.x)
-        val headingCorrection = crossTrackController.update(0.0)
+        val headingCorrection = crossTrackController.update(0.0, currentRobotVel?.y)
 
         val correctedVelocity = targetRobotVel + Pose2d(
             axialCorrection,
