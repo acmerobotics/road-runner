@@ -4,6 +4,8 @@ import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.path.Path
 import com.acmerobotics.roadrunner.profile.MotionState
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
+import com.acmerobotics.roadrunner.util.Angle
+import kotlin.math.PI
 
 private fun zeroPosition(state: MotionState) = MotionState(0.0, state.v, state.a, state.j)
 
@@ -25,9 +27,14 @@ class SimpleTrajectoryBuilder private constructor(
     @JvmOverloads constructor(
         startPose: Pose2d,
         startHeading: Double = startPose.heading,
-        driveConstraints: DriveConstraints,
-        start: MotionState = MotionState(0.0, 0.0, 0.0)
-    ) : this(startPose, startHeading, null, null, driveConstraints, start)
+        driveConstraints: DriveConstraints
+    ) : this(startPose, startHeading, null, null, driveConstraints, MotionState(0.0, 0.0, 0.0))
+
+    constructor(
+        startPose: Pose2d,
+        reversed: Boolean,
+        driveConstraints: DriveConstraints
+    ) : this(startPose, Angle.norm(startPose.heading + if (reversed) PI else 0.0), driveConstraints)
 
     /**
      * Create a builder from an active trajectory. This is useful for interrupting a live trajectory and smoothly
