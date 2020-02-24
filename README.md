@@ -7,21 +7,24 @@ A simple Kotlin library for planning 2D mobile robot paths and trajectories desi
 </p>
 <p align="center">(Courtesy of FTC Team 8393, Detroit 2019 Ochoa F2)</p>
 
+## Documentation
+
+Check out the [online documentation](https://acme-robotics.gitbook.io/road-runner/).
+
 ## Installation
 
-### Core
+### Core (FTC)
 
-1. Open your `ftc_app` project in Android Studio.
+1. Open your Android Studio project.
 
-1. Open up the Gradle file for the module you'd like to install in (probably `TeamCode/build.release.gradle`).
+1. Open `TeamCode/build.release.gradle` and add `implementation 'com.acmerobotics.roadrunner:core:0.5.0'` to the end of the `dependencies` block.
 
-1. Add `implementation 'com.acmerobotics.roadrunner:core:0.4.7'` to the end of the `dependencies` block.
+1. Sync the project \(Android Studio should prompt you to do this\).
 
-1. (Android only) Although Road Runner only has a few dependencies, these may exceed the method reference limit imposed by some versions of Android. Fortunately, there are a few ways around this. For more information, see [this article](https://developer.android.com/studio/build/multidex).
+1. Adding Road Runner and its dependencies may put your install package over the method reference limit imposed by some versions of Android. This restriction can be circumvented by one of the following methods:
 
-    1. **If you do not need to target API level 19** (i.e., in FTC, you don't need to use ZTE speeds), then just add `multiDexEnabled true` to the `defaultConfig` closure (for FTC, this is located inside `build.common.gradle`).
-
-    1. Otherwise, the next best solution is to enable Proguard (the pre Android 5.0 solution in the article is difficult to implement with the FTC SDK). To accomplish this, add the following lines to the `debug` and `release` closures inside `buildTypes` (this is also located in `build.common.gradle` for FTC):
+    1. **If you do not need to target API level 19** \(i.e., you don't need to use ZTE Speeds\), add `multiDexEnabled true` to the `defaultConfig` closure in `build.common.gradle`.
+    1. Otherwise, the next best solution is to enable Proguard which culls unnecessary methods. Begin by downloading the `proguard-rules.pro` file from the [quickstart](https://github.com/acmerobotics/road-runner-quickstart/blob/master/TeamCode/proguard-rules.pro) and save it to the `TeamCode` directory. Then add following lines to the `debug` and `release` closures inside `buildTypes` in `build.common.gradle`:
 
         ```groovy
         minifyEnabled true
@@ -29,34 +32,19 @@ A simple Kotlin library for planning 2D mobile robot paths and trajectories desi
                 'proguard-rules.pro'
         ```
 
-        Now download the `proguard-rules.pro` file from [the quickstart](https://github.com/acmerobotics/road-runner-quickstart/blob/master/TeamCode/proguard-rules.pro) and save it to your module folder (`TeamCode` in the case of FTC).
-
-    1. Finally, if the other solutions prove unworkable, you can download a slim jar from Releases. It lacks some of the features of the normal distribution, but it has fewer dependencies.
-
-1. Sync the project (Android Studio should prompt you to do this).
-
-1. You're finished.
+    For more information, see [this article](https://developer.android.com/studio/build/multidex).
 
 ### GUI
 
-Road Runner includes a simple GUI for generating trajectories from pose waypoints and constraints. You can download the latest version from the Releases tab (or build it with `./gradlew shadowJar`).
+Road Runner includes a simple GUI for generating trajectories from pose waypoints and constraints. You can download the latest version from the Releases tab \(or build it with `./gradlew shadowJar`\).
 
 ### Plugin
 
 Road Runner also includes a simple IDEA/Android Studio plugin based upon the GUI. Here are some instructions for building and loading the plugin:
 
 1. Download the latest plugin zip from Releases or build it with `./gradlew buildPlugin`.
-
-1. In Android Studio, navigate to Settings > Plugins.
-
+1. In Android Studio, navigate to Settings &gt; Plugins.
 1. Click the button that reads `Install plugin from disk...`.
-
 1. Select the zip archive from earlier.
-
 1. Restart Android Studio to activate plugin changes.
-
-1. Click on "Path Designer" on the right side of the editor and the tool window should appear.
-
-## Documentation
-
-Check out our new [online documentation](https://acme-robotics.gitbook.io/road-runner/).
+1. Click on "Road Runner" on the right side of the editor and the tool window should appear.
