@@ -23,6 +23,11 @@ abstract class Drive {
     protected abstract val rawExternalHeading: Double
 
     /**
+     * The heading velocity used to determine pose velocity in some cases
+     */
+    protected val externalHeadingVelocity: Double? = null
+
+    /**
      * The robot's heading in radians as measured by an external sensor (e.g., IMU, gyroscope).
      */
     var externalHeading: Double
@@ -39,6 +44,12 @@ abstract class Drive {
         set(value) {
             localizer.poseEstimate = value
         }
+
+    /**
+     *  Current robot pose velocity (optional)
+     */
+    val poseVelocity: Pose2d?
+        get() = localizer.poseVelocity
 
     /**
      * Updates [poseEstimate] with the most recent positional change.
