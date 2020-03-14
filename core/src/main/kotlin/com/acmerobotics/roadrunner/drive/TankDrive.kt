@@ -63,7 +63,7 @@ abstract class TankDrive constructor(
             }
 
             val wheelVelocities = drive.getWheelVelocities()
-            val extHeadingVel = drive.externalHeadingVelocity
+            val extHeadingVel = drive.getExternalHeadingVelocity()
             if (wheelVelocities != null) {
                 poseVelocity = TankKinematics.wheelToRobotVelocities(wheelVelocities, drive.trackWidth)
                 if (useExternalHeading && extHeadingVel != null) {
@@ -105,5 +105,5 @@ abstract class TankDrive constructor(
      * Returns the velocities of the wheels in linear distance units. Positions should exactly match the ordering in
      * [setMotorPowers].
      */
-    fun getWheelVelocities(): List<Double>? = null
+    open fun getWheelVelocities(): List<Double>? = null
 }

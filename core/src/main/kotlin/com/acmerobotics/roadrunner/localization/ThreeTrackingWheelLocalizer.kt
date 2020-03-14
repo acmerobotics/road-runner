@@ -22,8 +22,7 @@ abstract class ThreeTrackingWheelLocalizer(
             lastWheelPositions = emptyList()
             _poseEstimate = value
         }
-    final override var poseVelocity: Pose2d? = null
-        private set
+    override var poseVelocity: Pose2d? = null
     private var lastWheelPositions = emptyList<Double>()
 
     private val forwardSolver: DecompositionSolver
@@ -83,5 +82,5 @@ abstract class ThreeTrackingWheelLocalizer(
     /**
      * Returns the velocities of the tracking wheels in the desired distance units (not encoder counts!)
      */
-    fun getWheelVelocities(): List<Double>? = null
+    open fun getWheelVelocities(): List<Double>? = null
 }

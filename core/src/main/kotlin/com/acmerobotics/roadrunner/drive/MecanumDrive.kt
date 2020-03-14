@@ -70,7 +70,7 @@ abstract class MecanumDrive @JvmOverloads constructor(
             }
 
             val wheelVelocities = drive.getWheelVelocities()
-            val extHeadingVel = drive.externalHeadingVelocity
+            val extHeadingVel = drive.getExternalHeadingVelocity()
             if (wheelVelocities != null) {
                 poseVelocity = MecanumKinematics.wheelToRobotVelocities(
                         wheelVelocities, drive.trackWidth, drive.wheelBase, drive.lateralMultiplier
@@ -117,5 +117,5 @@ abstract class MecanumDrive @JvmOverloads constructor(
      * Returns the velocities of the wheels in linear distance units. Positions should exactly match the ordering in
      * [setMotorPowers].
      */
-    fun getWheelVelocities(): List<Double>? = null
+    open fun getWheelVelocities(): List<Double>? = null
 }

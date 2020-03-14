@@ -24,8 +24,7 @@ abstract class TwoTrackingWheelLocalizer(
             lastHeading = Double.NaN
             _poseEstimate = value
         }
-    final override var poseVelocity: Pose2d? = null
-        private set
+    override var poseVelocity: Pose2d? = null
     private var lastWheelPositions = emptyList<Double>()
     private var lastHeading = Double.NaN
 
@@ -91,7 +90,7 @@ abstract class TwoTrackingWheelLocalizer(
     /**
      * Returns the velocities of the tracking wheels in the desired distance units (not encoder counts!)
      */
-    fun getWheelVelocities(): List<Double>? = null
+    open fun getWheelVelocities(): List<Double>? = null
 
     /**
      * Returns the heading of the robot (usually from a gyroscope or IMU).
@@ -101,5 +100,5 @@ abstract class TwoTrackingWheelLocalizer(
     /**
      * Returns the heading of the robot (usually from a gyroscope or IMU).
      */
-    fun getHeadingVelocity(): Double? = null
+    open fun getHeadingVelocity(): Double? = null
 }

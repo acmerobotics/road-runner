@@ -68,7 +68,7 @@ abstract class SwerveDrive @JvmOverloads constructor(
             }
 
             val wheelVelocities = drive.getWheelVelocities()
-            val extHeadingVel = drive.externalHeadingVelocity
+            val extHeadingVel = drive.getExternalHeadingVelocity()
             if (wheelVelocities != null) {
                 poseVelocity = SwerveKinematics.wheelToRobotVelocities(
                         wheelVelocities, moduleOrientations, drive.wheelBase, drive.trackWidth)
@@ -124,7 +124,7 @@ abstract class SwerveDrive @JvmOverloads constructor(
      * Returns the velocities of the wheels in linear distance units. Positions should exactly match the ordering in
      * [setMotorPowers].
      */
-    fun getWheelVelocities(): List<Double>? = null
+    open fun getWheelVelocities(): List<Double>? = null
 
     /**
      * Returns the current module orientations in radians. Orientations should exactly match the order in
