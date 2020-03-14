@@ -44,6 +44,8 @@ abstract class MecanumDrive @JvmOverloads constructor(
                 if (useExternalHeading) drive.externalHeading = value.heading
                 _poseEstimate = value
             }
+        override var poseVelocity: Pose2d? = null
+            private set
         private var lastWheelPositions = emptyList<Double>()
         private var lastExtHeading = Double.NaN
 
@@ -66,6 +68,18 @@ abstract class MecanumDrive @JvmOverloads constructor(
                     Pose2d(robotPoseDelta.vec(), finalHeadingDelta)
                 )
             }
+
+            val wheelVelocities = drive.getWheelVelocities()
+            val extHeadingVel = drive.getExternalHeadingVelocity()
+            if (wheelVelocities != null) {
+                poseVelocity = MecanumKinematics.wheelToRobotVelocities(
+                        wheelVelocities, drive.trackWidth, drive.wheelBase, drive.lateralMultiplier
+                )
+                if (useExternalHeading && extHeadingVel != null) {
+                    poseVelocity = Pose2d(poseVelocity!!.vec(), extHeadingVel)
+                }
+            }
+
             lastWheelPositions = wheelPositions
             lastExtHeading = extHeading
         }
@@ -98,4 +112,10 @@ abstract class MecanumDrive @JvmOverloads constructor(
      * [setMotorPowers].
      */
     abstract fun getWheelPositions(): List<Double>
+
+    /**
+     * Returns the velocities of the wheels in linear distance units. Positions should exactly match the ordering in
+     * [setMotorPowers].
+     */
+    open fun getWheelVelocities(): List<Double>? = null
 }

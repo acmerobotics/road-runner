@@ -24,6 +24,7 @@ abstract class TwoTrackingWheelLocalizer(
             lastHeading = Double.NaN
             _poseEstimate = value
         }
+    override var poseVelocity: Pose2d? = null
     private var lastWheelPositions = emptyList<Double>()
     private var lastHeading = Double.NaN
 
@@ -48,6 +49,17 @@ abstract class TwoTrackingWheelLocalizer(
         require(forwardSolver.isNonSingular) { "The specified configuration cannot support full localization" }
     }
 
+    private fun calculatePoseDelta(wheelDeltas: List<Double>, headingDelta: Double): Pose2d {
+        val rawPoseDelta = forwardSolver.solve(MatrixUtils.createRealMatrix(
+                arrayOf((wheelDeltas + headingDelta).toDoubleArray())
+        ).transpose())
+        return Pose2d(
+                rawPoseDelta.getEntry(0, 0),
+                rawPoseDelta.getEntry(1, 0),
+                rawPoseDelta.getEntry(2, 0)
+        )
+    }
+
     override fun update() {
         val wheelPositions = getWheelPositions()
         val heading = getHeading()
@@ -56,16 +68,16 @@ abstract class TwoTrackingWheelLocalizer(
                     .zip(lastWheelPositions)
                     .map { it.first - it.second }
             val headingDelta = Angle.normDelta(heading - lastHeading)
-            val rawPoseDelta = forwardSolver.solve(MatrixUtils.createRealMatrix(
-                    arrayOf((wheelDeltas + headingDelta).toDoubleArray())
-            ).transpose())
-            val robotPoseDelta = Pose2d(
-                rawPoseDelta.getEntry(0, 0),
-                rawPoseDelta.getEntry(1, 0),
-                rawPoseDelta.getEntry(2, 0)
-            )
+            val robotPoseDelta = calculatePoseDelta(wheelDeltas, headingDelta)
             _poseEstimate = Kinematics.relativeOdometryUpdate(_poseEstimate, robotPoseDelta)
         }
+
+        val wheelVelocities = getWheelVelocities()
+        val headingVelocity = getHeadingVelocity()
+        if (wheelVelocities != null && headingVelocity != null) {
+            poseVelocity = calculatePoseDelta(wheelVelocities, headingVelocity)
+        }
+
         lastWheelPositions = wheelPositions
         lastHeading = heading
     }
@@ -76,7 +88,17 @@ abstract class TwoTrackingWheelLocalizer(
     abstract fun getWheelPositions(): List<Double>
 
     /**
+     * Returns the velocities of the tracking wheels in the desired distance units (not encoder counts!)
+     */
+    open fun getWheelVelocities(): List<Double>? = null
+
+    /**
      * Returns the heading of the robot (usually from a gyroscope or IMU).
      */
     abstract fun getHeading(): Double
+
+    /**
+     * Returns the heading of the robot (usually from a gyroscope or IMU).
+     */
+    open fun getHeadingVelocity(): Double? = null
 }
