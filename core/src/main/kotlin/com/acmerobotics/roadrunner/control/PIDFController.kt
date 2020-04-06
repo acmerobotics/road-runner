@@ -114,7 +114,7 @@ class PIDFController
         measuredPosition: Double,
         measuredVelocity: Double? = null
     ): Double {
-        Log.dbgPrint(3);
+        Log.dbgPrint(5);
         val currentTimestamp = clock.seconds()
         val error = getPositionError(measuredPosition)
         return if (lastUpdateTimestamp.isNaN()) {

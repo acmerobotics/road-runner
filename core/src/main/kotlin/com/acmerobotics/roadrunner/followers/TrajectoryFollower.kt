@@ -75,7 +75,7 @@ abstract class TrajectoryFollower @JvmOverloads constructor(
      */
     @JvmOverloads
     fun update(currentPose: Pose2d, currentRobotVel: Pose2d? = null): DriveSignal {
-        Log.dbgPrint(3);
+        Log.dbgPrint(5);
         while (remainingMarkers.size > 0 && elapsedTime() > remainingMarkers[0].time) {
             remainingMarkers.removeAt(0).callback.onMarkerReached()
         }
