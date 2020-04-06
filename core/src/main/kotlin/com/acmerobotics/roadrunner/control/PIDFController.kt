@@ -1,5 +1,6 @@
 package com.acmerobotics.roadrunner.control
 
+import com.acmerobotics.roadrunner.util.Log
 import com.acmerobotics.roadrunner.util.NanoClock
 import com.acmerobotics.roadrunner.util.epsilonEquals
 import kotlin.math.abs
@@ -113,6 +114,7 @@ class PIDFController
         measuredPosition: Double,
         measuredVelocity: Double? = null
     ): Double {
+        Log.dbgPrint(3);
         val currentTimestamp = clock.seconds()
         val error = getPositionError(measuredPosition)
         return if (lastUpdateTimestamp.isNaN()) {

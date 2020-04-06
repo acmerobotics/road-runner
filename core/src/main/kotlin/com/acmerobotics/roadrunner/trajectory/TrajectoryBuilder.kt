@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.profile.MotionState
 import com.acmerobotics.roadrunner.profile.SimpleMotionConstraints
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryConstraints
 import com.acmerobotics.roadrunner.util.Angle
+import com.acmerobotics.roadrunner.util.Log
 import kotlin.math.PI
 
 private fun zeroPosition(state: MotionState) = MotionState(0.0, state.v, state.a, state.j)
@@ -83,6 +84,7 @@ class TrajectoryBuilder private constructor(
      */
     fun lineTo(endPosition: Vector2d, constraintsOverride: TrajectoryConstraints): TrajectoryBuilder {
         val start = pathBuilder.build().length()
+        Log.dbgPrint(3)
 
         lineTo(endPosition)
 

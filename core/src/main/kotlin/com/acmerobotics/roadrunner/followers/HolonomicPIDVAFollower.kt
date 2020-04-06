@@ -6,6 +6,7 @@ import com.acmerobotics.roadrunner.drive.DriveSignal
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.kinematics.Kinematics
 import com.acmerobotics.roadrunner.trajectory.Trajectory
+import com.acmerobotics.roadrunner.util.Log
 import com.acmerobotics.roadrunner.util.NanoClock
 
 /**
@@ -39,6 +40,7 @@ class HolonomicPIDVAFollower @JvmOverloads constructor(
     }
 
     override fun followTrajectory(trajectory: Trajectory) {
+        Log.dbgPrint(3);
         axialController.reset()
         lateralController.reset()
         headingController.reset()
@@ -47,6 +49,7 @@ class HolonomicPIDVAFollower @JvmOverloads constructor(
     }
 
     override fun internalUpdate(currentPose: Pose2d, currentRobotVel: Pose2d?): DriveSignal {
+        Log.dbgPrint(3);
         val t = elapsedTime()
 
         val targetPose = trajectory[t]

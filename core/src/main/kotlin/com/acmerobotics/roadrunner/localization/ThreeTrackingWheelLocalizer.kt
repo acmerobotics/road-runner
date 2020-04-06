@@ -2,6 +2,7 @@ package com.acmerobotics.roadrunner.localization
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.kinematics.Kinematics
+import com.acmerobotics.roadrunner.util.Log
 import org.apache.commons.math3.linear.Array2DRowRealMatrix
 import org.apache.commons.math3.linear.DecompositionSolver
 import org.apache.commons.math3.linear.LUDecomposition
@@ -57,6 +58,7 @@ abstract class ThreeTrackingWheelLocalizer(
     }
 
     override fun update() {
+        Log.dbgPrint(3);
         val wheelPositions = getWheelPositions()
         if (lastWheelPositions.isNotEmpty()) {
             val wheelDeltas = wheelPositions

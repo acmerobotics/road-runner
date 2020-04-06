@@ -4,6 +4,7 @@ import com.acmerobotics.roadrunner.drive.DriveSignal
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.trajectory.Trajectory
 import com.acmerobotics.roadrunner.trajectory.TrajectoryMarker
+import com.acmerobotics.roadrunner.util.Log
 import com.acmerobotics.roadrunner.util.NanoClock
 import kotlin.math.abs
 
@@ -74,6 +75,7 @@ abstract class TrajectoryFollower @JvmOverloads constructor(
      */
     @JvmOverloads
     fun update(currentPose: Pose2d, currentRobotVel: Pose2d? = null): DriveSignal {
+        Log.dbgPrint(3);
         while (remainingMarkers.size > 0 && elapsedTime() > remainingMarkers[0].time) {
             remainingMarkers.removeAt(0).callback.onMarkerReached()
         }

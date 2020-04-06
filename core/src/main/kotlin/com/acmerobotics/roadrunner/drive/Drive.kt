@@ -3,6 +3,7 @@ package com.acmerobotics.roadrunner.drive
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.localization.Localizer
 import com.acmerobotics.roadrunner.util.Angle
+import com.acmerobotics.roadrunner.util.Log
 
 /**
  * Abstraction for generic robot drive motion and localization. Robot poses are specified in a coordinate system with
@@ -50,6 +51,7 @@ abstract class Drive {
      * Updates [poseEstimate] with the most recent positional change.
      */
     fun updatePoseEstimate() {
+        Log.dbgPrint(3);
         localizer.update()
     }
 

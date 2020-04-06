@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.path.heading.LinearInterpolator
 import com.acmerobotics.roadrunner.path.heading.SplineInterpolator
 import com.acmerobotics.roadrunner.path.heading.TangentInterpolator
 import com.acmerobotics.roadrunner.util.Angle
+import com.acmerobotics.roadrunner.util.Log
 import kotlin.math.PI
 
 /**
@@ -167,6 +168,7 @@ class PathBuilder private constructor(
      * @param endPosition end position
      */
     fun lineTo(endPosition: Vector2d): PathBuilder {
+        Log.dbgPrint(3);
         val line = makeLine(endPosition)
         val interpolator = makeTangentInterpolator(line)
 
@@ -298,6 +300,7 @@ class PathBuilder private constructor(
      * Constructs the [Path] instance.
      */
     fun build(): Path {
+        Log.dbgPrint(3);
         return Path(segments)
     }
 }
