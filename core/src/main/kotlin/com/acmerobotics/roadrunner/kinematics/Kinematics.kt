@@ -3,6 +3,7 @@ package com.acmerobotics.roadrunner.kinematics
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.util.Angle
+import com.acmerobotics.roadrunner.util.Log
 import com.acmerobotics.roadrunner.util.epsilonEquals
 import kotlin.math.cos
 import kotlin.math.sign
@@ -78,6 +79,7 @@ object Kinematics {
      */
     @JvmStatic
     fun relativeOdometryUpdate(fieldPose: Pose2d, robotPoseDelta: Pose2d): Pose2d {
+        Log.dbgPrint("Kinematics: relativeOdometryUpdate");
         val dtheta = robotPoseDelta.heading
         val (sineTerm, cosTerm) = if (dtheta epsilonEquals 0.0) {
             1.0 - dtheta * dtheta / 6.0 to dtheta / 2.0

@@ -3,6 +3,7 @@ package com.acmerobotics.roadrunner.path
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.util.DoubleProgression
+import com.acmerobotics.roadrunner.util.Log
 import com.acmerobotics.roadrunner.util.epsilonEquals
 import kotlin.math.max
 import kotlin.math.min
@@ -150,6 +151,8 @@ class Path(val segments: List<PathSegment>) {
      * @param ds spacing between guesses
      */
     fun project(queryPoint: Vector2d, ds: Double = 0.25): Double {
+        Log.dbgPrint("Path, project")
+
         val samples = (length() / ds).roundToInt()
 
         val guesses = (0..samples).map { it.toDouble() / samples * length() }

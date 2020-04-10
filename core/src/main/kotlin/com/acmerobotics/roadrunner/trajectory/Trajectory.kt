@@ -3,6 +3,7 @@ package com.acmerobotics.roadrunner.trajectory
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.path.Path
 import com.acmerobotics.roadrunner.profile.MotionProfile
+import com.acmerobotics.roadrunner.util.Log
 
 /**
  * Trajectory backed by a [Path] and a [MotionProfile].
@@ -20,6 +21,8 @@ class Trajectory @JvmOverloads constructor(
     operator fun get(time: Double) = path[profile[time].x]
 
     fun velocity(time: Double): Pose2d {
+        Log.dbgPrint("Trajectory, velocity")
+
         val motionState = profile[time]
         return path.deriv(motionState.x) * motionState.v
     }

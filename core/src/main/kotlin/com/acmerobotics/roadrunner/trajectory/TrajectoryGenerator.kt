@@ -6,6 +6,7 @@ import com.acmerobotics.roadrunner.profile.*
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryConstraints
 import com.acmerobotics.roadrunner.util.DoubleProgression
+import com.acmerobotics.roadrunner.util.Log
 import com.acmerobotics.roadrunner.util.epsilonEquals
 
 /**
@@ -78,6 +79,8 @@ object TrajectoryGenerator {
         displacementMarkers: List<DisplacementMarker>,
         spatialMarkers: List<SpatialMarker>
     ): List<TrajectoryMarker> {
+        Log.dbgPrint("TrajectoryGenerator, convertMarkers")
+
         return temporalMarkers.map { (time, callback) ->
             TrajectoryMarker(time(profile.duration()), callback) } +
             displacementMarkers.map { (displacement, callback) ->
@@ -108,6 +111,8 @@ object TrajectoryGenerator {
         spatialMarkers: List<SpatialMarker> = emptyList(),
         resolution: Double = 0.25
     ): Trajectory {
+        Log.dbgPrint("TrajectoryGenerator, generateTrajectory")
+
         val profile = generateProfile(path, constraints, start, goal, resolution)
         val markers = convertMarkers(path, profile, temporalMarkers, displacementMarkers, spatialMarkers)
         return Trajectory(path, profile, markers)
@@ -133,6 +138,8 @@ object TrajectoryGenerator {
         displacementMarkers: List<DisplacementMarker> = emptyList(),
         spatialMarkers: List<SpatialMarker> = emptyList()
     ): Trajectory {
+        Log.dbgPrint("TrajectoryGenerator, generateSimpleTrajectory")
+
         val profile = generateSimpleProfile(constraints, start, goal)
         val markers = convertMarkers(path, profile, temporalMarkers, displacementMarkers, spatialMarkers)
         return Trajectory(path, profile, markers)
