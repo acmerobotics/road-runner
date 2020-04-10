@@ -66,6 +66,9 @@ object Kinematics {
     @JvmStatic
     fun calculateMotorFeedforward(vel: Double, accel: Double, kV: Double, kA: Double, kStatic: Double): Double {
         val basePower = vel * kV + accel * kA
+        Log.dbgPrint("Kinematics: calculateMotorFeedforward: kV".plus(kV).plus(" kA: ".plus(kA)));
+        Log.dbgPrint(("  vel: ").plus(vel).plus(" accel: ").plus(accel));
+
         return if (basePower epsilonEquals 0.0) {
             0.0
         } else {
@@ -79,7 +82,6 @@ object Kinematics {
      */
     @JvmStatic
     fun relativeOdometryUpdate(fieldPose: Pose2d, robotPoseDelta: Pose2d): Pose2d {
-        Log.dbgPrint("Kinematics: relativeOdometryUpdate");
         val dtheta = robotPoseDelta.heading
         val (sineTerm, cosTerm) = if (dtheta epsilonEquals 0.0) {
             1.0 - dtheta * dtheta / 6.0 to dtheta / 2.0
@@ -93,6 +95,7 @@ object Kinematics {
         )
 
         val fieldPoseDelta = Pose2d(fieldPositionDelta.rotated(fieldPose.heading), robotPoseDelta.heading)
+        Log.dbgPrint("Kinematics: relativeOdometryUpdate, fieldPoseDelta ".plus(fieldPoseDelta.toString()));
 
         return Pose2d(
             fieldPose.x + fieldPoseDelta.x,

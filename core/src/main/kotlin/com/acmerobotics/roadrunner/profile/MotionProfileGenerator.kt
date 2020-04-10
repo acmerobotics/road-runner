@@ -39,6 +39,7 @@ object MotionProfileGenerator {
         maxJerk: Double = 0.0,
         overshoot: Boolean = false
     ): MotionProfile {
+        Log.dbgPrint("MotionProfileGenerator, generateSimpleMotionProfile")
         // ensure the goal is always after the start; plan the flipped profile otherwise
         if (goal.x < start.x) {
             return generateSimpleMotionProfile(
@@ -202,6 +203,7 @@ object MotionProfileGenerator {
         maxJerk: Double = 0.0
     ): MotionProfile =
         if (maxJerk epsilonEquals 0.0) {
+            Log.dbgPrint("MotionProfileGenerator, generateAccelProfile")
             // acceleration-limited
             val deltaT1 = abs(start.v - maxVel) / maxAccel
             val builder = MotionProfileBuilder(start)
@@ -213,6 +215,8 @@ object MotionProfileGenerator {
             }
             builder.build()
         } else {
+            Log.dbgPrint("MotionProfileGenerator, generateAccelProfile")
+
             // jerk-limited
             // compute the duration and velocity of the first segment
             val (deltaT1, deltaV1) = if (start.a > maxAccel) {

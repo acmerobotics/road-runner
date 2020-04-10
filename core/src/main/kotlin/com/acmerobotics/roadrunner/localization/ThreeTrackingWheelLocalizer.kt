@@ -29,6 +29,8 @@ abstract class ThreeTrackingWheelLocalizer(
     private val forwardSolver: DecompositionSolver
 
     init {
+        Log.dbgPrint("ThreeTrackingWheelLocalizer, init, inverseMatrix, LUDecomposition");
+
         require(wheelPoses.size == 3) { "3 wheel positions must be provided" }
 
         val inverseMatrix = Array2DRowRealMatrix(3, 3)
@@ -47,6 +49,8 @@ abstract class ThreeTrackingWheelLocalizer(
     }
 
     private fun calculatePoseDelta(wheelDeltas: List<Double>): Pose2d {
+        Log.dbgPrint("ThreeTrackingWheelLocalizer, calculatePoseDelta, to fowardSolver and transpose");
+
         val rawPoseDelta = forwardSolver.solve(MatrixUtils.createRealMatrix(
                 arrayOf(wheelDeltas.toDoubleArray())
         ).transpose())
@@ -58,7 +62,7 @@ abstract class ThreeTrackingWheelLocalizer(
     }
 
     override fun update() {
-        Log.dbgPrint(5);
+        Log.dbgPrint("ThreeTrackingWheelLocalizer, update, to getWheelVelocities and then calculatePoseDelta, relativeOdometryUpdate");
         val wheelPositions = getWheelPositions()
         if (lastWheelPositions.isNotEmpty()) {
             val wheelDeltas = wheelPositions

@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.path.Path
 import com.acmerobotics.roadrunner.profile.SimpleMotionConstraints
 import com.acmerobotics.roadrunner.util.Angle
 import com.acmerobotics.roadrunner.util.GuidingVectorField
+import com.acmerobotics.roadrunner.util.Log
 import com.acmerobotics.roadrunner.util.NanoClock
 import kotlin.math.atan2
 import kotlin.math.sqrt
@@ -37,6 +38,8 @@ class GVFFollower @JvmOverloads constructor(
     override var lastError: Pose2d = Pose2d()
 
     override fun followPath(path: Path) {
+        Log.dbgPrint("GVFFollower: followPath")
+
         gvf = GuidingVectorField(path, kN, errorMapFunc)
         lastUpdateTimestamp = clock.seconds()
         lastVel = 0.0
@@ -46,6 +49,7 @@ class GVFFollower @JvmOverloads constructor(
 
     override fun internalUpdate(currentPose: Pose2d): DriveSignal {
         val gvfResult = gvf.getExtended(currentPose.x, currentPose.y, lastProjDisplacement)
+        Log.dbgPrint("GVFFollower: internalUpdate")
 
         val desiredHeading = atan2(gvfResult.vector.y, gvfResult.vector.x)
         val headingError = Angle.normDelta(desiredHeading - currentPose.heading)

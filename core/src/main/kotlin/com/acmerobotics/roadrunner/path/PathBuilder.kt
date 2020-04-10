@@ -223,6 +223,7 @@ class PathBuilder private constructor(
      * @param distance distance to travel forward
      */
     fun forward(distance: Double): PathBuilder {
+        Log.dbgPrint("PathBuilder: forward ".plus(distance))
         val start = if (currentPose == null) {
             path!![s!!]
         } else {
@@ -248,6 +249,7 @@ class PathBuilder private constructor(
      * @param distance distance to strafe left
      */
     fun strafeLeft(distance: Double): PathBuilder {
+        Log.dbgPrint("PathBuilder: strafeLeft ".plus(distance))
         val start = if (currentPose == null) {
             path!![s!!]
         } else {
@@ -272,6 +274,8 @@ class PathBuilder private constructor(
      * @param endPose end pose
      */
     fun splineTo(endPose: Pose2d): PathBuilder {
+        Log.dbgPrint("PathBuilder: splineTo ")
+
         val spline = makeSpline(endPose)
         val interpolator = makeTangentInterpolator(spline)
 

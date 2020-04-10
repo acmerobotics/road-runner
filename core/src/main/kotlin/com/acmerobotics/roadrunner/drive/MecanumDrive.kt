@@ -91,6 +91,7 @@ abstract class MecanumDrive @JvmOverloads constructor(
 
     override fun setDriveSignal(driveSignal: DriveSignal) {
         Log.dbgPrint("MecanumDrive: setDriveSignal");
+        Log.dbgPrint("  to robotToWheelVelocities/robotToWheelAccelerations and then calculateMotorFeedforward, finally setMotorPowers");
         val velocities = MecanumKinematics.robotToWheelVelocities(
             driveSignal.vel, trackWidth, wheelBase, lateralMultiplier)
         val accelerations = MecanumKinematics.robotToWheelAccelerations(

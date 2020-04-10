@@ -59,6 +59,8 @@ class MotionProfile(segments: List<MotionSegment>) {
         val builder = MotionProfileBuilder(start())
         builder.appendProfile(this)
         builder.appendProfile(other)
+        Log.dbgPrint("MotionProfile, plus")
+
         return builder.build()
     }
 }
