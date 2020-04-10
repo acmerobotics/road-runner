@@ -41,6 +41,7 @@ abstract class TrajectoryFollower @JvmOverloads constructor(
      * Follow the given [trajectory].
      */
     open fun followTrajectory(trajectory: Trajectory) {
+        Log.dbgPrint(5);
         this.startTimestamp = clock.seconds()
         this.trajectory = trajectory
         this.admissible = false
