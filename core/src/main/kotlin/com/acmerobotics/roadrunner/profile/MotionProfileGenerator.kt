@@ -1,6 +1,7 @@
 package com.acmerobotics.roadrunner.profile
 
 import com.acmerobotics.roadrunner.util.DoubleProgression
+import com.acmerobotics.roadrunner.util.Log
 import com.acmerobotics.roadrunner.util.MathUtil.solveQuadratic
 import com.acmerobotics.roadrunner.util.epsilonEquals
 import kotlin.math.abs
@@ -314,6 +315,7 @@ object MotionProfileGenerator {
         constraints: MotionConstraints,
         resolution: Double = 0.25
     ): MotionProfile {
+        Log.dbgPrint("MotionProfileGenerator, generateMotionProfile")
         if (goal.x < start.x) {
             return generateMotionProfile(
                 start.flipped(),

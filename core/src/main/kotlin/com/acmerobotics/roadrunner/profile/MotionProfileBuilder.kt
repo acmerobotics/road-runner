@@ -1,5 +1,6 @@
 package com.acmerobotics.roadrunner.profile
 
+import com.acmerobotics.roadrunner.util.Log
 import com.acmerobotics.roadrunner.util.epsilonEquals
 
 /**
@@ -35,6 +36,8 @@ class MotionProfileBuilder(start: MotionState) {
      * Appends a [MotionProfile] to the current queue of control actions.
      */
     fun appendProfile(profile: MotionProfile): MotionProfileBuilder {
+        Log.dbgPrint("MotionProfileBuilder, appendProfile")
+
         for (segment in profile.segments) {
             if (segment.start.j epsilonEquals 0.0) {
                 // constant acceleration

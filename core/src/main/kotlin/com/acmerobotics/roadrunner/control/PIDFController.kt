@@ -114,7 +114,7 @@ class PIDFController
         measuredPosition: Double,
         measuredVelocity: Double? = null
     ): Double {
-        Log.dbgPrint(5);
+        Log.dbgPrint("PIDFController: update, kP: ".plus(pid.kP.toString()));
         val currentTimestamp = clock.seconds()
         val error = getPositionError(measuredPosition)
         return if (lastUpdateTimestamp.isNaN()) {
@@ -129,12 +129,14 @@ class PIDFController
             lastError = error
             lastUpdateTimestamp = currentTimestamp
 
+
             // note: we'd like to refactor this with Kinematics.calculateMotorFeedforward() but kF complicates the
             // determination of the sign of kStatic
             val baseOutput = pid.kP * error + pid.kI * errorSum +
                 pid.kD * (measuredVelocity?.minus(targetVelocity) ?: errorDeriv) +
                 kV * targetVelocity + kA * targetAcceleration + kF(measuredPosition, measuredVelocity)
             val output = if (baseOutput epsilonEquals 0.0) 0.0 else baseOutput + sign(baseOutput) * kStatic
+            Log.dbgPrint("PIDFController: P, I, D, kV, kA, kStatic, error, errorSum, errorDeriv, output: ".plus(output.toString()));
 
             if (outputBounded) {
                 max(minOutput, min(output, maxOutput))

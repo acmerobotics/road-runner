@@ -51,7 +51,7 @@ abstract class Drive {
      * Updates [poseEstimate] with the most recent positional change.
      */
     fun updatePoseEstimate() {
-        Log.dbgPrint(5);
+        Log.dbgPrint("Drive: updatePoseEstimate");
         localizer.update()
     }
 

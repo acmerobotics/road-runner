@@ -15,7 +15,7 @@ class MotionProfile(segments: List<MotionSegment>) {
      * Returns the [MotionState] at time [t].
      */
     operator fun get(t: Double): MotionState {
-        Log.dbgPrint(5)
+        Log.dbgPrint("MotionProfile, get")
 
         var remainingTime = max(0.0, min(t, duration()))
         for (segment in segments) {

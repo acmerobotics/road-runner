@@ -31,6 +31,8 @@ object MecanumKinematics {
         wheelBase: Double = trackWidth,
         lateralMultiplier: Double = 1.0
     ): List<Double> {
+        Log.dbgPrint("MecanumKinematics: robotToWheelVelocities");
+
         val k = (trackWidth + wheelBase) / 2.0
         return listOf(
                 robotVel.x - lateralMultiplier * robotVel.y - k * robotVel.heading,
@@ -83,7 +85,7 @@ object MecanumKinematics {
         wheelBase: Double = trackWidth,
         lateralMultiplier: Double = 1.0
     ): Pose2d {
-        Log.dbgPrint(5);
+        Log.dbgPrint("MecanumKinematics: wheelToRobotVelocities");
         val k = (trackWidth + wheelBase) / 2.0
         val (frontLeft, rearLeft, rearRight, frontRight) = wheelVelocities
         return Pose2d(

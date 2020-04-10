@@ -52,6 +52,8 @@ class PathBuilder private constructor(
     private var segments = mutableListOf<PathSegment>()
 
     private fun makeLine(end: Vector2d): LineSegment {
+        Log.dbgPrint("PathBuilder, makeLine")
+
         val start = if (currentPose == null) {
             path!![s!!]
         } else {
@@ -70,6 +72,8 @@ class PathBuilder private constructor(
     }
 
     private fun makeSpline(end: Pose2d): QuinticSpline {
+        Log.dbgPrint("PathBuilder, makeSpline")
+
         val start = if (currentPose == null) {
             path!![s!!]
         } else {
@@ -123,6 +127,7 @@ class PathBuilder private constructor(
     }
 
     private fun makeLinearInterpolator(endHeading: Double): LinearInterpolator {
+        Log.dbgPrint("PathBuilder, makeLinearInterpolator")
         val startHeading = currentHeading ?: throw PathContinuityViolationException()
 
         currentHeading = endHeading
@@ -142,6 +147,8 @@ class PathBuilder private constructor(
     }
 
     private fun addSegment(segment: PathSegment): PathBuilder {
+        Log.dbgPrint("PathBuilder, addSegment")
+
         if (segments.isNotEmpty()) {
             val lastSegment = segments.last()
             if (!(lastSegment.end() epsilonEqualsHeading segment.start() &&
@@ -168,7 +175,7 @@ class PathBuilder private constructor(
      * @param endPosition end position
      */
     fun lineTo(endPosition: Vector2d): PathBuilder {
-        Log.dbgPrint(5);
+        Log.dbgPrint("PathBuilder, lineTo, makeLine, makeTangentInterpolator and  addSegment")
         val line = makeLine(endPosition)
         val interpolator = makeTangentInterpolator(line)
 
@@ -300,7 +307,7 @@ class PathBuilder private constructor(
      * Constructs the [Path] instance.
      */
     fun build(): Path {
-        Log.dbgPrint(5);
+        Log.dbgPrint("PathBuilder, build")
         return Path(segments)
     }
 }
