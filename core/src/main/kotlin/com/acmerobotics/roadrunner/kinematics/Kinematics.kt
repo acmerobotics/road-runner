@@ -83,6 +83,8 @@ object Kinematics {
     @JvmStatic
     fun relativeOdometryUpdate(fieldPose: Pose2d, robotPoseDelta: Pose2d): Pose2d {
         val dtheta = robotPoseDelta.heading
+        Log.dbgPrint("dtheta: ".plus(dtheta))
+
         val (sineTerm, cosTerm) = if (dtheta epsilonEquals 0.0) {
             1.0 - dtheta * dtheta / 6.0 to dtheta / 2.0
         } else {
