@@ -4,6 +4,7 @@ import com.acmerobotics.roadrunner.drive.DriveSignal
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.trajectory.Trajectory
 import com.acmerobotics.roadrunner.trajectory.TrajectoryMarker
+import com.acmerobotics.roadrunner.util.Angle
 import com.acmerobotics.roadrunner.util.NanoClock
 import kotlin.math.abs
 
@@ -81,7 +82,7 @@ abstract class TrajectoryFollower @JvmOverloads constructor(
         val trajEndError = trajectory.end() - currentPose
         admissible = abs(trajEndError.x) < admissibleError.x &&
                 abs(trajEndError.y) < admissibleError.y &&
-                abs(trajEndError.heading) < admissibleError.heading
+                abs(Angle.normDelta(trajEndError.heading)) < admissibleError.heading
         return if (internalIsFollowing() || executedFinalUpdate) {
             internalUpdate(currentPose, currentRobotVel)
         } else {
