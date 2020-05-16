@@ -85,7 +85,7 @@ class HolonomicPIDVAFollower @JvmOverloads constructor(
         )
 
         lastError = poseError
-        Log.dbgPrint("lastError: ".plus(lastError.toString()))
+        Log.dbgPrint("lastPoseError: ".plus(lastError.toString()))
         Log.dbgPrint("axialCorrection: ".plus(axialCorrection.toString()))
         Log.dbgPrint("lateralCorrection: ".plus(lateralCorrection.toString()))
         Log.dbgPrint("headingCorrection: ".plus(headingCorrection.toString()))
