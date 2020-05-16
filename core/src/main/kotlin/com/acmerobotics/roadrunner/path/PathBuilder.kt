@@ -12,7 +12,7 @@ import kotlin.math.PI
 /**
  * Exception thrown by [PathBuilder].
  */
-abstract class PathBuilderException : Exception()
+abstract class PathBuilderException : RuntimeException()
 
 /**
  * Exception thrown when [PathBuilder] methods are chained illegally. This commonly arises when switching from
