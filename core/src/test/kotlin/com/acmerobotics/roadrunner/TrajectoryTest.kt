@@ -8,6 +8,7 @@ import com.acmerobotics.roadrunner.path.QuinticSpline
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
 import com.acmerobotics.roadrunner.trajectory.TrajectoryGenerator
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
+import com.acmerobotics.roadrunner.util.DoubleProgression
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import kotlin.math.PI
@@ -20,11 +21,10 @@ class TrajectoryTest {
         val stonePose = Pose2d(48.0, -47.5, PI)
         val trajectory = TrajectoryBuilder(stonePose, constraints = DriveConstraints(5.0, 10.0, 0.0, 2.0, 3.0, 0.0))
                 .lineTo(Vector2d(12 - cryptoColWidth, -47.5))
-                .splineTo(Pose2d(16.0, -24.0, PI / 3))
+                .splineTo(Vector2d(16.0, -24.0), PI / 3)
                 .build()
 
-        val dt = trajectory.duration() / 10000.0
-        val t = (0..10000).map { it * dt }
+        val t = DoubleProgression.fromClosedInterval(0.0, trajectory.duration(), 10_000)
 
         val x = t.map { trajectory[it].x }
         val velX = t.map { trajectory.velocity(it).x }
@@ -36,11 +36,11 @@ class TrajectoryTest {
 
         // there is a lot of noise in these numerical derivatives from the new parametrization
         // however the analytic ones are perfect
-        TestUtil.assertDerivEquals(x, velX, dt, 0.05, 0.1)
-        TestUtil.assertDerivEquals(velX, accelX, dt, 0.05, 0.1)
+        TestUtil.assertDerivEquals(x, velX, t.step, 0.05, 0.1)
+        TestUtil.assertDerivEquals(velX, accelX, t.step, 0.05, 0.1)
 
-        TestUtil.assertDerivEquals(y, velY, dt, 0.05, 0.1)
-        TestUtil.assertDerivEquals(velY, accelY, dt, 0.05, 0.1)
+        TestUtil.assertDerivEquals(y, velY, t.step, 0.05, 0.1)
+        TestUtil.assertDerivEquals(velY, accelY, t.step, 0.05, 0.1)
     }
 
     @Test
@@ -60,9 +60,9 @@ class TrajectoryTest {
         val endPose = Pose2d(25.0, 25.0, 0.0)
         repeat(50) {
             val traj = TrajectoryBuilder(Pose2d(), constraints = DriveConstraints(5.0, 10.0, 0.0, 2.0, 3.0, 0.0))
-                .splineTo(Pose2d(50 * Math.random(), 50 * Math.random(), 2 * PI * Math.random()))
-                .splineTo(Pose2d(50 * Math.random(), 50 * Math.random(), 2 * PI * Math.random()))
-                .splineTo(endPose)
+                .splineTo(Vector2d(50 * Math.random(), 50 * Math.random()), 2 * PI * Math.random())
+                .splineTo(Vector2d(50 * Math.random(), 50 * Math.random()), 2 * PI * Math.random())
+                .splineTo(endPose.vec(), endPose.heading)
                 .build()
             assert(traj.end() epsilonEqualsHeading endPose)
         }

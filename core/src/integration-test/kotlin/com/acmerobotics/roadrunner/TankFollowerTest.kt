@@ -64,8 +64,8 @@ class TankFollowerTest {
         val dt = 1.0 / SIMULATION_HZ
 
         val trajectory = TrajectoryBuilder(Pose2d(0.0, 0.0, 0.0), constraints = CONSTRAINTS)
-                .splineTo(Pose2d(15.0, 15.0, PI))
-                .splineTo(Pose2d(5.0, 35.0, PI / 3))
+                .splineTo(Vector2d(15.0, 15.0), PI)
+                .splineTo(Vector2d(5.0, 35.0), PI / 3)
                 .build()
 
         val clock = SimulatedClock()
@@ -115,8 +115,8 @@ class TankFollowerTest {
         val dt = 1.0 / SIMULATION_HZ
 
         val trajectory = TrajectoryBuilder(Pose2d(0.0, 0.0, 0.0), constraints = CONSTRAINTS)
-                .splineTo(Pose2d(15.0, 15.0, PI))
-                .splineTo(Pose2d(5.0, 35.0, PI / 3))
+                .splineTo(Vector2d(15.0, 15.0), PI)
+                .splineTo(Vector2d(5.0, 35.0), PI / 3)
                 .build()
 
         val clock = SimulatedClock()
@@ -166,7 +166,7 @@ class TankFollowerTest {
         val dt = 1.0 / SIMULATION_HZ
 
         val path = PathBuilder(Pose2d(0.0, 0.0, 0.0))
-                .splineTo(Pose2d(15.0, 15.0, 0.0))
+                .splineTo(Vector2d(15.0, 15.0), 0.0)
                 .lineTo(Vector2d(30.0, 15.0))
                 .build()
 

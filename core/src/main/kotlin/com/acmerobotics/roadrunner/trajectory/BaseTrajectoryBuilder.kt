@@ -15,14 +15,14 @@ import com.acmerobotics.roadrunner.path.PathBuilder
 @Suppress("UNCHECKED_CAST")
 abstract class BaseTrajectoryBuilder<T : BaseTrajectoryBuilder<T>> protected constructor(
     startPose: Pose2d?,
-    startHeading: Double?,
+    startTangent: Double?,
     trajectory: Trajectory?,
     t: Double?
 ) {
     protected var pathBuilder: PathBuilder = if (startPose == null) {
         PathBuilder(trajectory!!.path, trajectory.profile[t!!].x)
     } else {
-        PathBuilder(startPose, startHeading!!)
+        PathBuilder(startPose, startTangent!!)
     }
 
     private val temporalMarkers = mutableListOf<TemporalMarker>()
@@ -54,11 +54,10 @@ abstract class BaseTrajectoryBuilder<T : BaseTrajectoryBuilder<T>> protected con
     /**
      * Adds a line segment with linear heading interpolation.
      *
-     * @param endPosition end position
-     * @param endHeading end heading
+     * @param endPose end pose
      */
-    fun lineToLinearHeading(endPosition: Vector2d, endHeading: Double): T {
-        pathBuilder.lineToLinearHeading(endPosition, endHeading)
+    fun lineToLinearHeading(endPose: Pose2d): T {
+        pathBuilder.lineToLinearHeading(endPose)
 
         return this as T
     }
@@ -66,10 +65,10 @@ abstract class BaseTrajectoryBuilder<T : BaseTrajectoryBuilder<T>> protected con
     /**
      * Adds a line segment with spline heading interpolation.
      *
-     * @param endPosition end position
+     * @param endPose end pose
      */
-    fun lineToSplineHeading(endPosition: Vector2d, endHeading: Double): T {
-        pathBuilder.lineToSplineHeading(endPosition, endHeading)
+    fun lineToSplineHeading(endPose: Pose2d): T {
+        pathBuilder.lineToSplineHeading(endPose)
 
         return this as T
     }
@@ -132,10 +131,11 @@ abstract class BaseTrajectoryBuilder<T : BaseTrajectoryBuilder<T>> protected con
     /**
      * Adds a spline segment with tangent heading interpolation.
      *
-     * @param endPose end pose
+     * @param endPosition end position
+     * @param endTangent end tangent
      */
-    fun splineTo(endPose: Pose2d): T {
-        pathBuilder.splineTo(endPose)
+    fun splineTo(endPosition: Vector2d, endTangent: Double): T {
+        pathBuilder.splineTo(endPosition, endTangent)
 
         return this as T
     }
@@ -143,10 +143,11 @@ abstract class BaseTrajectoryBuilder<T : BaseTrajectoryBuilder<T>> protected con
     /**
      * Adds a spline segment with constant heading interpolation.
      *
-     * @param endPose end pose
+     * @param endPosition end position
+     * @param endTangent end tangent
      */
-    fun splineToConstantHeading(endPose: Pose2d): T {
-        pathBuilder.splineToConstantHeading(endPose)
+    fun splineToConstantHeading(endPosition: Vector2d, endTangent: Double): T {
+        pathBuilder.splineToConstantHeading(endPosition, endTangent)
 
         return this as T
     }
@@ -155,9 +156,10 @@ abstract class BaseTrajectoryBuilder<T : BaseTrajectoryBuilder<T>> protected con
      * Adds a spline segment with linear heading interpolation.
      *
      * @param endPose end pose
+     * @param endTangent end tangent
      */
-    fun splineToLinearHeading(endPose: Pose2d, endHeading: Double): T {
-        pathBuilder.splineToLinearHeading(endPose, endHeading)
+    fun splineToLinearHeading(endPose: Pose2d, endTangent: Double): T {
+        pathBuilder.splineToLinearHeading(endPose, endTangent)
 
         return this as T
     }
@@ -166,9 +168,10 @@ abstract class BaseTrajectoryBuilder<T : BaseTrajectoryBuilder<T>> protected con
      * Adds a spline segment with spline heading interpolation.
      *
      * @param endPose end pose
+     * @param endTangent end tangent
      */
-    fun splineToSplineHeading(endPose: Pose2d, endHeading: Double): T {
-        pathBuilder.splineToSplineHeading(endPose, endHeading)
+    fun splineToSplineHeading(endPose: Pose2d, endTangent: Double): T {
+        pathBuilder.splineToSplineHeading(endPose, endTangent)
 
         return this as T
     }

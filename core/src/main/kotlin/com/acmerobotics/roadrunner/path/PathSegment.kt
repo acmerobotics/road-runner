@@ -32,6 +32,9 @@ class PathSegment @JvmOverloads constructor(
         Pose2d(curve.secondDeriv(s, t), interpolator.secondDeriv(s, t))
 
     @JvmOverloads
+    fun tangentAngle(s: Double, t: Double = reparam(s)) = curve.tangentAngle(s, t)
+
+    @JvmOverloads
     internal fun internalDeriv(s: Double, t: Double = reparam(s)) =
         Pose2d(curve.internalDeriv(t), interpolator.internalDeriv(s, t))
 
@@ -58,6 +61,11 @@ class PathSegment @JvmOverloads constructor(
      */
     fun startSecondDeriv() = secondDeriv(0.0)
 
+    /**
+     * Returns the start tangent angle.
+     */
+    fun startTangentAngle() = tangentAngle(0.0)
+
     internal fun startInternalDeriv() = internalDeriv(0.0)
 
     internal fun startInternalSecondDeriv() = internalSecondDeriv(0.0)
@@ -76,6 +84,11 @@ class PathSegment @JvmOverloads constructor(
      * Returns the end pose second derivative.
      */
     fun endSecondDeriv() = secondDeriv(length())
+
+    /**
+     * Returns the end tangent angle.
+     */
+    fun endTangentAngle() = tangentAngle(length())
 
     internal fun endInternalDeriv() = internalDeriv(length())
 

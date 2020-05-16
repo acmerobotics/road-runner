@@ -56,7 +56,7 @@ class MainPanel : JPanel() {
 
     private var trajectoryConfig: TrajectoryConfig = DEFAULT_TRAJECTORY_CONFIG
         set(value) {
-            pathEditorPanel.config = PathConfig(value.startPose, value.startHeading, value.steps)
+            pathEditorPanel.config = PathConfig(value.startPose, value.startTangent, value.waypoints)
             trajectoryInfoPanel.resolution = value.resolution
 
             val i = trajList.selectedIndex
@@ -95,8 +95,8 @@ class MainPanel : JPanel() {
             updating = false
         }
 
-        pathEditorPanel.onConfigUpdate = { (startPose, startHeading, steps) ->
-            trajectoryConfig = trajectoryConfig.copy(startPose = startPose, startHeading = startHeading, steps = steps)
+        pathEditorPanel.onConfigUpdate = { (startPose, startTangent, steps) ->
+            trajectoryConfig = trajectoryConfig.copy(startPose = startPose, startTangent = startTangent, waypoints = steps)
 
             markCurrentTrajDirty()
 
@@ -261,7 +261,7 @@ class MainPanel : JPanel() {
         trajGenFuture = trajGenExecutor.submit {
             status = "generating trajectory..."
 
-            if (trajectoryConfig.steps.isEmpty()) {
+            if (trajectoryConfig.waypoints.isEmpty()) {
                 status = "error: empty path"
 
                 pathEditorPanel.valid = false
@@ -277,7 +277,7 @@ class MainPanel : JPanel() {
                 if (newTrajectory != null) {
                     fieldPanel.apply {
                         knots = listOf(trajectoryConfig.startPose.vec()) +
-                            trajectoryConfig.steps.map { it.pose.vec() }
+                            trajectoryConfig.waypoints.map { it.position }
                         robotDimensions = RobotDimensions(groupConfig.robotLength, groupConfig.robotWidth)
                         trajectory = newTrajectory
                     }

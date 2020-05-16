@@ -20,19 +20,8 @@ object TrajectoryConfigManager {
     private val MAPPER = ObjectMapper(YAMLFactory())
 
     init {
-        val module = SimpleModule()
-        module.addDeserializer(TrajectoryConfig::class.java, TrajectoryConfigDeserializer())
-        MAPPER.registerModule(module)
         MAPPER.registerKotlinModule()
         MAPPER.setSerializationInclusion(JsonInclude.Include.NON_NULL)
-    }
-
-    /**
-     * Saves a [LegacyTrajectoryConfig] to [file].
-     */
-    @JvmStatic
-    fun saveConfig(trajectoryConfig: LegacyTrajectoryConfig, file: File) {
-        MAPPER.writerWithDefaultPrettyPrinter().writeValue(file, trajectoryConfig)
     }
 
     /**

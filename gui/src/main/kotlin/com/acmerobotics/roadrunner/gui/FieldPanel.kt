@@ -17,7 +17,7 @@ import javax.swing.Timer
 import kotlin.math.min
 import kotlin.math.roundToInt
 
-private const val SPATIAL_RESOLUTION = 0.25 // in
+private const val SPATIAL_RESOLUTION = 2.0 // in
 private const val TEMPORAL_RESOLUTION = 0.025 // sec
 private val FIELD_IMAGE = ImageIO.read(FieldPanel::class.java.getResource("/field.png"))
 

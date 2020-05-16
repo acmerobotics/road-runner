@@ -1,4 +1,5 @@
 import com.acmerobotics.roadrunner.geometry.Pose2d
+import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.trajectory.config.TrajectoryConfig
 import com.acmerobotics.roadrunner.trajectory.config.TrajectoryGroupConfig
 
@@ -7,7 +8,7 @@ const val DEFAULT_TRACK_WIDTH = 18.0
 const val DEFAULT_RESOLUTION = 0.25
 val DEFAULT_TRAJECTORY_CONFIG = TrajectoryConfig(
     Pose2d(),
-    null,
+    0.0,
     emptyList(),
     DEFAULT_RESOLUTION
 )
@@ -24,8 +25,9 @@ val DEFAULT_GROUP_CONFIG = TrajectoryGroupConfig(
     null
 )
 
-val DEFAULT_STEP = TrajectoryConfig.Step(
-    Pose2d(),
-    null,
+val DEFAULT_STEP = TrajectoryConfig.Waypoint(
+    Vector2d(),
+    0.0,
+    0.0,
     TrajectoryConfig.HeadingInterpolationType.TANGENT
 )
