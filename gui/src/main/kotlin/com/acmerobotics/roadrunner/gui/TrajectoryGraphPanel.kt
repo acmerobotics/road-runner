@@ -1,6 +1,7 @@
 package com.acmerobotics.roadrunner.gui
 
 import com.acmerobotics.roadrunner.trajectory.Trajectory
+import com.acmerobotics.roadrunner.util.DoubleProgression
 import org.knowm.xchart.QuickChart
 import org.knowm.xchart.XYChart
 import org.knowm.xchart.style.MatlabTheme
@@ -42,8 +43,7 @@ class TrajectoryGraphPanel : JPanel() {
             return
         }
 
-        val dt = trajectory.duration() / RESOLUTION
-        val t = (0..RESOLUTION).map { it * dt }.toDoubleArray()
+        val t = DoubleProgression(0.0, trajectory.duration(), RESOLUTION).toList().toDoubleArray()
         val velocity = t.map { trajectory.velocity(it) }
         val x = velocity.map { it.x }.toDoubleArray()
         val y = velocity.map { it.y }.toDoubleArray()

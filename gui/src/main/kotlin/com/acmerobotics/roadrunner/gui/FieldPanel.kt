@@ -3,6 +3,7 @@ package com.acmerobotics.roadrunner.gui
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.trajectory.Trajectory
+import com.acmerobotics.roadrunner.util.DoubleProgression
 import com.acmerobotics.roadrunner.util.NanoClock
 import java.awt.*
 import java.awt.event.MouseEvent
@@ -91,9 +92,7 @@ class FieldPanel : JPanel() {
 
             // compute path samples
             val displacementSamples = (value.path.length() / SPATIAL_RESOLUTION).roundToInt()
-            val displacements = (0..displacementSamples).map {
-                it / displacementSamples.toDouble() * value.path.length()
-            }
+            val displacements = DoubleProgression.fromClosedInterval(0.0, value.path.length(), displacementSamples)
 
             // compute the path segments and area swept by the robot
             val poses = displacements.map { value.path[it] }
@@ -106,9 +105,7 @@ class FieldPanel : JPanel() {
 
             // compute time samples
             val timeSamples = (value.duration() / TEMPORAL_RESOLUTION).roundToInt()
-            val times = (0..timeSamples).map {
-                it / timeSamples.toDouble() * value.duration()
-            }
+            val times = DoubleProgression.fromClosedInterval(0.0, value.duration(), timeSamples)
 
             // TODO: is this procedure quadratic?
             // is it better to divide and conquer (at the cost of additional memory)?

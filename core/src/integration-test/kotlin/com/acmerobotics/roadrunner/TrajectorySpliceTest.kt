@@ -6,6 +6,7 @@ import com.acmerobotics.roadrunner.path.PathContinuityViolationException
 import com.acmerobotics.roadrunner.trajectory.Trajectory
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
+import com.acmerobotics.roadrunner.util.DoubleProgression
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.knowm.xchart.QuickChart
@@ -24,7 +25,7 @@ class TrajectorySpliceTest {
         resolution: Int = 1000
     ) {
         val duration = max(traj1.duration(), t + traj2.duration())
-        val timeData = (0..resolution).map { it / resolution.toDouble() * duration }.toDoubleArray()
+        val timeData = DoubleProgression.fromClosedInterval(0.0, duration, resolution).toList().toDoubleArray()
 
         val velData1 = timeData.map { traj1.velocity(it) }
         val xVelData1 = velData1.map { it.x }.toDoubleArray()

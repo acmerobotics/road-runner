@@ -2,6 +2,7 @@ package com.acmerobotics.roadrunner
 
 import com.acmerobotics.roadrunner.TestUtil.assertDerivEquals
 import com.acmerobotics.roadrunner.path.QuinticSpline
+import com.acmerobotics.roadrunner.util.DoubleProgression
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -18,8 +19,8 @@ class QuinticSplineTest {
         )
 
         val resolution = 1000
-        val ds = splineSegment.length() / resolution.toDouble()
-        val s = (0..resolution).map { it * ds }
+        val s = DoubleProgression.fromClosedInterval(0.0, splineSegment.length(), resolution)
+        val ds = s.step
 
         val x = s.map { splineSegment[it].x }
         val dx = s.map { splineSegment.deriv(it).x }

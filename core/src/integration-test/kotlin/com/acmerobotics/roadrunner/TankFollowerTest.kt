@@ -12,6 +12,7 @@ import com.acmerobotics.roadrunner.profile.SimpleMotionConstraints
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import com.acmerobotics.roadrunner.trajectory.constraints.TankConstraints
+import com.acmerobotics.roadrunner.util.DoubleProgression
 import org.apache.commons.math3.distribution.NormalDistribution
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -195,8 +196,7 @@ class TankFollowerTest {
             actualPositions.add(drive.poseEstimate.vec())
         }
 
-        val pathPoints = (0..10000)
-                .map { it / 10000.0 * path.length() }
+        val pathPoints = DoubleProgression.fromClosedInterval(0.0, path.length(), 10_000)
                 .map { path[it] }
         val graph = XYChart(600, 400)
         graph.title = "Tank GVF Follower Sim"
