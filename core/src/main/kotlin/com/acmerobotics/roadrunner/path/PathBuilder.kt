@@ -68,24 +68,24 @@ class PathBuilder private constructor(
     }
 
     private fun makeSpline(endPosition: Vector2d, endTangent: Double): QuinticSpline {
-        val start = if (currentPose == null) {
+        val startPose = if (currentPose == null) {
             path!![s!!]
         } else {
             currentPose!!
         }
 
-        if (start.vec() epsilonEquals endPosition) {
+        if (startPose.vec() epsilonEquals endPosition) {
             throw EmptyPathSegmentException()
         }
 
-        val derivMag = (start.vec() distTo endPosition)
+        val derivMag = (startPose.vec() distTo endPosition)
         val (startWaypoint, endWaypoint) = if (currentPose == null) {
             val startDeriv = path!!.internalDeriv(s!!).vec()
             val startSecondDeriv = path.internalSecondDeriv(s).vec()
-            QuinticSpline.Waypoint(start.vec(), startDeriv, startSecondDeriv) to
+            QuinticSpline.Waypoint(startPose.vec(), startDeriv, startSecondDeriv) to
                 QuinticSpline.Waypoint(endPosition, Vector2d.polar(derivMag, endTangent))
         } else {
-            QuinticSpline.Waypoint(start.vec(), Vector2d.polar(derivMag, start.heading)) to
+            QuinticSpline.Waypoint(startPose.vec(), Vector2d.polar(derivMag, currentTangent!!)) to
                 QuinticSpline.Waypoint(endPosition, Vector2d.polar(derivMag, endTangent))
         }
 
@@ -93,7 +93,7 @@ class PathBuilder private constructor(
     }
 
     private fun makeTangentInterpolator(curve: ParametricCurve): TangentInterpolator {
-        if (currentTangent == null) {
+        if (currentPose == null) {
             val prevInterpolator = path!!.segment(s!!).first.interpolator
             if (prevInterpolator !is TangentInterpolator) {
                 throw PathContinuityViolationException()
@@ -103,7 +103,7 @@ class PathBuilder private constructor(
 
         val startHeading = curve.tangentAngle(0.0, 0.0)
 
-        val interpolator = TangentInterpolator(currentTangent!! - startHeading)
+        val interpolator = TangentInterpolator(currentPose!!.heading - startHeading)
         interpolator.init(curve)
         return interpolator
     }
@@ -121,7 +121,7 @@ class PathBuilder private constructor(
     }
 
     private fun makeSplineInterpolator(endHeading: Double): SplineInterpolator {
-        return if (currentTangent == null) {
+        return if (currentPose == null) {
             SplineInterpolator(
                 path!![s!!].heading, endHeading,
                 path.deriv(s).heading, path.secondDeriv(s).heading, null, null)

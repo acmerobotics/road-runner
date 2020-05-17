@@ -43,7 +43,7 @@ class TrajectoryGraphPanel : JPanel() {
             return
         }
 
-        val t = DoubleProgression(0.0, trajectory.duration(), RESOLUTION).toList().toDoubleArray()
+        val t = DoubleProgression.fromClosedInterval(0.0, trajectory.duration(), RESOLUTION).toList().toDoubleArray()
         val velocity = t.map { trajectory.velocity(it) }
         val x = velocity.map { it.x }.toDoubleArray()
         val y = velocity.map { it.y }.toDoubleArray()

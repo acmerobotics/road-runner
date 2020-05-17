@@ -59,7 +59,7 @@ class PathStepPanel : JPanel() {
             }
 
             if (interpComboBox.selectedItemTyped != value.interpolationType) {
-                interpComboBox.selectedItem = value.tangent
+                interpComboBox.selectedItem = value.interpolationType
             }
             headingTextField.isVisible = value.interpolationType == TrajectoryConfig.HeadingInterpolationType.LINEAR ||
                 value.interpolationType == TrajectoryConfig.HeadingInterpolationType.SPLINE
