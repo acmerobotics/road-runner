@@ -3,8 +3,7 @@ package com.acmerobotics.roadrunner.gui
 import com.acmerobotics.roadrunner.path.EmptyPathSegmentException
 import com.acmerobotics.roadrunner.path.PathContinuityViolationException
 import com.acmerobotics.roadrunner.util.epsilonEquals
-import java.awt.BorderLayout
-import java.awt.Dimension
+import java.awt.*
 import java.io.File
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
@@ -53,26 +52,24 @@ class MainPanel : JPanel() {
     private var trajGenExecutor = Executors.newSingleThreadExecutor()
     private var trajGenFuture: Future<*>? = null
 
-    private var updating = false
-
     init {
         trajListPanel.onConfigChange = {
-            updating = true
+            val trajConfig = trajListPanel.trajectoryConfig
 
-            val (startPose, startTangent, waypoints, resolution) = trajListPanel.trajectoryConfig
-            pathEditorPanel.config = PathConfig(startPose, startTangent, waypoints)
-            trajectoryInfoPanel.resolution = resolution
+            if (trajConfig != null) {
+                val (startPose, startTangent, waypoints, resolution) = trajConfig
+                pathEditorPanel.config = PathConfig(startPose, startTangent, waypoints)
+                trajectoryInfoPanel.resolution = resolution
 
-            updateTrajectoryInBackground()
-
-            updating = false
+                updateTrajectoryInBackground()
+            }
         }
 
         pathEditorPanel.onConfigUpdate = { (startPose, startTangent, waypoints) ->
-            trajectoryConfig = trajectoryConfig.copy(startPose = startPose, startTangent = startTangent, waypoints = waypoints)
+            trajectoryConfig = trajectoryConfig?.copy(startPose = startPose, startTangent = startTangent, waypoints = waypoints)
         }
         trajectoryInfoPanel.onResolutionUpdate = {
-            trajectoryConfig = trajectoryConfig.copy(resolution = min(MIN_RESOLUTION, max(it, MAX_RESOLUTION)))
+            trajectoryConfig = trajectoryConfig?.copy(resolution = min(MIN_RESOLUTION, max(it, MAX_RESOLUTION)))
         }
         configPanel.onConfigUpdate = {
             groupConfig = it
@@ -85,7 +82,9 @@ class MainPanel : JPanel() {
 
         val upperContent = JPanel()
         upperContent.layout = BoxLayout(upperContent, BoxLayout.LINE_AXIS)
-        upperContent.add(trajListPanel)
+        upperContent.add(JPanel().apply {
+            add(trajListPanel)
+        })
 
         val trajContent = JPanel()
         trajContent.layout = BoxLayout(trajContent, BoxLayout.PAGE_AXIS)
@@ -120,6 +119,8 @@ class MainPanel : JPanel() {
     }
 
     private fun updateTrajectoryInBackground() {
+        val trajConfig = trajectoryConfig ?: return
+
         val c = groupConfig.constraints
         if (c.maxVel epsilonEquals 0.0 || c.maxAccel epsilonEquals 0.0 ||
             c.maxAngVel epsilonEquals 0.0 || c.maxAngAccel epsilonEquals 0.0) {
@@ -138,7 +139,7 @@ class MainPanel : JPanel() {
         trajGenFuture = trajGenExecutor.submit {
             status = "generating trajectory..."
 
-            if (trajectoryConfig.waypoints.isEmpty()) {
+            if (trajConfig.waypoints.isEmpty()) {
                 status = "error: empty path"
 
                 pathEditorPanel.valid = false
@@ -147,14 +148,14 @@ class MainPanel : JPanel() {
             }
 
             try {
-                val newTrajectory = trajectoryConfig.toTrajectory(groupConfig)
+                val newTrajectory = trajConfig.toTrajectory(groupConfig)
 
                 pathEditorPanel.valid = newTrajectory != null
 
                 if (newTrajectory != null) {
                     fieldPanel.apply {
-                        knots = listOf(trajectoryConfig.startPose.vec()) +
-                            trajectoryConfig.waypoints.map { it.position }
+                        waypoints = listOf(trajConfig.startPose.vec()) +
+                            trajConfig.waypoints.map { it.position }
                         robotDimensions = RobotDimensions(groupConfig.robotLength, groupConfig.robotWidth)
                         trajectory = newTrajectory
                     }

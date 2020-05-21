@@ -46,7 +46,7 @@ class FieldPanel : JPanel() {
     private var startTime: Double = 0.0
     private val clock = NanoClock.system()
 
-    var knots: List<Vector2d> = emptyList()
+    var waypoints: List<Vector2d> = emptyList()
         set(value) {
             field = value
 
@@ -81,7 +81,7 @@ class FieldPanel : JPanel() {
 
             if (value == null) {
                 synchronized(updateLock) {
-                    knots = emptyList()
+                    waypoints = emptyList()
                     path = newPath
                     area = newArea
                     field = value
@@ -196,7 +196,7 @@ class FieldPanel : JPanel() {
 
         synchronized(updateLock) {
             // draw poses
-            for (knot in knots) {
+            for (knot in waypoints) {
                 g2d.fill(fieldTransform.createTransformedShape(circle(knot, 3.0)))
             }
 

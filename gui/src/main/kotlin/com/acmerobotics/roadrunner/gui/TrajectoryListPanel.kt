@@ -5,9 +5,13 @@ import DEFAULT_TRAJECTORY_CONFIG
 import com.acmerobotics.roadrunner.trajectory.config.TrajectoryConfig
 import com.acmerobotics.roadrunner.trajectory.config.TrajectoryConfigManager
 import com.acmerobotics.roadrunner.trajectory.config.TrajectoryGroupConfig
+import java.awt.Component
 import java.awt.Dimension
 import java.io.File
+import java.lang.RuntimeException
 import javax.swing.*
+import javax.swing.event.ListDataEvent
+import javax.swing.event.ListDataListener
 
 
 data class DiskTrajectoryConfig(
@@ -15,26 +19,30 @@ data class DiskTrajectoryConfig(
     val file: File,
     val dirty: Boolean = false
 ) {
-    override fun toString() = "${file.nameWithoutExtension}${if (dirty) "*" else ""}"
+    val name = file.nameWithoutExtension
+
+    override fun toString() = "${name}${if (dirty) "*" else ""}"
 }
 
 
 class TrajectoryListPanel : JPanel() {
     var onConfigChange: (() -> Unit)? = null
 
-    private var _trajectoryConfig: TrajectoryConfig = DEFAULT_TRAJECTORY_CONFIG
+    private var _trajectoryConfig: TrajectoryConfig? = null
     var trajectoryConfig
         get() = _trajectoryConfig
         set(value) {
-            if (trajList.selectedValue == null) {
-                return
+            val i = trajList.selectedIndex
+            if ((i == -1) != (value == null)) {
+                throw RuntimeException()
             }
 
-            val i = trajList.selectedIndex
-            trajListModel.setElementAt(trajListModel[i].copy(
-                config = value,
-                dirty = true
-            ), i)
+            if (value != null) {
+                trajListModel.setElementAt(trajListModel[i].copy(
+                    config = value,
+                    dirty = true
+                ), i)
+            }
 
             _trajectoryConfig = value
         }
@@ -59,17 +67,49 @@ class TrajectoryListPanel : JPanel() {
     private var groupDir: File? = null
 
     init {
+        trajTextField.isEnabled = false
+
+        val removeButton = JButton("Remove")
+        removeButton.addActionListener {
+            delete(trajList.selectedIndex)
+        }
+        removeButton.isEnabled = false
+
+        val saveButton = JButton("Save")
+        saveButton.addActionListener {
+            val diskTraj = trajList.selectedValue ?: return@addActionListener
+            if (trajTextField.text != diskTraj.file.nameWithoutExtension) {
+                rename(trajList.selectedIndex, trajTextField.text)
+            } else {
+                save(trajList.selectedIndex)
+            }
+        }
+        saveButton.isEnabled = false
+
+        trajList.selectionMode = ListSelectionModel.SINGLE_SELECTION
+
         trajList.addListSelectionListener {
-            val (config, file) = trajList.selectedValue ?: return@addListSelectionListener
+            val selectedConfig = trajList.selectedValue
+            if (selectedConfig == null) {
+                trajTextField.text = ""
+                trajTextField.isEnabled = false
+                removeButton.isEnabled = false
+                saveButton.isEnabled = false
+            } else {
+                trajTextField.text = selectedConfig.name
+                trajTextField.isEnabled = true
+                removeButton.isEnabled = true
+                saveButton.isEnabled = true
+            }
 
-            trajTextField.text = file.nameWithoutExtension
-
-            _trajectoryConfig = config
+            _trajectoryConfig = selectedConfig?.config
 
             onConfigChange?.invoke()
         }
 
-        layout = BoxLayout(this, BoxLayout.PAGE_AXIS)
+        layout = BoxLayout(this, BoxLayout.PAGE_AXIS).apply {
+            alignmentY = Component.TOP_ALIGNMENT
+        }
 
         trajList.border = BorderFactory.createEmptyBorder(30, 30, 30, 30)
         trajList.background = background
@@ -85,20 +125,6 @@ class TrajectoryListPanel : JPanel() {
 
         val buttonPanel = JPanel()
         buttonPanel.layout = BoxLayout(buttonPanel, BoxLayout.LINE_AXIS)
-        val saveButton = JButton("Save")
-        saveButton.addActionListener {
-            val diskTraj = trajList.selectedValue ?: return@addActionListener
-            if (trajTextField.text != diskTraj.file.nameWithoutExtension) {
-                rename(trajList.selectedIndex, trajTextField.text)
-            } else {
-                save(trajList.selectedIndex)
-            }
-        }
-
-        val removeButton = JButton("Remove")
-        removeButton.addActionListener {
-            delete(trajList.selectedIndex)
-        }
 
         val addButton = JButton("Add")
         addButton.addActionListener {
@@ -139,6 +165,7 @@ class TrajectoryListPanel : JPanel() {
         } else {
             groupConfigDirty = true
         }
+
         trajListModel.clear()
         for (file in fileList) {
             trajListModel.addElement(DiskTrajectoryConfig(
@@ -146,7 +173,7 @@ class TrajectoryListPanel : JPanel() {
                 file
             ))
         }
-        trajList.selectedIndex = 0
+
         groupDir = dir
         return true
     }
@@ -155,13 +182,6 @@ class TrajectoryListPanel : JPanel() {
         val diskTrajectoryConfig = trajListModel[trajIndex]
         diskTrajectoryConfig.file.delete()
         trajListModel.remove(trajIndex)
-        if (!trajListModel.isEmpty) {
-            if (trajListModel.size() == trajIndex) {
-                trajList.selectedIndex = trajIndex - 1
-            } else {
-                trajList.selectedIndex = trajIndex
-            }
-        }
     }
 
     fun rename(trajIndex: Int, newName: String) {

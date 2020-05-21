@@ -19,8 +19,8 @@ import kotlin.math.sqrt
  * @param maxDepth maximum stack depth
  */
 class QuinticSpline(
-    start: Waypoint,
-    end: Waypoint,
+    start: Knot,
+    end: Knot,
     private val maxDeltaK: Double = 0.01,
     private val maxSegmentLength: Double = 0.25,
     private val maxDepth: Int = 30
@@ -46,7 +46,7 @@ class QuinticSpline(
      * @param d2x x second derivative
      * @param d2y y second derivative
      */
-    class Waypoint @JvmOverloads constructor(
+    class Knot @JvmOverloads constructor(
         val x: Double,
         val y: Double,
         val dx: Double = 0.0,
@@ -73,7 +73,7 @@ class QuinticSpline(
     private val tSamples = mutableListOf(0.0)
 
     init {
-        parametrize(0.0, 1.0)
+        parameterize(0.0, 1.0)
     }
 
     private fun approxLength(v1: Vector2d, v2: Vector2d, v3: Vector2d): Double {
@@ -104,7 +104,7 @@ class QuinticSpline(
         return abs(secondDeriv.x * deriv.y - deriv.x * secondDeriv.y) / (derivNorm * derivNorm * derivNorm)
     }
 
-    private fun parametrize(
+    private fun parameterize(
         tLo: Double,
         tHi: Double,
         vLo: Vector2d = internalGet(tLo),
@@ -122,8 +122,8 @@ class QuinticSpline(
         val segmentLength = approxLength(vLo, vMid, vHi)
 
         if (deltaK > maxDeltaK || segmentLength > maxSegmentLength) {
-            parametrize(tLo, tMid, vLo, vMid, depth + 1)
-            parametrize(tMid, tHi, vMid, vHi, depth + 1)
+            parameterize(tLo, tMid, vLo, vMid, depth + 1)
+            parameterize(tMid, tHi, vMid, vHi, depth + 1)
         } else {
             length += segmentLength
             sSamples.add(length)

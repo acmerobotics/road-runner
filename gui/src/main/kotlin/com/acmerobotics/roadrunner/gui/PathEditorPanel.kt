@@ -17,7 +17,7 @@ class WidthAgnosticPanel : JPanel() {
     }
 }
 
-class PathStepPanel : JPanel() {
+class WaypointPanel : JPanel() {
     private val indexLabel = JLabel("", SwingConstants.CENTER)
     private val xTextField = makeFormattedDoubleField()
     private val yTextField = makeFormattedDoubleField()
@@ -72,7 +72,7 @@ class PathStepPanel : JPanel() {
 
             updating = false
         }
-    var step
+    var waypoint
         get() = _waypoint
         set(value) {
             externalUpdate = true
@@ -132,7 +132,7 @@ class PathStepPanel : JPanel() {
 
         maximumSize = Dimension(maximumSize.width, preferredSize.height)
 
-        step = DEFAULT_STEP
+        waypoint = DEFAULT_STEP
     }
 }
 
@@ -154,7 +154,7 @@ class PathEditorPanel : JPanel() {
     private val headingTextField = makeFormattedDoubleField()
     private val tangentTextField = makeFormattedDoubleField()
     private val stepPanelContainer = WidthAgnosticPanel()
-    private val stepPanels = mutableListOf<PathStepPanel>()
+    private val stepPanels = mutableListOf<WaypointPanel>()
     private val headerContainer = JPanel()
 
     var onConfigUpdate: ((PathConfig) -> Unit)? = null
@@ -197,17 +197,17 @@ class PathEditorPanel : JPanel() {
                         }
                     })
                 }
-                if (panel.step !== step) {
-                    panel.step = step
+                if (panel.waypoint !== step) {
+                    panel.waypoint = step
                 }
             }
 
             // create additional panels if necessary
             val startSize = stepPanels.size
             for ((i, step) in value.waypoints.drop(startSize).withIndex()) {
-                val panel = PathStepPanel()
+                val panel = WaypointPanel()
                 panel.index = i + startSize
-                panel.step = step
+                panel.waypoint = step
                 panel.onStepRemove = {
                     _config = _config.copy(waypoints = _config.waypoints.filterIndexed { j, _ -> i + startSize != j })
                 }

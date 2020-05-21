@@ -438,7 +438,7 @@ object MotionProfileGenerator {
             i++
         }
 
-        // turn the final states into actual time-parametrized motion segments
+        // turn the final states into actual time-parameterized motion segments
         val motionSegments = mutableListOf<MotionSegment>()
         for ((state, stateDx) in finalStates) {
             val dt = if (state.a epsilonEquals 0.0) {
