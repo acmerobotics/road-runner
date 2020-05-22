@@ -120,7 +120,7 @@ class TrajectoryListPanel : JPanel() {
                 saveButton.isEnabled = true
             }
 
-            diskConfig = selectedConfig
+            _diskConfig = selectedConfig
         }
 
         layout = BoxLayout(this, BoxLayout.PAGE_AXIS).apply {

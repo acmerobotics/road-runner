@@ -24,6 +24,21 @@ class ConfigPanel : JPanel() {
     private val lateralMultiplierLabel = JLabel("Lateral Multiplier", SwingConstants.RIGHT)
     private val lateralMultiplierField = makeFormattedDoubleField()
 
+    private val editableComponents = listOf<JComponent>(
+        maxVelTextField, maxAccelTextField, maxAngVelTextField, maxAngAccelTextField,
+        robotLengthField, robotWidthField, driveTypeComboBox,
+        trackWidthField, wheelBaseField, lateralMultiplierField
+    )
+
+    var disabled = false
+        set(value) {
+            editableComponents.forEach {
+                it.isEnabled = !value
+            }
+
+            field = value
+        }
+
     var onConfigChange: ((TrajectoryGroupConfig) -> Unit)? = null
     private var externalUpdate = false
     private var updating = false
@@ -225,5 +240,7 @@ class ConfigPanel : JPanel() {
         add(Box.createHorizontalGlue())
 
         config = DEFAULT_GROUP_CONFIG
+
+        disabled = true
     }
 }

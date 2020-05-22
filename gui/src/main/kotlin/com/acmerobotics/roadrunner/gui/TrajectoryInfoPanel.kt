@@ -2,6 +2,7 @@ package com.acmerobotics.roadrunner.gui
 
 import DEFAULT_RESOLUTION
 import java.awt.GridLayout
+import javax.swing.JButton
 import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.SwingConstants
@@ -12,6 +13,13 @@ import javax.swing.SwingConstants
 class TrajectoryInfoPanel : JPanel() {
     private val durationLabel = JLabel()
     private val resolutionTextField = makeFormattedDoubleField()
+
+    var disabled = false
+        set(value) {
+            resolutionTextField.isEnabled = !value
+
+            field = value
+        }
 
     var duration: Double = 0.0
         set(value) {
@@ -75,5 +83,7 @@ class TrajectoryInfoPanel : JPanel() {
         maximumSize = preferredSize
 
         resolution = DEFAULT_RESOLUTION
+
+        disabled = true
     }
 }

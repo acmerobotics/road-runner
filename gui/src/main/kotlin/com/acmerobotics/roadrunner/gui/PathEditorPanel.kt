@@ -26,6 +26,20 @@ class WaypointPanel : JPanel() {
     private val tangentTextField = makeFormattedDoubleField()
     private val removeButton = JButton("Remove")
 
+    private val editableComponents = listOf<JComponent>(
+        xTextField, yTextField, headingTextField,
+        interpComboBox, tangentTextField, removeButton
+    )
+
+    var disabled = false
+        set(value) {
+            editableComponents.forEach {
+                it.isEnabled = !value
+            }
+
+            field = value
+        }
+
     var index: Int? = null
         set(value) {
             indexLabel.text = (value?.plus(2)).toString()
@@ -156,6 +170,25 @@ class PathEditorPanel : JPanel() {
     private val waypointPanelContainer = WidthAgnosticPanel()
     private val waypointPanels = mutableListOf<WaypointPanel>()
     private val headerContainer = JPanel()
+    private val addButton = JButton("Add")
+
+    private val editableComponents = listOf<JComponent>(
+        xTextField, yTextField, headingTextField,
+        tangentTextField, addButton
+    )
+
+    var disabled = false
+        set(value) {
+            editableComponents.forEach {
+                it.isEnabled = !value
+            }
+
+            waypointPanels.forEach {
+                it.disabled = value
+            }
+
+            field = value
+        }
 
     var onConfigChange: ((PathConfig) -> Unit)? = null
     private var externalUpdate = false
@@ -281,8 +314,6 @@ class PathEditorPanel : JPanel() {
         headerContainer.add(JLabel("Interp", SwingConstants.CENTER))
         headerContainer.add(JLabel("Heading", SwingConstants.CENTER))
 
-
-        val addButton = JButton("Add")
         addButton.addActionListener {
             _config = _config.copy(waypoints = _config.waypoints + listOf(_config.waypoints.lastOrNull()?.copy()
                 ?: TrajectoryConfig.Waypoint(_config.startPose.vec(), _config.startPose.heading,
@@ -316,6 +347,8 @@ class PathEditorPanel : JPanel() {
         add(scrollPane, BorderLayout.CENTER)
 
         config = DEFAULT_CONFIG
+
+        disabled = true
     }
 
     override fun getPreferredSize(): Dimension {

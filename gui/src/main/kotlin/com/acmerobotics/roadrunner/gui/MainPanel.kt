@@ -50,6 +50,14 @@ class MainPanel : JPanel() {
                         dirty = true
                     )
                 }
+
+                pathEditorPanel.disabled = false
+                configPanel.disabled = false
+                trajectoryInfoPanel.disabled = false
+            } else {
+                pathEditorPanel.disabled = true
+                configPanel.disabled = true
+                trajectoryInfoPanel.disabled = true
             }
 
             field = value
