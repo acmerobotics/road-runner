@@ -201,8 +201,8 @@ class MainPanel : JPanel() {
         }
     }
 
-    fun setProjectDir(dir: File) {
-        trajectoryListPanel.setGroupDir(dir)
+    fun setProjectDir(dir: File): Boolean {
+        return trajectoryListPanel.setGroupDir(dir)
     }
 
     fun saveAll() {

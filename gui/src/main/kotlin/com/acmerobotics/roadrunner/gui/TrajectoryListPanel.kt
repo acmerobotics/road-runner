@@ -168,10 +168,10 @@ class TrajectoryListPanel : JPanel() {
                 JOptionPane.YES_OPTION -> {
                     saveAll()
                 }
-                else -> {
-                    // TODO: are there separate cancel and no responses?
+                JOptionPane.CANCEL_OPTION -> {
                     return false
                 }
+                // do nothing for NO_OPTION
             }
         }
         val newGroupConfig = TrajectoryConfigManager.loadGroupConfig(dir)
