@@ -8,7 +8,6 @@ import com.acmerobotics.roadrunner.trajectory.config.TrajectoryGroupConfig
 import java.awt.Component
 import java.awt.Dimension
 import java.io.File
-import java.lang.RuntimeException
 import javax.swing.*
 import javax.swing.event.ListDataEvent
 import javax.swing.event.ListDataListener
@@ -26,30 +25,44 @@ data class DiskTrajectoryConfig(
 
 
 class TrajectoryListPanel : JPanel() {
-    var onConfigChange: (() -> Unit)? = null
+    var onConfigChange: ((DiskTrajectoryConfig?) -> Unit)? = null
 
-    private var _trajectoryConfig: TrajectoryConfig? = null
-    var trajectoryConfig
-        get() = _trajectoryConfig
+    private var externalUpdate = false
+    private var updating = false
+    private var _diskConfig: DiskTrajectoryConfig? = null
         set(value) {
+            if (updating) return
+
+            updating = true
+
             val i = trajList.selectedIndex
-            if ((i == -1) != (value == null)) {
-                throw RuntimeException()
-            }
 
             if (value != null) {
-                trajListModel.setElementAt(trajListModel[i].copy(
-                    config = value,
-                    dirty = true
-                ), i)
+                trajListModel.setElementAt(value, i)
             }
 
-            _trajectoryConfig = value
+            field = value
+
+            if (!externalUpdate) {
+                onConfigChange?.invoke(value)
+            }
+
+            updating = false
+        }
+
+    var diskConfig
+        get() = _diskConfig
+        set(value) {
+            externalUpdate = true
+
+            _diskConfig = value
+
+            externalUpdate = false
         }
 
     private val trajListModel = DefaultListModel<DiskTrajectoryConfig>()
     val dirty: Boolean
-        get() = trajListModel.asList().any { it.dirty }
+        get() = trajListModel.asList().any { it.dirty } || groupConfigDirty
 
     private val trajList: JList<DiskTrajectoryConfig?> = JList(trajListModel)
     private val trajTextField = JTextField()
@@ -89,6 +102,11 @@ class TrajectoryListPanel : JPanel() {
         trajList.selectionMode = ListSelectionModel.SINGLE_SELECTION
 
         trajList.addListSelectionListener {
+            // this thins out duplicate events
+            if (it.valueIsAdjusting) {
+                return@addListSelectionListener
+            }
+
             val selectedConfig = trajList.selectedValue
             if (selectedConfig == null) {
                 trajTextField.text = ""
@@ -102,9 +120,7 @@ class TrajectoryListPanel : JPanel() {
                 saveButton.isEnabled = true
             }
 
-            _trajectoryConfig = selectedConfig?.config
-
-            onConfigChange?.invoke()
+            diskConfig = selectedConfig
         }
 
         layout = BoxLayout(this, BoxLayout.PAGE_AXIS).apply {
@@ -116,10 +132,10 @@ class TrajectoryListPanel : JPanel() {
 
         trajTextField.maximumSize = Dimension(150, trajTextField.preferredSize.height)
         trajTextField.addChangeListener {
-            val diskTraj = trajList.selectedValue ?: return@addChangeListener
-            trajListModel.set(trajList.selectedIndex, diskTraj.copy(
+            val diskConfig = trajList.selectedValue ?: return@addChangeListener
+            _diskConfig = diskConfig.copy(
                 dirty = true
-            ))
+            )
         }
         add(trajTextField)
 
@@ -178,13 +194,13 @@ class TrajectoryListPanel : JPanel() {
         return true
     }
 
-    fun delete(trajIndex: Int) {
+    private fun delete(trajIndex: Int) {
         val diskTrajectoryConfig = trajListModel[trajIndex]
         diskTrajectoryConfig.file.delete()
         trajListModel.remove(trajIndex)
     }
 
-    fun rename(trajIndex: Int, newName: String) {
+    private fun rename(trajIndex: Int, newName: String) {
         val diskTraj = trajListModel[trajIndex]
         val newFile = File(diskTraj.file.parent, "$newName.yaml")
         diskTraj.file.delete()
@@ -194,7 +210,7 @@ class TrajectoryListPanel : JPanel() {
         save(trajIndex)
     }
 
-    fun save(trajIndex: Int) {
+    private fun save(trajIndex: Int) {
         val diskTrajectoryConfig = trajListModel[trajIndex]
         if (diskTrajectoryConfig.dirty) {
             TrajectoryConfigManager.saveConfig(diskTrajectoryConfig.config, diskTrajectoryConfig.file)
@@ -208,7 +224,7 @@ class TrajectoryListPanel : JPanel() {
         }
     }
 
-    fun add() {
+    private fun add() {
         val trajectories = trajListModel.asList().map { it.file.nameWithoutExtension }
         val prefix = "untitled"
         var name = prefix

@@ -24,7 +24,7 @@ class ConfigPanel : JPanel() {
     private val lateralMultiplierLabel = JLabel("Lateral Multiplier", SwingConstants.RIGHT)
     private val lateralMultiplierField = makeFormattedDoubleField()
 
-    var onConfigUpdate: ((TrajectoryGroupConfig) -> Unit)? = null
+    var onConfigChange: ((TrajectoryGroupConfig) -> Unit)? = null
     private var externalUpdate = false
     private var updating = false
     private var _config: TrajectoryGroupConfig = DEFAULT_GROUP_CONFIG
@@ -106,7 +106,7 @@ class ConfigPanel : JPanel() {
             field = value
 
             if (!externalUpdate) {
-                onConfigUpdate?.invoke(value)
+                onConfigChange?.invoke(value)
             }
 
             updating = false

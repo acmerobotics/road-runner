@@ -1,7 +1,10 @@
 package com.acmerobotics.roadrunner.gui
 
+import DEFAULT_GROUP_CONFIG
 import com.acmerobotics.roadrunner.path.EmptyPathSegmentException
 import com.acmerobotics.roadrunner.path.PathContinuityViolationException
+import com.acmerobotics.roadrunner.trajectory.config.TrajectoryConfig
+import com.acmerobotics.roadrunner.trajectory.config.TrajectoryGroupConfig
 import com.acmerobotics.roadrunner.util.epsilonEquals
 import java.awt.*
 import java.io.File
@@ -18,8 +21,7 @@ const val MAX_RESOLUTION = 0.01
  * Main GUI window panel.
  */
 class MainPanel : JPanel() {
-    var onTrajectoryUpdate: (() -> Unit)? = null
-    private val trajListPanel = TrajectoryListPanel()
+    private val trajectoryListPanel = TrajectoryListPanel()
     private val fieldPanel = FieldPanel()
     private val trajectoryGraphPanel = TrajectoryGraphPanel()
     private val trajectoryInfoPanel = TrajectoryInfoPanel()
@@ -33,45 +35,52 @@ class MainPanel : JPanel() {
             field = value
         }
 
-    private var trajectoryConfig
-        get() = trajListPanel.trajectoryConfig
+    private var trajectoryConfig: TrajectoryConfig? = null
         set(value) {
-            updateTrajectoryInBackground()
+            if (value != null) {
+                updateTrajectoryInBackground(value, groupConfig)
 
-            trajListPanel.trajectoryConfig = value
+                pathEditorPanel.config = PathConfig(value.startPose, value.startTangent, value.waypoints)
+                trajectoryInfoPanel.resolution = value.resolution
+
+                val diskConfig = trajectoryListPanel.diskConfig
+                if (diskConfig != null) {
+                    trajectoryListPanel.diskConfig = diskConfig.copy(
+                        config = value,
+                        dirty = true
+                    )
+                }
+            }
+
+            field = value
         }
 
-    private var groupConfig
-        get() = trajListPanel.groupConfig
+    private var groupConfig: TrajectoryGroupConfig = DEFAULT_GROUP_CONFIG
         set(value) {
-            updateTrajectoryInBackground()
+            val trajectoryConfig = trajectoryConfig
+            if (trajectoryConfig != null) {
+                updateTrajectoryInBackground(trajectoryConfig, value)
+            }
 
-            trajListPanel.groupConfig = value
+            trajectoryListPanel.groupConfig = value
+
+            field = value
         }
 
     private var trajGenExecutor = Executors.newSingleThreadExecutor()
     private var trajGenFuture: Future<*>? = null
 
     init {
-        trajListPanel.onConfigChange = {
-            val trajConfig = trajListPanel.trajectoryConfig
-
-            if (trajConfig != null) {
-                val (startPose, startTangent, waypoints, resolution) = trajConfig
-                pathEditorPanel.config = PathConfig(startPose, startTangent, waypoints)
-                trajectoryInfoPanel.resolution = resolution
-
-                updateTrajectoryInBackground()
-            }
+        trajectoryListPanel.onConfigChange = {
+            trajectoryConfig = it?.config
         }
-
-        pathEditorPanel.onConfigUpdate = { (startPose, startTangent, waypoints) ->
+        pathEditorPanel.onConfigChange = { (startPose, startTangent, waypoints) ->
             trajectoryConfig = trajectoryConfig?.copy(startPose = startPose, startTangent = startTangent, waypoints = waypoints)
         }
-        trajectoryInfoPanel.onResolutionUpdate = {
+        trajectoryInfoPanel.onResolutionChange = {
             trajectoryConfig = trajectoryConfig?.copy(resolution = min(MIN_RESOLUTION, max(it, MAX_RESOLUTION)))
         }
-        configPanel.onConfigUpdate = {
+        configPanel.onConfigChange = {
             groupConfig = it
         }
 
@@ -83,7 +92,7 @@ class MainPanel : JPanel() {
         val upperContent = JPanel()
         upperContent.layout = BoxLayout(upperContent, BoxLayout.LINE_AXIS)
         upperContent.add(JPanel().apply {
-            add(trajListPanel)
+            add(trajectoryListPanel)
         })
 
         val trajContent = JPanel()
@@ -118,9 +127,7 @@ class MainPanel : JPanel() {
         add(statusPanel, BorderLayout.SOUTH)
     }
 
-    private fun updateTrajectoryInBackground() {
-        val trajConfig = trajectoryConfig ?: return
-
+    private fun updateTrajectoryInBackground(trajectoryConfig: TrajectoryConfig, groupConfig: TrajectoryGroupConfig) {
         val c = groupConfig.constraints
         if (c.maxVel epsilonEquals 0.0 || c.maxAccel epsilonEquals 0.0 ||
             c.maxAngVel epsilonEquals 0.0 || c.maxAngAccel epsilonEquals 0.0) {
@@ -139,7 +146,7 @@ class MainPanel : JPanel() {
         trajGenFuture = trajGenExecutor.submit {
             status = "generating trajectory..."
 
-            if (trajConfig.waypoints.isEmpty()) {
+            if (trajectoryConfig.waypoints.isEmpty()) {
                 status = "error: empty path"
 
                 pathEditorPanel.valid = false
@@ -148,21 +155,19 @@ class MainPanel : JPanel() {
             }
 
             try {
-                val newTrajectory = trajConfig.toTrajectory(groupConfig)
+                val newTrajectory = trajectoryConfig.toTrajectory(groupConfig)
 
                 pathEditorPanel.valid = newTrajectory != null
 
                 if (newTrajectory != null) {
                     fieldPanel.apply {
-                        waypoints = listOf(trajConfig.startPose.vec()) +
-                            trajConfig.waypoints.map { it.position }
+                        waypoints = listOf(trajectoryConfig.startPose.vec()) +
+                            trajectoryConfig.waypoints.map { it.position }
                         robotDimensions = RobotDimensions(groupConfig.robotLength, groupConfig.robotWidth)
                         trajectory = newTrajectory
                     }
                     trajectoryInfoPanel.duration = newTrajectory.duration()
                     trajectoryGraphPanel.updateTrajectory(newTrajectory)
-
-                    onTrajectoryUpdate?.invoke()
                 }
 
                 status = "done"
@@ -189,15 +194,15 @@ class MainPanel : JPanel() {
     }
 
     fun setProjectDir(dir: File) {
-        trajListPanel.setGroupDir(dir)
+        trajectoryListPanel.setGroupDir(dir)
     }
 
     fun saveAll() {
-        trajListPanel.saveAll()
+        trajectoryListPanel.saveAll()
     }
 
     fun close(): Boolean {
-        return if (trajListPanel.dirty) {
+        return if (trajectoryListPanel.dirty) {
             val result = JOptionPane.showConfirmDialog(this, "Save unsaved changes?")
             when (result) {
                 JOptionPane.YES_OPTION -> {

@@ -1,6 +1,6 @@
 package com.acmerobotics.roadrunner.gui
 
-import DEFAULT_STEP
+import DEFAULT_WAYPOINT
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.trajectory.config.TrajectoryConfig
 import java.awt.BorderLayout
@@ -32,12 +32,12 @@ class WaypointPanel : JPanel() {
             field = value
         }
 
-    var onStepRemove: (() -> Unit)? = null
+    var onWaypointRemove: (() -> Unit)? = null
 
-    var onStepUpdate: ((TrajectoryConfig.Waypoint) -> Unit)? = null
+    var onWaypointChange: ((TrajectoryConfig.Waypoint) -> Unit)? = null
     private var externalUpdate = false
     private var updating = false
-    private var _waypoint: TrajectoryConfig.Waypoint = DEFAULT_STEP
+    private var _waypoint: TrajectoryConfig.Waypoint = DEFAULT_WAYPOINT
         set(value) {
             if (updating) {
                 return
@@ -67,7 +67,7 @@ class WaypointPanel : JPanel() {
             field = value
 
             if (!externalUpdate) {
-                onStepUpdate?.invoke(value)
+                onWaypointChange?.invoke(value)
             }
 
             updating = false
@@ -118,7 +118,7 @@ class WaypointPanel : JPanel() {
         }
 
         removeButton.addActionListener {
-            onStepRemove?.invoke()
+            onWaypointRemove?.invoke()
         }
 
         layout = GridLayout(1, 7, 5, 0)
@@ -132,7 +132,7 @@ class WaypointPanel : JPanel() {
 
         maximumSize = Dimension(maximumSize.width, preferredSize.height)
 
-        waypoint = DEFAULT_STEP
+        waypoint = DEFAULT_WAYPOINT
     }
 }
 
@@ -153,11 +153,11 @@ class PathEditorPanel : JPanel() {
     private val yTextField = makeFormattedDoubleField()
     private val headingTextField = makeFormattedDoubleField()
     private val tangentTextField = makeFormattedDoubleField()
-    private val stepPanelContainer = WidthAgnosticPanel()
-    private val stepPanels = mutableListOf<WaypointPanel>()
+    private val waypointPanelContainer = WidthAgnosticPanel()
+    private val waypointPanels = mutableListOf<WaypointPanel>()
     private val headerContainer = JPanel()
 
-    var onConfigUpdate: ((PathConfig) -> Unit)? = null
+    var onConfigChange: ((PathConfig) -> Unit)? = null
     private var externalUpdate = false
     private var updating = false
     private var _config: PathConfig = DEFAULT_CONFIG
@@ -181,58 +181,58 @@ class PathEditorPanel : JPanel() {
                 tangentTextField.value = value.startTangent.toDegrees()
             }
 
-            // update existing step panels
-            for ((i, pair) in value.waypoints.zip(stepPanels).withIndex()) {
-                val (step, panel) = pair
+            // update existing waypoint panels
+            for ((i, pair) in value.waypoints.zip(waypointPanels).withIndex()) {
+                val (waypoint, panel) = pair
                 panel.isVisible = true
-                panel.onStepRemove = {
+                panel.onWaypointRemove = {
                     _config = _config.copy(waypoints = _config.waypoints.filterIndexed { j, _ -> i != j })
                 }
-                panel.onStepUpdate = { newStep ->
-                    _config = _config.copy(waypoints = _config.waypoints.mapIndexed { j, step ->
+                panel.onWaypointChange = { newWaypoint ->
+                    _config = _config.copy(waypoints = _config.waypoints.mapIndexed { j, waypoint ->
                         if (i == j) {
-                            newStep
+                            newWaypoint
                         } else {
-                            step
+                            waypoint
                         }
                     })
                 }
-                if (panel.waypoint !== step) {
-                    panel.waypoint = step
+                if (panel.waypoint !== waypoint) {
+                    panel.waypoint = waypoint
                 }
             }
 
             // create additional panels if necessary
-            val startSize = stepPanels.size
-            for ((i, step) in value.waypoints.drop(startSize).withIndex()) {
+            val startSize = waypointPanels.size
+            for ((i, waypoint) in value.waypoints.drop(startSize).withIndex()) {
                 val panel = WaypointPanel()
                 panel.index = i + startSize
-                panel.waypoint = step
-                panel.onStepRemove = {
+                panel.waypoint = waypoint
+                panel.onWaypointRemove = {
                     _config = _config.copy(waypoints = _config.waypoints.filterIndexed { j, _ -> i + startSize != j })
                 }
-                panel.onStepUpdate = { newStep ->
-                    _config = _config.copy(waypoints = _config.waypoints.mapIndexed { j, step ->
+                panel.onWaypointChange = { newWaypoint ->
+                    _config = _config.copy(waypoints = _config.waypoints.mapIndexed { j, waypoint ->
                         if (i + startSize == j) {
-                            newStep
+                            newWaypoint
                         } else {
-                            step
+                            waypoint
                         }
                     })
                 }
-                stepPanelContainer.add(panel)
-                stepPanels.add(panel)
+                waypointPanelContainer.add(panel)
+                waypointPanels.add(panel)
             }
 
             // hide the rest
-            for (stepPanel in stepPanels.drop(value.waypoints.size)) {
-                stepPanel.isVisible = false
+            for (waypointPanel in waypointPanels.drop(value.waypoints.size)) {
+                waypointPanel.isVisible = false
             }
 
             field = value
 
             if (!externalUpdate) {
-                onConfigUpdate?.invoke(value)
+                onConfigChange?.invoke(value)
             }
 
             updating = false
@@ -294,10 +294,10 @@ class PathEditorPanel : JPanel() {
         headerContainer.border = BorderFactory.createEmptyBorder(0, 0, 0, 15)
         add(headerContainer, BorderLayout.NORTH)
 
-        val scrollPane = JScrollPane(stepPanelContainer, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER)
+        val scrollPane = JScrollPane(waypointPanelContainer, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER)
         scrollPane.border = BorderFactory.createEmptyBorder()
 
-        stepPanelContainer.layout = BoxLayout(stepPanelContainer, BoxLayout.PAGE_AXIS)
+        waypointPanelContainer.layout = BoxLayout(waypointPanelContainer, BoxLayout.PAGE_AXIS)
 
         val firstRow = JPanel()
         firstRow.layout = GridLayout(1, 7, 5, 0)
@@ -311,7 +311,7 @@ class PathEditorPanel : JPanel() {
 
         firstRow.maximumSize = Dimension(firstRow.maximumSize.width, firstRow.preferredSize.height)
 
-        stepPanelContainer.add(firstRow)
+        waypointPanelContainer.add(firstRow)
 
         add(scrollPane, BorderLayout.CENTER)
 

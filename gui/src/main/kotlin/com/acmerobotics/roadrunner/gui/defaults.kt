@@ -25,7 +25,7 @@ val DEFAULT_GROUP_CONFIG = TrajectoryGroupConfig(
     null
 )
 
-val DEFAULT_STEP = TrajectoryConfig.Waypoint(
+val DEFAULT_WAYPOINT = TrajectoryConfig.Waypoint(
     Vector2d(),
     0.0,
     0.0,
