@@ -17,7 +17,7 @@ Check out the [online documentation](https://acme-robotics.gitbook.io/road-runne
 
 1. Open your Android Studio project.
 
-1. Open `TeamCode/build.release.gradle` and add `implementation 'com.acmerobotics.roadrunner:core:0.5.0'` to the end of the `dependencies` block.
+1. Open `TeamCode/build.release.gradle` and add `implementation 'com.acmerobotics.roadrunner:core:0.5.1'` to the end of the `dependencies` block.
 
 1. Sync the project \(Android Studio should prompt you to do this\).
 
