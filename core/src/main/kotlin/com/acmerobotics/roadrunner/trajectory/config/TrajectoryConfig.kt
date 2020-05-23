@@ -64,8 +64,8 @@ data class TrajectoryConfig(
                 waypoints[i - 1].position
             }
             val interWaypointAngle = (position - prevPosition).angle()
-            val line = Angle.normDelta(prevTangent - tangent) epsilonEquals 0.0
-                && Angle.normDelta(tangent - interWaypointAngle) epsilonEquals 0.0
+            val line = Angle.normDelta(prevTangent - tangent) epsilonEquals 0.0 &&
+                Angle.normDelta(tangent - interWaypointAngle) epsilonEquals 0.0
 
             when (interpolationType) {
                 HeadingInterpolationType.TANGENT -> if (line) {

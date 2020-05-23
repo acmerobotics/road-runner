@@ -33,7 +33,8 @@ object GraphUtil {
         includeAcceleration: Boolean = true,
         resolution: Int = 1000
     ) {
-        val timeData = DoubleProgression.fromClosedInterval(0.0, profile.duration(), resolution).toList().toDoubleArray()
+        val timeData = DoubleProgression.fromClosedInterval(
+            0.0, profile.duration(), resolution).toList().toDoubleArray()
         val positionData = timeData.map { profile[it].x }.toDoubleArray()
         val velocityData = timeData.map { profile[it].v }.toDoubleArray()
 
@@ -61,7 +62,8 @@ object GraphUtil {
     }
 
     fun saveParametricCurve(name: String, parametricCurve: ParametricCurve, resolution: Int = 1000) {
-        val displacementData = DoubleProgression.fromClosedInterval (0.0, parametricCurve.length(), resolution)
+        val displacementData = DoubleProgression.fromClosedInterval(
+            0.0, parametricCurve.length(), resolution)
         val points = displacementData.map { parametricCurve[it] }
         val xData = points.map { it.x }.toDoubleArray()
         val yData = points.map { it.y }.toDoubleArray()
@@ -73,7 +75,8 @@ object GraphUtil {
     }
 
     fun savePath(name: String, path: Path, resolution: Int = 1000) {
-        val displacementData = DoubleProgression.fromClosedInterval(0.0, path.length(), resolution).toList().toDoubleArray()
+        val displacementData = DoubleProgression.fromClosedInterval(
+            0.0, path.length(), resolution).toList().toDoubleArray()
         val posData = displacementData.map { path[it] }
         val xData = posData.map { it.x }.toDoubleArray()
         val yData = posData.map { it.y }.toDoubleArray()
@@ -92,7 +95,8 @@ object GraphUtil {
     }
 
     fun savePathPositions(name: String, path: Path, resolution: Int = 1000) {
-        val displacementData = DoubleProgression.fromClosedInterval(0.0, path.length(), resolution).toList().toDoubleArray()
+        val displacementData = DoubleProgression.fromClosedInterval(
+            0.0, path.length(), resolution).toList().toDoubleArray()
         val posData = displacementData.map { path[it] }
         val xData = posData.map { it.x }.toDoubleArray()
         val yData = posData.map { it.y }.toDoubleArray()
@@ -115,7 +119,8 @@ object GraphUtil {
     }
 
     fun savePathDerivatives(name: String, path: Path, resolution: Int = 1000) {
-        val displacementData = DoubleProgression.fromClosedInterval(0.0, path.length(), resolution).toList().toDoubleArray()
+        val displacementData = DoubleProgression.fromClosedInterval(
+            0.0, path.length(), resolution).toList().toDoubleArray()
         val derivData = displacementData.map { path.deriv(it) }
         val xDerivData = derivData.map { it.x }.toDoubleArray()
         val yDerivData = derivData.map { it.y }.toDoubleArray()
@@ -138,7 +143,8 @@ object GraphUtil {
     }
 
     fun saveTrajectory(name: String, trajectory: Trajectory, resolution: Int = 1000) {
-        val timeData = DoubleProgression.fromClosedInterval(0.0, trajectory.duration(), resolution).toList().toDoubleArray()
+        val timeData = DoubleProgression.fromClosedInterval(
+            0.0, trajectory.duration(), resolution).toList().toDoubleArray()
         val velocityData = timeData.map { trajectory.velocity(it) }
         val xVelocityData = velocityData.map { it.x }.toDoubleArray()
         val yVelocityData = velocityData.map { it.y }.toDoubleArray()

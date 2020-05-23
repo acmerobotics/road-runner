@@ -232,7 +232,11 @@ class TrajectoryBuilder private constructor(
      * @param endTangent end tangent
      * @param constraintsOverride segment-specific constraints
      */
-    fun splineTo(endPosition: Vector2d, endTangent: Double, constraintsOverride: TrajectoryConstraints): TrajectoryBuilder {
+    fun splineTo(
+        endPosition: Vector2d,
+        endTangent: Double,
+        constraintsOverride: TrajectoryConstraints
+    ): TrajectoryBuilder {
         val start = 0.0
 
         splineTo(endPosition, endTangent)
@@ -251,7 +255,11 @@ class TrajectoryBuilder private constructor(
      * @param endTangent end tangent
      * @param constraintsOverride segment-specific constraints
      */
-    fun splineToConstantHeading(endPosition: Vector2d, endTangent: Double, constraintsOverride: TrajectoryConstraints): TrajectoryBuilder {
+    fun splineToConstantHeading(
+        endPosition: Vector2d,
+        endTangent: Double,
+        constraintsOverride: TrajectoryConstraints
+    ): TrajectoryBuilder {
         val start = 0.0
 
         splineToConstantHeading(endPosition, endTangent)

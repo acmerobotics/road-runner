@@ -9,9 +9,6 @@ import java.awt.Component
 import java.awt.Dimension
 import java.io.File
 import javax.swing.*
-import javax.swing.event.ListDataEvent
-import javax.swing.event.ListDataListener
-
 
 data class DiskTrajectoryConfig(
     val config: TrajectoryConfig,
@@ -22,7 +19,6 @@ data class DiskTrajectoryConfig(
 
     override fun toString() = "${name}${if (dirty) "*" else ""}"
 }
-
 
 class TrajectoryListPanel : JPanel() {
     var onConfigChange: ((DiskTrajectoryConfig?) -> Unit)? = null
