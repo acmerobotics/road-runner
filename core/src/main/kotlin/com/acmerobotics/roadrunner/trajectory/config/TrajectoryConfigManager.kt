@@ -14,7 +14,7 @@ import java.io.InputStream
  * Class containing methods for saving (loading) trajectory configurations to (from) YAML files.
  */
 object TrajectoryConfigManager {
-    @JvmStatic
+    @JvmField
     val GROUP_FILENAME = "_group.yaml"
 
     private val MAPPER = ObjectMapper(YAMLFactory())
@@ -66,7 +66,14 @@ object TrajectoryConfigManager {
     }
 
     /**
-     * Loads a [Trajectory] from [file].
+     * Loads the [TrajectoryGroupConfig] from [inputStream].
+     */
+    @JvmStatic
+    fun loadGroupConfig(inputStream: InputStream) =
+        MAPPER.readValue(inputStream, TrajectoryGroupConfig::class.java)
+
+    /**
+     * Loads a [TrajectoryBuilder] from [file].
      */
     @JvmStatic
     fun loadBuilder(file: File): TrajectoryBuilder? {
@@ -75,7 +82,7 @@ object TrajectoryConfigManager {
     }
 
     /**
-     * Convenience wrapper around [loadBuilder].
+     * Loads a [Trajectory] from [file].
      */
     @JvmStatic
     fun load(file: File) = loadBuilder(file)?.build()
