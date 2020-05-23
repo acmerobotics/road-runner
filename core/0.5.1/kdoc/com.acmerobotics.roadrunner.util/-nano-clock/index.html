@@ -1,0 +1,55 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>NanoClock - core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">core</a>&nbsp;/&nbsp;<a href="../index.html">com.acmerobotics.roadrunner.util</a>&nbsp;/&nbsp;<a href="./index.html">NanoClock</a><br/>
+<br/>
+<h1>NanoClock</h1>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">NanoClock</span></code> <a href="https://github.com/acmerobotics/road-runner/blob/master/core/src/main/kotlin/com/acmerobotics/roadrunner/util/NanoClock.kt#L7">(source)</a>
+<p>Clock interface with nanosecond precision and no guarantee about its origin (that is, this is only suited for
+measuring relative/elapsed time).</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="-init-.html">&lt;init&gt;</a></h4>
+</td>
+<td>
+<p>Clock interface with nanosecond precision and no guarantee about its origin (that is, this is only suited for
+measuring relative/elapsed time).</p>
+<code><span class="identifier">NanoClock</span><span class="symbol">(</span><span class="symbol">)</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="seconds.html">seconds</a></h4>
+</td>
+<td>
+<p>Returns the number of seconds since an arbitrary (yet consistent) origin.</p>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">seconds</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Companion Object Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="system.html">system</a></h4>
+</td>
+<td>
+<p>Returns a <a href="./index.html">NanoClock</a> backed by <a href="https://docs.oracle.com/javase/6/docs/api/java/lang/System.html#nanoTime()">System.nanoTime</a>.</p>
+<code><span class="keyword">fun </span><span class="identifier">system</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">NanoClock</span></a></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

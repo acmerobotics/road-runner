@@ -1,0 +1,77 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>TankPIDVAFollower - core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">core</a>&nbsp;/&nbsp;<a href="../index.html">com.acmerobotics.roadrunner.followers</a>&nbsp;/&nbsp;<a href="./index.html">TankPIDVAFollower</a><br/>
+<br/>
+<h1>TankPIDVAFollower</h1>
+<code><span class="keyword">class </span><span class="identifier">TankPIDVAFollower</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-trajectory-follower/index.html"><span class="identifier">TrajectoryFollower</span></a></code> <a href="https://github.com/acmerobotics/road-runner/blob/master/core/src/main/kotlin/com/acmerobotics/roadrunner/followers/TankPIDVAFollower.kt#L23">(source)</a>
+<p>Traditional PID controller with feedforward velocity and acceleration components to follow a trajectory. More
+specifically, one feedback loop controls the path displacement (that is, x in the robot reference frame), and
+another feedback loop to minimize cross track (lateral) error via heading correction (overall, very similar to
+<a href="../-holonomic-p-i-d-v-a-follower/index.html">HolonomicPIDVAFollower</a> except adjusted for the nonholonomic constraint). Feedforward is applied at the wheel level.</p>
+<h3>Parameters</h3>
+<p><a name="axialCoeffs"></a>
+<code>axialCoeffs</code> - PID coefficients for the robot axial (robot X) controller</p>
+<p><a name="crossTrackCoeffs"></a>
+<code>crossTrackCoeffs</code> - PID coefficients for the robot heading controller based on cross track error</p>
+<p><a name="admissibleError"></a>
+<code>admissibleError</code> - admissible/satisfactory pose error at the end of each move</p>
+<p><a name="timeout"></a>
+<code>timeout</code> - max time to wait for the error to be admissible</p>
+<p><a name="clock"></a>
+<code>clock</code> - clock</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="-init-.html">&lt;init&gt;</a></h4>
+</td>
+<td>
+<p>Traditional PID controller with feedforward velocity and acceleration components to follow a trajectory. More
+specifically, one feedback loop controls the path displacement (that is, x in the robot reference frame), and
+another feedback loop to minimize cross track (lateral) error via heading correction (overall, very similar to
+<a href="../-holonomic-p-i-d-v-a-follower/index.html">HolonomicPIDVAFollower</a> except adjusted for the nonholonomic constraint). Feedforward is applied at the wheel level.</p>
+<code><span class="identifier">TankPIDVAFollower</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.followers.TankPIDVAFollower$<init>(com.acmerobotics.roadrunner.control.PIDCoefficients, com.acmerobotics.roadrunner.control.PIDCoefficients, com.acmerobotics.roadrunner.geometry.Pose2d, kotlin.Double, com.acmerobotics.roadrunner.util.NanoClock)/axialCoeffs">axialCoeffs</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.control/-p-i-d-coefficients/index.html"><span class="identifier">PIDCoefficients</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.followers.TankPIDVAFollower$<init>(com.acmerobotics.roadrunner.control.PIDCoefficients, com.acmerobotics.roadrunner.control.PIDCoefficients, com.acmerobotics.roadrunner.geometry.Pose2d, kotlin.Double, com.acmerobotics.roadrunner.util.NanoClock)/crossTrackCoeffs">crossTrackCoeffs</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.control/-p-i-d-coefficients/index.html"><span class="identifier">PIDCoefficients</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.followers.TankPIDVAFollower$<init>(com.acmerobotics.roadrunner.control.PIDCoefficients, com.acmerobotics.roadrunner.control.PIDCoefficients, com.acmerobotics.roadrunner.geometry.Pose2d, kotlin.Double, com.acmerobotics.roadrunner.util.NanoClock)/admissibleError">admissibleError</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a>&nbsp;<span class="symbol">=</span>&nbsp;Pose2d()<span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.followers.TankPIDVAFollower$<init>(com.acmerobotics.roadrunner.control.PIDCoefficients, com.acmerobotics.roadrunner.control.PIDCoefficients, com.acmerobotics.roadrunner.geometry.Pose2d, kotlin.Double, com.acmerobotics.roadrunner.util.NanoClock)/timeout">timeout</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a>&nbsp;<span class="symbol">=</span>&nbsp;0.0<span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.followers.TankPIDVAFollower$<init>(com.acmerobotics.roadrunner.control.PIDCoefficients, com.acmerobotics.roadrunner.control.PIDCoefficients, com.acmerobotics.roadrunner.geometry.Pose2d, kotlin.Double, com.acmerobotics.roadrunner.util.NanoClock)/clock">clock</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.util/-nano-clock/index.html"><span class="identifier">NanoClock</span></a>&nbsp;<span class="symbol">=</span>&nbsp;NanoClock.system()<span class="symbol">)</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="last-error.html">lastError</a></h4>
+</td>
+<td>
+<p>Robot pose error computed in the last <a href="../-trajectory-follower/update.html">update</a> call.</p>
+<code><span class="keyword">var </span><span class="identifier">lastError</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="follow-trajectory.html">followTrajectory</a></h4>
+</td>
+<td>
+<p>Follow the given <a href="../-trajectory-follower/follow-trajectory.html#com.acmerobotics.roadrunner.followers.TrajectoryFollower$followTrajectory(com.acmerobotics.roadrunner.trajectory.Trajectory)/trajectory">trajectory</a>.</p>
+<code><span class="keyword">fun </span><span class="identifier">followTrajectory</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.followers.TankPIDVAFollower$followTrajectory(com.acmerobotics.roadrunner.trajectory.Trajectory)/trajectory">trajectory</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.trajectory/-trajectory/index.html"><span class="identifier">Trajectory</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="internal-update.html">internalUpdate</a></h4>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">internalUpdate</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.followers.TankPIDVAFollower$internalUpdate(com.acmerobotics.roadrunner.geometry.Pose2d, com.acmerobotics.roadrunner.geometry.Pose2d)/currentPose">currentPose</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.followers.TankPIDVAFollower$internalUpdate(com.acmerobotics.roadrunner.geometry.Pose2d, com.acmerobotics.roadrunner.geometry.Pose2d)/currentRobotVel">currentRobotVel</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.drive/-drive-signal/index.html"><span class="identifier">DriveSignal</span></a></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

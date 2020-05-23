@@ -1,0 +1,96 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>QuinticSpline - core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">core</a>&nbsp;/&nbsp;<a href="../index.html">com.acmerobotics.roadrunner.path</a>&nbsp;/&nbsp;<a href="./index.html">QuinticSpline</a><br/>
+<br/>
+<h1>QuinticSpline</h1>
+<code><span class="keyword">class </span><span class="identifier">QuinticSpline</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-parametric-curve/index.html"><span class="identifier">ParametricCurve</span></a></code> <a href="https://github.com/acmerobotics/road-runner/blob/master/core/src/main/kotlin/com/acmerobotics/roadrunner/path/QuinticSpline.kt#L21">(source)</a>
+<p>Combination of two quintic polynomials into a 2D quintic spline. See
+<a href="https://github.com/acmerobotics/road-runner/blob/master/doc/pdf/Quintic_Splines_for_FTC.pdf">this short paper</a> for
+some motivation and implementation details.</p>
+<h3>Parameters</h3>
+<p><a name="start"></a>
+<code>start</code> - start waypoint</p>
+<p><a name="end"></a>
+<code>end</code> - end waypoint</p>
+<p><a name="maxDeltaK"></a>
+<code>maxDeltaK</code> - maximum change in curvature between arc length param segments</p>
+<p><a name="maxSegmentLength"></a>
+<code>maxSegmentLength</code> - maximum length of a single param segment</p>
+<p><a name="maxDepth"></a>
+<code>maxDepth</code> - maximum stack depth</p>
+<h3>Types</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="-knot/index.html">Knot</a></h4>
+</td>
+<td>
+<p>Class for representing the end points of interpolated quintic splines.</p>
+<code><span class="keyword">class </span><span class="identifier">Knot</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="-init-.html">&lt;init&gt;</a></h4>
+</td>
+<td>
+<p>Combination of two quintic polynomials into a 2D quintic spline. See
+<a href="https://github.com/acmerobotics/road-runner/blob/master/doc/pdf/Quintic_Splines_for_FTC.pdf">this short paper</a> for
+some motivation and implementation details.</p>
+<code><span class="identifier">QuinticSpline</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.path.QuinticSpline$<init>(com.acmerobotics.roadrunner.path.QuinticSpline.Knot, com.acmerobotics.roadrunner.path.QuinticSpline.Knot, kotlin.Double, kotlin.Double, kotlin.Int)/start">start</span><span class="symbol">:</span>&nbsp;<span class="identifier">Knot</span><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.path.QuinticSpline$<init>(com.acmerobotics.roadrunner.path.QuinticSpline.Knot, com.acmerobotics.roadrunner.path.QuinticSpline.Knot, kotlin.Double, kotlin.Double, kotlin.Int)/end">end</span><span class="symbol">:</span>&nbsp;<span class="identifier">Knot</span><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.path.QuinticSpline$<init>(com.acmerobotics.roadrunner.path.QuinticSpline.Knot, com.acmerobotics.roadrunner.path.QuinticSpline.Knot, kotlin.Double, kotlin.Double, kotlin.Int)/maxDeltaK">maxDeltaK</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a>&nbsp;<span class="symbol">=</span>&nbsp;0.01<span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.path.QuinticSpline$<init>(com.acmerobotics.roadrunner.path.QuinticSpline.Knot, com.acmerobotics.roadrunner.path.QuinticSpline.Knot, kotlin.Double, kotlin.Double, kotlin.Int)/maxSegmentLength">maxSegmentLength</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a>&nbsp;<span class="symbol">=</span>&nbsp;0.25<span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.path.QuinticSpline$<init>(com.acmerobotics.roadrunner.path.QuinticSpline.Knot, com.acmerobotics.roadrunner.path.QuinticSpline.Knot, kotlin.Double, kotlin.Double, kotlin.Int)/maxDepth">maxDepth</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a>&nbsp;<span class="symbol">=</span>&nbsp;30<span class="symbol">)</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="x.html">x</a></h4>
+</td>
+<td>
+<p>X polynomial (i.e., x(t))</p>
+<code><span class="keyword">val </span><span class="identifier">x</span><span class="symbol">: </span><a href="../-quintic-polynomial/index.html"><span class="identifier">QuinticPolynomial</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="y.html">y</a></h4>
+</td>
+<td>
+<p>Y polynomial (i.e., y(t))</p>
+<code><span class="keyword">val </span><span class="identifier">y</span><span class="symbol">: </span><a href="../-quintic-polynomial/index.html"><span class="identifier">QuinticPolynomial</span></a></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="length.html">length</a></h4>
+</td>
+<td>
+<p>Returns the length of the curve.</p>
+<code><span class="keyword">fun </span><span class="identifier">length</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="to-string.html">toString</a></h4>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">toString</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

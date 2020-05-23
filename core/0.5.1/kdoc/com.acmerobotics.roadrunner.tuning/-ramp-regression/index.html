@@ -1,0 +1,81 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>RampRegression - core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">core</a>&nbsp;/&nbsp;<a href="../index.html">com.acmerobotics.roadrunner.tuning</a>&nbsp;/&nbsp;<a href="./index.html">RampRegression</a><br/>
+<br/>
+<h1>RampRegression</h1>
+<code><span class="keyword">class </span><span class="identifier">RampRegression</span></code> <a href="https://github.com/acmerobotics/road-runner/blob/master/core/src/main/kotlin/com/acmerobotics/roadrunner/tuning/RampRegression.kt#L20">(source)</a>
+<p>Container for ramp feedforward regression data.</p>
+<p>Here's the general procedure for gathering the requisite data:</p>
+<ol><li>Slowly ramp the motor power/voltage and record encoder values along the way.</li>
+<li>Run a linear regression on the encoder velocity vs. motor power plot to obtain a slope (kV)
+    and an optional intercept (kStatic).</li>
+</ol>
+<h3>Parameters</h3>
+<p><a name="timeSamples"></a>
+<code>timeSamples</code> - time samples</p>
+<p><a name="positionSamples"></a>
+<code>positionSamples</code> - position samples</p>
+<p><a name="powerSamples"></a>
+<code>powerSamples</code> - power (scaled voltage) samples</p>
+<h3>Types</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="-ramp-result/index.html">RampResult</a></h4>
+</td>
+<td>
+<p>Feedforward parameter estimates from the ramp regression and additional summary statistics</p>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">RampResult</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="-init-.html">&lt;init&gt;</a></h4>
+</td>
+<td>
+<p>Container for ramp feedforward regression data.</p>
+<code><span class="identifier">RampRegression</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.tuning.RampRegression$<init>(kotlin.collections.MutableList((kotlin.Double)), kotlin.collections.MutableList((kotlin.Double)), kotlin.collections.MutableList((kotlin.Double)))/timeSamples">timeSamples</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list/index.html"><span class="identifier">MutableList</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;mutableListOf()<span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.tuning.RampRegression$<init>(kotlin.collections.MutableList((kotlin.Double)), kotlin.collections.MutableList((kotlin.Double)), kotlin.collections.MutableList((kotlin.Double)))/positionSamples">positionSamples</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list/index.html"><span class="identifier">MutableList</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;mutableListOf()<span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.tuning.RampRegression$<init>(kotlin.collections.MutableList((kotlin.Double)), kotlin.collections.MutableList((kotlin.Double)), kotlin.collections.MutableList((kotlin.Double)))/powerSamples">powerSamples</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list/index.html"><span class="identifier">MutableList</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;mutableListOf()<span class="symbol">)</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="add.html">add</a></h4>
+</td>
+<td>
+<p>Add a sample to the regression.</p>
+<code><span class="keyword">fun </span><span class="identifier">add</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.tuning.RampRegression$add(kotlin.Double, kotlin.Double, kotlin.Double)/time">time</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.tuning.RampRegression$add(kotlin.Double, kotlin.Double, kotlin.Double)/position">position</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.tuning.RampRegression$add(kotlin.Double, kotlin.Double, kotlin.Double)/power">power</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="fit.html">fit</a></h4>
+</td>
+<td>
+<p>Fit data from a "ramp" test.</p>
+<code><span class="keyword">fun </span><span class="identifier">fit</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.tuning.RampRegression$fit(kotlin.Boolean)/fitStatic">fitStatic</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a>&nbsp;<span class="symbol">=</span>&nbsp;false<span class="symbol">)</span><span class="symbol">: </span><span class="identifier">RampResult</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="save.html">save</a></h4>
+</td>
+<td>
+<p>Save the data to a CSV file for debugging or additional analysis.</p>
+<code><span class="keyword">fun </span><span class="identifier">save</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.tuning.RampRegression$save(java.io.File)/file">file</span><span class="symbol">:</span>&nbsp;<a href="https://docs.oracle.com/javase/6/docs/api/java/io/File.html"><span class="identifier">File</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

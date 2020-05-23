@@ -1,0 +1,164 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>PathSegment - core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">core</a>&nbsp;/&nbsp;<a href="../index.html">com.acmerobotics.roadrunner.path</a>&nbsp;/&nbsp;<a href="./index.html">PathSegment</a><br/>
+<br/>
+<h1>PathSegment</h1>
+<code><span class="keyword">class </span><span class="identifier">PathSegment</span></code> <a href="https://github.com/acmerobotics/road-runner/blob/master/core/src/main/kotlin/com/acmerobotics/roadrunner/path/PathSegment.kt#L14">(source)</a>
+<p>Path segment composed of a parametric curve and heading interpolator.</p>
+<h3>Parameters</h3>
+<p><a name="curve"></a>
+<code>curve</code> - parametric curve</p>
+<p><a name="interpolator"></a>
+<code>interpolator</code> - heading interpolator</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="-init-.html">&lt;init&gt;</a></h4>
+</td>
+<td>
+<p>Path segment composed of a parametric curve and heading interpolator.</p>
+<code><span class="identifier">PathSegment</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.path.PathSegment$<init>(com.acmerobotics.roadrunner.path.ParametricCurve, com.acmerobotics.roadrunner.path.heading.HeadingInterpolator)/curve">curve</span><span class="symbol">:</span>&nbsp;<a href="../-parametric-curve/index.html"><span class="identifier">ParametricCurve</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.path.PathSegment$<init>(com.acmerobotics.roadrunner.path.ParametricCurve, com.acmerobotics.roadrunner.path.heading.HeadingInterpolator)/interpolator">interpolator</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.path.heading/-heading-interpolator/index.html"><span class="identifier">HeadingInterpolator</span></a>&nbsp;<span class="symbol">=</span>&nbsp;TangentInterpolator()<span class="symbol">)</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="curve.html">curve</a></h4>
+</td>
+<td>
+<p>parametric curve</p>
+<code><span class="keyword">val </span><span class="identifier">curve</span><span class="symbol">: </span><a href="../-parametric-curve/index.html"><span class="identifier">ParametricCurve</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="interpolator.html">interpolator</a></h4>
+</td>
+<td>
+<p>heading interpolator</p>
+<code><span class="keyword">val </span><span class="identifier">interpolator</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.path.heading/-heading-interpolator/index.html"><span class="identifier">HeadingInterpolator</span></a></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="deriv.html">deriv</a></h4>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">deriv</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.path.PathSegment$deriv(kotlin.Double, kotlin.Double)/s">s</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.path.PathSegment$deriv(kotlin.Double, kotlin.Double)/t">t</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a>&nbsp;<span class="symbol">=</span>&nbsp;reparam(s)<span class="symbol">)</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="end.html">end</a></h4>
+</td>
+<td>
+<p>Returns the end pose.</p>
+<code><span class="keyword">fun </span><span class="identifier">end</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="end-deriv.html">endDeriv</a></h4>
+</td>
+<td>
+<p>Returns the end pose derivative.</p>
+<code><span class="keyword">fun </span><span class="identifier">endDeriv</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="end-second-deriv.html">endSecondDeriv</a></h4>
+</td>
+<td>
+<p>Returns the end pose second derivative.</p>
+<code><span class="keyword">fun </span><span class="identifier">endSecondDeriv</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="end-tangent-angle.html">endTangentAngle</a></h4>
+</td>
+<td>
+<p>Returns the end tangent angle.</p>
+<code><span class="keyword">fun </span><span class="identifier">endTangentAngle</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="get.html">get</a></h4>
+</td>
+<td>
+<code><span class="keyword">operator</span> <span class="keyword">fun </span><span class="identifier">get</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.path.PathSegment$get(kotlin.Double, kotlin.Double)/s">s</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.path.PathSegment$get(kotlin.Double, kotlin.Double)/t">t</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a>&nbsp;<span class="symbol">=</span>&nbsp;reparam(s)<span class="symbol">)</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="length.html">length</a></h4>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">length</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="reparam.html">reparam</a></h4>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">reparam</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.path.PathSegment$reparam(kotlin.Double)/s">s</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="second-deriv.html">secondDeriv</a></h4>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">secondDeriv</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.path.PathSegment$secondDeriv(kotlin.Double, kotlin.Double)/s">s</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.path.PathSegment$secondDeriv(kotlin.Double, kotlin.Double)/t">t</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a>&nbsp;<span class="symbol">=</span>&nbsp;reparam(s)<span class="symbol">)</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="start.html">start</a></h4>
+</td>
+<td>
+<p>Returns the start pose.</p>
+<code><span class="keyword">fun </span><span class="identifier">start</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="start-deriv.html">startDeriv</a></h4>
+</td>
+<td>
+<p>Returns the start pose derivative.</p>
+<code><span class="keyword">fun </span><span class="identifier">startDeriv</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="start-second-deriv.html">startSecondDeriv</a></h4>
+</td>
+<td>
+<p>Returns the start pose second derivative.</p>
+<code><span class="keyword">fun </span><span class="identifier">startSecondDeriv</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="start-tangent-angle.html">startTangentAngle</a></h4>
+</td>
+<td>
+<p>Returns the start tangent angle.</p>
+<code><span class="keyword">fun </span><span class="identifier">startTangentAngle</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="tangent-angle.html">tangentAngle</a></h4>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">tangentAngle</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.path.PathSegment$tangentAngle(kotlin.Double, kotlin.Double)/s">s</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.path.PathSegment$tangentAngle(kotlin.Double, kotlin.Double)/t">t</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a>&nbsp;<span class="symbol">=</span>&nbsp;reparam(s)<span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

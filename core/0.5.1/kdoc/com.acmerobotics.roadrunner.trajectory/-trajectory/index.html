@@ -1,0 +1,107 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>Trajectory - core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">core</a>&nbsp;/&nbsp;<a href="../index.html">com.acmerobotics.roadrunner.trajectory</a>&nbsp;/&nbsp;<a href="./index.html">Trajectory</a><br/>
+<br/>
+<h1>Trajectory</h1>
+<code><span class="keyword">class </span><span class="identifier">Trajectory</span></code> <a href="https://github.com/acmerobotics/road-runner/blob/master/core/src/main/kotlin/com/acmerobotics/roadrunner/trajectory/Trajectory.kt#L13">(source)</a>
+<p>Trajectory backed by a <a href="../../com.acmerobotics.roadrunner.path/-path/index.html">Path</a> and a <a href="../../com.acmerobotics.roadrunner.profile/-motion-profile/index.html">MotionProfile</a>.</p>
+<h3>Parameters</h3>
+<p><a name="path"></a>
+<code>path</code> - path</p>
+<p><a name="profile"></a>
+<code>profile</code> - motion profile</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="-init-.html">&lt;init&gt;</a></h4>
+</td>
+<td>
+<p>Trajectory backed by a <a href="../../com.acmerobotics.roadrunner.path/-path/index.html">Path</a> and a <a href="../../com.acmerobotics.roadrunner.profile/-motion-profile/index.html">MotionProfile</a>.</p>
+<code><span class="identifier">Trajectory</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.Trajectory$<init>(com.acmerobotics.roadrunner.path.Path, com.acmerobotics.roadrunner.profile.MotionProfile, kotlin.collections.List((com.acmerobotics.roadrunner.trajectory.TrajectoryMarker)))/path">path</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.path/-path/index.html"><span class="identifier">Path</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.Trajectory$<init>(com.acmerobotics.roadrunner.path.Path, com.acmerobotics.roadrunner.profile.MotionProfile, kotlin.collections.List((com.acmerobotics.roadrunner.trajectory.TrajectoryMarker)))/profile">profile</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.profile/-motion-profile/index.html"><span class="identifier">MotionProfile</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.Trajectory$<init>(com.acmerobotics.roadrunner.path.Path, com.acmerobotics.roadrunner.profile.MotionProfile, kotlin.collections.List((com.acmerobotics.roadrunner.trajectory.TrajectoryMarker)))/markers">markers</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-trajectory-marker/index.html"><span class="identifier">TrajectoryMarker</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;emptyList()<span class="symbol">)</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="markers.html">markers</a></h4>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">markers</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-trajectory-marker/index.html"><span class="identifier">TrajectoryMarker</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="path.html">path</a></h4>
+</td>
+<td>
+<p>path</p>
+<code><span class="keyword">val </span><span class="identifier">path</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.path/-path/index.html"><span class="identifier">Path</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="profile.html">profile</a></h4>
+</td>
+<td>
+<p>motion profile</p>
+<code><span class="keyword">val </span><span class="identifier">profile</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.profile/-motion-profile/index.html"><span class="identifier">MotionProfile</span></a></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="acceleration.html">acceleration</a></h4>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">acceleration</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.Trajectory$acceleration(kotlin.Double)/time">time</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="duration.html">duration</a></h4>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">duration</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="end.html">end</a></h4>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">end</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="get.html">get</a></h4>
+</td>
+<td>
+<code><span class="keyword">operator</span> <span class="keyword">fun </span><span class="identifier">get</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.Trajectory$get(kotlin.Double)/time">time</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="start.html">start</a></h4>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">start</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="velocity.html">velocity</a></h4>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">velocity</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.Trajectory$velocity(kotlin.Double)/time">time</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>
