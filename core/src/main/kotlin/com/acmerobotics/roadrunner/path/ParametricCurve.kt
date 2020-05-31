@@ -4,8 +4,8 @@ import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.util.DoubleProgression
 
 /**
- * Parametric curve with two components (x and y). These curves are reparametrized from an internal parameter (t) to the
- * arc length parameter (s).
+ * Parametric curve with two components (x and y). These curves are reparameterized from an internal parameter (t) to
+ * the arc length parameter (s).
  */
 abstract class ParametricCurve {
 

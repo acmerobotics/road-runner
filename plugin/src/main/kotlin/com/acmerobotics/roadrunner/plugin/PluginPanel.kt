@@ -3,6 +3,7 @@ package com.acmerobotics.roadrunner.plugin
 import com.acmerobotics.roadrunner.gui.MainPanel
 import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.project.Project
+import java.awt.Dimension
 import java.io.File
 import javax.swing.*
 
@@ -33,7 +34,8 @@ class PluginPanel(private val project: Project) : JPanel() {
                 .toMutableList()
 
         val moduleLabel = JLabel("Module", SwingConstants.RIGHT)
-        moduleComboBox.maximumSize = moduleComboBox.preferredSize
+        val prefSize = moduleComboBox.preferredSize
+        moduleComboBox.maximumSize = Dimension(3 * prefSize.width, prefSize.height)
         moduleComboBox.model = DefaultComboBoxModel(modules.toTypedArray())
         moduleComboBox.addActionListener {
             if (currentModule != comboBoxModule) {
@@ -74,6 +76,9 @@ class PluginPanel(private val project: Project) : JPanel() {
     private fun getTrajectoryAssetsDir(moduleString: String): File? {
         val module = moduleManager.modules.firstOrNull { it.name == moduleString } ?: return null
         val moduleFile = File(module.moduleFilePath)
-        return File(moduleFile.parent, "src/main/assets/trajectory")
+        val path = File(moduleFile.parent, "src/main/assets/trajectory").absolutePath
+        val trajDir = File(path.replace(".idea/modules/", ""))
+        trajDir.mkdirs()
+        return trajDir
     }
 }

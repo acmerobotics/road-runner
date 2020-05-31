@@ -14,21 +14,21 @@ private fun zeroPosition(state: MotionState) = MotionState(0.0, state.v, state.a
  */
 class SimpleTrajectoryBuilder private constructor(
     startPose: Pose2d?,
-    startHeading: Double?,
+    startTangent: Double?,
     trajectory: Trajectory?,
     t: Double?,
     private val driveConstraints: DriveConstraints,
     private val start: MotionState
-) : BaseTrajectoryBuilder<SimpleTrajectoryBuilder>(startPose, startHeading, trajectory, t) {
+) : BaseTrajectoryBuilder<SimpleTrajectoryBuilder>(startPose, startTangent, trajectory, t) {
     /**
      * Create a builder from a start pose and motion state. This is the recommended constructor for creating
      * trajectories from rest.
      */
     @JvmOverloads constructor(
         startPose: Pose2d,
-        startHeading: Double = startPose.heading,
+        startTangent: Double = startPose.heading,
         driveConstraints: DriveConstraints
-    ) : this(startPose, startHeading, null, null, driveConstraints, MotionState(0.0, 0.0, 0.0))
+    ) : this(startPose, startTangent, null, null, driveConstraints, MotionState(0.0, 0.0, 0.0))
 
     constructor(
         startPose: Pose2d,

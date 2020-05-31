@@ -55,10 +55,6 @@ Specific constraints for trajectories and different drive types.
 
 Serializable configurations for GUIs.
 
-# Package com.acmerobotics.roadrunner.tuning
-
-Basic regression analysis for tuning feedforward parameters.
-
 # Package com.acmerobotics.roadrunner.util
 
 Miscellaneous utilities.

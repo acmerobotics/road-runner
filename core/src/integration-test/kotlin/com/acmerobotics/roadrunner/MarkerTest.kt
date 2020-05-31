@@ -1,6 +1,7 @@
 package com.acmerobotics.roadrunner
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
+import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.path.PathBuilder
 import com.acmerobotics.roadrunner.trajectory.SpatialMarker
 import com.acmerobotics.roadrunner.trajectory.TrajectoryGenerator
@@ -26,7 +27,7 @@ class MarkerTest {
 
         val distances = mutableListOf<Double>()
         val path = PathBuilder(Pose2d(random.nextDouble(), random.nextDouble(), 2 * PI * random.nextDouble()))
-            .splineTo(Pose2d(random.nextDouble(), random.nextDouble(), 2 * PI * random.nextDouble()))
+            .splineTo(Vector2d(random.nextDouble(), random.nextDouble()), 2 * PI * random.nextDouble())
             .build()
         repeat(trials) {
             val displacement = path.length() * random.nextDouble()

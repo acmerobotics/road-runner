@@ -155,7 +155,7 @@ class Path(val segments: List<PathSegment>) {
 
         val samples = (length() / ds).roundToInt()
 
-        val guesses = (0..samples).map { it.toDouble() / samples * length() }
+        val guesses = DoubleProgression.fromClosedInterval(0.0, length(), samples)
 
         val results = guesses.map { fastProject(queryPoint, it) }
 

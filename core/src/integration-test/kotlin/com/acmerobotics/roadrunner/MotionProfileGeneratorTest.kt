@@ -2,6 +2,7 @@ package com.acmerobotics.roadrunner
 
 import com.acmerobotics.roadrunner.TestUtil.assertContinuous
 import com.acmerobotics.roadrunner.profile.*
+import com.acmerobotics.roadrunner.util.DoubleProgression
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -40,7 +41,7 @@ class MotionProfileGeneratorTest {
         }
 
         // verify continuity
-        val t = (0..RESOLUTION).map { it * profile.duration() / RESOLUTION }
+        val t = DoubleProgression.fromClosedInterval(0.0, profile.duration(), RESOLUTION)
         assertContinuous(t.map { profile[it].x }, 1.0)
         assertContinuous(t.map { profile[it].v }, 1.0)
         if (verifyAccel) {

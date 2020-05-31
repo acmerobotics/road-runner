@@ -1,14 +1,17 @@
 package com.acmerobotics.roadrunner
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
+import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.path.PathContinuityViolationException
 import com.acmerobotics.roadrunner.trajectory.Trajectory
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
+import com.acmerobotics.roadrunner.util.DoubleProgression
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.knowm.xchart.QuickChart
 import org.knowm.xchart.style.MatlabTheme
+import java.util.*
 import kotlin.math.max
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -22,7 +25,7 @@ class TrajectorySpliceTest {
         resolution: Int = 1000
     ) {
         val duration = max(traj1.duration(), t + traj2.duration())
-        val timeData = (0..resolution).map { it / resolution.toDouble() * duration }.toDoubleArray()
+        val timeData = DoubleProgression.fromClosedInterval(0.0, duration, resolution).toList().toDoubleArray()
 
         val velData1 = timeData.map { traj1.velocity(it) }
         val xVelData1 = velData1.map { it.x }.toDoubleArray()
@@ -55,13 +58,13 @@ class TrajectorySpliceTest {
         val constraints = DriveConstraints(25.0, 50.0, 50.0, 1.0, 1.0, 1.0)
 
         val traj1 = TrajectoryBuilder(Pose2d(), constraints = constraints)
-            .splineTo(Pose2d(40.0, 50.0))
+            .splineTo(Vector2d(40.0, 50.0), 0.0)
             .build()
 
         val t = 0.6 * traj1.duration()
 
         val traj2 = TrajectoryBuilder(traj1, t, constraints)
-            .splineTo(Pose2d(50.0, 60.0))
+            .splineTo(Vector2d(50.0, 60.0), 0.0)
             .build()
 
         saveSplicedTrajectory("splice/tangentHeading", traj1, traj2, t)
@@ -72,7 +75,7 @@ class TrajectorySpliceTest {
         val constraints = DriveConstraints(25.0, 50.0, 50.0, 1.0, 1.0, 1.0)
 
         val traj1 = TrajectoryBuilder(Pose2d(), constraints = constraints)
-            .splineTo(Pose2d(40.0, 50.0))
+            .splineTo(Vector2d(40.0, 50.0), 0.0)
             .build()
 
         val t = 0.6 * traj1.duration()
@@ -89,14 +92,14 @@ class TrajectorySpliceTest {
         val constraints = DriveConstraints(25.0, 50.0, 50.0, 1.0, 1.0, 1.0)
 
         val traj1 = TrajectoryBuilder(Pose2d(), constraints = constraints)
-            .splineToConstantHeading(Pose2d(40.0, 50.0))
+            .splineToConstantHeading(Vector2d(40.0, 50.0), 0.0)
             .build()
 
         val t = 0.6 * traj1.duration()
 
         try {
             TrajectoryBuilder(traj1, t, constraints)
-                .splineTo(Pose2d(50.0, 60.0))
+                .splineTo(Vector2d(50.0, 60.0), 0.0)
                 .build()
             assert(false)
         } catch (e: PathContinuityViolationException) {
