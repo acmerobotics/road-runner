@@ -19,6 +19,6 @@ object Log {
         //Throwable.printStackTrace();
     }
     fun dbgPrint(s: String) {
-        println("$s");
+        //println("$s");
     }
 }

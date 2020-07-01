@@ -2,6 +2,7 @@ package com.acmerobotics.roadrunner.path
 
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.util.DoubleProgression
+import com.acmerobotics.roadrunner.util.Log
 import com.acmerobotics.roadrunner.util.epsilonEquals
 import kotlin.math.abs
 import kotlin.math.asin
@@ -81,6 +82,8 @@ class QuinticSpline(
         val w2 = (v2 - v3) * 2.0
         val det = w1.x * w2.y - w2.x * w1.y
         val chord = v1 distTo v3
+        Log.dbgPrint("QuinticSpline: approxLength ")
+
         return if (det epsilonEquals 0.0) {
             chord
         } else {
@@ -98,6 +101,7 @@ class QuinticSpline(
     }
 
     private fun internalCurvature(t: Double): Double {
+        Log.dbgPrint("QuinticSpline: internalCurvature ")
         val deriv = internalDeriv(t)
         val derivNorm = deriv.norm()
         val secondDeriv = internalSecondDeriv(t)
@@ -111,6 +115,8 @@ class QuinticSpline(
         vHi: Vector2d = internalGet(tHi),
         depth: Int = 0
     ) {
+        Log.dbgPrint("QuinticSpline: parameterize ")
+
         if (depth >= maxDepth) {
             return
         }
@@ -147,6 +153,7 @@ class QuinticSpline(
     override fun reparam(s: Double): Double {
         if (s <= 0.0) return 0.0
         if (s >= length) return 1.0
+        Log.dbgPrint("QuinticSpline: reparam ")
 
         var lo = 0
         var hi = sSamples.size
@@ -175,6 +182,7 @@ class QuinticSpline(
         var i = 0
         var sampleIndex = 0
         var currS = s.start
+        Log.dbgPrint("QuinticSpline: reparam ")
         while (i < t.size) {
             t[i++] = when {
                 currS <= 0.0 -> 0.0
@@ -200,11 +208,13 @@ class QuinticSpline(
     }
 
     override fun paramDeriv(t: Double): Double {
+        Log.dbgPrint("QuinticSpline: paramDeriv ")
         val deriv = internalDeriv(t)
         return 1.0 / sqrt(deriv.x * deriv.x + deriv.y * deriv.y)
     }
 
     override fun paramSecondDeriv(t: Double): Double {
+        Log.dbgPrint("QuinticSpline: paramSecondDeriv ")
         val deriv = internalDeriv(t)
         val secondDeriv = internalSecondDeriv(t)
         val numerator = -(deriv.x * secondDeriv.x + deriv.y * secondDeriv.y)
@@ -213,6 +223,7 @@ class QuinticSpline(
     }
 
     override fun paramThirdDeriv(t: Double): Double {
+        Log.dbgPrint("QuinticSpline: paramThirdDeriv ")
         val deriv = internalDeriv(t)
         val secondDeriv = internalSecondDeriv(t)
         val thirdDeriv = internalThirdDeriv(t)

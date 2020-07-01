@@ -97,6 +97,8 @@ class PathBuilder private constructor(
     }
 
     private fun makeTangentInterpolator(curve: ParametricCurve): TangentInterpolator {
+        Log.dbgPrint("PathBuilder: makeTangentInterpolator ")
+
         if (currentPose == null) {
             val prevInterpolator = path!!.segment(s!!).first.interpolator
             if (prevInterpolator !is TangentInterpolator) {
@@ -113,6 +115,7 @@ class PathBuilder private constructor(
     }
 
     private fun makeConstantInterpolator(): ConstantInterpolator {
+        Log.dbgPrint("PathBuilder, makeConstantInterpolator")
         val currentHeading = currentPose?.heading ?: throw PathContinuityViolationException()
 
         return ConstantInterpolator(currentHeading)
@@ -126,6 +129,7 @@ class PathBuilder private constructor(
     }
 
     private fun makeSplineInterpolator(endHeading: Double): SplineInterpolator {
+        Log.dbgPrint("PathBuilder, makeSplineInterpolator")
         return if (currentPose == null) {
             SplineInterpolator(
                 path!![s!!].heading, endHeading,
