@@ -1,7 +1,6 @@
 package com.acmerobotics.roadrunner.util
 
-import kotlin.math.abs
-import kotlin.math.sqrt
+import kotlin.math.*
 
 /**
  * Various math utilities.
@@ -9,18 +8,72 @@ import kotlin.math.sqrt
 object MathUtil {
 
     /**
-     * Returns the real solutions to the quadratic ax^2 + bx + c.
+     * Returns the real solutions to the quadratic ax^2 + bx + c = 0.
      */
     @JvmStatic
-    fun solveQuadratic(a: Double, b: Double, c: Double): List<Double> {
+    fun solveQuadratic(a: Double, b: Double, c: Double): DoubleArray {
+        if (a epsilonEquals 0.0) {
+            return doubleArrayOf(-c / b)
+        }
+
         val disc = b * b - 4 * a * c
         return when {
-            disc epsilonEquals 0.0 -> listOf(-b / (2 * a))
-            disc > 0.0 -> listOf(
+            disc epsilonEquals 0.0 -> doubleArrayOf(-b / (2 * a))
+            disc > 0.0 -> doubleArrayOf(
                     (-b + sqrt(disc)) / (2 * a),
                     (-b - sqrt(disc)) / (2 * a)
             )
-            else -> emptyList()
+            else -> doubleArrayOf()
+        }
+    }
+
+    /**
+     * Similar to Java cbrt, but implemented with kotlin math (preserves sign)
+     */
+    @JvmStatic
+    fun cbrt(x: Double) = sign(x) * abs(x).pow(1.0 / 3.0)
+
+    /**
+     * Returns real solutions to the cubic ax^3 + bx^2 + cx + d = 0
+     * [Reference](https://github.com/davidzof/wattzap/blob/a3065da/src/com/wattzap/model/power/Cubic.java#L125-L182)
+     */
+    @JvmStatic
+    fun solveCubic(a: Double, b: Double, c: Double, d: Double): DoubleArray {
+        if (a epsilonEquals 0.0) {
+            return solveQuadratic(b, c, d)
+        }
+
+        val a2 = b / a
+        val a1 = c / a
+        val a0 = d / a
+
+        val lambda = a2 / 3.0
+        val Q = (3.0 * a1 - a2 * a2) / 9.0
+        val R = (9.0 * a1 * a2 - 27.0 * a0 - 2.0 * a2 * a2 * a2) / 54.0
+        val Q3 = Q * Q * Q
+        val R2 = R * R
+        val D = Q3 + R2
+
+        return when {
+            D < 0.0 -> { // 3 unique reals
+                val theta = acos(R / sqrt(-Q3))
+                val sqrtQ = sqrt(-Q)
+                doubleArrayOf(
+                        2.0 * sqrtQ * cos(theta / 3.0) - lambda,
+                        2.0 * sqrtQ * cos((theta + 2.0 * PI) / 3.0) - lambda,
+                        2.0 * sqrtQ * cos((theta + 4.0 * PI) / 3.0) - lambda
+                )
+            }
+            D > 0.0 -> { // 1 real
+                val sqrtD = sqrt(D)
+                val S = cbrt(R + sqrtD)
+                val T = cbrt(R - sqrtD)
+                doubleArrayOf(S + T - lambda)
+            }
+            else -> { // 2 unique (3 total) reals
+                val cbrtR = cbrt(R)
+                doubleArrayOf(2.0 * cbrtR - lambda, cbrtR - lambda)
+            }
         }
     }
 }

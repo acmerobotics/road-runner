@@ -27,8 +27,8 @@ class TankPIDVAFollower @JvmOverloads constructor(
     timeout: Double = 0.0,
     clock: NanoClock = NanoClock.system()
 ) : TrajectoryFollower(admissibleError, timeout, clock) {
-    private val axialController = PIDFController(axialCoeffs)
-    private val crossTrackController = PIDFController(crossTrackCoeffs)
+    private val axialController = PIDFController(axialCoeffs, clock = clock)
+    private val crossTrackController = PIDFController(crossTrackCoeffs, clock = clock)
 
     override var lastError: Pose2d = Pose2d()
 

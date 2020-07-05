@@ -2,6 +2,7 @@ package com.acmerobotics.roadrunner.profile
 
 import com.acmerobotics.roadrunner.util.DoubleProgression
 import com.acmerobotics.roadrunner.util.MathUtil.solveQuadratic
+import com.acmerobotics.roadrunner.util.NanoClock
 import com.acmerobotics.roadrunner.util.epsilonEquals
 import kotlin.math.abs
 import kotlin.math.ceil
@@ -295,11 +296,8 @@ object MotionProfileGenerator {
         }
 
     /**
-     * Generates a motion profile with dynamic maximum velocity and acceleration. Uses the algorithm described in
-     * section 3.2 of [Sprunk2008.pdf](http://www2.informatik.uni-freiburg.de/~lau/students/Sprunk2008.pdf). Warning:
-     * Profiles may be generated incorrectly if the endpoint velocity/acceleration values preclude the obedience of the
-     * motion constraints. To protect against this, verify the continuity of the generated profile or keep the start and
-     * goal velocities at 0.
+     * Generates a motion profile with dynamic maximum velocity and acceleration. See [generateDisplacementProfile] for
+     * more details.
      *
      * @param start start motion state
      * @param goal goal motion state
@@ -316,205 +314,294 @@ object MotionProfileGenerator {
     ): MotionProfile {
         if (goal.x < start.x) {
             return generateMotionProfile(
-                start.flipped(),
-                goal.flipped(),
-                object : MotionConstraints() {
-                    override fun get(s: Double) = constraints[-s]
-                    override fun get(s: DoubleProgression) = constraints[-s]
-                },
-                resolution
+                    start.flipped(),
+                    goal.flipped(),
+                    object : MotionConstraints() {
+                        override fun get(s: Double) = constraints[-s]
+                        override fun get(s: DoubleProgression) = constraints[-s]
+                    },
+                    resolution
             ).flipped()
         }
 
-        val length = goal.x - start.x
-        // dx is an adjusted resolution that fits nicely within length
-        val samples = ceil(length / resolution).toInt()
+        val displacementProfile = generateDisplacementProfile(
+                DisplacementState(start.v, start.a, start.j),
+                DisplacementState(goal.v, goal.a, goal.j),
+                goal.x - start.x,
+                object : MotionConstraints() {
+                    override fun get(s: Double) = constraints[s + start.x]
+                    override fun get(s: DoubleProgression) = constraints[s + start.x]
+                },
+                resolution
+        )
 
-        val s = DoubleProgression.fromClosedInterval(0.0, length, samples)
-        val constraintsList = constraints[s + start.x]
+        return convertProfile(displacementProfile, start.x)
+    }
 
-        // compute the forward states
-        val forwardStates = forwardPass(
-            MotionState(0.0, start.v, start.a),
-            s,
-            constraintsList
-        ).map { (motionState, dx) -> Pair(
-            MotionState(
-                motionState.x + start.x,
-                motionState.v,
-                motionState.a
-            ), dx) }
-            .toMutableList()
+    /**
+     * Converts a [DisplacementProfile] to a time-indexed [MotionProfile] starting at x=[start]
+     *
+     * @param displacementProfile the displacement profile to be converted
+     * @param start the start x that is added onto the dx from the displacement profile
+     */
+    fun convertProfile(displacementProfile: DisplacementProfile, start: Double): MotionProfile {
+        val finalSegments = displacementProfile.segments
 
-        // compute the backward states
-        val backwardStates = forwardPass(
-            MotionState(0.0, goal.v, goal.a),
-            s,
-            constraintsList.reversed()
-        ).map { (motionState, dx) ->
-            Pair(afterDisplacement(motionState, dx), dx)
-        }.map { (motionState, dx) ->
-            Pair(
-                MotionState(
-                    goal.x - motionState.x,
-                    motionState.v,
-                    -motionState.a
-                ), dx
-            )
-        }.reversed().toMutableList()
-
-        // merge the forward and backward states
-        val finalStates = mutableListOf<Pair<MotionState, Double>>()
-
-        var i = 0
-        while (i < forwardStates.size && i < backwardStates.size) {
-            // retrieve the start states and displacement deltas
-            var (forwardStartState, forwardDx) = forwardStates[i]
-            var (backwardStartState, backwardDx) = backwardStates[i]
-
-            // if there's a discrepancy in the displacements, split the the longer chunk in two and add the second
-            // to the corresponding list; this guarantees that segments are always aligned
-            if (!(forwardDx epsilonEquals backwardDx)) {
-                if (forwardDx > backwardDx) {
-                    // forward longer
-                    forwardStates.add(
-                        i + 1,
-                        Pair(afterDisplacement(forwardStartState, backwardDx), forwardDx - backwardDx)
-                    )
-                    forwardDx = backwardDx
-                } else {
-                    // backward longer
-                    backwardStates.add(
-                            i + 1,
-                            Pair(afterDisplacement(backwardStartState, forwardDx), backwardDx - forwardDx)
-                    )
-                    backwardDx = forwardDx
-                }
-            }
-
-            // compute the end states (after alignment)
-            val forwardEndState = afterDisplacement(forwardStartState, forwardDx)
-            val backwardEndState = afterDisplacement(backwardStartState, backwardDx)
-
-            if (forwardStartState.v <= backwardStartState.v) {
-                // forward start lower
-                if (forwardEndState.v <= backwardEndState.v) {
-                    // forward end lower
-                    finalStates.add(Pair(forwardStartState, forwardDx))
-                } else {
-                    // backward end lower
-                    val intersection = intersection(
-                        forwardStartState,
-                        backwardStartState
-                    )
-                    finalStates.add(Pair(forwardStartState, intersection))
-                    finalStates.add(
-                        Pair(
-                            afterDisplacement(backwardStartState, intersection),
-                            backwardDx - intersection
-                        )
-                    )
-                }
-            } else {
-                // backward start lower
-                if (forwardEndState.v >= backwardEndState.v) {
-                    // backward end lower
-                    finalStates.add(Pair(backwardStartState, backwardDx))
-                } else {
-                    // forward end lower
-                    val intersection = intersection(
-                        forwardStartState,
-                        backwardStartState
-                    )
-                    finalStates.add(Pair(backwardStartState, intersection))
-                    finalStates.add(
-                        Pair(
-                            afterDisplacement(forwardStartState, intersection),
-                            forwardDx - intersection
-                        )
-                    )
-                }
-            }
-            i++
-        }
-
-        // turn the final states into actual time-parameterized motion segments
+        // turn the final states into actual time-parametrized motion segments
+        var x = start
         val motionSegments = mutableListOf<MotionSegment>()
-        for ((state, stateDx) in finalStates) {
-            val dt = if (state.a epsilonEquals 0.0) {
-                stateDx / state.v
-            } else {
-                val discriminant = state.v * state.v + 2 * state.a * stateDx
-                if (discriminant epsilonEquals 0.0) {
-                    -state.v / state.a
-                } else {
-                    (sqrt(discriminant) - state.v) / state.a
-                }
-            }
-            motionSegments.add(MotionSegment(state, dt))
+        for (segment in finalSegments) {
+            val state = segment.start
+            val dt = segment.duration()
+            motionSegments.add(
+                    MotionSegment(MotionState(x, state.v, state.a, state.j), dt)
+            )
+
+            x += segment.dx
         }
 
         return MotionProfile(motionSegments)
     }
 
+    /**
+     * Generates an [OnlineDisplacementProfile] based on [generateDisplacementProfile] and the provided params
+     *
+     * @param start start displacement state
+     * @param goal goal displacement state
+     * @param length the length of the profile in displacement units
+     * @param maxVel maximum velocity constraint
+     * @param maxAccel maximum acceleration constraint
+     * @param clock clock used for dt calculation
+     */
+    @Suppress("LongParameterList")
+    @JvmStatic
+    @JvmOverloads
+    fun generateSimpleOnlineDisplacementProfile(
+        start: DisplacementState,
+        goal: DisplacementState,
+        length: Double,
+        maxVel: Double,
+        maxAccel: Double,
+        clock: NanoClock = NanoClock.system()
+    ) = OnlineDisplacementProfile(
+            start,
+            goal,
+            length,
+            object : MotionConstraints() {
+                override fun get(s: Double) = SimpleMotionConstraints(maxVel, maxAccel)
+                override fun get(s: DoubleProgression) = s.map { get(it) }
+            },
+            clock
+    )
+
+    /**
+     * Generates an [OnlineDisplacementProfile] based on [generateDisplacementProfile] and the provided params
+     *
+     * @param start start displacement state
+     * @param goal goal displacement state
+     * @param length the length of the profile in displacement units
+     * @param constraints motion constraints
+     * @param clock clock used for dt calculation
+     * @param resolution separation between constraint samples
+     */
+    @Suppress("LongParameterList")
+    @JvmStatic
+    @JvmOverloads
+    fun generateOnlineDisplacementProfile(
+        start: DisplacementState,
+        goal: DisplacementState,
+        length: Double,
+        constraints: MotionConstraints,
+        clock: NanoClock = NanoClock.system(),
+        resolution: Double = 0.25
+    ): OnlineDisplacementProfile {
+        // ds is an adjusted resolution that fits nicely within length
+        val samples = ceil(length / resolution).toInt()
+        val s = DoubleProgression.fromClosedInterval(0.0, length, samples)
+
+        val constraintsList = constraints[s]
+        val lastState = DisplacementState(constraintsList.last().maxVel)
+
+        // we start with last constraint rather than goal because the end ramp is already handled in the online profile
+        val backwardProfile = forwardPass(
+                lastState,
+                s,
+                constraintsList.reversed()
+        ).reversed()
+
+        return OnlineDisplacementProfile(start, goal, length, constraints, clock, backwardProfile)
+    }
+
+    /**
+     * Generates a displacement profile with dynamic maximum velocity and acceleration. Uses the algorithm described in
+     * section 3.2 of [Sprunk2008.pdf](http://www2.informatik.uni-freiburg.de/~lau/students/Sprunk2008.pdf). Warning:
+     * Profiles may be generated incorrectly if the endpoint velocity/acceleration values preclude the obedience of the
+     * motion constraints. To protect against this, verify the continuity of the generated profile or keep the start and
+     * goal velocities at 0. Additionally, undershooting (start negative velocity or start negative acceleration beyond
+     * velocity) and overshooting have undefined behavior.
+     *
+     * @param start start displacement state
+     * @param goal goal displacement state
+     * @param length the length of the profile in displacement units
+     * @param constraints motion constraints
+     * @param resolution separation between constraint samples
+     */
+    @JvmStatic
+    @JvmOverloads
+    fun generateDisplacementProfile(
+        start: DisplacementState,
+        goal: DisplacementState,
+        length: Double,
+        constraints: MotionConstraints,
+        resolution: Double = 0.25
+    ): DisplacementProfile {
+        // ds is an adjusted resolution that fits nicely within length
+        val samples = ceil(length / resolution).toInt()
+        val s = DoubleProgression.fromClosedInterval(0.0, length, samples)
+
+        val constraintsList = constraints[s]
+
+        // compute the forward states
+        val forwardProfile = forwardPass(
+                start,
+                s,
+                constraintsList
+        )
+
+        // compute the backward states
+        val backwardProfile = forwardPass(
+                goal,
+                s,
+                constraintsList.reversed()
+        ).reversed()
+
+        // merge the forward and backward states
+        return mergeProfiles(forwardProfile, backwardProfile)
+    }
+
+    // merges the forward profiles and reverse profiles together into a single constraint-respecting profile
+    // See figure 3.4 of [Sprunk2008.pdf](http://www2.informatik.uni-freiburg.de/~lau/students/Sprunk2008.pdf)
+    private fun mergeProfiles(
+        forwardProfile: DisplacementProfile,
+        backwardProfile: DisplacementProfile
+    ): DisplacementProfile {
+        val forwardSegments = forwardProfile.segments.toMutableList()
+        val backwardSegments = backwardProfile.segments.toMutableList()
+        val finalSegments = mutableListOf<DisplacementSegment>()
+
+        var i = 0
+        while (i < forwardSegments.size && i < backwardSegments.size) {
+            // retrieve the start states and displacement deltas
+            var forwardSegment = forwardSegments[i]
+            var backwardSegment = backwardSegments[i]
+
+            // if there's a discrepancy in the displacements, split the the longer chunk in two and add the second
+            // to the corresponding list; this guarantees that segments are always aligned
+            if (!(forwardSegment.dx epsilonEquals backwardSegment.dx)) {
+                if (forwardSegment.dx > backwardSegment.dx) {
+                    // forward longer
+                    forwardSegments.add(
+                            i + 1,
+                            DisplacementSegment(
+                                    forwardSegment[backwardSegment.dx], forwardSegment.dx - backwardSegment.dx
+                            )
+                    )
+                    forwardSegment = DisplacementSegment(forwardSegment.start, backwardSegment.dx)
+                } else {
+                    // backward longer
+                    backwardSegments.add(
+                            i + 1,
+                            DisplacementSegment(
+                                    backwardSegment[forwardSegment.dx], backwardSegment.dx - forwardSegment.dx
+                            )
+                    )
+                    backwardSegment = DisplacementSegment(backwardSegment.start, forwardSegment.dx)
+                }
+            }
+
+            // compute the end states (after alignment)
+            val (higherSegment, lowerSegment) =
+                    if (forwardSegment.start.v <= backwardSegment.start.v) {
+                        Pair(backwardSegment, forwardSegment)
+                    } else {
+                        Pair(forwardSegment, backwardSegment)
+                    }
+
+            if (lowerSegment.end().v <= higherSegment.end().v) {
+                // lower start, lower end
+                finalSegments.add(lowerSegment)
+            } else {
+                // higher start, lower end
+                val intersection = intersection(
+                        lowerSegment.start,
+                        higherSegment.start
+                )
+                finalSegments.add(DisplacementSegment(lowerSegment.start, intersection))
+                finalSegments.add(
+                        DisplacementSegment(
+                                higherSegment[intersection],
+                                higherSegment.dx - intersection
+                        )
+                )
+            }
+
+            i++
+        }
+
+        return DisplacementProfile(finalSegments)
+    }
+
     // execute a forward pass that consists of applying maximum acceleration starting at min(last velocity, max vel)
-    // on a segment-by-segment basis
+    // on a segment-by-segment basis.
+    // See figure 3.4 of [Sprunk2008.pdf](http://www2.informatik.uni-freiburg.de/~lau/students/Sprunk2008.pdf)
     private fun forwardPass(
-        start: MotionState,
+        start: DisplacementState,
         displacements: DoubleProgression,
         constraints: List<SimpleMotionConstraints>
-    ): List<Pair<MotionState, Double>> {
-        val forwardStates = mutableListOf<Pair<MotionState, Double>>()
+    ): DisplacementProfile {
+        val forwardSegments = mutableListOf<DisplacementSegment>()
 
         val dx = displacements.step
 
         var lastState = start
-        displacements
-            .zip(constraints)
+        constraints
             .dropLast(1)
-            .forEach { (displacement, constraint) ->
+            .forEach { constraint ->
                 // compute the segment constraints
                 val maxVel = constraint.maxVel
                 val maxAccel = constraint.maxAccel
 
                 lastState = if (lastState.v >= maxVel) {
                     // the last velocity exceeds max vel so we just coast
-                    val state = MotionState(displacement, maxVel, 0.0)
-                    forwardStates.add(Pair(state, dx))
-                    afterDisplacement(state, dx)
+                    val segment = DisplacementSegment(DisplacementState(maxVel), dx)
+                    forwardSegments.add(segment)
+                    segment.end()
                 } else {
                     // compute the final velocity assuming max accel
                     val finalVel = sqrt(lastState.v * lastState.v + 2 * maxAccel * dx)
                     if (finalVel <= maxVel) {
                         // we're still under max vel so we're good
-                        val state = MotionState(displacement, lastState.v, maxAccel)
-                        forwardStates.add(Pair(state, dx))
-                        afterDisplacement(state, dx)
+                        val segment = DisplacementSegment(DisplacementState(lastState.v, maxAccel), dx)
+                        forwardSegments.add(segment)
+                        segment.end()
                     } else {
                         // we went over max vel so now we split the segment
                         val accelDx = (maxVel * maxVel - lastState.v * lastState.v) / (2 * maxAccel)
-                        val accelState = MotionState(displacement, lastState.v, maxAccel)
-                        val coastState = MotionState(displacement + accelDx, maxVel, 0.0)
-                        forwardStates.add(Pair(accelState, accelDx))
-                        forwardStates.add(Pair(coastState, dx - accelDx))
-                        afterDisplacement(coastState, dx - accelDx)
+                        val accelState = DisplacementState(lastState.v, maxAccel)
+                        val coastState = DisplacementState(maxVel)
+                        val accelSegment = DisplacementSegment(accelState, accelDx)
+                        val coastSegment = DisplacementSegment(coastState, dx - accelDx)
+                        forwardSegments.add(accelSegment)
+                        forwardSegments.add(coastSegment)
+                        coastSegment.end()
                     }
                 }
             }
 
-        return forwardStates
+        return DisplacementProfile(forwardSegments)
     }
 
-    private fun afterDisplacement(state: MotionState, dx: Double): MotionState {
-        val discriminant = state.v * state.v + 2 * state.a * dx
-        return if (discriminant epsilonEquals 0.0) {
-            MotionState(state.x + dx, 0.0, state.a)
-        } else {
-            MotionState(state.x + dx, sqrt(discriminant), state.a)
-        }
-    }
-
-    private fun intersection(state1: MotionState, state2: MotionState): Double {
+    private fun intersection(state1: DisplacementState, state2: DisplacementState): Double {
         return (state1.v * state1.v - state2.v * state2.v) / (2 * state2.a - 2 * state1.a)
     }
 }

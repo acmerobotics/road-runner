@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.kinematics.Kinematics
 import com.acmerobotics.roadrunner.trajectory.Trajectory
 import com.acmerobotics.roadrunner.util.NanoClock
+import kotlin.math.PI
 
 /**
  * Traditional PID controller with feedforward velocity and acceleration components to follow a trajectory. More
@@ -28,15 +29,11 @@ class HolonomicPIDVAFollower @JvmOverloads constructor(
     timeout: Double = 0.0,
     clock: NanoClock = NanoClock.system()
 ) : TrajectoryFollower(admissibleError, timeout, clock) {
-    private val axialController = PIDFController(axialCoeffs)
-    private val lateralController = PIDFController(lateralCoeffs)
-    private val headingController = PIDFController(headingCoeffs)
+    private val axialController = PIDFController(axialCoeffs, clock = clock)
+    private val lateralController = PIDFController(lateralCoeffs, clock = clock)
+    private val headingController = PIDFController(headingCoeffs, clock = clock).apply { setInputBounds(-PI, PI) }
 
     override var lastError: Pose2d = Pose2d()
-
-    init {
-        headingController.setInputBounds(-Math.PI, Math.PI)
-    }
 
     override fun followTrajectory(trajectory: Trajectory) {
         axialController.reset()

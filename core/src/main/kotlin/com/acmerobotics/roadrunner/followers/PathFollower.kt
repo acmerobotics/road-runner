@@ -13,11 +13,12 @@ import kotlin.math.abs
  * @param clock clock
  */
 abstract class PathFollower @JvmOverloads constructor(
-    private val admissibleError: Pose2d,
+    private val admissibleError: Pose2d = Pose2d(),
     protected val clock: NanoClock = NanoClock.system()
 ) {
     private var startTimestamp: Double = 0.0
     private var admissible = false
+    internal var executedFinalUpdate = false
 
     /**
      * Path being followed if [isFollowing] is true.
@@ -32,6 +33,12 @@ abstract class PathFollower @JvmOverloads constructor(
         protected set
 
     /**
+     * The projected displacement along the path found in the last [update] call (may be initialized to Double.NaN.)
+     */
+    abstract var displacement: Double
+        protected set
+
+    /**
      * Follow the given [path].
      *
      * @param path path
@@ -41,31 +48,35 @@ abstract class PathFollower @JvmOverloads constructor(
         this.startTimestamp = clock.seconds()
         this.path = path
         this.admissible = false
+
+        executedFinalUpdate = false
     }
 
+    private fun internalIsFollowing() = !admissible
+
     /**
-     * Returns true if the current path has finished executing.
+     * Returns true if the current path is currently executing.
      */
-    fun isFollowing(): Boolean {
-        return !admissible
-    }
+    fun isFollowing() = !executedFinalUpdate && internalIsFollowing()
 
     /**
      * Run a single iteration of the path follower.
      *
      * @param currentPose current robot pose
      */
-    fun update(currentPose: Pose2d): DriveSignal {
-        val pathEndError = path.end() - currentPose
+    @JvmOverloads
+    fun update(currentPose: Pose2d, currentRobotVel: Pose2d? = null): DriveSignal {
+        val pathEndError = path.end() - currentPose + Pose2d()
         admissible = abs(pathEndError.x) < admissibleError.x &&
                 abs(pathEndError.y) < admissibleError.y &&
                 abs(Angle.normDelta(pathEndError.heading)) < admissibleError.heading
-        return if (isFollowing()) {
-            internalUpdate(currentPose)
+        return if (internalIsFollowing() || executedFinalUpdate) {
+            internalUpdate(currentPose, currentRobotVel)
         } else {
+            executedFinalUpdate = true
             DriveSignal()
         }
     }
 
-    protected abstract fun internalUpdate(currentPose: Pose2d): DriveSignal
+    protected abstract fun internalUpdate(currentPose: Pose2d, currentRobotVel: Pose2d?): DriveSignal
 }

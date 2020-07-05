@@ -2,9 +2,11 @@ package com.acmerobotics.roadrunner
 
 import com.acmerobotics.roadrunner.control.PIDCoefficients
 import com.acmerobotics.roadrunner.drive.MecanumDrive
+import com.acmerobotics.roadrunner.followers.HolonomicGVFFollower
 import com.acmerobotics.roadrunner.followers.HolonomicPIDVAFollower
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
+import com.acmerobotics.roadrunner.path.PathBuilder
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import com.acmerobotics.roadrunner.trajectory.constraints.MecanumConstraints
@@ -92,7 +94,7 @@ class MecanumFollowerTest {
         }
 
         val graph = XYChart(600, 400)
-        graph.title = "Mecanum PIDVA Follower Sim"
+        graph.title = "Mecanum PIDVA Follower Sim (%.2fs)".format(t)
         graph.addSeries(
                 "Target Trajectory",
                 targetPositions.map { it.x }.toDoubleArray(),
@@ -104,5 +106,56 @@ class MecanumFollowerTest {
         graph.seriesMap.values.forEach { it.marker = None() }
         graph.styler.theme = MatlabTheme()
         GraphUtil.saveGraph("sim/mecanumPIDVA", graph)
+    }
+
+    @Test
+    fun simulateGVFFollower() {
+        val dt = 1.0 / SIMULATION_HZ
+
+        val path = PathBuilder(Pose2d(0.0, 0.0, PI))
+                .splineTo(Vector2d(15.0, 15.0), PI)
+                .splineTo(Vector2d(5.0, 35.0), PI / 3)
+                .build()
+
+        val clock = SimulatedClock()
+        val drive = SimulatedMecanumDrive(dt, kV, TRACK_WIDTH)
+        val follower = HolonomicGVFFollower(
+                CONSTRAINTS,
+                Pose2d(0.5, 0.5, Math.toRadians(180.0)),
+                1.0,
+                PIDCoefficients(5.0, 0.0, 0.1),
+                clock = clock)
+        follower.followPath(path)
+
+        val actualPositions = mutableListOf<Vector2d>()
+
+        drive.poseEstimate = Pose2d(4.0, -5.0, PI)
+        var t = 0.0
+        while (follower.isFollowing()) {
+            t += dt
+            clock.time = t
+            val signal = follower.update(drive.poseEstimate)
+            drive.setDriveSignal(signal)
+            drive.updatePoseEstimate()
+
+            actualPositions.add(drive.poseEstimate.vec())
+        }
+
+        val pathPoints = (0..10000)
+                .map { it / 10000.0 * path.length() }
+                .map { path[it] }
+        val graph = XYChart(600, 400)
+        graph.title = "Mecanum GVF Follower Sim (%.2fs)".format(t)
+        graph.addSeries(
+                "Target Path",
+                pathPoints.map { it.x }.toDoubleArray(),
+                pathPoints.map { it.y }.toDoubleArray())
+        graph.addSeries(
+                "Actual Path",
+                actualPositions.map { it.x }.toDoubleArray(),
+                actualPositions.map { it.y }.toDoubleArray())
+        graph.seriesMap.values.forEach { it.marker = None() }
+        graph.styler.theme = MatlabTheme()
+        GraphUtil.saveGraph("sim/mecanumGVF", graph)
     }
 }

@@ -3,6 +3,7 @@ package com.acmerobotics.roadrunner.trajectory.constraints
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.profile.SimpleMotionConstraints
 import com.acmerobotics.roadrunner.util.epsilonEquals
+import kotlin.math.abs
 
 /**
  * This class describes general robot trajectory constraints. More specifically, for paths, the robot velocity,
@@ -28,7 +29,7 @@ open class DriveConstraints(
         val maxVels = mutableListOf(maxVel)
 
         if (!(deriv.heading epsilonEquals 0.0)) {
-            maxVels.add(maxAngVel / Math.abs(deriv.heading))
+            maxVels.add(maxAngVel / abs(deriv.heading))
         }
 
         return SimpleMotionConstraints(maxVels.min() ?: 0.0, maxAccel)

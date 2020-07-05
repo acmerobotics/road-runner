@@ -46,6 +46,8 @@ data class Vector2d @JvmOverloads constructor(
         return Vector2d(newX, newY)
     }
 
+    fun unit() = this / norm()
+
     infix fun epsilonEquals(other: Vector2d) =
         x epsilonEquals other.x && y epsilonEquals other.y
 

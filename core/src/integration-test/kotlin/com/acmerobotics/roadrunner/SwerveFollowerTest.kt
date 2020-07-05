@@ -99,7 +99,7 @@ class SwerveFollowerTest {
         }
 
         val graph = XYChart(600, 400)
-        graph.title = "Swerve PIDVA Follower Sim"
+        graph.title = "Swerve PIDVA Follower Sim (%.2fs)".format(t)
         graph.addSeries(
                 "Target Trajectory",
                 targetPositions.map { it.x }.toDoubleArray(),

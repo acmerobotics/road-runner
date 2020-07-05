@@ -2,13 +2,12 @@ package com.acmerobotics.roadrunner
 
 import com.acmerobotics.roadrunner.control.PIDCoefficients
 import com.acmerobotics.roadrunner.drive.TankDrive
-import com.acmerobotics.roadrunner.followers.GVFFollower
+import com.acmerobotics.roadrunner.followers.TankGVFFollower
 import com.acmerobotics.roadrunner.followers.RamseteFollower
 import com.acmerobotics.roadrunner.followers.TankPIDVAFollower
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.path.PathBuilder
-import com.acmerobotics.roadrunner.profile.SimpleMotionConstraints
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import com.acmerobotics.roadrunner.trajectory.constraints.TankConstraints
@@ -20,7 +19,6 @@ import org.knowm.xchart.XYChart
 import org.knowm.xchart.style.MatlabTheme
 import org.knowm.xchart.style.markers.None
 import kotlin.math.PI
-import kotlin.math.atan
 import kotlin.math.max
 import kotlin.math.min
 
@@ -97,7 +95,7 @@ class TankFollowerTest {
         }
 
         val graph = XYChart(600, 400)
-        graph.title = "Tank PIDVA Follower Sim"
+        graph.title = "Tank PIDVA Follower Sim (%.2fs)".format(t)
         graph.addSeries(
                 "Target Trajectory",
                 targetPositions.map { it.x }.toDoubleArray(),
@@ -148,7 +146,7 @@ class TankFollowerTest {
         }
 
         val graph = XYChart(600, 400)
-        graph.title = "Tank Ramsete Follower Sim"
+        graph.title = "Tank Ramsete Follower Sim (%.2fs)".format(t)
         graph.addSeries(
                 "Target Trajectory",
                 targetPositions.map { it.x }.toDoubleArray(),
@@ -166,25 +164,24 @@ class TankFollowerTest {
     fun simulateGVFFollower() {
         val dt = 1.0 / SIMULATION_HZ
 
-        val path = PathBuilder(Pose2d(0.0, 0.0, 0.0))
-                .splineTo(Vector2d(15.0, 15.0), 0.0)
-                .lineTo(Vector2d(30.0, 15.0))
+        val path = PathBuilder(Pose2d(0.0, 0.0, PI))
+                .splineTo(Vector2d(15.0, 15.0), PI)
+                .splineTo(Vector2d(5.0, 35.0), PI / 3)
                 .build()
 
         val clock = SimulatedClock()
         val drive = SimulatedTankDrive(dt, kV, TRACK_WIDTH)
-        val follower = GVFFollower(
-                SimpleMotionConstraints(5.0, 25.0),
-            Pose2d(0.5, 0.5, Math.toRadians(3.0)),
-                3.0,
-                5.0,
-                ::atan,
-                clock)
+        val follower = TankGVFFollower(
+                CONSTRAINTS,
+                Pose2d(0.5, 0.5, Math.toRadians(3.0)),
+                1.0,
+                2.0,
+                clock = clock)
         follower.followPath(path)
 
         val actualPositions = mutableListOf<Vector2d>()
 
-        drive.poseEstimate = Pose2d(0.0, 10.0, -PI / 2)
+        drive.poseEstimate = Pose2d(4.0, -5.0, PI)
         var t = 0.0
         while (follower.isFollowing()) {
             t += dt
@@ -199,13 +196,13 @@ class TankFollowerTest {
         val pathPoints = DoubleProgression.fromClosedInterval(0.0, path.length(), 10_000)
                 .map { path[it] }
         val graph = XYChart(600, 400)
-        graph.title = "Tank GVF Follower Sim"
+        graph.title = "Tank GVF Follower Sim (%.2fs)".format(t)
         graph.addSeries(
-                "Target Trajectory",
+                "Target Path",
                 pathPoints.map { it.x }.toDoubleArray(),
                 pathPoints.map { it.y }.toDoubleArray())
         graph.addSeries(
-                "Actual Trajectory",
+                "Actual Path",
                 actualPositions.map { it.x }.toDoubleArray(),
                 actualPositions.map { it.y }.toDoubleArray())
         graph.seriesMap.values.forEach { it.marker = None() }

@@ -12,7 +12,7 @@ import kotlin.math.abs
  * Generic [Trajectory] follower for time-based pose reference tracking.
  *
  * @param admissibleError admissible/satisfactory pose error at the end of each move
- * @param timeout max time to wait for the error to be admissible
+ * @param timeout max time (over the planned time) to wait for the error to be admissible
  * @param clock clock
  */
 abstract class TrajectoryFollower @JvmOverloads constructor(

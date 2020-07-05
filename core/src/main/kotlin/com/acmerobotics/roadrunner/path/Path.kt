@@ -115,7 +115,7 @@ class Path(val segments: List<PathSegment>) {
      * @param projectGuess guess for the projected queryPoint's s along the path
      */
     fun fastProject(queryPoint: Vector2d, projectGuess: Double = length() / 2.0): Double {
-        // we use the first-order method (since we already compute the arc length param
+        // we use the first-order method (since we already compute the arc length param)
         var s = projectGuess
         repeat(200) {
             val t = reparam(s)

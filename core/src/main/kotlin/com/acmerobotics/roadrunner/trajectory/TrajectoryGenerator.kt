@@ -12,15 +12,14 @@ import com.acmerobotics.roadrunner.util.epsilonEquals
  * Trajectory generator for creating trajectories with dynamic and static constraints from paths.
  */
 object TrajectoryGenerator {
-
-    private fun generateProfile(
-        path: Path,
-        constraints: TrajectoryConstraints,
-        start: MotionState,
-        goal: MotionState,
-        resolution: Double
-    ): MotionProfile {
-        return MotionProfileGenerator.generateMotionProfile(start, goal, object : MotionConstraints() {
+    /**
+     * Generates [MotionConstraints] based on the [TrajectoryConstraints] for the [Path]
+     *
+     * @param path The path to use for constraint sampling
+     * @param constraints the trajectory constraints to respect
+     */
+    fun generateConstraints(path: Path, constraints: TrajectoryConstraints) =
+            object : MotionConstraints() {
             override fun get(s: Double): SimpleMotionConstraints {
                 val t = path.reparam(s)
                 return constraints[
@@ -41,8 +40,20 @@ object TrajectoryGenerator {
                             path.secondDeriv(s, t)
                         ]
                     }
-        }, resolution)
-    }
+        }
+
+    private fun generateProfile(
+        path: Path,
+        constraints: TrajectoryConstraints,
+        start: MotionState,
+        goal: MotionState,
+        resolution: Double
+    ) = MotionProfileGenerator.generateMotionProfile(
+            start,
+            goal,
+            generateConstraints(path, constraints),
+            resolution
+    )
 
     private fun generateSimpleProfile(
         constraints: DriveConstraints,

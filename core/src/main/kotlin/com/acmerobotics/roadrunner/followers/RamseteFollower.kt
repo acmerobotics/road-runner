@@ -59,7 +59,7 @@ class RamseteFollower @JvmOverloads constructor(
                 (cos(currentPose.heading) * error.y - sin(currentPose.heading) * error.x) +
                 k3 * error.heading
 
-        lastError = error
+        lastError = Kinematics.calculatePoseError(targetPose, currentPose)
 
         // TODO: is Ramsete acceleration FF worth?
         return DriveSignal(Pose2d(v, 0.0, omega))
