@@ -3,8 +3,7 @@ package com.acmerobotics.roadrunner.util
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.geometry.times
 import com.acmerobotics.roadrunner.path.Path
-import kotlin.math.PI
-import kotlin.math.atan
+import kotlin.math.*
 
 /**
  * Guiding vector field for effective path following described in section III, eq. (9) of
@@ -24,6 +23,8 @@ class GuidingVectorField(
 
     /**
      * Represents the error mapping function and its derivative (see eq. (4))
+     * Error maps describe functions that convert cross-track error into the normal vector's weight
+     * [Graphed on Desmos](https://www.desmos.com/calculator/wy1u493y7k)
      */
     abstract class ErrorMap {
 
@@ -37,25 +38,36 @@ class GuidingVectorField(
         }
 
         /**
-         * The cubic error mapping function.
-         * Where a = cubeCoefficient, f(x) = ax^3 + x and f'(x) = a/3x^2 + 1
+         * The damped power error mapping function.
+         * Where p = power >= 1, b = horizontalStretch,
+         * f(x) = |x/b|^p*sign(x)/(1+|x/b|^p) and f'(x) = p/b*|x/b|^(p-1)/(1+|x/b|^p)^2
          *
-         * @param cubeCoefficient the third-order term coefficient
+         * @param power the function power >= 1
+         * @param horizontalStretch the compression/stretch transformation of the input value
          */
-        class Cubic(private val cubeCoefficient: Double = 0.01) : ErrorMap() {
-            override fun get(error: Double) = cubeCoefficient * error * error * error + error
-            override fun deriv(error: Double) = cubeCoefficient / 3.0 * error * error + 1.0
+        class DampedPower(private val power: Double, private val horizontalStretch: Double) : ErrorMap() {
+            override fun get(error: Double) =
+                    abs(error / horizontalStretch).pow(power) * sign(error) /
+                            (1.0 + abs(error / horizontalStretch).pow(power))
+            override fun deriv(error: Double) =
+                    power / horizontalStretch * abs(error / horizontalStretch).pow(power - 1.0) /
+                            (1.0 + abs(error / horizontalStretch).pow(power)) *
+                            (1.0 + abs(error / horizontalStretch).pow(power))
         }
 
         /**
          * The arc tangent error mapping function.
-         * Where b = horizontalStretch, f(x) = atan(b * x) and f'(x) = b / (1 + x^2)
+         * Where p = power >= 1, b = horizontalStretch,
+         * f(x) = atan(|x/b|^p*sign(x))/(pi/2) and f'(x) = p|x/b|^(p-1)/(pi/2*b*(1+|x/b|^(2p)))
          *
+         * @param power the function power >= 1
          * @param horizontalStretch the compression/stretch transformation of the input value
          */
-        class Atan(private val horizontalStretch: Double = 1.0) : ErrorMap() {
-            override fun get(error: Double) = atan(horizontalStretch * error)
-            override fun deriv(error: Double) = horizontalStretch / (1 + error * error)
+        class Atan(private val power: Double, private val horizontalStretch: Double) : ErrorMap() {
+            override fun get(error: Double) = atan(abs(error / horizontalStretch).pow(power) * sign(error)) /
+                    (PI / 2.0)
+            override fun deriv(error: Double) = power * abs(error / horizontalStretch).pow(power - 1.0) /
+                    (PI / 2.0 * horizontalStretch * (1.0 + abs(error / horizontalStretch).pow(2.0 * power)))
         }
 
         /**

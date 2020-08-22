@@ -5,9 +5,9 @@ import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.kinematics.Kinematics
 import com.acmerobotics.roadrunner.path.Path
 import com.acmerobotics.roadrunner.profile.DisplacementState
-import com.acmerobotics.roadrunner.profile.MotionProfileGenerator
-import com.acmerobotics.roadrunner.profile.OnlineDisplacementProfile
-import com.acmerobotics.roadrunner.trajectory.TrajectoryGenerator
+import com.acmerobotics.roadrunner.profile.MotionProfileGenerator.generateOnlineMotionProfile
+import com.acmerobotics.roadrunner.profile.OnlineMotionProfile
+import com.acmerobotics.roadrunner.trajectory.TrajectoryGenerator.generateConstraints
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import com.acmerobotics.roadrunner.util.Angle
 import com.acmerobotics.roadrunner.util.GuidingVectorField
@@ -35,23 +35,34 @@ class TankGVFFollower @JvmOverloads constructor(
     clock: NanoClock = NanoClock.system()
 ) : PathFollower(admissibleError, clock) {
     private lateinit var gvf: GuidingVectorField
-    private lateinit var profile: OnlineDisplacementProfile
+    private lateinit var profile: OnlineMotionProfile
 
-    private var lastUpdateTimestamp: Double = 0.0
     private var lastVel: Double = 0.0
 
     override var displacement: Double = Double.NaN
     override var lastError: Pose2d = Pose2d()
 
     override fun followPath(path: Path) {
-        gvf = GuidingVectorField(path, kN, errorMap)
-        profile = MotionProfileGenerator.generateOnlineDisplacementProfile(
+        val profile = generateOnlineMotionProfile(
                 DisplacementState(0.0),
                 DisplacementState(0.0),
                 path.length(),
-                TrajectoryGenerator.generateConstraints(path, constraints),
+                generateConstraints(path, constraints),
                 clock
         )
+        followPath(path, profile)
+    }
+
+    /**
+     * Follows the given [path] and uses the provided [profile] for online motion profiling
+     *
+     * @param path the path to be followed
+     * @param profile the user provided online profile to be used (see [generateOnlineMotionProfile] and
+     * [generateConstraints])
+     */
+    fun followPath(path: Path, profile: OnlineMotionProfile) {
+        gvf = GuidingVectorField(path, kN, errorMap)
+        this.profile = profile
         lastVel = 0.0
         displacement = Double.NaN
         super.followPath(path)
@@ -65,9 +76,10 @@ class TankGVFFollower @JvmOverloads constructor(
         }
 
         val gvfResult = gvf.getExtended(currentPose.vec(), displacement)
-        val pathPose = path[displacement]
-        val pathDeriv = path.deriv(displacement)
-        val pathSecondDeriv = path.secondDeriv(displacement)
+        val t = path.reparam(displacement)
+        val pathPose = path[displacement, t]
+        val pathDeriv = path.deriv(displacement, t)
+        val pathSecondDeriv = path.secondDeriv(displacement, t)
 
         val error = Kinematics.calculatePoseError(pathPose, currentPose)
 

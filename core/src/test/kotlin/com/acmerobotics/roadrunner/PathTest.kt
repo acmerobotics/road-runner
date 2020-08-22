@@ -48,12 +48,12 @@ class PathTest {
     fun testProgressionParam() {
         val path = Path(listOf(
             PathSegment(QuinticSpline(
-                QuinticSpline.Knot(0.0, 0.0, 20.0, 40.0),
-                QuinticSpline.Knot(45.0, 35.0, 60.0, 10.0)
+                    QuinticSpline.Knot(0.0, 0.0, 20.0, 40.0),
+                    QuinticSpline.Knot(45.0, 35.0, 60.0, 10.0)
             )), PathSegment(QuinticSpline(
                 QuinticSpline.Knot(45.0, 35.0, 60.0, 10.0),
                 QuinticSpline.Knot(55.0, 70.0, -20.0, 30.0)
-            ))
+        ))
         ))
 
         val dispProg = DoubleProgression.fromClosedInterval(0.0, path.length(), 20)

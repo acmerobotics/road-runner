@@ -8,8 +8,8 @@ import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.kinematics.Kinematics
 import com.acmerobotics.roadrunner.path.Path
 import com.acmerobotics.roadrunner.profile.DisplacementState
-import com.acmerobotics.roadrunner.profile.MotionProfileGenerator.generateOnlineDisplacementProfile
-import com.acmerobotics.roadrunner.profile.OnlineDisplacementProfile
+import com.acmerobotics.roadrunner.profile.MotionProfileGenerator.generateOnlineMotionProfile
+import com.acmerobotics.roadrunner.profile.OnlineMotionProfile
 import com.acmerobotics.roadrunner.trajectory.TrajectoryGenerator.generateConstraints
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import com.acmerobotics.roadrunner.util.GuidingVectorField
@@ -37,7 +37,7 @@ class HolonomicGVFFollower @JvmOverloads constructor(
     clock: NanoClock = NanoClock.system()
 ) : PathFollower(admissibleError, clock) {
     private lateinit var gvf: GuidingVectorField
-    private lateinit var profile: OnlineDisplacementProfile
+    private lateinit var profile: OnlineMotionProfile
 
     private val headingController = PIDFController(headingCoeffs, clock = clock).apply { setInputBounds(-PI, PI) }
     private var lastVel: Double = 0.0
@@ -47,14 +47,26 @@ class HolonomicGVFFollower @JvmOverloads constructor(
     override var lastError: Pose2d = Pose2d()
 
     override fun followPath(path: Path) {
-        gvf = GuidingVectorField(path, kN, errorMap)
-        profile = generateOnlineDisplacementProfile(
+        val profile = generateOnlineMotionProfile(
                 DisplacementState(0.0),
                 DisplacementState(0.0),
                 path.length(),
                 generateConstraints(path, constraints),
                 clock
         )
+        followPath(path, profile)
+    }
+
+    /**
+     * Follows the given [path] and uses the provided [profile] for online motion profiling
+     *
+     * @param path the path to be followed
+     * @param profile the user provided online profile to be used (see [generateOnlineMotionProfile] and
+     * [generateConstraints])
+     */
+    fun followPath(path: Path, profile: OnlineMotionProfile) {
+        gvf = GuidingVectorField(path, kN, errorMap)
+        this.profile = profile
         headingController.reset()
         lastVel = 0.0
         displacement = Double.NaN
@@ -70,9 +82,10 @@ class HolonomicGVFFollower @JvmOverloads constructor(
         }
 
         val gvfResult = gvf.getExtended(currentPose.vec(), displacement)
-        val pathPose = path[displacement]
-        val pathDeriv = path.deriv(displacement)
-        val pathSecondDeriv = path.secondDeriv(displacement)
+        val t = path.reparam(displacement)
+        val pathPose = path[displacement, t]
+        val pathDeriv = path.deriv(displacement, t)
+        val pathSecondDeriv = path.secondDeriv(displacement, t)
 
         val fieldError = pathPose.vec() - currentPose.vec()
         val error = Kinematics.calculatePoseError(pathPose, currentPose)
@@ -95,7 +108,7 @@ class HolonomicGVFFollower @JvmOverloads constructor(
         var alpha: Double
         var profileState = DisplacementState(lastVel)
 
-        // Iteratively solve constraints (this is needed for normalizing the heading correction which relies on velocity)
+        // Iteratively solve constraints (needed for the heading normalized correction which depends on velocity)
         var iters = 0
         do {
             targetVel = gvfVector * profileState.v
@@ -106,7 +119,8 @@ class HolonomicGVFFollower @JvmOverloads constructor(
             val pathOmega = pathDeriv.heading * displacementDeriv
 
             val denominator = 1.0 - ((currentPose - pathPose).vec() dot pathSecondDeriv.vec())
-            val numerator1 = displacementDeriv * (targetVel dot pathSecondDeriv.vec()) + (targetAccel dot pathDeriv.vec())
+            val numerator1 =
+                    displacementDeriv * (targetVel dot pathSecondDeriv.vec()) + (targetAccel dot pathDeriv.vec())
             val numerator2 = (targetVel dot pathDeriv.vec()) * (targetVel dot pathSecondDeriv.vec())
             val displacementSecondDeriv = numerator1 / denominator + numerator2 / (denominator * denominator)
             val pathAlpha = pathSecondDeriv.heading * displacementDeriv * displacementDeriv
@@ -117,7 +131,7 @@ class HolonomicGVFFollower @JvmOverloads constructor(
 
             val headingVelNormalized = if (omega epsilonEquals 0.0) 0.0 else omega / profileState.v
             val dynamicDeriv = Pose2d(gvfResult.vector, headingVelNormalized)
-            // Path second deriv heading is not entirely correct here, but all current constraints do not use it
+            // Path second deriv heading is not entirely correct here, but all constraints (at this time) do not use it
             val dynamicSecondDeriv = Pose2d(gvfResult.deriv, pathSecondDeriv.heading)
             val constraints = constraints[displacement, currentPose, dynamicDeriv, dynamicSecondDeriv]
 
@@ -130,7 +144,7 @@ class HolonomicGVFFollower @JvmOverloads constructor(
             }
 
             profileState = newProfileState
-        } while (iters++ < 100)
+        } while (iters++ < 20)
 
         profile.update(profileState.v)
 

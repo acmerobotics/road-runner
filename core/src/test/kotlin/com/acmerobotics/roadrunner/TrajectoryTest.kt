@@ -46,11 +46,11 @@ class TrajectoryTest {
     @Test
     fun testShortTrajectory() {
         val path = Path(listOf(PathSegment(QuinticSpline(
-            QuinticSpline.Knot(0.0, 0.0, 0.0, -1.0),
-            QuinticSpline.Knot(1e-4, 1e-4, 0.707, 0.707)
+                QuinticSpline.Knot(0.0, 0.0, 0.0, -1.0),
+                QuinticSpline.Knot(1e-4, 1e-4, 0.707, 0.707)
         )), PathSegment(QuinticSpline(
-            QuinticSpline.Knot(1e-4, 1e-4, 0.707, 0.707),
-            QuinticSpline.Knot(2e-4, 0.0, -1.0, 0.0)
+                QuinticSpline.Knot(1e-4, 1e-4, 0.707, 0.707),
+                QuinticSpline.Knot(2e-4, 0.0, -1.0, 0.0)
         ))))
         TrajectoryGenerator.generateTrajectory(path, DriveConstraints(5.0, 10.0, 0.0, 2.0, 3.0, 0.0), resolution = 1.0)
     }

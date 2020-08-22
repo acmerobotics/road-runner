@@ -3,10 +3,6 @@ package com.acmerobotics.roadrunner.path
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.util.DoubleProgression
-import com.acmerobotics.roadrunner.util.epsilonEquals
-import kotlin.math.max
-import kotlin.math.min
-import kotlin.math.roundToInt
 
 /**
  * Path composed of a list of parametric curves and heading interpolators.
@@ -14,6 +10,7 @@ import kotlin.math.roundToInt
  * @param segments list of path segments
  */
 class Path(val segments: List<PathSegment>) {
+    private val projector = PathProjector(this)
 
     /**
      * @param segment single path segment
@@ -93,7 +90,7 @@ class Path(val segments: List<PathSegment>) {
                 break
             }
             val pair =
-                remainingDisplacement.split(segment.length())
+                    remainingDisplacement.split(segment.length())
             val segmentDisplacement = pair.first
             if (!segmentDisplacement.isEmpty()) {
                 segment.reparam(segmentDisplacement).copyInto(t, offset, 0)
@@ -108,56 +105,20 @@ class Path(val segments: List<PathSegment>) {
     }
 
     /**
-     * Project [queryPoint] onto the current path using the iterative method described
-     * [here](http://www.geometrie.tugraz.at/wallner/sproj.pdf).
+     * Based on the guess, this method converges to the nearest orthogonal projection. See [PathProjector] for details.
      *
      * @param queryPoint query queryPoint
      * @param projectGuess guess for the projected queryPoint's s along the path
      */
-    fun fastProject(queryPoint: Vector2d, projectGuess: Double = length() / 2.0): Double {
-        // we use the first-order method (since we already compute the arc length param)
-        var s = projectGuess
-        repeat(200) {
-            val t = reparam(s)
-            val pathPoint = get(s, t).vec()
-            val deriv = deriv(s, t).vec()
-
-            val ds = (queryPoint - pathPoint) dot deriv
-
-            if (ds epsilonEquals 0.0) {
-                return@repeat
-            }
-
-            s += ds
-
-            if (s <= 0.0) {
-                return@repeat
-            }
-
-            if (s >= length()) {
-                return@repeat
-            }
-        }
-
-        return max(0.0, min(s, length()))
-    }
+    fun fastProject(queryPoint: Vector2d, projectGuess: Double = length() / 2.0) =
+            projector.localProject(queryPoint, projectGuess)
 
     /**
-     * Project [queryPoint] onto the current path by applying [fastProject] with various
-     * guesses along the path.
+     * Finds the nearest point on the path to the query point. See [PathProjector] for details.
      *
      * @param queryPoint query queryPoint
-     * @param ds spacing between guesses
      */
-    fun project(queryPoint: Vector2d, ds: Double = 0.25): Double {
-        val samples = (length() / ds).roundToInt()
-
-        val guesses = DoubleProgression.fromClosedInterval(0.0, length(), samples)
-
-        val results = guesses.map { fastProject(queryPoint, it) }
-
-        return results.minBy { this[it].vec().distTo(queryPoint) } ?: 0.0
-    }
+    fun project(queryPoint: Vector2d) = projector.project(queryPoint)
 
     /**
      * Returns the start pose.

@@ -11,10 +11,10 @@ import kotlin.math.*
  * @param length the length of the profile in displacement units
  * @param baseConstraints motion constraints used for online mp unless an override is specified in [get]
  * @param clock clock used for dt calculation
- * @param backwardsPassProfile a backwards pass that follows [baseConstraints] used to ensure decel consistency with
- * dynamic constraints
+ * @param backwardsPassProfile a backwards pass (usually with the same constraints as the forwards pass) used to ensure
+ * decel consistency with dynamic constraints
  */
-class OnlineDisplacementProfile(
+class OnlineMotionProfile(
     start: DisplacementState,
     private val goal: DisplacementState,
     private val length: Double,
@@ -29,7 +29,7 @@ class OnlineDisplacementProfile(
      * Gets the velocity and numeric acceleration state based on the online mp forward pass and the
      * [DisplacementProfile] reverse pass.
      * Note: Calling [update] is required to update the internal state after a velocity has been selected.
-     * @param displacement The displacement along the profile from [0, length]
+     * @param displacement The displacement along the profile from `[0, length]`
      * @param error An optional error parameter that is factored into the stopping distance calculation for
      * multi-dimensional systems
      * @param constraints An optional parameter to override the constraints which can be useful for dynamic
@@ -56,9 +56,9 @@ class OnlineDisplacementProfile(
 
     /**
      * Updates the internal state (timestamp and previous velocity) after a given velocity has been selected
-     * @param velocity The calculated
-     * @param timestamp An optional parameter to override the timestamp of the velocity as provided by [clock] of when
-     * the velocity was selected
+     * @param velocity The velocity set/used
+     * @param timestamp An optional parameter to override the current timestamp which represents the time this velocity
+     * was set
      */
     fun update(velocity: Double, timestamp: Double = clock.seconds()) {
         lastVelocity = velocity

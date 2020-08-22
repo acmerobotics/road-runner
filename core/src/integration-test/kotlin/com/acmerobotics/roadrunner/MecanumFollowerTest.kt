@@ -112,9 +112,9 @@ class MecanumFollowerTest {
     fun simulateGVFFollower() {
         val dt = 1.0 / SIMULATION_HZ
 
-        val path = PathBuilder(Pose2d(0.0, 0.0, PI))
-                .splineTo(Vector2d(15.0, 15.0), PI)
-                .splineTo(Vector2d(5.0, 35.0), PI / 3)
+        val path = PathBuilder(Pose2d(0.0, 0.0, 0.0))
+                .splineTo(Vector2d(15.0, 15.0), 0.0)
+                .lineTo(Vector2d(30.0, 15.0))
                 .build()
 
         val clock = SimulatedClock()
@@ -123,13 +123,13 @@ class MecanumFollowerTest {
                 CONSTRAINTS,
                 Pose2d(0.5, 0.5, Math.toRadians(180.0)),
                 1.0,
-                PIDCoefficients(5.0, 0.0, 0.1),
+                PIDCoefficients(5.0, 0.0, 0.3),
                 clock = clock)
         follower.followPath(path)
 
         val actualPositions = mutableListOf<Vector2d>()
 
-        drive.poseEstimate = Pose2d(4.0, -5.0, PI)
+        drive.poseEstimate = Pose2d(0.0, 10.0, -PI / 2)
         var t = 0.0
         while (follower.isFollowing()) {
             t += dt

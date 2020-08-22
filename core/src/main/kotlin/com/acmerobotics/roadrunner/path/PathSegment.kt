@@ -12,8 +12,8 @@ import com.acmerobotics.roadrunner.util.DoubleProgression
  * @param interpolator heading interpolator
  */
 class PathSegment @JvmOverloads constructor(
-    val curve: ParametricCurve,
-    val interpolator: HeadingInterpolator = TangentInterpolator()
+        val curve: ParametricCurve,
+        val interpolator: HeadingInterpolator = TangentInterpolator()
 ) {
     init {
         interpolator.init(curve)

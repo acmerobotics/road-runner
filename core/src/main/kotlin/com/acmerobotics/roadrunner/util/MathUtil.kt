@@ -8,7 +8,7 @@ import kotlin.math.*
 object MathUtil {
 
     /**
-     * Returns the real solutions to the quadratic ax^2 + bx + c = 0.
+     * Returns the real solutions to the quadratic [a]x^2 + [b]x + [c] = 0.
      */
     @JvmStatic
     fun solveQuadratic(a: Double, b: Double, c: Double): DoubleArray {
@@ -34,7 +34,7 @@ object MathUtil {
     fun cbrt(x: Double) = sign(x) * abs(x).pow(1.0 / 3.0)
 
     /**
-     * Returns real solutions to the cubic ax^3 + bx^2 + cx + d = 0
+     * Returns real solutions to the cubic [a]x^3 + [b]x^2 + [c]x + [d] = 0
      * [Reference](https://github.com/davidzof/wattzap/blob/a3065da/src/com/wattzap/model/power/Cubic.java#L125-L182)
      */
     @JvmStatic
@@ -72,7 +72,7 @@ object MathUtil {
             }
             else -> { // 2 unique (3 total) reals
                 val cbrtR = cbrt(R)
-                doubleArrayOf(2.0 * cbrtR - lambda, cbrtR - lambda)
+                doubleArrayOf(2.0 * cbrtR - lambda, -cbrtR - lambda)
             }
         }
     }

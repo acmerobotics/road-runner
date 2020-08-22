@@ -37,12 +37,12 @@ class SplineInterpolator @JvmOverloads constructor(
         val headingDelta = Angle.normDelta(endHeading - startHeading)
 
         headingSpline = QuinticPolynomial(
-            0.0,
-            (startHeadingDeriv ?: curve.tangentAngleDeriv(0.0, 0.0)) * len,
-            (startHeadingSecondDeriv ?: curve.tangentAngleSecondDeriv(0.0, 0.0)) * len * len,
-            headingDelta,
-            (endHeadingDeriv ?: curve.tangentAngleDeriv(len, 1.0)) * len,
-            (endHeadingSecondDeriv ?: curve.tangentAngleSecondDeriv(len, 1.0)) * len * len
+                0.0,
+                (startHeadingDeriv ?: curve.tangentAngleDeriv(0.0, 0.0)) * len,
+                (startHeadingSecondDeriv ?: curve.tangentAngleSecondDeriv(0.0, 0.0)) * len * len,
+                headingDelta,
+                (endHeadingDeriv ?: curve.tangentAngleDeriv(len, 1.0)) * len,
+                (endHeadingSecondDeriv ?: curve.tangentAngleSecondDeriv(len, 1.0)) * len * len
         )
     }
 

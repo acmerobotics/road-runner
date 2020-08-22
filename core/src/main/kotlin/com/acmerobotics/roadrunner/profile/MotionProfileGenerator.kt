@@ -364,7 +364,7 @@ object MotionProfileGenerator {
     }
 
     /**
-     * Generates an [OnlineDisplacementProfile] based on [generateDisplacementProfile] and the provided params
+     * Generates an [OnlineMotionProfile] based on [generateDisplacementProfile] and the provided params
      *
      * @param start start displacement state
      * @param goal goal displacement state
@@ -376,14 +376,14 @@ object MotionProfileGenerator {
     @Suppress("LongParameterList")
     @JvmStatic
     @JvmOverloads
-    fun generateSimpleOnlineDisplacementProfile(
+    fun generateSimpleOnlineMotionProfile(
         start: DisplacementState,
         goal: DisplacementState,
         length: Double,
         maxVel: Double,
         maxAccel: Double,
         clock: NanoClock = NanoClock.system()
-    ) = OnlineDisplacementProfile(
+    ) = OnlineMotionProfile(
             start,
             goal,
             length,
@@ -395,7 +395,7 @@ object MotionProfileGenerator {
     )
 
     /**
-     * Generates an [OnlineDisplacementProfile] based on [generateDisplacementProfile] and the provided params
+     * Generates an [OnlineMotionProfile] based on [generateDisplacementProfile] and the provided params
      *
      * @param start start displacement state
      * @param goal goal displacement state
@@ -407,14 +407,14 @@ object MotionProfileGenerator {
     @Suppress("LongParameterList")
     @JvmStatic
     @JvmOverloads
-    fun generateOnlineDisplacementProfile(
+    fun generateOnlineMotionProfile(
         start: DisplacementState,
         goal: DisplacementState,
         length: Double,
         constraints: MotionConstraints,
         clock: NanoClock = NanoClock.system(),
         resolution: Double = 0.25
-    ): OnlineDisplacementProfile {
+    ): OnlineMotionProfile {
         // ds is an adjusted resolution that fits nicely within length
         val samples = ceil(length / resolution).toInt()
         val s = DoubleProgression.fromClosedInterval(0.0, length, samples)
@@ -429,7 +429,7 @@ object MotionProfileGenerator {
                 constraintsList.reversed()
         ).reversed()
 
-        return OnlineDisplacementProfile(start, goal, length, constraints, clock, backwardProfile)
+        return OnlineMotionProfile(start, goal, length, constraints, clock, backwardProfile)
     }
 
     /**

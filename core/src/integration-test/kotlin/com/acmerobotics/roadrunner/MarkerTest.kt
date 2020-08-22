@@ -26,9 +26,13 @@ class MarkerTest {
         val constraints = DriveConstraints(25.0, 50.0, 50.0, 1.0, 1.0, 1.0)
 
         val distances = mutableListOf<Double>()
-        val path = PathBuilder(Pose2d(random.nextDouble(), random.nextDouble(), 2 * PI * random.nextDouble()))
-            .splineTo(Vector2d(random.nextDouble(), random.nextDouble()), 2 * PI * random.nextDouble())
+        val path = PathBuilder(Pose2d(10 * random.nextDouble(), 10 * random.nextDouble(), 2 * PI * random.nextDouble()))
+            .splineTo(Vector2d(10 * random.nextDouble(), 10 * random.nextDouble()), 2 * PI * random.nextDouble())
+            .splineTo(Vector2d(10 * random.nextDouble(), 10 * random.nextDouble()), 2 * PI * random.nextDouble())
+            .splineTo(Vector2d(10 * random.nextDouble(), 10 * random.nextDouble()), 2 * PI * random.nextDouble())
+            .splineTo(Vector2d(10 * random.nextDouble(), 10 * random.nextDouble()), 2 * PI * random.nextDouble())
             .build()
+
         repeat(trials) {
             val displacement = path.length() * random.nextDouble()
             val position = path[displacement].vec()
