@@ -15,9 +15,9 @@ import kotlin.math.sqrt
  * @param parameterizer the parameterizer to be used to compute arc-length reparameterization
  */
 class QuinticSpline(
-        start: Knot,
-        end: Knot,
-        private val parameterizer: SplineParameterizer = SplineParameterizer()
+    start: Knot,
+    end: Knot,
+    private val parameterizer: SplineParameterizer = SplineParameterizer()
 ) : ParametricCurve() {
     /**
      * X polynomial (i.e., x(t))

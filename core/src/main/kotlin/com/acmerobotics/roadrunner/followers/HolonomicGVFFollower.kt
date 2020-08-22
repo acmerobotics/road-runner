@@ -74,6 +74,7 @@ class HolonomicGVFFollower @JvmOverloads constructor(
         super.followPath(path)
     }
 
+    @Suppress("ComplexMethod")
     override fun internalUpdate(currentPose: Pose2d, currentRobotVel: Pose2d?): DriveSignal {
         displacement = if (displacement.isNaN()) {
             path.project(currentPose.vec())
