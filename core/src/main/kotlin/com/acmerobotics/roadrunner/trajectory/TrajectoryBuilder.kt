@@ -144,7 +144,7 @@ class TrajectoryBuilder private constructor(
     ): TrajectoryBuilder {
         val start = 0.0
 
-        lineToLinearHeading(endPose)
+        lineToSplineHeading(endPose)
 
         val end = pathBuilder.build().length()
 
