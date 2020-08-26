@@ -82,7 +82,7 @@ class TrajectoryBuilder private constructor(
      * @param constraintsOverride segment-specific constraints
      */
     fun lineTo(endPosition: Vector2d, constraintsOverride: TrajectoryConstraints): TrajectoryBuilder {
-        val start = 0.0
+        val start = pathBuilder.build().length()
 
         lineTo(endPosition)
 
@@ -100,7 +100,7 @@ class TrajectoryBuilder private constructor(
      * @param constraintsOverride segment-specific constraints
      */
     fun lineToConstantHeading(endPosition: Vector2d, constraintsOverride: TrajectoryConstraints): TrajectoryBuilder {
-        val start = 0.0
+        val start = pathBuilder.build().length()
 
         lineToConstantHeading(endPosition)
 
@@ -121,7 +121,7 @@ class TrajectoryBuilder private constructor(
         endPose: Pose2d,
         constraintsOverride: TrajectoryConstraints
     ): TrajectoryBuilder {
-        val start = 0.0
+        val start = pathBuilder.build().length()
 
         lineToLinearHeading(endPose)
 
@@ -142,7 +142,7 @@ class TrajectoryBuilder private constructor(
         endPose: Pose2d,
         constraintsOverride: TrajectoryConstraints
     ): TrajectoryBuilder {
-        val start = 0.0
+        val start = pathBuilder.build().length()
 
         lineToSplineHeading(endPose)
 
@@ -159,17 +159,8 @@ class TrajectoryBuilder private constructor(
      * @param endPosition end position
      * @param constraintsOverride segment-specific constraints
      */
-    fun strafeTo(endPosition: Vector2d, constraintsOverride: TrajectoryConstraints): TrajectoryBuilder {
-        val start = 0.0
-
-        strafeTo(endPosition)
-
-        val end = pathBuilder.build().length()
-
-        constraintsOverrideIntervals.add(ConstraintsInterval(start, end, constraintsOverride))
-
-        return this
-    }
+    fun strafeTo(endPosition: Vector2d, constraintsOverride: TrajectoryConstraints) =
+        lineToConstantHeading(endPosition, constraintsOverride)
 
     /**
      * Adds a line straight forward.
@@ -178,7 +169,7 @@ class TrajectoryBuilder private constructor(
      * @param constraintsOverride segment-specific constraints
      */
     fun forward(distance: Double, constraintsOverride: TrajectoryConstraints): TrajectoryBuilder {
-        val start = 0.0
+        val start = pathBuilder.build().length()
 
         forward(distance)
 
@@ -205,7 +196,7 @@ class TrajectoryBuilder private constructor(
      * @param constraintsOverride segment-specific constraints
      */
     fun strafeLeft(distance: Double, constraintsOverride: TrajectoryConstraints): TrajectoryBuilder {
-        val start = 0.0
+        val start = pathBuilder.build().length()
 
         strafeLeft(distance)
 
@@ -237,7 +228,7 @@ class TrajectoryBuilder private constructor(
         endTangent: Double,
         constraintsOverride: TrajectoryConstraints
     ): TrajectoryBuilder {
-        val start = 0.0
+        val start = pathBuilder.build().length()
 
         splineTo(endPosition, endTangent)
 
@@ -260,7 +251,7 @@ class TrajectoryBuilder private constructor(
         endTangent: Double,
         constraintsOverride: TrajectoryConstraints
     ): TrajectoryBuilder {
-        val start = 0.0
+        val start = pathBuilder.build().length()
 
         splineToConstantHeading(endPosition, endTangent)
 
@@ -283,7 +274,7 @@ class TrajectoryBuilder private constructor(
         endTangent: Double,
         constraintsOverride: TrajectoryConstraints
     ): TrajectoryBuilder {
-        val start = 0.0
+        val start = pathBuilder.build().length()
 
         splineToLinearHeading(endPose, endTangent)
 
@@ -305,7 +296,7 @@ class TrajectoryBuilder private constructor(
         endHeading: Double,
         constraintsOverride: TrajectoryConstraints
     ): TrajectoryBuilder {
-        val start = 0.0
+        val start = pathBuilder.build().length()
 
         splineToSplineHeading(endPose, endHeading)
 
