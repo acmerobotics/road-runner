@@ -34,7 +34,8 @@ val JFormattedTextField.doubleValue
     get() = getTypedValue<Number>()?.toDouble()
 
 inline fun <reified T> JFormattedTextField.addValueChangeListener(
-    crossinline listener: (T) -> Unit) {
+    crossinline listener: (T) -> Unit
+) {
     addPropertyChangeListener {
         val newValue = it.newValue
         if (newValue is T) {

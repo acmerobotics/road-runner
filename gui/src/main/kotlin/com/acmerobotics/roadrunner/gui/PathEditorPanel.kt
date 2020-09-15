@@ -1,6 +1,6 @@
 package com.acmerobotics.roadrunner.gui
 
-import DEFAULT_STEP
+import DEFAULT_WAYPOINT
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.trajectory.config.TrajectoryConfig
 import java.awt.BorderLayout
@@ -10,7 +10,6 @@ import java.awt.GridLayout
 import javax.swing.*
 import kotlin.math.min
 
-
 class WidthAgnosticPanel : JPanel() {
     override fun getPreferredSize(): Dimension {
         val baseSize = super.getPreferredSize()
@@ -18,14 +17,28 @@ class WidthAgnosticPanel : JPanel() {
     }
 }
 
-class PathStepPanel : JPanel() {
+class WaypointPanel : JPanel() {
     private val indexLabel = JLabel("", SwingConstants.CENTER)
     private val xTextField = makeFormattedDoubleField()
     private val yTextField = makeFormattedDoubleField()
-    private val tangentTextField = makeFormattedDoubleField()
-    private val interpComboBox = JComboBox(TrajectoryConfig.HeadingInterpolationType.values())
     private val headingTextField = makeFormattedDoubleField()
+    private val interpComboBox = JComboBox(TrajectoryConfig.HeadingInterpolationType.values())
+    private val tangentTextField = makeFormattedDoubleField()
     private val removeButton = JButton("Remove")
+
+    private val editableComponents = listOf<JComponent>(
+        xTextField, yTextField, headingTextField,
+        interpComboBox, tangentTextField, removeButton
+    )
+
+    var disabled = false
+        set(value) {
+            editableComponents.forEach {
+                it.isEnabled = !value
+            }
+
+            field = value
+        }
 
     var index: Int? = null
         set(value) {
@@ -33,12 +46,12 @@ class PathStepPanel : JPanel() {
             field = value
         }
 
-    var onStepRemove: (() -> Unit)? = null
+    var onWaypointRemove: (() -> Unit)? = null
 
-    var onStepUpdate: ((TrajectoryConfig.Step) -> Unit)? = null
+    var onWaypointChange: ((TrajectoryConfig.Waypoint) -> Unit)? = null
     private var externalUpdate = false
     private var updating = false
-    private var _step: TrajectoryConfig.Step = DEFAULT_STEP
+    private var _waypoint: TrajectoryConfig.Waypoint = DEFAULT_WAYPOINT
         set(value) {
             if (updating) {
                 return
@@ -46,84 +59,80 @@ class PathStepPanel : JPanel() {
 
             updating = true
 
-            if (xTextField.doubleValue != value.pose.x) {
-                xTextField.value = value.pose.x
+            if (xTextField.doubleValue != value.position.x) {
+                xTextField.value = value.position.x
             }
-            if (yTextField.doubleValue != value.pose.y) {
-                yTextField.value = value.pose.y
+            if (yTextField.doubleValue != value.position.y) {
+                yTextField.value = value.position.y
             }
-            if (tangentTextField.doubleValue != value.pose.heading.toDegrees()) {
-                tangentTextField.value = value.pose.heading.toDegrees()
+            if (headingTextField.doubleValue != value.heading.toDegrees()) {
+                headingTextField.value = value.heading.toDegrees()
             }
-
-            val newHeading = value.heading
-            if (newHeading != null) {
-                if (headingTextField.doubleValue != newHeading.toDegrees()) {
-                    headingTextField.value = newHeading.toDegrees()
-                }
+            if (tangentTextField.doubleValue != value.tangent.toDegrees()) {
+                tangentTextField.value = value.tangent.toDegrees()
             }
 
             if (interpComboBox.selectedItemTyped != value.interpolationType) {
                 interpComboBox.selectedItem = value.interpolationType
             }
-            headingTextField.isVisible = value.interpolationType == TrajectoryConfig.HeadingInterpolationType.LINEAR
-                || value.interpolationType == TrajectoryConfig.HeadingInterpolationType.SPLINE
+            headingTextField.isVisible = value.interpolationType == TrajectoryConfig.HeadingInterpolationType.LINEAR ||
+                value.interpolationType == TrajectoryConfig.HeadingInterpolationType.SPLINE
 
             field = value
 
             if (!externalUpdate) {
-                onStepUpdate?.invoke(value)
+                onWaypointChange?.invoke(value)
             }
 
             updating = false
         }
-    var step
-        get() = _step
+    var waypoint
+        get() = _waypoint
         set(value) {
             externalUpdate = true
 
-            _step = value
+            _waypoint = value
 
             externalUpdate = false
         }
 
     init {
         xTextField.addValueChangeListener<Number> {
-            _step = _step.copy(pose = _step.pose.copy(x = it.toDouble()))
+            _waypoint = _waypoint.copy(position = _waypoint.position.copy(x = it.toDouble()))
         }
         yTextField.addValueChangeListener<Number> {
-            _step = _step.copy(pose = _step.pose.copy(y = it.toDouble()))
+            _waypoint = _waypoint.copy(position = _waypoint.position.copy(y = it.toDouble()))
         }
-        tangentTextField.addValueChangeListener<Number> {
-            _step = _step.copy(pose = _step.pose.copy(heading = it.toDouble().toRadians()))
+        headingTextField.addValueChangeListener<Number> {
+            _waypoint = _waypoint.copy(heading = it.toDouble().toRadians())
         }
 
         interpComboBox.addActionListener {
             val newInterpType = interpComboBox.selectedItemTyped ?: return@addActionListener
-            if (_step.interpolationType != newInterpType) {
-                _step = when (newInterpType) {
+            if (_waypoint.interpolationType != newInterpType) {
+                _waypoint = when (newInterpType) {
                     TrajectoryConfig.HeadingInterpolationType.TANGENT -> {
-                        _step.copy(interpolationType = TrajectoryConfig.HeadingInterpolationType.TANGENT, heading = null)
+                        _waypoint.copy(interpolationType = TrajectoryConfig.HeadingInterpolationType.TANGENT, heading = 0.0)
                     }
                     TrajectoryConfig.HeadingInterpolationType.CONSTANT -> {
-                        _step.copy(interpolationType = TrajectoryConfig.HeadingInterpolationType.CONSTANT, heading = null)
+                        _waypoint.copy(interpolationType = TrajectoryConfig.HeadingInterpolationType.CONSTANT, heading = 0.0)
                     }
                     TrajectoryConfig.HeadingInterpolationType.LINEAR -> {
-                        _step.copy(interpolationType = TrajectoryConfig.HeadingInterpolationType.LINEAR, heading = _step.pose.heading)
+                        _waypoint.copy(interpolationType = TrajectoryConfig.HeadingInterpolationType.LINEAR, heading = _waypoint.tangent)
                     }
                     TrajectoryConfig.HeadingInterpolationType.SPLINE -> {
-                        _step.copy(interpolationType = TrajectoryConfig.HeadingInterpolationType.SPLINE, heading = _step.pose.heading)
+                        _waypoint.copy(interpolationType = TrajectoryConfig.HeadingInterpolationType.SPLINE, heading = _waypoint.tangent)
                     }
                 }
             }
         }
 
-        headingTextField.addValueChangeListener<Number> {
-            _step = _step.copy(heading = it.toDouble().toRadians())
+        tangentTextField.addValueChangeListener<Number> {
+            _waypoint = _waypoint.copy(tangent = it.toDouble().toRadians())
         }
 
         removeButton.addActionListener {
-            onStepRemove?.invoke()
+            onWaypointRemove?.invoke()
         }
 
         layout = GridLayout(1, 7, 5, 0)
@@ -137,32 +146,51 @@ class PathStepPanel : JPanel() {
 
         maximumSize = Dimension(maximumSize.width, preferredSize.height)
 
-        step = DEFAULT_STEP
+        waypoint = DEFAULT_WAYPOINT
     }
 }
 
 data class PathConfig(
     val startPose: Pose2d,
-    val startHeading: Double?,
-    val steps: List<TrajectoryConfig.Step>
+    val startTangent: Double,
+    val waypoints: List<TrajectoryConfig.Waypoint>
 )
 
 private val DEFAULT_CONFIG = PathConfig(
     Pose2d(),
-    null,
+    0.0,
     emptyList()
 )
 
 class PathEditorPanel : JPanel() {
     private val xTextField = makeFormattedDoubleField()
     private val yTextField = makeFormattedDoubleField()
-    private val tangentTextField = makeFormattedDoubleField()
     private val headingTextField = makeFormattedDoubleField()
-    private val stepPanelContainer = WidthAgnosticPanel()
-    private val stepPanels = mutableListOf<PathStepPanel>()
+    private val tangentTextField = makeFormattedDoubleField()
+    private val waypointPanelContainer = WidthAgnosticPanel()
+    private val waypointPanels = mutableListOf<WaypointPanel>()
     private val headerContainer = JPanel()
+    private val addButton = JButton("Add")
 
-    var onConfigUpdate: ((PathConfig) -> Unit)? = null
+    private val editableComponents = listOf<JComponent>(
+        xTextField, yTextField, headingTextField,
+        tangentTextField, addButton
+    )
+
+    var disabled = false
+        set(value) {
+            editableComponents.forEach {
+                it.isEnabled = !value
+            }
+
+            waypointPanels.forEach {
+                it.disabled = value
+            }
+
+            field = value
+        }
+
+    var onConfigChange: ((PathConfig) -> Unit)? = null
     private var externalUpdate = false
     private var updating = false
     private var _config: PathConfig = DEFAULT_CONFIG
@@ -179,73 +207,65 @@ class PathEditorPanel : JPanel() {
             if (yTextField.doubleValue != value.startPose.y) {
                 yTextField.value = value.startPose.y
             }
-            if (tangentTextField.doubleValue != value.startPose.heading.toDegrees()) {
-                tangentTextField.value = value.startPose.heading.toDegrees()
+            if (headingTextField.doubleValue != value.startPose.heading.toDegrees()) {
+                headingTextField.value = value.startPose.heading.toDegrees()
+            }
+            if (tangentTextField.doubleValue != value.startTangent.toDegrees()) {
+                tangentTextField.value = value.startTangent.toDegrees()
             }
 
-            val newStartHeading = value.startHeading
-            if (newStartHeading != null) {
-                if (headingTextField.doubleValue != newStartHeading.toDegrees()) {
-                    headingTextField.value = newStartHeading.toDegrees()
-                }
-            } else {
-                if (headingTextField.doubleValue != value.startPose.heading.toDegrees()) {
-                    headingTextField.value = value.startPose.heading.toDegrees()
-                }
-            }
-
-            // update existing step panels
-            for ((i, pair) in value.steps.zip(stepPanels).withIndex()) {
-                val (step, panel) = pair
+            // update existing waypoint panels
+            for ((i, pair) in value.waypoints.zip(waypointPanels).withIndex()) {
+                val (waypoint, panel) = pair
                 panel.isVisible = true
-                panel.onStepRemove = {
-                    _config = _config.copy(steps = _config.steps.filterIndexed { j, _ -> i != j })
+                panel.onWaypointRemove = {
+                    _config = _config.copy(waypoints = _config.waypoints.filterIndexed { j, _ -> i != j })
                 }
-                panel.onStepUpdate = { newStep ->
-                    _config = _config.copy(steps = _config.steps.mapIndexed { j, step ->
+                panel.onWaypointChange = { newWaypoint ->
+                    _config = _config.copy(waypoints = _config.waypoints.mapIndexed { j, waypoint ->
                         if (i == j) {
-                            newStep
+                            newWaypoint
                         } else {
-                            step
+                            waypoint
                         }
                     })
                 }
-                if (panel.step !== step) {
-                    panel.step = step
+                if (panel.waypoint !== waypoint) {
+                    panel.waypoint = waypoint
                 }
             }
 
             // create additional panels if necessary
-            val startSize = stepPanels.size
-            for ((i, step) in value.steps.drop(startSize).withIndex()) {
-                val panel = PathStepPanel()
+            val startSize = waypointPanels.size
+            for ((i, waypoint) in value.waypoints.drop(startSize).withIndex()) {
+                val panel = WaypointPanel()
                 panel.index = i + startSize
-                panel.step = step
-                panel.onStepRemove = {
-                    _config = _config.copy(steps = _config.steps.filterIndexed { j, _ -> i + startSize != j })
+                panel.waypoint = waypoint
+                panel.onWaypointRemove = {
+                    _config = _config.copy(waypoints = _config.waypoints.filterIndexed { j, _ -> i + startSize != j })
                 }
-                panel.onStepUpdate = { newStep ->
-                    _config = _config.copy(steps = _config.steps.mapIndexed { j, step ->
+                panel.onWaypointChange = { newWaypoint ->
+                    _config = _config.copy(waypoints = _config.waypoints.mapIndexed { j, waypoint ->
                         if (i + startSize == j) {
-                            newStep
+                            newWaypoint
                         } else {
-                            step
+                            waypoint
                         }
                     })
                 }
-                stepPanelContainer.add(panel)
-                stepPanels.add(panel)
+                waypointPanelContainer.add(panel)
+                waypointPanels.add(panel)
             }
 
             // hide the rest
-            for (stepPanel in stepPanels.drop(value.steps.size)) {
-                stepPanel.isVisible = false
+            for (waypointPanel in waypointPanels.drop(value.waypoints.size)) {
+                waypointPanel.isVisible = false
             }
 
             field = value
 
             if (!externalUpdate) {
-                onConfigUpdate?.invoke(value)
+                onConfigChange?.invoke(value)
             }
 
             updating = false
@@ -277,11 +297,11 @@ class PathEditorPanel : JPanel() {
         yTextField.addValueChangeListener<Number> {
             _config = _config.copy(startPose = _config.startPose.copy(y = it.toDouble()))
         }
-        tangentTextField.addValueChangeListener<Number> {
+        headingTextField.addValueChangeListener<Number> {
             _config = _config.copy(startPose = _config.startPose.copy(heading = it.toDouble().toRadians()))
         }
-        headingTextField.addValueChangeListener<Number> {
-            _config = _config.copy(startHeading = it.toDouble().toRadians())
+        tangentTextField.addValueChangeListener<Number> {
+            _config = _config.copy(startTangent = it.toDouble().toRadians())
         }
 
         layout = BorderLayout()
@@ -294,10 +314,10 @@ class PathEditorPanel : JPanel() {
         headerContainer.add(JLabel("Interp", SwingConstants.CENTER))
         headerContainer.add(JLabel("Heading", SwingConstants.CENTER))
 
-        val addButton = JButton("Add")
         addButton.addActionListener {
-            _config = _config.copy(steps = _config.steps + listOf(_config.steps.lastOrNull()?.copy()
-                ?: TrajectoryConfig.Step(_config.startPose.copy(), _config.startHeading, TrajectoryConfig.HeadingInterpolationType.TANGENT)
+            _config = _config.copy(waypoints = _config.waypoints + listOf(_config.waypoints.lastOrNull()?.copy()
+                ?: TrajectoryConfig.Waypoint(_config.startPose.vec(), _config.startPose.heading,
+                    _config.startTangent, TrajectoryConfig.HeadingInterpolationType.TANGENT)
             ))
         }
         headerContainer.add(addButton)
@@ -305,10 +325,10 @@ class PathEditorPanel : JPanel() {
         headerContainer.border = BorderFactory.createEmptyBorder(0, 0, 0, 15)
         add(headerContainer, BorderLayout.NORTH)
 
-        val scrollPane = JScrollPane(stepPanelContainer, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER)
+        val scrollPane = JScrollPane(waypointPanelContainer, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER)
         scrollPane.border = BorderFactory.createEmptyBorder()
 
-        stepPanelContainer.layout = BoxLayout(stepPanelContainer, BoxLayout.PAGE_AXIS)
+        waypointPanelContainer.layout = BoxLayout(waypointPanelContainer, BoxLayout.PAGE_AXIS)
 
         val firstRow = JPanel()
         firstRow.layout = GridLayout(1, 7, 5, 0)
@@ -322,11 +342,13 @@ class PathEditorPanel : JPanel() {
 
         firstRow.maximumSize = Dimension(firstRow.maximumSize.width, firstRow.preferredSize.height)
 
-        stepPanelContainer.add(firstRow)
+        waypointPanelContainer.add(firstRow)
 
         add(scrollPane, BorderLayout.CENTER)
 
         config = DEFAULT_CONFIG
+
+        disabled = true
     }
 
     override fun getPreferredSize(): Dimension {

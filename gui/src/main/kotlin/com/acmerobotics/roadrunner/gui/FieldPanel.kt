@@ -3,6 +3,7 @@ package com.acmerobotics.roadrunner.gui
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.trajectory.Trajectory
+import com.acmerobotics.roadrunner.util.DoubleProgression
 import com.acmerobotics.roadrunner.util.NanoClock
 import java.awt.*
 import java.awt.event.MouseEvent
@@ -17,8 +18,8 @@ import javax.swing.Timer
 import kotlin.math.min
 import kotlin.math.roundToInt
 
-private const val SPATIAL_RESOLUTION = 0.25  // in
-private const val TEMPORAL_RESOLUTION = 0.025  // sec
+private const val SPATIAL_RESOLUTION = 2.0 // in
+private const val TEMPORAL_RESOLUTION = 0.025 // sec
 private val FIELD_IMAGE = ImageIO.read(FieldPanel::class.java.getResource("/field.png"))
 
 data class RobotDimensions(
@@ -45,7 +46,7 @@ class FieldPanel : JPanel() {
     private var startTime: Double = 0.0
     private val clock = NanoClock.system()
 
-    var knots: List<Vector2d> = emptyList()
+    var waypoints: List<Vector2d> = emptyList()
         set(value) {
             field = value
 
@@ -80,7 +81,7 @@ class FieldPanel : JPanel() {
 
             if (value == null) {
                 synchronized(updateLock) {
-                    knots = emptyList()
+                    waypoints = emptyList()
                     path = newPath
                     area = newArea
                     field = value
@@ -91,9 +92,7 @@ class FieldPanel : JPanel() {
 
             // compute path samples
             val displacementSamples = (value.path.length() / SPATIAL_RESOLUTION).roundToInt()
-            val displacements = (0..displacementSamples).map {
-                it / displacementSamples.toDouble() * value.path.length()
-            }
+            val displacements = DoubleProgression.fromClosedInterval(0.0, value.path.length(), displacementSamples)
 
             // compute the path segments and area swept by the robot
             val poses = displacements.map { value.path[it] }
@@ -106,9 +105,7 @@ class FieldPanel : JPanel() {
 
             // compute time samples
             val timeSamples = (value.duration() / TEMPORAL_RESOLUTION).roundToInt()
-            val times = (0..timeSamples).map {
-                it / timeSamples.toDouble() * value.duration()
-            }
+            val times = DoubleProgression.fromClosedInterval(0.0, value.duration(), timeSamples)
 
             // TODO: is this procedure quadratic?
             // is it better to divide and conquer (at the cost of additional memory)?
@@ -138,7 +135,6 @@ class FieldPanel : JPanel() {
 
         addMouseListener(object : MouseListener {
             override fun mouseReleased(e: MouseEvent?) {
-
             }
 
             override fun mouseEntered(e: MouseEvent?) {
@@ -146,7 +142,6 @@ class FieldPanel : JPanel() {
             }
 
             override fun mouseClicked(e: MouseEvent?) {
-
             }
 
             override fun mouseExited(e: MouseEvent?) {
@@ -154,7 +149,6 @@ class FieldPanel : JPanel() {
             }
 
             override fun mousePressed(e: MouseEvent?) {
-
             }
         })
     }
@@ -202,7 +196,7 @@ class FieldPanel : JPanel() {
 
         synchronized(updateLock) {
             // draw poses
-            for (knot in knots) {
+            for (knot in waypoints) {
                 g2d.fill(fieldTransform.createTransformedShape(circle(knot, 3.0)))
             }
 

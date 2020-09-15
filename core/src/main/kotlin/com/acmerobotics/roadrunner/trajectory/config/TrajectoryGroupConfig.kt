@@ -5,6 +5,9 @@ import com.acmerobotics.roadrunner.trajectory.constraints.MecanumConstraints
 import com.acmerobotics.roadrunner.trajectory.constraints.TankConstraints
 import com.fasterxml.jackson.annotation.JsonIgnore
 
+/**
+ * Configuration describing constraints and other robot-specific parameters that are shared by a group of trajectories.
+ */
 data class TrajectoryGroupConfig(
     val maxVel: Double,
     val maxAccel: Double,
@@ -17,6 +20,9 @@ data class TrajectoryGroupConfig(
     val wheelBase: Double?,
     val lateralMultiplier: Double?
 ) {
+    /**
+     * Type of drivetrain.
+     */
     enum class DriveType {
         GENERIC,
         MECANUM,
@@ -34,7 +40,8 @@ data class TrajectoryGroupConfig(
 
     @JsonIgnore val constraints = when (driveType) {
         DriveType.GENERIC -> baseConstraints
-        DriveType.MECANUM -> MecanumConstraints(baseConstraints, trackWidth!!, wheelBase ?: trackWidth, lateralMultiplier!!)
+        DriveType.MECANUM -> MecanumConstraints(baseConstraints,
+            trackWidth!!, wheelBase ?: trackWidth, lateralMultiplier!!)
         DriveType.TANK -> TankConstraints(baseConstraints, trackWidth!!)
     }
 }

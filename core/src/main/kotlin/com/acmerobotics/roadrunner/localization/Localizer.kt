@@ -13,6 +13,11 @@ interface Localizer {
     var poseEstimate: Pose2d
 
     /**
+     * Current robot pose velocity (optional)
+     */
+    val poseVelocity: Pose2d?
+
+    /**
      * Completes a single localization update.
      */
     fun update()

@@ -5,8 +5,10 @@ import kotlin.math.abs
 
 object TestUtil {
     private fun numericalDerivative(x: List<Double>, ds: Double): List<Double> {
-        val deriv = (0 until x.size - 2).map { (x[it + 2] - x[it]) / (2 * ds) }.toMutableList()
-        deriv.add(0, deriv[0])
+        val deriv = (0 until x.size - 2).map {
+            (x[it + 2] - x[it]) / (2 * ds)
+        }.toMutableList()
+        deriv.add(0, deriv.first())
         deriv.add(deriv.last())
         return deriv
     }
