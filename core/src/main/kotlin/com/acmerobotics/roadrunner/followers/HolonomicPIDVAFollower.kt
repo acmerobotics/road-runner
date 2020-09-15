@@ -46,7 +46,7 @@ class HolonomicPIDVAFollower @JvmOverloads constructor(
         super.followTrajectory(trajectory)
     }
 
-    override fun internalUpdate(currentPose: Pose2d): DriveSignal {
+    override fun internalUpdate(currentPose: Pose2d, currentRobotVel: Pose2d?): DriveSignal {
         val t = elapsedTime()
 
         val targetPose = trajectory[t]
@@ -58,15 +58,19 @@ class HolonomicPIDVAFollower @JvmOverloads constructor(
 
         val poseError = Kinematics.calculatePoseError(targetPose, currentPose)
 
-        // you can pass the error directly to PIDFController by setting setpoint = error and position = 0
+        // you can pass the error directly to PIDFController by setting setpoint = error and measurement = 0
         axialController.targetPosition = poseError.x
         lateralController.targetPosition = poseError.y
         headingController.targetPosition = poseError.heading
 
-        // note: feedforward is processed at the wheel level; velocity is only passed here to adjust the derivative term
-        val axialCorrection = axialController.update(0.0, targetRobotVel.x)
-        val lateralCorrection = lateralController.update(0.0, targetRobotVel.y)
-        val headingCorrection = headingController.update(0.0, targetRobotVel.heading)
+        axialController.targetVelocity = targetRobotVel.x
+        lateralController.targetVelocity = targetRobotVel.y
+        headingController.targetVelocity = targetRobotVel.heading
+
+        // note: feedforward is processed at the wheel level
+        val axialCorrection = axialController.update(0.0, currentRobotVel?.x)
+        val lateralCorrection = lateralController.update(0.0, currentRobotVel?.y)
+        val headingCorrection = headingController.update(0.0, currentRobotVel?.heading)
 
         val correctedVelocity = targetRobotVel + Pose2d(
             axialCorrection,

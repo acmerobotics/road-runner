@@ -26,13 +26,13 @@ open class SwerveConstraints @JvmOverloads constructor(
     baseConstraints.maxAngAccel,
     baseConstraints.maxAngJerk
 ) {
-    override operator fun get(pose: Pose2d, deriv: Pose2d, secondDeriv: Pose2d): SimpleMotionConstraints {
+    override operator fun get(s: Double, pose: Pose2d, deriv: Pose2d, secondDeriv: Pose2d): SimpleMotionConstraints {
         val robotDeriv = Kinematics.fieldToRobotVelocity(pose, deriv)
 
         val wheelVelocities = SwerveKinematics.robotToWheelVelocities(robotDeriv, trackWidth, wheelBase)
         val maxTrajVel = wheelVelocities.map { maxVel / it }.map(::abs).min() ?: 0.0
 
-        val superConstraints = super.get(pose, deriv, secondDeriv)
+        val superConstraints = super.get(s, pose, deriv, secondDeriv)
 
         return SimpleMotionConstraints(min(superConstraints.maxVel, maxTrajVel),
             superConstraints.maxAccel)

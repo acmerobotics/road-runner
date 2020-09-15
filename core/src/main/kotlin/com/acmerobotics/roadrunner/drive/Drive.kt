@@ -41,6 +41,12 @@ abstract class Drive {
         }
 
     /**
+     *  Current robot pose velocity (optional)
+     */
+    val poseVelocity: Pose2d?
+        get() = localizer.poseVelocity
+
+    /**
      * Updates [poseEstimate] with the most recent positional change.
      */
     fun updatePoseEstimate() {
@@ -57,4 +63,9 @@ abstract class Drive {
      * Sets the current commanded drive state of the robot. Feedforward is *not* applied to [drivePower].
      */
     abstract fun setDrivePower(drivePower: Pose2d)
+
+    /**
+     * The heading velocity used to determine pose velocity in some cases
+     */
+    open fun getExternalHeadingVelocity(): Double? = null
 }

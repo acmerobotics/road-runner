@@ -13,6 +13,13 @@ class TrajectoryInfoPanel : JPanel() {
     private val durationLabel = JLabel()
     private val resolutionTextField = makeFormattedDoubleField()
 
+    var disabled = false
+        set(value) {
+            resolutionTextField.isEnabled = !value
+
+            field = value
+        }
+
     var duration: Double = 0.0
         set(value) {
             durationLabel.text = if (value.isInfinite() || value.isNaN()) {
@@ -23,7 +30,7 @@ class TrajectoryInfoPanel : JPanel() {
             field = value
         }
 
-    var onResolutionUpdate: ((Double) -> Unit)? = null
+    var onResolutionChange: ((Double) -> Unit)? = null
     private var externalUpdate = false
     private var updating = false
     private var _resolution: Double = 0.0
@@ -41,7 +48,7 @@ class TrajectoryInfoPanel : JPanel() {
             field = value
 
             if (!externalUpdate) {
-                onResolutionUpdate?.invoke(value)
+                onResolutionChange?.invoke(value)
             }
 
             updating = false
@@ -75,5 +82,7 @@ class TrajectoryInfoPanel : JPanel() {
         maximumSize = preferredSize
 
         resolution = DEFAULT_RESOLUTION
+
+        disabled = true
     }
 }

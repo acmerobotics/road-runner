@@ -35,7 +35,7 @@ class RamseteFollower @JvmOverloads constructor(
             sin(x) / x
         }
 
-    override fun internalUpdate(currentPose: Pose2d): DriveSignal {
+    override fun internalUpdate(currentPose: Pose2d, currentRobotVel: Pose2d?): DriveSignal {
         val t = elapsedTime()
 
         val targetPose = trajectory[t]

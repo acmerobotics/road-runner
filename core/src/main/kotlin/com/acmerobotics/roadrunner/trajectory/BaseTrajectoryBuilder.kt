@@ -4,8 +4,6 @@ import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.path.Path
 import com.acmerobotics.roadrunner.path.PathBuilder
-import com.acmerobotics.roadrunner.path.heading.HeadingInterpolator
-import com.acmerobotics.roadrunner.path.heading.TangentInterpolator
 
 /**
  * Easy-to-use builder for creating [Trajectory] instances.
@@ -14,96 +12,76 @@ import com.acmerobotics.roadrunner.path.heading.TangentInterpolator
  * @param trajectory initial trajectory (for splicing)
  * @param t time index in previous trajectory to begin new trajectory
  */
-abstract class BaseTrajectoryBuilder protected constructor(
+@Suppress("UNCHECKED_CAST")
+abstract class BaseTrajectoryBuilder<T : BaseTrajectoryBuilder<T>> protected constructor(
     startPose: Pose2d?,
-    startHeading: Double?,
+    startTangent: Double?,
     trajectory: Trajectory?,
     t: Double?
 ) {
-    private var pathBuilder: PathBuilder = if (startPose == null) {
+    protected var pathBuilder: PathBuilder = if (startPose == null) {
         PathBuilder(trajectory!!.path, trajectory.profile[t!!].x)
     } else {
-        PathBuilder(startPose, startHeading!!)
+        PathBuilder(startPose, startTangent!!)
     }
-
-    val currentPose
-        get() = pathBuilder.currentPose
-    val currentHeading
-        get() = pathBuilder.currentHeading
 
     private val temporalMarkers = mutableListOf<TemporalMarker>()
     private val displacementMarkers = mutableListOf<DisplacementMarker>()
     private val spatialMarkers = mutableListOf<SpatialMarker>()
 
     /**
-     * Adds a line path segment.
-     *
-     * @param pos end position
-     * @param interpolator heading interpolator
-     */
-    @Deprecated("raw heading interpolators are no longer permitted in high-level builders")
-    fun lineTo(
-        pos: Vector2d,
-        interpolator: HeadingInterpolator = TangentInterpolator()
-    ): BaseTrajectoryBuilder {
-        pathBuilder.lineTo(pos, interpolator)
-
-        return this
-    }
-
-    /**
      * Adds a line segment with tangent heading interpolation.
      *
-     * @param position end position
+     * @param endPosition end position
      */
-    fun lineTo(position: Vector2d): BaseTrajectoryBuilder {
-        pathBuilder.lineTo(position)
+    fun lineTo(endPosition: Vector2d): T {
+        pathBuilder.lineTo(endPosition)
 
-        return this
+        return this as T
     }
 
     /**
      * Adds a line segment with constant heading interpolation.
      *
-     * @param position end position
+     * @param endPosition end position
      */
-    fun lineToConstantHeading(position: Vector2d): BaseTrajectoryBuilder {
-        pathBuilder.lineToConstantHeading(position)
+    fun lineToConstantHeading(endPosition: Vector2d): T {
+        pathBuilder.lineToConstantHeading(endPosition)
 
-        return this
+        return this as T
     }
 
     /**
      * Adds a line segment with linear heading interpolation.
      *
-     * @param position end position
+     * @param endPose end pose
      */
-    fun lineToLinearHeading(position: Vector2d, heading: Double): BaseTrajectoryBuilder {
-        pathBuilder.lineToLinearHeading(position, heading)
+    fun lineToLinearHeading(endPose: Pose2d): T {
+        pathBuilder.lineToLinearHeading(endPose)
 
-        return this
+        return this as T
     }
 
     /**
      * Adds a line segment with spline heading interpolation.
      *
-     * @param position end position
+     * @param endPose end pose
      */
-    fun lineToSplineHeading(position: Vector2d, heading: Double): BaseTrajectoryBuilder {
-        pathBuilder.lineToSplineHeading(position, heading)
+    fun lineToSplineHeading(endPose: Pose2d): T {
+        pathBuilder.lineToSplineHeading(endPose)
 
-        return this
+        return this as T
     }
 
     /**
      * Adds a strafe path segment.
      *
-     * @param position end position
+     * @param endPosition end position
      */
-    fun strafeTo(position: Vector2d): BaseTrajectoryBuilder {
-        pathBuilder.strafeTo(position)
+    fun strafeTo(endPosition: Vector2d): T {
+        pathBuilder.strafeTo(endPosition)
 
-        return this
+        return this as T
     }
 
     /**
@@ -111,10 +89,10 @@ abstract class BaseTrajectoryBuilder protected constructor(
      *
      * @param distance distance to travel forward
      */
-    fun forward(distance: Double): BaseTrajectoryBuilder {
+    fun forward(distance: Double): T {
         pathBuilder.forward(distance)
 
-        return this
+        return this as T
     }
 
     /**
@@ -122,10 +100,10 @@ abstract class BaseTrajectoryBuilder protected constructor(
      *
      * @param distance distance to travel backward
      */
-    fun back(distance: Double): BaseTrajectoryBuilder {
+    fun back(distance: Double): T {
         pathBuilder.back(distance)
 
-        return this
+        return this as T
     }
 
     /**
@@ -133,10 +111,10 @@ abstract class BaseTrajectoryBuilder protected constructor(
      *
      * @param distance distance to strafe left
      */
-    fun strafeLeft(distance: Double): BaseTrajectoryBuilder {
+    fun strafeLeft(distance: Double): T {
         pathBuilder.strafeLeft(distance)
 
-        return this
+        return this as T
     }
 
     /**
@@ -144,70 +122,58 @@ abstract class BaseTrajectoryBuilder protected constructor(
      *
      * @param distance distance to strafe right
      */
-    fun strafeRight(distance: Double): BaseTrajectoryBuilder {
+    fun strafeRight(distance: Double): T {
         pathBuilder.strafeRight(distance)
 
-        return this
-    }
-
-    /**
-     * Adds a spline segment.
-     *
-     * @param pose end pose
-     * @param interpolator heading interpolator
-     */
-    @Deprecated("raw heading interpolators are no longer permitted in high-level builders")
-    fun splineTo(
-        pose: Pose2d,
-        interpolator: HeadingInterpolator = TangentInterpolator()
-    ): BaseTrajectoryBuilder {
-        pathBuilder.splineTo(pose, interpolator)
-
-        return this
+        return this as T
     }
 
     /**
      * Adds a spline segment with tangent heading interpolation.
      *
-     * @param pose end pose
+     * @param endPosition end position
+     * @param endTangent end tangent
      */
-    fun splineTo(pose: Pose2d): BaseTrajectoryBuilder {
-        pathBuilder.splineTo(pose)
+    fun splineTo(endPosition: Vector2d, endTangent: Double): T {
+        pathBuilder.splineTo(endPosition, endTangent)
 
-        return this
+        return this as T
     }
 
     /**
      * Adds a spline segment with constant heading interpolation.
      *
-     * @param pose end pose
+     * @param endPosition end position
+     * @param endTangent end tangent
      */
-    fun splineToConstantHeading(pose: Pose2d): BaseTrajectoryBuilder {
-        pathBuilder.splineToConstantHeading(pose)
+    fun splineToConstantHeading(endPosition: Vector2d, endTangent: Double): T {
+        pathBuilder.splineToConstantHeading(endPosition, endTangent)
 
-        return this
+        return this as T
     }
 
     /**
      * Adds a spline segment with linear heading interpolation.
      *
-     * @param pose end pose
+     * @param endPose end pose
+     * @param endTangent end tangent
      */
-    fun splineToLinearHeading(pose: Pose2d, heading: Double): BaseTrajectoryBuilder {
-        pathBuilder.splineToLinearHeading(pose, heading)
+    fun splineToLinearHeading(endPose: Pose2d, endTangent: Double): T {
+        pathBuilder.splineToLinearHeading(endPose, endTangent)
 
-        return this
+        return this as T
     }
 
     /**
      * Adds a spline segment with spline heading interpolation.
      *
-     * @param pose end pose
+     * @param endPose end pose
+     * @param endTangent end tangent
      */
-    fun splineToSplineHeading(pose: Pose2d, heading: Double): BaseTrajectoryBuilder {
-        pathBuilder.splineToSplineHeading(pose, heading)
+    fun splineToSplineHeading(endPose: Pose2d, endTangent: Double): T {
+        pathBuilder.splineToSplineHeading(endPose, endTangent)
 
-        return this
+        return this as T
     }
 
     /**
@@ -225,19 +191,19 @@ abstract class BaseTrajectoryBuilder protected constructor(
     /**
      * Adds a marker to the trajectory at [time] evaluated with the trajectory duration.
      */
-    fun addTemporalMarker(time: (Double) -> Double, callback: MarkerCallback): BaseTrajectoryBuilder {
+    fun addTemporalMarker(time: (Double) -> Double, callback: MarkerCallback): T {
         temporalMarkers.add(TemporalMarker(time, callback))
 
-        return this
+        return this as T
     }
 
     /**
      * Adds a marker that will be triggered at the closest trajectory point to [point].
      */
-    fun addSpatialMarker(point: Vector2d, callback: MarkerCallback): BaseTrajectoryBuilder {
+    fun addSpatialMarker(point: Vector2d, callback: MarkerCallback): T {
         spatialMarkers.add(SpatialMarker(point, callback))
 
-        return this
+        return this as T
     }
 
     /**
@@ -261,10 +227,10 @@ abstract class BaseTrajectoryBuilder protected constructor(
     /**
      * Adds a marker to the trajectory at [displacement] evaluated with path length.
      */
-    fun addDisplacementMarker(displacement: (Double) -> Double, callback: MarkerCallback): BaseTrajectoryBuilder {
+    fun addDisplacementMarker(displacement: (Double) -> Double, callback: MarkerCallback): T {
         displacementMarkers.add(DisplacementMarker(displacement, callback))
 
-        return this
+        return this as T
     }
 
     /**

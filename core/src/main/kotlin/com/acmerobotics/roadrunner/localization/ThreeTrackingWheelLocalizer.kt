@@ -22,6 +22,7 @@ abstract class ThreeTrackingWheelLocalizer(
             lastWheelPositions = emptyList()
             _poseEstimate = value
         }
+    override var poseVelocity: Pose2d? = null
     private var lastWheelPositions = emptyList<Double>()
 
     private val forwardSolver: DecompositionSolver
@@ -44,22 +45,32 @@ abstract class ThreeTrackingWheelLocalizer(
         require(forwardSolver.isNonSingular) { "The specified configuration cannot support full localization" }
     }
 
+    private fun calculatePoseDelta(wheelDeltas: List<Double>): Pose2d {
+        val rawPoseDelta = forwardSolver.solve(MatrixUtils.createRealMatrix(
+                arrayOf(wheelDeltas.toDoubleArray())
+        ).transpose())
+        return Pose2d(
+                rawPoseDelta.getEntry(0, 0),
+                rawPoseDelta.getEntry(1, 0),
+                rawPoseDelta.getEntry(2, 0)
+        )
+    }
+
     override fun update() {
         val wheelPositions = getWheelPositions()
         if (lastWheelPositions.isNotEmpty()) {
             val wheelDeltas = wheelPositions
                     .zip(lastWheelPositions)
                     .map { it.first - it.second }
-            val rawPoseDelta = forwardSolver.solve(MatrixUtils.createRealMatrix(
-                    arrayOf(wheelDeltas.toDoubleArray())
-            ).transpose())
-            val robotPoseDelta = Pose2d(
-                rawPoseDelta.getEntry(0, 0),
-                rawPoseDelta.getEntry(1, 0),
-                rawPoseDelta.getEntry(2, 0)
-            )
+            val robotPoseDelta = calculatePoseDelta(wheelDeltas)
             _poseEstimate = Kinematics.relativeOdometryUpdate(_poseEstimate, robotPoseDelta)
         }
+
+        val wheelVelocities = getWheelVelocities()
+        if (wheelVelocities != null) {
+            poseVelocity = calculatePoseDelta(wheelVelocities)
+        }
+
         lastWheelPositions = wheelPositions
     }
 
@@ -67,4 +78,9 @@ abstract class ThreeTrackingWheelLocalizer(
      * Returns the positions of the tracking wheels in the desired distance units (not encoder counts!)
      */
     abstract fun getWheelPositions(): List<Double>
+
+    /**
+     * Returns the velocities of the tracking wheels in the desired distance units (not encoder counts!)
+     */
+    open fun getWheelVelocities(): List<Double>? = null
 }

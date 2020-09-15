@@ -4,6 +4,7 @@ import com.acmerobotics.roadrunner.drive.DriveSignal
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.trajectory.Trajectory
 import com.acmerobotics.roadrunner.trajectory.TrajectoryMarker
+import com.acmerobotics.roadrunner.util.Angle
 import com.acmerobotics.roadrunner.util.NanoClock
 import kotlin.math.abs
 
@@ -57,9 +58,9 @@ abstract class TrajectoryFollower @JvmOverloads constructor(
     }
 
     /**
-     * Returns true if the current trajectory has finished executing.
+     * Returns true if the current trajectory is currently executing.
      */
-    fun isDone() = executedFinalUpdate && !internalIsFollowing()
+    fun isFollowing() = !executedFinalUpdate || internalIsFollowing()
 
     /**
      * Returns the elapsed time since the last [followTrajectory] call.
@@ -69,9 +70,11 @@ abstract class TrajectoryFollower @JvmOverloads constructor(
     /**
      * Run a single iteration of the trajectory follower.
      *
-     * @param currentPose current robot pose
+     * @param currentPose current field frame pose
+     * @param currentRobotVel current robot frame velocity
      */
-    fun update(currentPose: Pose2d): DriveSignal {
+    @JvmOverloads
+    fun update(currentPose: Pose2d, currentRobotVel: Pose2d? = null): DriveSignal {
         while (remainingMarkers.size > 0 && elapsedTime() > remainingMarkers[0].time) {
             remainingMarkers.removeAt(0).callback.onMarkerReached()
         }
@@ -79,9 +82,9 @@ abstract class TrajectoryFollower @JvmOverloads constructor(
         val trajEndError = trajectory.end() - currentPose
         admissible = abs(trajEndError.x) < admissibleError.x &&
                 abs(trajEndError.y) < admissibleError.y &&
-                abs(trajEndError.heading) < admissibleError.heading
+                abs(Angle.normDelta(trajEndError.heading)) < admissibleError.heading
         return if (internalIsFollowing() || executedFinalUpdate) {
-            internalUpdate(currentPose)
+            internalUpdate(currentPose, currentRobotVel)
         } else {
             for (marker in remainingMarkers) {
                 marker.callback.onMarkerReached()
@@ -92,5 +95,5 @@ abstract class TrajectoryFollower @JvmOverloads constructor(
         }
     }
 
-    protected abstract fun internalUpdate(currentPose: Pose2d): DriveSignal
+    protected abstract fun internalUpdate(currentPose: Pose2d, currentRobotVel: Pose2d?): DriveSignal
 }

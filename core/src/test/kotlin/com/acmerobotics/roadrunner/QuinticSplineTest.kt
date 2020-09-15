@@ -2,6 +2,7 @@ package com.acmerobotics.roadrunner
 
 import com.acmerobotics.roadrunner.TestUtil.assertDerivEquals
 import com.acmerobotics.roadrunner.path.QuinticSpline
+import com.acmerobotics.roadrunner.util.DoubleProgression
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -13,13 +14,13 @@ class QuinticSplineTest {
     @Test
     fun testSplineDerivatives() {
         val splineSegment = QuinticSpline(
-                QuinticSpline.Waypoint(0.0, 0.0, 20.0, 40.0),
-                QuinticSpline.Waypoint(45.0, 35.0, 60.0, 10.0)
+                QuinticSpline.Knot(0.0, 0.0, 20.0, 40.0),
+                QuinticSpline.Knot(45.0, 35.0, 60.0, 10.0)
         )
 
         val resolution = 1000
-        val ds = splineSegment.length() / resolution.toDouble()
-        val s = (0..resolution).map { it * ds }
+        val s = DoubleProgression.fromClosedInterval(0.0, splineSegment.length(), resolution)
+        val ds = s.step
 
         val x = s.map { splineSegment[it].x }
         val dx = s.map { splineSegment.deriv(it).x }
@@ -59,8 +60,8 @@ class QuinticSplineTest {
     @Test
     fun testInterpolation() {
         val splineSegment = QuinticSpline(
-                QuinticSpline.Waypoint(0.0, 0.0, 20.0, 40.0),
-                QuinticSpline.Waypoint(45.0, 35.0, 60.0, 10.0)
+                QuinticSpline.Knot(0.0, 0.0, 20.0, 40.0),
+                QuinticSpline.Knot(45.0, 35.0, 60.0, 10.0)
         )
 
         assertEquals(0.0, splineSegment[0.0].x, 1e-3)
@@ -72,13 +73,13 @@ class QuinticSplineTest {
     @Test
     fun testDerivativeMagnitudeInvariance() {
         val splineSegment = QuinticSpline(
-                QuinticSpline.Waypoint(0.0, 0.0, 20.0, 40.0),
-                QuinticSpline.Waypoint(45.0, 35.0, 60.0, 10.0)
+                QuinticSpline.Knot(0.0, 0.0, 20.0, 40.0),
+                QuinticSpline.Knot(45.0, 35.0, 60.0, 10.0)
         )
 
         val splineSegment2 = QuinticSpline(
-                QuinticSpline.Waypoint(0.0, 0.0, 40.0, 80.0),
-                QuinticSpline.Waypoint(45.0, 35.0, 120.0, 20.0)
+                QuinticSpline.Knot(0.0, 0.0, 40.0, 80.0),
+                QuinticSpline.Knot(45.0, 35.0, 120.0, 20.0)
         )
 
         assertEquals(splineSegment.deriv(0.0).x, splineSegment2.deriv(0.0).x, 0.001)

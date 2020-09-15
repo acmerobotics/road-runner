@@ -32,8 +32,8 @@ class SplineTrajectoryTest {
     @Test
     fun testSimpleSpline() {
         val spline = QuinticSpline(
-                QuinticSpline.Waypoint(0.0, 0.0, 20.0, 20.0),
-                QuinticSpline.Waypoint(30.0, 15.0, -30.0, 10.0)
+                QuinticSpline.Knot(0.0, 0.0, 20.0, 20.0),
+                QuinticSpline.Knot(30.0, 15.0, -30.0, 10.0)
         )
         val trajectory = TrajectoryGenerator.generateTrajectory(Path(PathSegment(spline)), BASE_CONSTRAINTS)
 
@@ -48,8 +48,8 @@ class SplineTrajectoryTest {
             Vector2d(15.0, 15.0)
         )
         val spline = QuinticSpline(
-                QuinticSpline.Waypoint(15.0, 15.0, 15.0, 15.0),
-                QuinticSpline.Waypoint(30.0, 15.0, 20.0, 5.0)
+                QuinticSpline.Knot(15.0, 15.0, 15.0, 15.0),
+                QuinticSpline.Knot(30.0, 15.0, 20.0, 5.0)
         )
         val path = Path(listOf(
             PathSegment(line),

@@ -23,23 +23,6 @@ object MathUtil {
             else -> emptyList()
         }
     }
-
-    /**
-     * Numerically compute dy/dx from the given x and y values. The returned list is padded to match
-     * the length of the original sequences.
-     * @param x x-values
-     * @param y y-values
-     * @return derivative values
-     */
-    fun numericalDerivative(x: List<Double>, y: List<Double>): List<Double> {
-        val deriv = mutableListOf<Double>()
-        for (i in 2 until x.size) {
-            deriv.add((y[i] - y[i - 2]) / (x[i] - x[i - 2]))
-        }
-        deriv.add(0, deriv[0])
-        deriv.add(deriv[deriv.size - 1])
-        return deriv
-    }
 }
 
 const val EPSILON = 1e-6
