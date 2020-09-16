@@ -1,0 +1,139 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>DriveConstraints - core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">core</a>&nbsp;/&nbsp;<a href="../index.html">com.acmerobotics.roadrunner.trajectory.constraints</a>&nbsp;/&nbsp;<a href="./index.html">DriveConstraints</a><br/>
+<br/>
+<h1>DriveConstraints</h1>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">DriveConstraints</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-trajectory-constraints/index.html"><span class="identifier">TrajectoryConstraints</span></a></code> <a href="https://github.com/acmerobotics/road-runner/blob/master/core/src/main/kotlin/com/acmerobotics/roadrunner/trajectory/constraints/DriveConstraints.kt#L19">(source)</a>
+<p>This class describes general robot trajectory constraints. More specifically, for paths, the robot velocity,
+robot acceleration, and robot angular velocity are limited.  For point turns, the angular velocity and angular
+acceleration are limited. If <a href="max-jerk.html">maxJerk</a> or <a href="max-ang-jerk.html">maxAngJerk</a> are 0, acceleration-limited fallbacks will be used.</p>
+<h3>Parameters</h3>
+<p><a name="maxVel"></a>
+<code>maxVel</code> - maximum robot velocity</p>
+<p><a name="maxAccel"></a>
+<code>maxAccel</code> - maximum robot acceleration</p>
+<p><a name="maxJerk"></a>
+<code>maxJerk</code> - maximum robot jerk (ignored by dynamic profiles)</p>
+<p><a name="maxAngVel"></a>
+<code>maxAngVel</code> - maximum angular velocity</p>
+<p><a name="maxAngAccel"></a>
+<code>maxAngAccel</code> - maximum angular acceleration (ignored by trajectories)</p>
+<p><a name="maxAngJerk"></a>
+<code>maxAngJerk</code> - maximum angular jerk (ignored by trajectories)</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="-init-.html">&lt;init&gt;</a></h4>
+</td>
+<td>
+<p>This class describes general robot trajectory constraints. More specifically, for paths, the robot velocity,
+robot acceleration, and robot angular velocity are limited.  For point turns, the angular velocity and angular
+acceleration are limited. If <a href="max-jerk.html">maxJerk</a> or <a href="max-ang-jerk.html">maxAngJerk</a> are 0, acceleration-limited fallbacks will be used.</p>
+<code><span class="identifier">DriveConstraints</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints$<init>(kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double)/maxVel">maxVel</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints$<init>(kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double)/maxAccel">maxAccel</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints$<init>(kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double)/maxJerk">maxJerk</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints$<init>(kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double)/maxAngVel">maxAngVel</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints$<init>(kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double)/maxAngAccel">maxAngAccel</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints$<init>(kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double)/maxAngJerk">maxAngJerk</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="max-accel.html">maxAccel</a></h4>
+</td>
+<td>
+<p>maximum robot acceleration</p>
+<code><span class="keyword">var </span><span class="identifier">maxAccel</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="max-ang-accel.html">maxAngAccel</a></h4>
+</td>
+<td>
+<p>maximum angular acceleration (ignored by trajectories)</p>
+<code><span class="keyword">var </span><span class="identifier">maxAngAccel</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="max-ang-jerk.html">maxAngJerk</a></h4>
+</td>
+<td>
+<p>maximum angular jerk (ignored by trajectories)</p>
+<code><span class="keyword">var </span><span class="identifier">maxAngJerk</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="max-ang-vel.html">maxAngVel</a></h4>
+</td>
+<td>
+<p>maximum angular velocity</p>
+<code><span class="keyword">var </span><span class="identifier">maxAngVel</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="max-jerk.html">maxJerk</a></h4>
+</td>
+<td>
+<p>maximum robot jerk (ignored by dynamic profiles)</p>
+<code><span class="keyword">var </span><span class="identifier">maxJerk</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="max-vel.html">maxVel</a></h4>
+</td>
+<td>
+<p>maximum robot velocity</p>
+<code><span class="keyword">var </span><span class="identifier">maxVel</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="get.html">get</a></h4>
+</td>
+<td>
+<p>Returns the maximum velocity and acceleration for the given path displacement and pose derivatives.</p>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">get</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints$get(kotlin.Double, com.acmerobotics.roadrunner.geometry.Pose2d, com.acmerobotics.roadrunner.geometry.Pose2d, com.acmerobotics.roadrunner.geometry.Pose2d)/s">s</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints$get(kotlin.Double, com.acmerobotics.roadrunner.geometry.Pose2d, com.acmerobotics.roadrunner.geometry.Pose2d, com.acmerobotics.roadrunner.geometry.Pose2d)/pose">pose</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints$get(kotlin.Double, com.acmerobotics.roadrunner.geometry.Pose2d, com.acmerobotics.roadrunner.geometry.Pose2d, com.acmerobotics.roadrunner.geometry.Pose2d)/deriv">deriv</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints$get(kotlin.Double, com.acmerobotics.roadrunner.geometry.Pose2d, com.acmerobotics.roadrunner.geometry.Pose2d, com.acmerobotics.roadrunner.geometry.Pose2d)/secondDeriv">secondDeriv</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.profile/-simple-motion-constraints/index.html"><span class="identifier">SimpleMotionConstraints</span></a></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Inheritors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="../-mecanum-constraints/index.html">MecanumConstraints</a></h4>
+</td>
+<td>
+<p>Mecanum-specific drive constraints that also limit maximum wheel velocities.</p>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">MecanumConstraints</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">DriveConstraints</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="../-swerve-constraints/index.html">SwerveConstraints</a></h4>
+</td>
+<td>
+<p>Mecanum-specific drive constraints that also limit maximum wheel velocities.</p>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">SwerveConstraints</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">DriveConstraints</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="../-tank-constraints/index.html">TankConstraints</a></h4>
+</td>
+<td>
+<p>Tank-specific drive constraints that also limit maximum wheel velocities.</p>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">TankConstraints</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">DriveConstraints</span></a></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

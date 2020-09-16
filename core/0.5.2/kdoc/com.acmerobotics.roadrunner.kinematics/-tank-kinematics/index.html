@@ -1,0 +1,46 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>TankKinematics - core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">core</a>&nbsp;/&nbsp;<a href="../index.html">com.acmerobotics.roadrunner.kinematics</a>&nbsp;/&nbsp;<a href="./index.html">TankKinematics</a><br/>
+<br/>
+<h1>TankKinematics</h1>
+<code><span class="keyword">object </span><span class="identifier">TankKinematics</span></code> <a href="https://github.com/acmerobotics/road-runner/blob/master/core/src/main/kotlin/com/acmerobotics/roadrunner/kinematics/TankKinematics.kt#L13">(source)</a>
+<p>Tank drive kinematic equations based upon the unicycle model. All wheel positions and velocities are given in
+(left, right) tuples. Robot poses are specified in a coordinate system with positive x pointing forward, positive y
+pointing left, and positive heading measured counter-clockwise from the x-axis.</p>
+<p><a href="http://rossum.sourceforge.net/papers/DiffSteer/">This page</a> gives a motivated derivation.</p>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="robot-to-wheel-accelerations.html">robotToWheelAccelerations</a></h4>
+</td>
+<td>
+<p>Computes the wheel accelerations corresponding to <a href="robot-to-wheel-accelerations.html#com.acmerobotics.roadrunner.kinematics.TankKinematics$robotToWheelAccelerations(com.acmerobotics.roadrunner.geometry.Pose2d, kotlin.Double)/robotAccel">robotAccel</a> given <a href="robot-to-wheel-accelerations.html#com.acmerobotics.roadrunner.kinematics.TankKinematics$robotToWheelAccelerations(com.acmerobotics.roadrunner.geometry.Pose2d, kotlin.Double)/trackWidth">trackWidth</a>.</p>
+<code><span class="keyword">fun </span><span class="identifier">robotToWheelAccelerations</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.kinematics.TankKinematics$robotToWheelAccelerations(com.acmerobotics.roadrunner.geometry.Pose2d, kotlin.Double)/robotAccel">robotAccel</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.kinematics.TankKinematics$robotToWheelAccelerations(com.acmerobotics.roadrunner.geometry.Pose2d, kotlin.Double)/trackWidth">trackWidth</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="robot-to-wheel-velocities.html">robotToWheelVelocities</a></h4>
+</td>
+<td>
+<p>Computes the wheel velocities corresponding to <a href="robot-to-wheel-velocities.html#com.acmerobotics.roadrunner.kinematics.TankKinematics$robotToWheelVelocities(com.acmerobotics.roadrunner.geometry.Pose2d, kotlin.Double)/robotVel">robotVel</a> given <a href="robot-to-wheel-velocities.html#com.acmerobotics.roadrunner.kinematics.TankKinematics$robotToWheelVelocities(com.acmerobotics.roadrunner.geometry.Pose2d, kotlin.Double)/trackWidth">trackWidth</a>.</p>
+<code><span class="keyword">fun </span><span class="identifier">robotToWheelVelocities</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.kinematics.TankKinematics$robotToWheelVelocities(com.acmerobotics.roadrunner.geometry.Pose2d, kotlin.Double)/robotVel">robotVel</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.kinematics.TankKinematics$robotToWheelVelocities(com.acmerobotics.roadrunner.geometry.Pose2d, kotlin.Double)/trackWidth">trackWidth</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="wheel-to-robot-velocities.html">wheelToRobotVelocities</a></h4>
+</td>
+<td>
+<p>Computes the robot velocity corresponding to <a href="wheel-to-robot-velocities.html#com.acmerobotics.roadrunner.kinematics.TankKinematics$wheelToRobotVelocities(kotlin.collections.List((kotlin.Double)), kotlin.Double)/wheelVelocities">wheelVelocities</a> and the given drive parameters.</p>
+<code><span class="keyword">fun </span><span class="identifier">wheelToRobotVelocities</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.kinematics.TankKinematics$wheelToRobotVelocities(kotlin.collections.List((kotlin.Double)), kotlin.Double)/wheelVelocities">wheelVelocities</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.kinematics.TankKinematics$wheelToRobotVelocities(kotlin.collections.List((kotlin.Double)), kotlin.Double)/trackWidth">trackWidth</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>
