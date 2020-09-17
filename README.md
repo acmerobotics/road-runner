@@ -17,7 +17,7 @@ Check out the [online documentation](https://acme-robotics.gitbook.io/road-runne
 
 1. Open your Android Studio project.
 
-1. Open `TeamCode/build.release.gradle` and add `implementation 'com.acmerobotics.roadrunner:core:0.5.1'` to the end of the `dependencies` block.
+1. Open `TeamCode/build.release.gradle` and add `implementation 'com.acmerobotics.roadrunner:core:0.5.2'` to the end of the `dependencies` block.
 
 1. Sync the project \(Android Studio should prompt you to do this\).
 
@@ -42,9 +42,9 @@ Road Runner includes a simple GUI for generating trajectories from pose waypoint
 
 Road Runner also includes a simple IDEA/Android Studio plugin based upon the GUI. Here are some instructions for building and loading the plugin:
 
-1. Download the latest plugin zip from Releases or build it with `./gradlew buildPlugin`.
+1. Download the latest plugin zip from the Release assets or build it with `./gradlew buildPlugin`.
 1. In Android Studio, navigate to Settings &gt; Plugins.
-1. Click the button that reads `Install plugin from disk...`.
-1. Select the zip archive from earlier.
+1. Click the gear icon and select `Install Plugin from Disk...`.
+1. Select the zip archive from your downloads or `plugin/build/distributions`.
 1. Restart Android Studio to activate plugin changes.
 1. Click on "Road Runner" on the right side of the editor and the tool window should appear.
