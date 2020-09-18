@@ -30,7 +30,6 @@ compileKotlin {
 detekt {
     toolVersion = detekt_version
     input = files("src/main/kotlin")
-    filters = ".*/resources/.*,.*/build/.*"
     config = files("$rootDir/detekt-config.yml")
 }
 
