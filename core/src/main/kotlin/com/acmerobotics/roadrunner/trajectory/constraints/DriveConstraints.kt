@@ -31,6 +31,6 @@ open class DriveConstraints(
             maxVels.add(maxAngVel / Math.abs(deriv.heading))
         }
 
-        return SimpleMotionConstraints(maxVels.min() ?: 0.0, maxAccel)
+        return SimpleMotionConstraints(maxVels.minOrNull() ?: 0.0, maxAccel)
     }
 }

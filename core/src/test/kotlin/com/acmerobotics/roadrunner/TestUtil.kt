@@ -25,8 +25,8 @@ object TestUtil {
 
     fun assertContinuous(values: List<Double>, epsilon: Double) {
         assertThat(values.drop(1)
-                .zip(values.dropLast(1))
-                .map { it.first - it.second }
-                .max() ?: 0.0).isLessThan(epsilon)
+            .zip(values.dropLast(1))
+            .map { it.first - it.second }
+            .maxOrNull() ?: 0.0).isLessThan(epsilon)
     }
 }

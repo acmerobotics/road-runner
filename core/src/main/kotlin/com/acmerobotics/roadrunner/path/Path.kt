@@ -156,7 +156,7 @@ class Path(val segments: List<PathSegment>) {
 
         val results = guesses.map { fastProject(queryPoint, it) }
 
-        return results.minBy { this[it].vec().distTo(queryPoint) } ?: 0.0
+        return results.minByOrNull { this[it].vec().distTo(queryPoint) } ?: 0.0
     }
 
     /**

@@ -50,6 +50,6 @@ class MarkerTest {
 
         GraphUtil.savePath("markerPath", path)
 
-        assert(distances.max()!! < 0.1)
+        assert(distances.maxOrNull()!! < 0.1)
     }
 }

@@ -30,7 +30,7 @@ open class SwerveConstraints @JvmOverloads constructor(
         val robotDeriv = Kinematics.fieldToRobotVelocity(pose, deriv)
 
         val wheelVelocities = SwerveKinematics.robotToWheelVelocities(robotDeriv, trackWidth, wheelBase)
-        val maxTrajVel = wheelVelocities.map { maxVel / it }.map(::abs).min() ?: 0.0
+        val maxTrajVel = wheelVelocities.map { maxVel / it }.map(::abs).minOrNull() ?: 0.0
 
         val superConstraints = super.get(s, pose, deriv, secondDeriv)
 

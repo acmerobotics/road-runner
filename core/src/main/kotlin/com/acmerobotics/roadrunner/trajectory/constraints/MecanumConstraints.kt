@@ -33,7 +33,7 @@ open class MecanumConstraints @JvmOverloads constructor(
 
         val wheelVelocities = MecanumKinematics.robotToWheelVelocities(
             robotDeriv, trackWidth, wheelBase, lateralMultiplier)
-        val maxTrajVel = wheelVelocities.map { maxVel / it }.map(::abs).min() ?: 0.0
+        val maxTrajVel = wheelVelocities.map { maxVel / it }.map(::abs).minOrNull() ?: 0.0
 
         val superConstraints = super.get(s, pose, deriv, secondDeriv)
 

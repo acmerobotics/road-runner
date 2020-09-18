@@ -30,13 +30,13 @@ class DriveWheelConstraintsTest {
             .build()
         val t = DoubleProgression.fromClosedInterval(0.0, trajectory.duration(), 10_000)
         val maxWheelVelMag = t.map { time ->
-            val pose = trajectory[time]
-            val poseVel = trajectory.velocity(time)
-            val robotVel = Kinematics.fieldToRobotVelocity(pose, poseVel)
-            robotToWheelVelocities(robotVel)
-                .map(::abs)
-                .max() ?: 0.0
-        }.max() ?: 0.0
+                val pose = trajectory[time]
+                val poseVel = trajectory.velocity(time)
+                val robotVel = Kinematics.fieldToRobotVelocity(pose, poseVel)
+                robotToWheelVelocities(robotVel)
+                    .map(::abs)
+                    .maxOrNull() ?: 0.0
+            }.maxOrNull() ?: 0.0
         assertThat(maxWheelVelMag).isLessThan(maxWheelVel + 0.1)
     }
 
