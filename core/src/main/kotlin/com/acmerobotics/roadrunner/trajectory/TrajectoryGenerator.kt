@@ -78,10 +78,10 @@ object TrajectoryGenerator {
         displacementMarkers: List<DisplacementMarker>,
         spatialMarkers: List<SpatialMarker>
     ): List<TrajectoryMarker> {
-        return temporalMarkers.map { (time, callback) ->
-            TrajectoryMarker(time(profile.duration()), callback) } +
-            displacementMarkers.map { (displacement, callback) ->
-                TrajectoryMarker(displacementToTime(profile, displacement(path.length())), callback) } +
+        return temporalMarkers.map { (producer, callback) ->
+            TrajectoryMarker(producer.produce(profile.duration()), callback) } +
+            displacementMarkers.map { (producer, callback) ->
+                TrajectoryMarker(displacementToTime(profile, producer.produce(path.length())), callback) } +
             spatialMarkers.map { (point, callback) ->
                 TrajectoryMarker(pointToTime(path, profile, point), callback) }
     }
