@@ -136,9 +136,8 @@ class MainPanel : JPanel() {
     }
 
     private fun updateTrajectoryInBackground(trajectoryConfig: TrajectoryConfig, groupConfig: TrajectoryGroupConfig) {
-        val c = groupConfig.constraints
-        if (c.maxVel epsilonEquals 0.0 || c.maxAccel epsilonEquals 0.0 ||
-            c.maxAngVel epsilonEquals 0.0 || c.maxAngAccel epsilonEquals 0.0) {
+        if (groupConfig.maxVel epsilonEquals 0.0 || groupConfig.maxAccel epsilonEquals 0.0 ||
+            groupConfig.maxAngVel epsilonEquals 0.0 || groupConfig.maxAngAccel epsilonEquals 0.0) {
             status = "bad constraints"
 
             return

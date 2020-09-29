@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import kotlin.math.min
+import kotlin.math.pow
 
 private const val RESOLUTION = 1000
 
@@ -24,7 +25,7 @@ class MotionProfileGeneratorTest {
         verifyAccel: Boolean = false
     ) {
         // save it
-        GraphUtil.saveMotionProfile("$name", profile)
+        GraphUtil.saveMotionProfile(name, profile)
 
         // verify start state satisfaction
         assertEquals(start.x, profile.start().x, 1e-4)
@@ -152,11 +153,8 @@ class MotionProfileGeneratorTest {
             MotionProfileGenerator.generateMotionProfile(
                 MotionState(0.0, 0.0, 0.0),
                 MotionState(10.0, 0.0, 0.0),
-                object : MotionConstraints() {
-                    override fun get(s: Double) = SimpleMotionConstraints(
-                        Math.pow(s - 5.0, 4.0) + 1.0, 5.0
-                    )
-                }
+                { (it - 5.0).pow(4.0) + 1.0 },
+                { 5.0 }
             )
         )
     }
@@ -170,12 +168,8 @@ class MotionProfileGeneratorTest {
             MotionProfileGenerator.generateMotionProfile(
                 MotionState(0.0, 0.0, 0.0),
                 MotionState(10.0, 0.0, 0.0),
-                object : MotionConstraints() {
-                    override fun get(s: Double) = SimpleMotionConstraints(
-                        Math.pow(s - 5.0, 4.0) + 1.0,
-                        min(Math.pow(s - 5.0, 4.0) + 1.0, 10.0)
-                    )
-                }
+                { (it - 5.0).pow(4.0) + 1.0 },
+                { min((it - 5.0).pow(4.0) + 1.0, 10.0) }
             )
         )
     }
@@ -189,13 +183,9 @@ class MotionProfileGeneratorTest {
             MotionProfileGenerator.generateMotionProfile(
                 MotionState(10.0, 0.0, 0.0),
                 MotionState(0.0, 0.0, 0.0),
-                object : MotionConstraints() {
-                    override fun get(s: Double) = SimpleMotionConstraints(
-                        Math.pow(s - 5.0, 4.0) + 1.0,
-                        min(Math.pow(s - 5.0, 4.0) + 1.0, 10.0)
-                    )
-                }
-            )
+                { (it - 5.0).pow(4.0) + 1.0 },
+                { min((it - 5.0).pow(4.0) + 1.0, 10.0) }
+           )
         )
     }
 

@@ -6,8 +6,7 @@ import com.acmerobotics.roadrunner.followers.HolonomicPIDVAFollower
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
-import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
-import com.acmerobotics.roadrunner.trajectory.constraints.SwerveConstraints
+import com.acmerobotics.roadrunner.trajectory.constraints.*
 import org.apache.commons.math3.distribution.NormalDistribution
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -22,8 +21,11 @@ private const val kV = 1.0 / 60.0
 private const val SIMULATION_HZ = 25
 private const val TRACK_WIDTH = 3.0
 
-private val BASE_CONSTRAINTS = DriveConstraints(50.0, 25.0, 0.0, PI / 2, PI / 2, 0.0)
-private val CONSTRAINTS = SwerveConstraints(BASE_CONSTRAINTS, TRACK_WIDTH)
+private val VEL_CONSTRAINT = MinVelocityConstraint(listOf(
+    SwerveVelocityConstraint(50.0, TRACK_WIDTH),
+    AngularVelocityConstraint(PI / 2)
+))
+private val ACCEL_CONSTRAINT = ProfileAccelerationConstraint(25.0)
 
 private val VOLTAGE_NOISE_DIST = NormalDistribution(1.0, 0.05)
 
@@ -66,7 +68,7 @@ class SwerveFollowerTest {
     fun simulatePIDVAFollower() {
         val dt = 1.0 / SIMULATION_HZ
 
-        val trajectory = TrajectoryBuilder(Pose2d(0.0, 0.0, 0.0), constraints = CONSTRAINTS)
+        val trajectory = TrajectoryBuilder(Pose2d(0.0, 0.0, 0.0), baseVelConstraint = VEL_CONSTRAINT, baseAccelConstraint = ACCEL_CONSTRAINT)
                 .splineTo(Vector2d(15.0, 15.0), PI)
                 .splineTo(Vector2d(5.0, 35.0), PI / 3)
                 .build()

@@ -7,11 +7,17 @@ import com.acmerobotics.roadrunner.path.PathSegment
 import com.acmerobotics.roadrunner.path.QuinticSpline
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
 import com.acmerobotics.roadrunner.trajectory.TrajectoryGenerator
-import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
+import com.acmerobotics.roadrunner.trajectory.constraints.*
 import com.acmerobotics.roadrunner.util.DoubleProgression
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import kotlin.math.PI
+
+private val VEL_CONSTRAINT = MinVelocityConstraint(listOf(
+    TranslationalVelocityConstraint(5.0),
+    AngularVelocityConstraint(2.0)
+))
+private val ACCEL_CONSTRAINT = ProfileAccelerationConstraint(10.0)
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TrajectoryTest {
@@ -19,10 +25,11 @@ class TrajectoryTest {
     fun testTrajectoryDerivatives() {
         val cryptoColWidth = 7.5
         val stonePose = Pose2d(48.0, -47.5, PI)
-        val trajectory = TrajectoryBuilder(stonePose, constraints = DriveConstraints(5.0, 10.0, 0.0, 2.0, 3.0, 0.0))
-                .lineTo(Vector2d(12 - cryptoColWidth, -47.5))
-                .splineTo(Vector2d(16.0, -24.0), PI / 3)
-                .build()
+        val trajectory = TrajectoryBuilder(stonePose,
+            baseVelConstraint = VEL_CONSTRAINT, baseAccelConstraint = ACCEL_CONSTRAINT)
+            .lineTo(Vector2d(12 - cryptoColWidth, -47.5))
+            .splineTo(Vector2d(16.0, -24.0), PI / 3)
+            .build()
 
         val t = DoubleProgression.fromClosedInterval(0.0, trajectory.duration(), 10_000)
 
@@ -52,14 +59,15 @@ class TrajectoryTest {
             QuinticSpline.Knot(1e-4, 1e-4, 0.707, 0.707),
             QuinticSpline.Knot(2e-4, 0.0, -1.0, 0.0)
         ))))
-        TrajectoryGenerator.generateTrajectory(path, DriveConstraints(5.0, 10.0, 0.0, 2.0, 3.0, 0.0), resolution = 1.0)
+        TrajectoryGenerator.generateTrajectory(path, VEL_CONSTRAINT, ACCEL_CONSTRAINT, resolution = 1.0)
     }
 
     @Test
     fun testTrajectoryEnd() {
         val endPose = Pose2d(25.0, 25.0, 0.0)
         repeat(50) {
-            val traj = TrajectoryBuilder(Pose2d(), constraints = DriveConstraints(5.0, 10.0, 0.0, 2.0, 3.0, 0.0))
+            val traj = TrajectoryBuilder(Pose2d(),
+                baseVelConstraint = VEL_CONSTRAINT, baseAccelConstraint = ACCEL_CONSTRAINT)
                 .splineTo(Vector2d(50 * Math.random(), 50 * Math.random()), 2 * PI * Math.random())
                 .splineTo(Vector2d(50 * Math.random(), 50 * Math.random()), 2 * PI * Math.random())
                 .splineTo(endPose.vec(), endPose.heading)

@@ -3,9 +3,15 @@ package com.acmerobotics.roadrunner.profile
 import com.acmerobotics.roadrunner.util.DoubleProgression
 import com.acmerobotics.roadrunner.util.MathUtil.solveQuadratic
 import com.acmerobotics.roadrunner.util.epsilonEquals
+import java.lang.IllegalArgumentException
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.sqrt
+
+private data class EvaluatedConstraint(
+    val maxVel: Double,
+    val maxAccel: Double
+)
 
 /**
  * Motion profile generator with arbitrary start and end motion states and either dynamic constraints or jerk limiting.
@@ -303,7 +309,8 @@ object MotionProfileGenerator {
      *
      * @param start start motion state
      * @param goal goal motion state
-     * @param constraints motion constraints
+     * @param velocityConstraints velocity constraints
+     * @param accelerationConstraints acceleration constraints
      * @param resolution separation between constraint samples
      */
     @JvmStatic
@@ -311,16 +318,16 @@ object MotionProfileGenerator {
     fun generateMotionProfile(
         start: MotionState,
         goal: MotionState,
-        constraints: MotionConstraints,
+        velocityConstraint: VelocityConstraint,
+        accelerationConstraint: AccelerationConstraint,
         resolution: Double = 0.25
     ): MotionProfile {
         if (goal.x < start.x) {
             return generateMotionProfile(
                 start.flipped(),
                 goal.flipped(),
-                object : MotionConstraints() {
-                    override fun get(s: Double) = constraints[-s]
-                },
+                { velocityConstraint[-it] },
+                { accelerationConstraint[-it] },
                 resolution
             ).flipped()
         }
@@ -330,7 +337,13 @@ object MotionProfileGenerator {
         val samples = ceil(length / resolution).toInt()
 
         val s = DoubleProgression.fromClosedInterval(0.0, length, samples)
-        val constraintsList = (s + start.x).map { constraints[it] }
+        val constraintsList =
+            (s + start.x).map {
+                EvaluatedConstraint(
+                    velocityConstraint[it],
+                    accelerationConstraint[it]
+                )
+            }
 
         // compute the forward states
         val forwardStates = forwardPass(
@@ -461,7 +474,7 @@ object MotionProfileGenerator {
     private fun forwardPass(
         start: MotionState,
         displacements: DoubleProgression,
-        constraints: List<SimpleMotionConstraints>
+        constraints: List<EvaluatedConstraint>
     ): List<Pair<MotionState, Double>> {
         val forwardStates = mutableListOf<Pair<MotionState, Double>>()
 

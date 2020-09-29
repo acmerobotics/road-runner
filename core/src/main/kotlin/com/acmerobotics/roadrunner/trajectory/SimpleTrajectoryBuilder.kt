@@ -3,7 +3,6 @@ package com.acmerobotics.roadrunner.trajectory
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.path.Path
 import com.acmerobotics.roadrunner.profile.MotionState
-import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
 import com.acmerobotics.roadrunner.util.Angle
 import kotlin.math.PI
 
@@ -17,7 +16,9 @@ class SimpleTrajectoryBuilder private constructor(
     startTangent: Double?,
     trajectory: Trajectory?,
     t: Double?,
-    private val driveConstraints: DriveConstraints,
+    private val maxProfileVel: Double,
+    private val maxProfileAccel: Double,
+    private val maxProfileJerk: Double,
     private val start: MotionState
 ) : BaseTrajectoryBuilder<SimpleTrajectoryBuilder>(startPose, startTangent, trajectory, t) {
     /**
@@ -27,14 +28,20 @@ class SimpleTrajectoryBuilder private constructor(
     @JvmOverloads constructor(
         startPose: Pose2d,
         startTangent: Double = startPose.heading,
-        driveConstraints: DriveConstraints
-    ) : this(startPose, startTangent, null, null, driveConstraints, MotionState(0.0, 0.0, 0.0))
+        maxProfileVel: Double,
+        maxProfileAccel: Double,
+        maxProfileJerk: Double = 0.0
+    ) : this(startPose, startTangent, null, null,
+        maxProfileVel, maxProfileAccel, maxProfileJerk, MotionState(0.0, 0.0, 0.0))
 
     constructor(
         startPose: Pose2d,
         reversed: Boolean,
-        driveConstraints: DriveConstraints
-    ) : this(startPose, Angle.norm(startPose.heading + if (reversed) PI else 0.0), driveConstraints)
+        maxProfileVel: Double,
+        maxProfileAccel: Double,
+        maxProfileJerk: Double = 0.0
+    ) : this(startPose, Angle.norm(startPose.heading + if (reversed) PI else 0.0),
+        maxProfileVel, maxProfileAccel, maxProfileJerk)
 
     /**
      * Create a builder from an active trajectory. This is useful for interrupting a live trajectory and smoothly
@@ -43,8 +50,11 @@ class SimpleTrajectoryBuilder private constructor(
     constructor(
         trajectory: Trajectory,
         t: Double,
-        driveConstraints: DriveConstraints
-    ) : this(null, null, trajectory, t, driveConstraints, zeroPosition(trajectory.profile[t]))
+        maxProfileVel: Double,
+        maxProfileAccel: Double,
+        maxProfileJerk: Double = 0.0
+    ) : this(null, null, trajectory, t,
+        maxProfileVel, maxProfileAccel, maxProfileJerk, zeroPosition(trajectory.profile[t]))
 
     override fun buildTrajectory(
         path: Path,
@@ -55,7 +65,9 @@ class SimpleTrajectoryBuilder private constructor(
         val goal = MotionState(path.length(), 0.0, 0.0)
         return TrajectoryGenerator.generateSimpleTrajectory(
             path,
-            driveConstraints,
+            maxProfileVel,
+            maxProfileAccel,
+            maxProfileJerk,
             start,
             goal,
             temporalMarkers,

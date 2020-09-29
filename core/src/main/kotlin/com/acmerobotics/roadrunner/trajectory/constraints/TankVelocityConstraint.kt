@@ -1,0 +1,24 @@
+package com.acmerobotics.roadrunner.trajectory.constraints
+
+import com.acmerobotics.roadrunner.geometry.Pose2d
+import com.acmerobotics.roadrunner.kinematics.Kinematics
+import com.acmerobotics.roadrunner.kinematics.TankKinematics
+import kotlin.math.abs
+
+/**
+ * Tank-specific drive constraints that also limit maximum wheel velocities.
+ *
+ * @param maxWheelVel maximum wheel velocity
+ * @param trackWidth track width
+ */
+open class TankVelocityConstraint(
+    private val maxWheelVel: Double,
+    private val trackWidth: Double
+) : TrajectoryVelocityConstraint {
+    override fun get(s: Double, pose: Pose2d, deriv: Pose2d, secondDeriv: Pose2d, baseVel: Pose2d): Double {
+        val robotDeriv = Kinematics.fieldToRobotVelocity(pose, deriv)
+
+        val wheelVelocities = TankKinematics.robotToWheelVelocities(robotDeriv, trackWidth)
+        return wheelVelocities.map { maxWheelVel / it }.map(::abs).minOrNull()!!
+    }
+}

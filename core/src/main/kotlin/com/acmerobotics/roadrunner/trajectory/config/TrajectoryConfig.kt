@@ -46,7 +46,8 @@ data class TrajectoryConfig(
         val builder = TrajectoryBuilder(
             startPose,
             startTangent,
-            groupConfig.constraints,
+            groupConfig.velConstraint,
+            groupConfig.accelConstraint,
             resolution = resolution
         )
 

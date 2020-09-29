@@ -15,16 +15,18 @@ import org.junit.jupiter.api.TestInstance
 import kotlin.math.PI
 import kotlin.math.abs
 
-private val BASE_CONSTRAINTS = DriveConstraints(10.0, 25.0, 0.0, PI / 2, PI / 2, 0.0)
+private val ACCEL_CONSTRAINT = ProfileAccelerationConstraint(25.0)
+private const val MAX_WHEEL_VEL = 10.0
+private const val TRACK_WIDTH = 5.0
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class DriveWheelConstraintsTest {
     private fun testWheelVelocityLimiting(
-        constraints: TrajectoryConstraints,
-        maxWheelVel: Double,
+        velConstraint: TrajectoryVelocityConstraint,
         robotToWheelVelocities: (vel: Pose2d) -> List<Double>
     ) {
-        val trajectory = TrajectoryBuilder(Pose2d(0.0, 0.0, 0.0), constraints = constraints)
+        val trajectory = TrajectoryBuilder(Pose2d(0.0, 0.0, 0.0),
+            baseVelConstraint = velConstraint, baseAccelConstraint = ACCEL_CONSTRAINT)
             .splineTo(Vector2d(15.0, 15.0), PI)
             .splineTo(Vector2d(5.0, 35.0), PI / 3)
             .build()
@@ -37,42 +39,42 @@ class DriveWheelConstraintsTest {
                     .map(::abs)
                     .maxOrNull() ?: 0.0
             }.maxOrNull() ?: 0.0
-        assertThat(maxWheelVelMag).isLessThan(maxWheelVel + 0.1)
+        assertThat(maxWheelVelMag).isLessThan(MAX_WHEEL_VEL + 0.1)
     }
 
     @Test
     fun testTankWheelVelocityLimiting() {
-        val constraints = TankConstraints(BASE_CONSTRAINTS, 10.0)
+        val velConstraint = TankVelocityConstraint(MAX_WHEEL_VEL, TRACK_WIDTH)
 
-        testWheelVelocityLimiting(constraints, BASE_CONSTRAINTS.maxVel) {
-            TankKinematics.robotToWheelVelocities(it, constraints.trackWidth)
+        testWheelVelocityLimiting(velConstraint) {
+            TankKinematics.robotToWheelVelocities(it, TRACK_WIDTH)
         }
     }
 
     @Test
     fun testTankWheelVelocityLimitingReversed() {
-        val constraints = TankConstraints(BASE_CONSTRAINTS, 10.0)
+        val velConstraint = TankVelocityConstraint(MAX_WHEEL_VEL, TRACK_WIDTH)
 
-        testWheelVelocityLimiting(constraints, BASE_CONSTRAINTS.maxVel) {
-            TankKinematics.robotToWheelVelocities(it, constraints.trackWidth)
+        testWheelVelocityLimiting(velConstraint) {
+            TankKinematics.robotToWheelVelocities(it, TRACK_WIDTH)
         }
     }
 
     @Test
     fun testMecanumWheelVelocityLimiting() {
-        val constraints = MecanumConstraints(BASE_CONSTRAINTS, 10.0, 5.0)
+        val velConstraint = MecanumVelocityConstraint(MAX_WHEEL_VEL, TRACK_WIDTH)
 
-        testWheelVelocityLimiting(constraints, BASE_CONSTRAINTS.maxVel) {
-            MecanumKinematics.robotToWheelVelocities(it, constraints.trackWidth, constraints.wheelBase)
+        testWheelVelocityLimiting(velConstraint) {
+            MecanumKinematics.robotToWheelVelocities(it, TRACK_WIDTH)
         }
     }
 
     @Test
     fun testSwerveWheelVelocityLimiting() {
-        val constraints = SwerveConstraints(BASE_CONSTRAINTS, 10.0, 5.0)
+        val velConstraint = SwerveVelocityConstraint(MAX_WHEEL_VEL, TRACK_WIDTH)
 
-        testWheelVelocityLimiting(constraints, BASE_CONSTRAINTS.maxVel) {
-            SwerveKinematics.robotToWheelVelocities(it, constraints.trackWidth, constraints.wheelBase)
+        testWheelVelocityLimiting(velConstraint) {
+            SwerveKinematics.robotToWheelVelocities(it, TRACK_WIDTH)
         }
     }
 }

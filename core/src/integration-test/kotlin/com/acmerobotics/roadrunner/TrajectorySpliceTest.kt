@@ -5,14 +5,23 @@ import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.path.PathContinuityViolationException
 import com.acmerobotics.roadrunner.trajectory.Trajectory
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
-import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
+import com.acmerobotics.roadrunner.trajectory.constraints.AngularVelocityConstraint
+import com.acmerobotics.roadrunner.trajectory.constraints.MinVelocityConstraint
+import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint
+import com.acmerobotics.roadrunner.trajectory.constraints.TranslationalVelocityConstraint
 import com.acmerobotics.roadrunner.util.DoubleProgression
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.knowm.xchart.QuickChart
 import org.knowm.xchart.style.MatlabTheme
-import java.util.*
+import kotlin.math.PI
 import kotlin.math.max
+
+private val VEL_CONSTRAINT = MinVelocityConstraint(listOf(
+    TranslationalVelocityConstraint(50.0),
+    AngularVelocityConstraint(PI / 2)
+))
+private val ACCEL_CONSTRAINT = ProfileAccelerationConstraint(10.0)
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TrajectorySpliceTest {
@@ -55,15 +64,13 @@ class TrajectorySpliceTest {
 
     @Test
     fun testSpliceTangentHeading() {
-        val constraints = DriveConstraints(25.0, 50.0, 50.0, 1.0, 1.0, 1.0)
-
-        val traj1 = TrajectoryBuilder(Pose2d(), constraints = constraints)
+        val traj1 = TrajectoryBuilder(Pose2d(), baseVelConstraint = VEL_CONSTRAINT, baseAccelConstraint = ACCEL_CONSTRAINT)
             .splineTo(Vector2d(40.0, 50.0), 0.0)
             .build()
 
         val t = 0.6 * traj1.duration()
 
-        val traj2 = TrajectoryBuilder(traj1, t, constraints)
+        val traj2 = TrajectoryBuilder(traj1, t, VEL_CONSTRAINT, ACCEL_CONSTRAINT)
             .splineTo(Vector2d(50.0, 60.0), 0.0)
             .build()
 
@@ -72,15 +79,13 @@ class TrajectorySpliceTest {
 
     @Test
     fun testSpliceSplineHeading() {
-        val constraints = DriveConstraints(25.0, 50.0, 50.0, 1.0, 1.0, 1.0)
-
-        val traj1 = TrajectoryBuilder(Pose2d(), constraints = constraints)
+        val traj1 = TrajectoryBuilder(Pose2d(), baseVelConstraint = VEL_CONSTRAINT, baseAccelConstraint = ACCEL_CONSTRAINT)
             .splineTo(Vector2d(40.0, 50.0), 0.0)
             .build()
 
         val t = 0.6 * traj1.duration()
 
-        val traj2 = TrajectoryBuilder(traj1, t, constraints)
+        val traj2 = TrajectoryBuilder(traj1, t, VEL_CONSTRAINT, ACCEL_CONSTRAINT)
             .splineToSplineHeading(Pose2d(50.0, 60.0), Math.toRadians(15.0))
             .build()
 
@@ -89,16 +94,14 @@ class TrajectorySpliceTest {
 
     @Test
     fun testSpliceTangentHeadingException() {
-        val constraints = DriveConstraints(25.0, 50.0, 50.0, 1.0, 1.0, 1.0)
-
-        val traj1 = TrajectoryBuilder(Pose2d(), constraints = constraints)
+        val traj1 = TrajectoryBuilder(Pose2d(), baseVelConstraint = VEL_CONSTRAINT, baseAccelConstraint = ACCEL_CONSTRAINT)
             .splineToConstantHeading(Vector2d(40.0, 50.0), 0.0)
             .build()
 
         val t = 0.6 * traj1.duration()
 
         try {
-            TrajectoryBuilder(traj1, t, constraints)
+            TrajectoryBuilder(traj1, t, VEL_CONSTRAINT, ACCEL_CONSTRAINT)
                 .splineTo(Vector2d(50.0, 60.0), 0.0)
                 .build()
             assert(false)

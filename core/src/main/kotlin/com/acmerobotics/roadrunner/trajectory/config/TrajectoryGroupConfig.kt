@@ -1,8 +1,6 @@
 package com.acmerobotics.roadrunner.trajectory.config
 
-import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints
-import com.acmerobotics.roadrunner.trajectory.constraints.MecanumConstraints
-import com.acmerobotics.roadrunner.trajectory.constraints.TankConstraints
+import com.acmerobotics.roadrunner.trajectory.constraints.*
 import com.fasterxml.jackson.annotation.JsonIgnore
 
 /**
@@ -29,19 +27,17 @@ data class TrajectoryGroupConfig(
         TANK
     }
 
-    @JsonIgnore private val baseConstraints = DriveConstraints(
-        maxVel = maxVel,
-        maxAccel = maxAccel,
-        maxAngVel = maxAngVel,
-        maxAngAccel = maxAngAccel,
-        maxJerk = 0.0,
-        maxAngJerk = 0.0
-    )
+    @JsonIgnore val velConstraint: TrajectoryVelocityConstraint =
+        MinVelocityConstraint(listOf(
+            AngularVelocityConstraint(maxAngVel),
+            when (driveType) {
+                DriveType.GENERIC -> TranslationalVelocityConstraint(maxVel)
+                DriveType.MECANUM -> MecanumVelocityConstraint(maxVel,
+                    trackWidth!!, wheelBase ?: trackWidth, lateralMultiplier!!)
+                DriveType.TANK -> TankVelocityConstraint(maxVel, trackWidth!!)
+            }
+        ))
 
-    @JsonIgnore val constraints = when (driveType) {
-        DriveType.GENERIC -> baseConstraints
-        DriveType.MECANUM -> MecanumConstraints(baseConstraints,
-            trackWidth!!, wheelBase ?: trackWidth, lateralMultiplier!!)
-        DriveType.TANK -> TankConstraints(baseConstraints, trackWidth!!)
-    }
+    @JsonIgnore val accelConstraint: TrajectoryAccelerationConstraint =
+        ProfileAccelerationConstraint(maxAccel)
 }

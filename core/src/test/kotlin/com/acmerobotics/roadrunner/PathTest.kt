@@ -43,24 +43,4 @@ class PathTest {
         assertDerivEquals(heading, headingDeriv, ds, 0.01)
         assertDerivEquals(headingDeriv, headingSecondDeriv, ds, 0.01)
     }
-
-    @Test
-    fun testProgressionParam() {
-        val path = Path(listOf(
-            PathSegment(QuinticSpline(
-                QuinticSpline.Knot(0.0, 0.0, 20.0, 40.0),
-                QuinticSpline.Knot(45.0, 35.0, 60.0, 10.0)
-            )), PathSegment(QuinticSpline(
-                QuinticSpline.Knot(45.0, 35.0, 60.0, 10.0),
-                QuinticSpline.Knot(55.0, 70.0, -20.0, 30.0)
-            ))
-        ))
-
-        val dispProg = DoubleProgression.fromClosedInterval(0.0, path.length(), 20)
-        val indiv = dispProg.map(path::reparam)
-        val seq = path.reparam(dispProg).toList()
-        indiv.zip(seq).forEach { (a, b) ->
-            assertEquals(a, b, 1e-6)
-        }
-    }
 }
