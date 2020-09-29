@@ -320,7 +320,6 @@ object MotionProfileGenerator {
                 goal.flipped(),
                 object : MotionConstraints() {
                     override fun get(s: Double) = constraints[-s]
-                    override fun get(s: DoubleProgression) = constraints[-s]
                 },
                 resolution
             ).flipped()
@@ -331,7 +330,7 @@ object MotionProfileGenerator {
         val samples = ceil(length / resolution).toInt()
 
         val s = DoubleProgression.fromClosedInterval(0.0, length, samples)
-        val constraintsList = constraints[s + start.x]
+        val constraintsList = (s + start.x).map { constraints[it] }
 
         // compute the forward states
         val forwardStates = forwardPass(

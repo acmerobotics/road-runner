@@ -83,30 +83,6 @@ class Path(val segments: List<PathSegment>) {
         return segment.reparam(remainingDisplacement)
     }
 
-    internal fun reparam(s: DoubleProgression): DoubleArray {
-        val t = DoubleArray(s.size())
-        // skip any negative s entries (the corresponding array entries are already 0.0)
-        var (ignore, remainingDisplacement) = s.split(0.0)
-        var offset = ignore.size()
-        for (segment in segments) {
-            if (offset == t.size) {
-                break
-            }
-            val pair =
-                remainingDisplacement.split(segment.length())
-            val segmentDisplacement = pair.first
-            if (!segmentDisplacement.isEmpty()) {
-                segment.reparam(segmentDisplacement).copyInto(t, offset, 0)
-                offset += segmentDisplacement.size()
-            }
-            remainingDisplacement = pair.second - segment.length()
-        }
-        while (offset < t.size) {
-            t[offset++] = 1.0
-        }
-        return t
-    }
-
     /**
      * Project [queryPoint] onto the current path using the iterative method described
      * [here](http://www.geometrie.tugraz.at/wallner/sproj.pdf).

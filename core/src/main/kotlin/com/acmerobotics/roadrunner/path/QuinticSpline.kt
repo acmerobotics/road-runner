@@ -170,35 +170,6 @@ class QuinticSpline(
         return interp(s, sSamples[lo], sSamples[hi], tSamples[lo], tSamples[hi])
     }
 
-    override fun reparam(s: DoubleProgression): DoubleArray {
-        val t = DoubleArray(s.size())
-        var i = 0
-        var sampleIndex = 0
-        var currS = s.start
-        while (i < t.size) {
-            t[i++] = when {
-                currS <= 0.0 -> 0.0
-                currS >= length -> 1.0
-                else -> {
-                    while (sSamples[sampleIndex] < currS) {
-                        sampleIndex++
-                    }
-                    val s0 = sSamples[sampleIndex - 1]
-                    val s1 = sSamples[sampleIndex]
-                    val t0 = tSamples[sampleIndex - 1]
-                    val t1 = tSamples[sampleIndex]
-                    interp(currS, s0, s1, t0, t1)
-                }
-            }
-            currS += s.step
-        }
-        while (i < t.size) {
-            t[i] = 1.0
-            i++
-        }
-        return t
-    }
-
     override fun paramDeriv(t: Double): Double {
         val deriv = internalDeriv(t)
         return 1.0 / sqrt(deriv.x * deriv.x + deriv.y * deriv.y)

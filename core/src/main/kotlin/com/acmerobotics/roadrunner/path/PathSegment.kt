@@ -44,8 +44,6 @@ class PathSegment @JvmOverloads constructor(
 
     fun reparam(s: Double) = curve.reparam(s)
 
-    internal fun reparam(s: DoubleProgression) = curve.reparam(s)
-
     /**
      * Returns the start pose.
      */

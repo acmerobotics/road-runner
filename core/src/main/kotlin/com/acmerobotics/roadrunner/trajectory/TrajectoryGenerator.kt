@@ -30,17 +30,6 @@ object TrajectoryGenerator {
                     path.secondDeriv(s, t)
                 ]
             }
-
-            override fun get(s: DoubleProgression) =
-                s.zip(path.reparam(s).asIterable())
-                    .map { (s, t) ->
-                        constraints[
-                            s,
-                            path[s, t],
-                            path.deriv(s, t),
-                            path.secondDeriv(s, t)
-                        ]
-                    }
         }, resolution)
     }
 
