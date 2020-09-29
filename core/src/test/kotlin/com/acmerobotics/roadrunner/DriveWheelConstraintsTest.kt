@@ -77,4 +77,17 @@ class DriveWheelConstraintsTest {
             SwerveKinematics.robotToWheelVelocities(it, TRACK_WIDTH)
         }
     }
+
+    @Test
+    fun testBaseVelocity() {
+        val velConstraint = TankVelocityConstraint(MAX_WHEEL_VEL, TRACK_WIDTH)
+        repeat(100) {
+            val deriv = Pose2d(5.0 * (Math.random() - 0.5), 0.0, 0.5 * (Math.random() - 0.5))
+            val baseVel = Pose2d(10.0 * (Math.random() - 0.5), 0.0, 1.0 * (Math.random() - 0.5))
+            val maxScalarVel = velConstraint[0.0, Pose2d(), deriv, baseVel]
+            val maxVel = baseVel + deriv * maxScalarVel
+            val maxWheelVel = TankKinematics.robotToWheelVelocities(maxVel, TRACK_WIDTH).map(::abs).maxOrNull()!!
+            assertThat(maxWheelVel).isLessThan(MAX_WHEEL_VEL + 0.1)
+        }
+    }
 }
