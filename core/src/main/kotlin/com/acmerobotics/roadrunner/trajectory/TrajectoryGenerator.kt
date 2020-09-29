@@ -29,7 +29,6 @@ object TrajectoryGenerator {
                     s,
                     path[s, t],
                     path.deriv(s, t),
-                    path.secondDeriv(s, t),
                     Pose2d()
                 ]
             },
@@ -39,7 +38,6 @@ object TrajectoryGenerator {
                     s,
                     path[s, t],
                     path.deriv(s, t),
-                    path.secondDeriv(s, t),
                     Pose2d()
                 ]
             }, resolution)

@@ -13,8 +13,7 @@ fun interface TrajectoryAccelerationConstraint {
      * @param s path displacement
      * @param pose pose
      * @param deriv pose derivative
-     * @param secondDeriv pose second derivative
      * @param baseVel additive base velocity
      */
-    operator fun get(s: Double, pose: Pose2d, deriv: Pose2d, secondDeriv: Pose2d, baseVel: Pose2d): Double
+    operator fun get(s: Double, pose: Pose2d, deriv: Pose2d, baseVel: Pose2d): Double
 }

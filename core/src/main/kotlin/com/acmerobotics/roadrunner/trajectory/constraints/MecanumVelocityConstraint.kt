@@ -19,7 +19,7 @@ open class MecanumVelocityConstraint @JvmOverloads constructor(
     private val wheelBase: Double = trackWidth,
     private val lateralMultiplier: Double = 1.0
 ) : TrajectoryVelocityConstraint {
-    override fun get(s: Double, pose: Pose2d, deriv: Pose2d, secondDeriv: Pose2d, baseVel: Pose2d): Double {
+    override fun get(s: Double, pose: Pose2d, deriv: Pose2d, baseVel: Pose2d): Double {
         val robotDeriv = Kinematics.fieldToRobotVelocity(pose, deriv)
 
         val wheelVelocities = MecanumKinematics.robotToWheelVelocities(

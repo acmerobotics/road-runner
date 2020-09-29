@@ -21,14 +21,14 @@ private class PiecewiseVelocityConstraint(
     private val baseConstraint: TrajectoryVelocityConstraint,
     private val constraintOverrides: List<IntervalVelocityConstraint>
 ) : TrajectoryVelocityConstraint {
-    override fun get(s: Double, pose: Pose2d, deriv: Pose2d, secondDeriv: Pose2d, baseVel: Pose2d): Double {
+    override fun get(s: Double, pose: Pose2d, deriv: Pose2d, baseVel: Pose2d): Double {
         for (interval in constraintOverrides) {
             val (start, end, constraint) = interval
             if (s in start..end) {
-                return constraint[s, pose, deriv, secondDeriv, baseVel]
+                return constraint[s, pose, deriv, baseVel]
             }
         }
-        return baseConstraint[s, pose, deriv, secondDeriv, baseVel]
+        return baseConstraint[s, pose, deriv, baseVel]
     }
 }
 
@@ -42,14 +42,14 @@ private class PiecewiseAccelerationConstraint(
     private val baseConstraint: TrajectoryAccelerationConstraint,
     private val constraintOverrides: List<IntervalAccelerationConstraint>
 ) : TrajectoryAccelerationConstraint {
-    override fun get(s: Double, pose: Pose2d, deriv: Pose2d, secondDeriv: Pose2d, baseVel: Pose2d): Double {
+    override fun get(s: Double, pose: Pose2d, deriv: Pose2d, baseVel: Pose2d): Double {
         for (interval in constraintOverrides) {
             val (start, end, constraint) = interval
             if (s in start..end) {
-                return constraint[s, pose, deriv, secondDeriv, baseVel]
+                return constraint[s, pose, deriv, baseVel]
             }
         }
-        return baseConstraint[s, pose, deriv, secondDeriv, baseVel]
+        return baseConstraint[s, pose, deriv, baseVel]
     }
 }
 

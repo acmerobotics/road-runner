@@ -17,7 +17,7 @@ open class SwerveVelocityConstraint @JvmOverloads constructor(
     private val trackWidth: Double,
     private val wheelBase: Double = trackWidth
 ) : TrajectoryVelocityConstraint {
-    override fun get(s: Double, pose: Pose2d, deriv: Pose2d, secondDeriv: Pose2d, baseVel: Pose2d): Double {
+    override fun get(s: Double, pose: Pose2d, deriv: Pose2d, baseVel: Pose2d): Double {
         val robotDeriv = Kinematics.fieldToRobotVelocity(pose, deriv)
 
         val wheelVelocities = SwerveKinematics.robotToWheelVelocities(robotDeriv, trackWidth, wheelBase)
