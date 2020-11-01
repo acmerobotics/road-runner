@@ -93,7 +93,7 @@ abstract class MecanumDrive @JvmOverloads constructor(
         Log.dbgPrint(3);
         val velocities = MecanumKinematics.robotToWheelVelocities(
             driveSignal.vel, trackWidth, wheelBase, lateralMultiplier)
-        val accelerations = MecanumKinematics.drobotToWheelAccelerations(
+        val accelerations = MecanumKinematics.robotToWheelAccelerations(
             driveSignal.accel, trackWidth, wheelBase, lateralMultiplier)
         val powers = Kinematics.calculateMotorFeedforward(velocities, accelerations, kV, kA, kStatic)
         setMotorPowers(powers[0], powers[1], powers[2], powers[3])
