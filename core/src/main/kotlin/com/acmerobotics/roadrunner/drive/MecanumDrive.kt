@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.kinematics.Kinematics
 import com.acmerobotics.roadrunner.kinematics.MecanumKinematics
 import com.acmerobotics.roadrunner.localization.Localizer
 import com.acmerobotics.roadrunner.util.Angle
+import com.acmerobotics.roadrunner.util.Log
 
 /**
  * This class provides the basic functionality of a mecanum drive using [MecanumKinematics].
@@ -50,6 +51,7 @@ abstract class MecanumDrive @JvmOverloads constructor(
         private var lastExtHeading = Double.NaN
 
         override fun update() {
+            Log.dbgPrint(3);
             val wheelPositions = drive.getWheelPositions()
             val extHeading = if (useExternalHeading) drive.externalHeading else Double.NaN
             if (lastWheelPositions.isNotEmpty()) {
@@ -88,15 +90,17 @@ abstract class MecanumDrive @JvmOverloads constructor(
     override var localizer: Localizer = MecanumLocalizer(this)
 
     override fun setDriveSignal(driveSignal: DriveSignal) {
+        Log.dbgPrint(3);
         val velocities = MecanumKinematics.robotToWheelVelocities(
             driveSignal.vel, trackWidth, wheelBase, lateralMultiplier)
-        val accelerations = MecanumKinematics.robotToWheelAccelerations(
+        val accelerations = MecanumKinematics.drobotToWheelAccelerations(
             driveSignal.accel, trackWidth, wheelBase, lateralMultiplier)
         val powers = Kinematics.calculateMotorFeedforward(velocities, accelerations, kV, kA, kStatic)
         setMotorPowers(powers[0], powers[1], powers[2], powers[3])
     }
 
     override fun setDrivePower(drivePower: Pose2d) {
+        Log.dbgPrint(3);
         val powers = MecanumKinematics.robotToWheelVelocities(
             drivePower, 1.0, 1.0, lateralMultiplier)
         setMotorPowers(powers[0], powers[1], powers[2], powers[3])

@@ -1,6 +1,7 @@
 package com.acmerobotics.roadrunner.kinematics
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
+import com.acmerobotics.roadrunner.util.Log
 
 /**
  * Mecanum drive kinematic equations. All wheel positions and velocities are given starting with front left and
@@ -82,6 +83,7 @@ object MecanumKinematics {
         wheelBase: Double = trackWidth,
         lateralMultiplier: Double = 1.0
     ): Pose2d {
+        Log.dbgPrint(3);
         val k = (trackWidth + wheelBase) / 2.0
         val (frontLeft, rearLeft, rearRight, frontRight) = wheelVelocities
         return Pose2d(

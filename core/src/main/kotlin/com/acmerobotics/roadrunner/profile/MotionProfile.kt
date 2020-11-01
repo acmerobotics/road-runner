@@ -1,5 +1,6 @@
 package com.acmerobotics.roadrunner.profile
 
+import com.acmerobotics.roadrunner.util.Log
 import kotlin.math.max
 import kotlin.math.min
 
@@ -10,11 +11,12 @@ import kotlin.math.min
  */
 class MotionProfile(segments: List<MotionSegment>) {
     internal val segments: MutableList<MotionSegment> = segments.toMutableList()
-
     /**
      * Returns the [MotionState] at time [t].
      */
     operator fun get(t: Double): MotionState {
+        Log.dbgPrint(3)
+
         var remainingTime = max(0.0, min(t, duration()))
         for (segment in segments) {
             if (remainingTime <= segment.dt) {
