@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.kinematics.Kinematics
 import com.acmerobotics.roadrunner.trajectory.Trajectory
 import com.acmerobotics.roadrunner.util.NanoClock
+import kotlin.math.sign
 
 /**
  * Traditional PID controller with feedforward velocity and acceleration components to follow a trajectory. More
@@ -60,7 +61,8 @@ class TankPIDVAFollower @JvmOverloads constructor(
 
         // note: feedforward is processed at the wheel level
         val axialCorrection = axialController.update(0.0, currentRobotVel?.x)
-        val headingCorrection = crossTrackController.update(0.0, currentRobotVel?.y)
+        val headingCorrection = sign(targetVel.vec() dot currentPose.vec()) *
+            crossTrackController.update(0.0, currentRobotVel?.y)
 
         val correctedVelocity = targetRobotVel + Pose2d(
             axialCorrection,
