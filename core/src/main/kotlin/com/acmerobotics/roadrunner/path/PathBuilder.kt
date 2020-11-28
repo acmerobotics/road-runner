@@ -123,8 +123,13 @@ class PathBuilder private constructor(
     private fun makeSplineInterpolator(endHeading: Double): SplineInterpolator {
         return if (currentPose == null) {
             SplineInterpolator(
-                path!![s!!].heading, endHeading,
-                path.deriv(s).heading, path.secondDeriv(s).heading, null, null)
+                path!![s!!].heading,
+                endHeading,
+                path.deriv(s).heading,
+                path.secondDeriv(s).heading,
+                null,
+                null
+            )
         } else {
             SplineInterpolator(currentPose?.heading!!, endHeading)
         }

@@ -6,7 +6,6 @@ import com.acmerobotics.roadrunner.path.Path
 import com.acmerobotics.roadrunner.profile.*
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryAccelerationConstraint
 import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint
-import com.acmerobotics.roadrunner.util.DoubleProgression
 import com.acmerobotics.roadrunner.util.epsilonEquals
 
 /**
@@ -22,7 +21,9 @@ object TrajectoryGenerator {
         goal: MotionState,
         resolution: Double
     ): MotionProfile {
-        return MotionProfileGenerator.generateMotionProfile(start, goal,
+        return MotionProfileGenerator.generateMotionProfile(
+            start,
+            goal,
             { s ->
                 val t = path.reparam(s)
                 velocityConstraint[
@@ -40,7 +41,9 @@ object TrajectoryGenerator {
                     path.deriv(s, t),
                     Pose2d()
                 ]
-            }, resolution)
+            },
+            resolution
+        )
     }
 
     private fun generateSimpleProfile(
@@ -50,8 +53,13 @@ object TrajectoryGenerator {
         start: MotionState,
         goal: MotionState
     ): MotionProfile {
-        return MotionProfileGenerator.generateSimpleMotionProfile(start, goal,
-            maxProfileVel, maxProfileAccel, maxProfileJerk)
+        return MotionProfileGenerator.generateSimpleMotionProfile(
+            start,
+            goal,
+            maxProfileVel,
+            maxProfileAccel,
+            maxProfileJerk
+        )
     }
 
     // note: this assumes that the profile position is monotonic increasing

@@ -3,7 +3,6 @@ package com.acmerobotics.roadrunner.path
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.path.heading.HeadingInterpolator
 import com.acmerobotics.roadrunner.path.heading.TangentInterpolator
-import com.acmerobotics.roadrunner.util.DoubleProgression
 
 /**
  * Path segment composed of a parametric curve and heading interpolator.

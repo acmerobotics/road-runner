@@ -17,8 +17,8 @@ object MathUtil {
         return when {
             disc epsilonEquals 0.0 -> listOf(-b / (2 * a))
             disc > 0.0 -> listOf(
-                    (-b + sqrt(disc)) / (2 * a),
-                    (-b - sqrt(disc)) / (2 * a)
+                (-b + sqrt(disc)) / (2 * a),
+                (-b - sqrt(disc)) / (2 * a)
             )
             else -> emptyList()
         }

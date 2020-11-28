@@ -14,8 +14,8 @@ class QuinticSplineTest {
     @Test
     fun testSplineDerivatives() {
         val splineSegment = QuinticSpline(
-                QuinticSpline.Knot(0.0, 0.0, 20.0, 40.0),
-                QuinticSpline.Knot(45.0, 35.0, 60.0, 10.0)
+            QuinticSpline.Knot(0.0, 0.0, 20.0, 40.0),
+            QuinticSpline.Knot(45.0, 35.0, 60.0, 10.0)
         )
 
         val resolution = 1000
@@ -60,8 +60,8 @@ class QuinticSplineTest {
     @Test
     fun testInterpolation() {
         val splineSegment = QuinticSpline(
-                QuinticSpline.Knot(0.0, 0.0, 20.0, 40.0),
-                QuinticSpline.Knot(45.0, 35.0, 60.0, 10.0)
+            QuinticSpline.Knot(0.0, 0.0, 20.0, 40.0),
+            QuinticSpline.Knot(45.0, 35.0, 60.0, 10.0)
         )
 
         assertEquals(0.0, splineSegment[0.0].x, 1e-3)
@@ -73,27 +73,39 @@ class QuinticSplineTest {
     @Test
     fun testDerivativeMagnitudeInvariance() {
         val splineSegment = QuinticSpline(
-                QuinticSpline.Knot(0.0, 0.0, 20.0, 40.0),
-                QuinticSpline.Knot(45.0, 35.0, 60.0, 10.0)
+            QuinticSpline.Knot(0.0, 0.0, 20.0, 40.0),
+            QuinticSpline.Knot(45.0, 35.0, 60.0, 10.0)
         )
 
         val splineSegment2 = QuinticSpline(
-                QuinticSpline.Knot(0.0, 0.0, 40.0, 80.0),
-                QuinticSpline.Knot(45.0, 35.0, 120.0, 20.0)
+            QuinticSpline.Knot(0.0, 0.0, 40.0, 80.0),
+            QuinticSpline.Knot(45.0, 35.0, 120.0, 20.0)
         )
 
         assertEquals(splineSegment.deriv(0.0).x, splineSegment2.deriv(0.0).x, 0.001)
         assertEquals(splineSegment.deriv(0.0).y, splineSegment2.deriv(0.0).y, 0.001)
-        assertEquals(splineSegment.deriv(splineSegment.length()).x,
-            splineSegment2.deriv(splineSegment.length()).x, 0.001)
-        assertEquals(splineSegment.deriv(splineSegment.length()).y,
-            splineSegment2.deriv(splineSegment.length()).y, 0.001)
+        assertEquals(
+            splineSegment.deriv(splineSegment.length()).x,
+            splineSegment2.deriv(splineSegment.length()).x,
+            0.001
+        )
+        assertEquals(
+            splineSegment.deriv(splineSegment.length()).y,
+            splineSegment2.deriv(splineSegment.length()).y,
+            0.001
+        )
 
         assertEquals(splineSegment.secondDeriv(0.0).x, splineSegment2.secondDeriv(0.0).x, 0.001)
         assertEquals(splineSegment.secondDeriv(0.0).y, splineSegment2.secondDeriv(0.0).y, 0.001)
-        assertEquals(splineSegment.secondDeriv(splineSegment.length()).x,
-            splineSegment2.secondDeriv(splineSegment.length()).x, 0.001)
-        assertEquals(splineSegment.secondDeriv(splineSegment.length()).y,
-            splineSegment2.secondDeriv(splineSegment.length()).y, 0.001)
+        assertEquals(
+            splineSegment.secondDeriv(splineSegment.length()).x,
+            splineSegment2.secondDeriv(splineSegment.length()).x,
+            0.001
+        )
+        assertEquals(
+            splineSegment.secondDeriv(splineSegment.length()).y,
+            splineSegment2.secondDeriv(splineSegment.length()).y,
+            0.001
+        )
     }
 }

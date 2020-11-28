@@ -38,21 +38,21 @@ class WiggleInterpolator(
         val t2 = 1.0 - t1
 
         beginSpline = QuinticPolynomial(
-                0.0,
-                0.0,
-                0.0,
-                waveGet(t1),
-                waveDeriv(t1) * (K * period),
-                waveSecondDeriv(t1) * (K * K * period * period)
+            0.0,
+            0.0,
+            0.0,
+            waveGet(t1),
+            waveDeriv(t1) * (K * period),
+            waveSecondDeriv(t1) * (K * K * period * period)
         )
 
         endSpline = QuinticPolynomial(
-                waveGet(t2),
-                waveDeriv(t2) * (1 - K * period),
-                waveSecondDeriv(t2) * ((1 - K * period) * (1 - K * period)),
-                0.0,
-                0.0,
-                0.0
+            waveGet(t2),
+            waveDeriv(t2) * (1 - K * period),
+            waveSecondDeriv(t2) * ((1 - K * period) * (1 - K * period)),
+            0.0,
+            0.0,
+            0.0
         )
     }
 

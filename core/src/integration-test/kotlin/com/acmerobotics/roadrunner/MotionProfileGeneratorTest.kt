@@ -130,15 +130,15 @@ class MotionProfileGeneratorTest {
     @Test
     fun testSimpleConstraintViolation() {
         testProfile(
-                "simpleConstraintViolation",
+            "simpleConstraintViolation",
+            MotionState(0.0, 60.0, 0.0),
+            MotionState(10.0, 0.0, 0.0),
+            MotionProfileGenerator.generateSimpleMotionProfile(
                 MotionState(0.0, 60.0, 0.0),
                 MotionState(10.0, 0.0, 0.0),
-                MotionProfileGenerator.generateSimpleMotionProfile(
-                        MotionState(0.0, 60.0, 0.0),
-                        MotionState(10.0, 0.0, 0.0),
-                        1000.0,
-                        5.0
-                )
+                1000.0,
+                5.0
+            )
         )
     }
 
@@ -185,7 +185,7 @@ class MotionProfileGeneratorTest {
                 MotionState(0.0, 0.0, 0.0),
                 { (it - 5.0).pow(4.0) + 1.0 },
                 { min((it - 5.0).pow(4.0) + 1.0, 10.0) }
-           )
+            )
         )
     }
 
@@ -211,67 +211,67 @@ class MotionProfileGeneratorTest {
     @Test
     fun testJerkLimited() {
         testProfile(
-                "jerkLimited",
+            "jerkLimited",
+            MotionState(0.0, 50.0, -25.0),
+            MotionState(100.0, -5.0, 20.0),
+            MotionProfileGenerator.generateSimpleMotionProfile(
                 MotionState(0.0, 50.0, -25.0),
                 MotionState(100.0, -5.0, 20.0),
-                MotionProfileGenerator.generateSimpleMotionProfile(
-                        MotionState(0.0, 50.0, -25.0),
-                        MotionState(100.0, -5.0, 20.0),
-                        15.0,
-                        30.0,
-                        30.0
-                ),
-                true
+                15.0,
+                30.0,
+                30.0
+            ),
+            true
         )
     }
 
     @Test
     fun testShortJerkLimited() {
         testProfile(
-                "jlShort",
+            "jlShort",
+            MotionState(0.0, 0.0, 0.0),
+            MotionState(10.0, 0.0, 0.0),
+            MotionProfileGenerator.generateSimpleMotionProfile(
                 MotionState(0.0, 0.0, 0.0),
                 MotionState(10.0, 0.0, 0.0),
-                MotionProfileGenerator.generateSimpleMotionProfile(
-                        MotionState(0.0, 0.0, 0.0),
-                        MotionState(10.0, 0.0, 0.0),
-                        15.0,
-                        30.0,
-                        30.0
-                ),
-                true
+                15.0,
+                30.0,
+                30.0
+            ),
+            true
         )
     }
 
     @Test
     fun testLongJerkLimited() {
         testProfile(
-                "jlLong",
+            "jlLong",
+            MotionState(0.0, 0.0, 0.0),
+            MotionState(100.0, 0.0, 0.0),
+            MotionProfileGenerator.generateSimpleMotionProfile(
                 MotionState(0.0, 0.0, 0.0),
                 MotionState(100.0, 0.0, 0.0),
-                MotionProfileGenerator.generateSimpleMotionProfile(
-                        MotionState(0.0, 0.0, 0.0),
-                        MotionState(100.0, 0.0, 0.0),
-                        15.0,
-                        30.0,
-                        30.0
-                ),
-                true
+                15.0,
+                30.0,
+                30.0
+            ),
+            true
         )
     }
 
     @Test
     fun testJLConstraintViolations() {
         testProfile(
-                "jlConstraintViolations",
+            "jlConstraintViolations",
+            MotionState(0.0, 10.0),
+            MotionState(1.0, 0.0),
+            MotionProfileGenerator.generateSimpleMotionProfile(
                 MotionState(0.0, 10.0),
                 MotionState(1.0, 0.0),
-                MotionProfileGenerator.generateSimpleMotionProfile(
-                        MotionState(0.0, 10.0),
-                        MotionState(1.0, 0.0),
-                        15.0,
-                        30.0,
-                        40.0
-                )
+                15.0,
+                30.0,
+                40.0
+            )
         )
     }
 }

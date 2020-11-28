@@ -39,8 +39,11 @@ abstract class TwoTrackingWheelLocalizer(
             val positionVector = wheelPoses[i].vec()
             inverseMatrix.setEntry(i, 0, orientationVector.x)
             inverseMatrix.setEntry(i, 1, orientationVector.y)
-            inverseMatrix.setEntry(i, 2,
-                    positionVector.x * orientationVector.y - positionVector.y * orientationVector.x)
+            inverseMatrix.setEntry(
+                i,
+                2,
+                positionVector.x * orientationVector.y - positionVector.y * orientationVector.x
+            )
         }
         inverseMatrix.setEntry(2, 2, 1.0)
 
@@ -50,13 +53,15 @@ abstract class TwoTrackingWheelLocalizer(
     }
 
     private fun calculatePoseDelta(wheelDeltas: List<Double>, headingDelta: Double): Pose2d {
-        val rawPoseDelta = forwardSolver.solve(MatrixUtils.createRealMatrix(
+        val rawPoseDelta = forwardSolver.solve(
+            MatrixUtils.createRealMatrix(
                 arrayOf((wheelDeltas + headingDelta).toDoubleArray())
-        ).transpose())
+            ).transpose()
+        )
         return Pose2d(
-                rawPoseDelta.getEntry(0, 0),
-                rawPoseDelta.getEntry(1, 0),
-                rawPoseDelta.getEntry(2, 0)
+            rawPoseDelta.getEntry(0, 0),
+            rawPoseDelta.getEntry(1, 0),
+            rawPoseDelta.getEntry(2, 0)
         )
     }
 

@@ -31,8 +31,16 @@ class SimpleTrajectoryBuilder private constructor(
         maxProfileVel: Double,
         maxProfileAccel: Double,
         maxProfileJerk: Double = 0.0
-    ) : this(startPose, startTangent, null, null,
-        maxProfileVel, maxProfileAccel, maxProfileJerk, MotionState(0.0, 0.0, 0.0))
+    ) : this(
+        startPose,
+        startTangent,
+        null,
+        null,
+        maxProfileVel,
+        maxProfileAccel,
+        maxProfileJerk,
+        MotionState(0.0, 0.0, 0.0)
+    )
 
     constructor(
         startPose: Pose2d,
@@ -40,8 +48,13 @@ class SimpleTrajectoryBuilder private constructor(
         maxProfileVel: Double,
         maxProfileAccel: Double,
         maxProfileJerk: Double = 0.0
-    ) : this(startPose, Angle.norm(startPose.heading + if (reversed) PI else 0.0),
-        maxProfileVel, maxProfileAccel, maxProfileJerk)
+    ) : this(
+        startPose,
+        Angle.norm(startPose.heading + if (reversed) PI else 0.0),
+        maxProfileVel,
+        maxProfileAccel,
+        maxProfileJerk
+    )
 
     /**
      * Create a builder from an active trajectory. This is useful for interrupting a live trajectory and smoothly
@@ -53,8 +66,16 @@ class SimpleTrajectoryBuilder private constructor(
         maxProfileVel: Double,
         maxProfileAccel: Double,
         maxProfileJerk: Double = 0.0
-    ) : this(null, null, trajectory, t,
-        maxProfileVel, maxProfileAccel, maxProfileJerk, zeroPosition(trajectory.profile[t]))
+    ) : this(
+        null,
+        null,
+        trajectory,
+        t,
+        maxProfileVel,
+        maxProfileAccel,
+        maxProfileJerk,
+        zeroPosition(trajectory.profile[t])
+    )
 
     override fun buildTrajectory(
         path: Path,

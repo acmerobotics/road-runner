@@ -57,12 +57,18 @@ abstract class SwerveDrive @JvmOverloads constructor(
                         .zip(lastWheelPositions)
                         .map { it.first - it.second }
                 val robotPoseDelta = SwerveKinematics.wheelToRobotVelocities(
-                        wheelDeltas, moduleOrientations, drive.wheelBase, drive.trackWidth)
-                val finalHeadingDelta = if (useExternalHeading)
+                    wheelDeltas,
+                    moduleOrientations,
+                    drive.wheelBase,
+                    drive.trackWidth
+                )
+                val finalHeadingDelta = if (useExternalHeading) {
                     Angle.normDelta(extHeading - lastExtHeading)
-                else
+                } else {
                     robotPoseDelta.heading
-                _poseEstimate = Kinematics.relativeOdometryUpdate(_poseEstimate,
+                }
+                _poseEstimate = Kinematics.relativeOdometryUpdate(
+                    _poseEstimate,
                     Pose2d(robotPoseDelta.vec(), finalHeadingDelta)
                 )
             }
@@ -71,7 +77,11 @@ abstract class SwerveDrive @JvmOverloads constructor(
             val extHeadingVel = drive.getExternalHeadingVelocity()
             if (wheelVelocities != null) {
                 poseVelocity = SwerveKinematics.wheelToRobotVelocities(
-                        wheelVelocities, moduleOrientations, drive.wheelBase, drive.trackWidth)
+                    wheelVelocities,
+                    moduleOrientations,
+                    drive.wheelBase,
+                    drive.trackWidth
+                )
                 if (useExternalHeading && extHeadingVel != null) {
                     poseVelocity = Pose2d(poseVelocity!!.vec(), extHeadingVel)
                 }
@@ -86,12 +96,22 @@ abstract class SwerveDrive @JvmOverloads constructor(
 
     override fun setDriveSignal(driveSignal: DriveSignal) {
         val velocities = SwerveKinematics.robotToWheelVelocities(
-            driveSignal.vel, trackWidth, wheelBase)
+            driveSignal.vel,
+            trackWidth,
+            wheelBase
+        )
         val accelerations = SwerveKinematics.robotToWheelAccelerations(
-            driveSignal.vel, driveSignal.accel, trackWidth, wheelBase)
+            driveSignal.vel,
+            driveSignal.accel,
+            trackWidth,
+            wheelBase
+        )
         val powers = Kinematics.calculateMotorFeedforward(velocities, accelerations, kV, kA, kStatic)
         val orientations = SwerveKinematics.robotToModuleOrientations(
-            driveSignal.vel, trackWidth, wheelBase)
+            driveSignal.vel,
+            trackWidth,
+            wheelBase
+        )
         setMotorPowers(powers[0], powers[1], powers[2], powers[3])
         setModuleOrientations(orientations[0], orientations[1], orientations[2], orientations[3])
     }

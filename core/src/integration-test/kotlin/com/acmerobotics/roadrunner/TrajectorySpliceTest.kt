@@ -17,10 +17,12 @@ import org.knowm.xchart.style.MatlabTheme
 import kotlin.math.PI
 import kotlin.math.max
 
-private val VEL_CONSTRAINT = MinVelocityConstraint(listOf(
-    TranslationalVelocityConstraint(50.0),
-    AngularVelocityConstraint(PI / 2)
-))
+private val VEL_CONSTRAINT = MinVelocityConstraint(
+    listOf(
+        TranslationalVelocityConstraint(50.0),
+        AngularVelocityConstraint(PI / 2)
+    )
+)
 private val ACCEL_CONSTRAINT = ProfileAccelerationConstraint(10.0)
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -64,7 +66,11 @@ class TrajectorySpliceTest {
 
     @Test
     fun testSpliceTangentHeading() {
-        val traj1 = TrajectoryBuilder(Pose2d(), baseVelConstraint = VEL_CONSTRAINT, baseAccelConstraint = ACCEL_CONSTRAINT)
+        val traj1 = TrajectoryBuilder(
+            Pose2d(),
+            baseVelConstraint = VEL_CONSTRAINT,
+            baseAccelConstraint = ACCEL_CONSTRAINT
+        )
             .splineTo(Vector2d(40.0, 50.0), 0.0)
             .build()
 
@@ -79,7 +85,11 @@ class TrajectorySpliceTest {
 
     @Test
     fun testSpliceSplineHeading() {
-        val traj1 = TrajectoryBuilder(Pose2d(), baseVelConstraint = VEL_CONSTRAINT, baseAccelConstraint = ACCEL_CONSTRAINT)
+        val traj1 = TrajectoryBuilder(
+            Pose2d(),
+            baseVelConstraint = VEL_CONSTRAINT,
+            baseAccelConstraint = ACCEL_CONSTRAINT
+        )
             .splineTo(Vector2d(40.0, 50.0), 0.0)
             .build()
 
@@ -94,7 +104,11 @@ class TrajectorySpliceTest {
 
     @Test
     fun testSpliceTangentHeadingException() {
-        val traj1 = TrajectoryBuilder(Pose2d(), baseVelConstraint = VEL_CONSTRAINT, baseAccelConstraint = ACCEL_CONSTRAINT)
+        val traj1 = TrajectoryBuilder(
+            Pose2d(),
+            baseVelConstraint = VEL_CONSTRAINT,
+            baseAccelConstraint = ACCEL_CONSTRAINT
+        )
             .splineToConstantHeading(Vector2d(40.0, 50.0), 0.0)
             .build()
 

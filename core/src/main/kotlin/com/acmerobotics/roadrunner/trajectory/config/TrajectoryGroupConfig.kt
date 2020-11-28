@@ -28,15 +28,21 @@ data class TrajectoryGroupConfig(
     }
 
     @JsonIgnore val velConstraint: TrajectoryVelocityConstraint =
-        MinVelocityConstraint(listOf(
-            AngularVelocityConstraint(maxAngVel),
-            when (driveType) {
-                DriveType.GENERIC -> TranslationalVelocityConstraint(maxVel)
-                DriveType.MECANUM -> MecanumVelocityConstraint(maxVel,
-                    trackWidth!!, wheelBase ?: trackWidth, lateralMultiplier!!)
-                DriveType.TANK -> TankVelocityConstraint(maxVel, trackWidth!!)
-            }
-        ))
+        MinVelocityConstraint(
+            listOf(
+                AngularVelocityConstraint(maxAngVel),
+                when (driveType) {
+DriveType.GENERIC -> TranslationalVelocityConstraint(maxVel)
+DriveType.MECANUM -> MecanumVelocityConstraint(
+    maxVel,
+    trackWidth!!,
+    wheelBase ?: trackWidth,
+    lateralMultiplier!!
+)
+DriveType.TANK -> TankVelocityConstraint(maxVel, trackWidth!!)
+}
+            )
+        )
 
     @JsonIgnore val accelConstraint: TrajectoryAccelerationConstraint =
         ProfileAccelerationConstraint(maxAccel)

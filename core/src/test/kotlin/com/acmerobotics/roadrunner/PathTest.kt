@@ -5,7 +5,6 @@ import com.acmerobotics.roadrunner.path.Path
 import com.acmerobotics.roadrunner.path.PathSegment
 import com.acmerobotics.roadrunner.path.QuinticSpline
 import com.acmerobotics.roadrunner.util.DoubleProgression
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 
@@ -13,10 +12,14 @@ import org.junit.jupiter.api.TestInstance
 class PathTest {
     @Test
     fun testPathDerivatives() {
-        val splineSegment = Path(PathSegment(QuinticSpline(
-                QuinticSpline.Knot(0.0, 0.0, 20.0, 40.0),
-                QuinticSpline.Knot(45.0, 35.0, 60.0, 10.0)
-        )))
+        val splineSegment = Path(
+            PathSegment(
+                QuinticSpline(
+                    QuinticSpline.Knot(0.0, 0.0, 20.0, 40.0),
+                    QuinticSpline.Knot(45.0, 35.0, 60.0, 10.0)
+                )
+            )
+        )
 
         val resolution = 1000
         val s = DoubleProgression.fromClosedInterval(0.0, splineSegment.length(), resolution)

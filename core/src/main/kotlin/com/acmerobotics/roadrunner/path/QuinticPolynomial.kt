@@ -5,14 +5,14 @@ import org.apache.commons.math3.linear.MatrixUtils
 
 @Suppress("TopLevelPropertyNaming")
 private val COEFF_MATRIX = MatrixUtils.createRealMatrix(
-        arrayOf(
-                doubleArrayOf(0.0, 0.0, 0.0, 0.0, 0.0, 1.0),
-                doubleArrayOf(0.0, 0.0, 0.0, 0.0, 1.0, 0.0),
-                doubleArrayOf(0.0, 0.0, 0.0, 2.0, 0.0, 0.0),
-                doubleArrayOf(1.0, 1.0, 1.0, 1.0, 1.0, 1.0),
-                doubleArrayOf(5.0, 4.0, 3.0, 2.0, 1.0, 0.0),
-                doubleArrayOf(20.0, 12.0, 6.0, 2.0, 0.0, 0.0)
-        )
+    arrayOf(
+        doubleArrayOf(0.0, 0.0, 0.0, 0.0, 0.0, 1.0),
+        doubleArrayOf(0.0, 0.0, 0.0, 0.0, 1.0, 0.0),
+        doubleArrayOf(0.0, 0.0, 0.0, 2.0, 0.0, 0.0),
+        doubleArrayOf(1.0, 1.0, 1.0, 1.0, 1.0, 1.0),
+        doubleArrayOf(5.0, 4.0, 3.0, 2.0, 1.0, 0.0),
+        doubleArrayOf(20.0, 12.0, 6.0, 2.0, 0.0, 0.0)
+    )
 )
 
 /**
@@ -42,9 +42,18 @@ class QuinticPolynomial(
 
     init {
         val target =
-            MatrixUtils.createRealMatrix(arrayOf(doubleArrayOf(
-                start, startDeriv, startSecondDeriv, end, endDeriv, endSecondDeriv
-            ))).transpose()
+            MatrixUtils.createRealMatrix(
+                arrayOf(
+                    doubleArrayOf(
+                        start,
+                        startDeriv,
+                        startSecondDeriv,
+                        end,
+                        endDeriv,
+                        endSecondDeriv
+                    )
+                )
+            ).transpose()
 
         val solver = LUDecomposition(COEFF_MATRIX).solver
         val coeff = solver.solve(target)

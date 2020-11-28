@@ -13,10 +13,12 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import kotlin.math.PI
 
-private val VEL_CONSTRAINT = MinVelocityConstraint(listOf(
-    TranslationalVelocityConstraint(5.0),
-    AngularVelocityConstraint(2.0)
-))
+private val VEL_CONSTRAINT = MinVelocityConstraint(
+    listOf(
+        TranslationalVelocityConstraint(5.0),
+        AngularVelocityConstraint(2.0)
+    )
+)
 private val ACCEL_CONSTRAINT = ProfileAccelerationConstraint(10.0)
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -25,8 +27,11 @@ class TrajectoryTest {
     fun testTrajectoryDerivatives() {
         val cryptoColWidth = 7.5
         val stonePose = Pose2d(48.0, -47.5, PI)
-        val trajectory = TrajectoryBuilder(stonePose,
-            baseVelConstraint = VEL_CONSTRAINT, baseAccelConstraint = ACCEL_CONSTRAINT)
+        val trajectory = TrajectoryBuilder(
+            stonePose,
+            baseVelConstraint = VEL_CONSTRAINT,
+            baseAccelConstraint = ACCEL_CONSTRAINT
+        )
             .lineTo(Vector2d(12 - cryptoColWidth, -47.5))
             .splineTo(Vector2d(16.0, -24.0), PI / 3)
             .build()
@@ -52,13 +57,22 @@ class TrajectoryTest {
 
     @Test
     fun testShortTrajectory() {
-        val path = Path(listOf(PathSegment(QuinticSpline(
-            QuinticSpline.Knot(0.0, 0.0, 0.0, -1.0),
-            QuinticSpline.Knot(1e-4, 1e-4, 0.707, 0.707)
-        )), PathSegment(QuinticSpline(
-            QuinticSpline.Knot(1e-4, 1e-4, 0.707, 0.707),
-            QuinticSpline.Knot(2e-4, 0.0, -1.0, 0.0)
-        ))))
+        val path = Path(
+            listOf(
+                PathSegment(
+                    QuinticSpline(
+                        QuinticSpline.Knot(0.0, 0.0, 0.0, -1.0),
+                        QuinticSpline.Knot(1e-4, 1e-4, 0.707, 0.707)
+                    )
+                ),
+                PathSegment(
+                    QuinticSpline(
+                        QuinticSpline.Knot(1e-4, 1e-4, 0.707, 0.707),
+                        QuinticSpline.Knot(2e-4, 0.0, -1.0, 0.0)
+                    )
+                )
+            )
+        )
         TrajectoryGenerator.generateTrajectory(path, VEL_CONSTRAINT, ACCEL_CONSTRAINT, resolution = 1.0)
     }
 
@@ -66,8 +80,11 @@ class TrajectoryTest {
     fun testTrajectoryEnd() {
         val endPose = Pose2d(25.0, 25.0, 0.0)
         repeat(50) {
-            val traj = TrajectoryBuilder(Pose2d(),
-                baseVelConstraint = VEL_CONSTRAINT, baseAccelConstraint = ACCEL_CONSTRAINT)
+            val traj = TrajectoryBuilder(
+                Pose2d(),
+                baseVelConstraint = VEL_CONSTRAINT,
+                baseAccelConstraint = ACCEL_CONSTRAINT
+            )
                 .splineTo(Vector2d(50 * Math.random(), 50 * Math.random()), 2 * PI * Math.random())
                 .splineTo(Vector2d(50 * Math.random(), 50 * Math.random()), 2 * PI * Math.random())
                 .splineTo(endPose.vec(), endPose.heading)

@@ -26,10 +26,12 @@ private const val kV = 1.0 / 60.0
 private const val SIMULATION_HZ = 25
 private const val TRACK_WIDTH = 3.0
 
-private val VEL_CONSTRAINT = MinVelocityConstraint(listOf(
-    TankVelocityConstraint(25.0, TRACK_WIDTH),
-    AngularVelocityConstraint(1.0)
-))
+private val VEL_CONSTRAINT = MinVelocityConstraint(
+    listOf(
+        TankVelocityConstraint(25.0, TRACK_WIDTH),
+        AngularVelocityConstraint(1.0)
+    )
+)
 private val ACCEL_CONSTRAINT = ProfileAccelerationConstraint(50.0)
 
 private val VOLTAGE_NOISE_DIST = NormalDistribution(1.0, 0.05)
@@ -65,8 +67,11 @@ class TankFollowerTest {
     fun simulatePIDVAFollower() {
         val dt = 1.0 / SIMULATION_HZ
 
-        val trajectory = TrajectoryBuilder(Pose2d(0.0, 0.0, 0.0),
-            baseVelConstraint = VEL_CONSTRAINT, baseAccelConstraint = ACCEL_CONSTRAINT)
+        val trajectory = TrajectoryBuilder(
+            Pose2d(0.0, 0.0, 0.0),
+            baseVelConstraint = VEL_CONSTRAINT,
+            baseAccelConstraint = ACCEL_CONSTRAINT
+        )
             .splineTo(Vector2d(15.0, 15.0), PI)
             .splineTo(Vector2d(5.0, 35.0), PI / 3)
             .build()
@@ -103,11 +108,13 @@ class TankFollowerTest {
         graph.addSeries(
             "Target Trajectory",
             targetPositions.map { it.x }.toDoubleArray(),
-            targetPositions.map { it.y }.toDoubleArray())
+            targetPositions.map { it.y }.toDoubleArray()
+        )
         graph.addSeries(
             "Actual Trajectory",
             actualPositions.map { it.x }.toDoubleArray(),
-            actualPositions.map { it.y }.toDoubleArray())
+            actualPositions.map { it.y }.toDoubleArray()
+        )
         graph.seriesMap.values.forEach { it.marker = None() }
         graph.styler.theme = MatlabTheme()
         GraphUtil.saveGraph("sim/tankPIDVA", graph)
@@ -117,8 +124,11 @@ class TankFollowerTest {
     fun simulateRamseteFollower() {
         val dt = 1.0 / SIMULATION_HZ
 
-        val trajectory = TrajectoryBuilder(Pose2d(0.0, 0.0, 0.0),
-            baseVelConstraint = VEL_CONSTRAINT, baseAccelConstraint = ACCEL_CONSTRAINT)
+        val trajectory = TrajectoryBuilder(
+            Pose2d(0.0, 0.0, 0.0),
+            baseVelConstraint = VEL_CONSTRAINT,
+            baseAccelConstraint = ACCEL_CONSTRAINT
+        )
             .splineTo(Vector2d(15.0, 15.0), PI)
             .splineTo(Vector2d(5.0, 35.0), PI / 3)
             .build()
@@ -126,11 +136,11 @@ class TankFollowerTest {
         val clock = SimulatedClock()
         val drive = SimulatedTankDrive(dt, kV, TRACK_WIDTH)
         val follower = RamseteFollower(
-                1.6,
-                0.9,
+            1.6,
+            0.9,
             Pose2d(0.5, 0.5, Math.toRadians(3.0)),
-                1.0,
-                clock
+            1.0,
+            clock
         )
         follower.followTrajectory(trajectory)
 
@@ -153,13 +163,15 @@ class TankFollowerTest {
         val graph = XYChart(600, 400)
         graph.title = "Tank Ramsete Follower Sim"
         graph.addSeries(
-                "Target Trajectory",
-                targetPositions.map { it.x }.toDoubleArray(),
-                targetPositions.map { it.y }.toDoubleArray())
+            "Target Trajectory",
+            targetPositions.map { it.x }.toDoubleArray(),
+            targetPositions.map { it.y }.toDoubleArray()
+        )
         graph.addSeries(
-                "Actual Trajectory",
-                actualPositions.map { it.x }.toDoubleArray(),
-                actualPositions.map { it.y }.toDoubleArray())
+            "Actual Trajectory",
+            actualPositions.map { it.x }.toDoubleArray(),
+            actualPositions.map { it.y }.toDoubleArray()
+        )
         graph.seriesMap.values.forEach { it.marker = None() }
         graph.styler.theme = MatlabTheme()
         GraphUtil.saveGraph("sim/tankRamsete", graph)
@@ -183,7 +195,8 @@ class TankFollowerTest {
             3.0,
             5.0,
             ::atan,
-            clock)
+            clock
+        )
         follower.followPath(path)
 
         val actualPositions = mutableListOf<Vector2d>()
@@ -205,13 +218,15 @@ class TankFollowerTest {
         val graph = XYChart(600, 400)
         graph.title = "Tank GVF Follower Sim"
         graph.addSeries(
-                "Target Trajectory",
-                pathPoints.map { it.x }.toDoubleArray(),
-                pathPoints.map { it.y }.toDoubleArray())
+            "Target Trajectory",
+            pathPoints.map { it.x }.toDoubleArray(),
+            pathPoints.map { it.y }.toDoubleArray()
+        )
         graph.addSeries(
-                "Actual Trajectory",
-                actualPositions.map { it.x }.toDoubleArray(),
-                actualPositions.map { it.y }.toDoubleArray())
+            "Actual Trajectory",
+            actualPositions.map { it.x }.toDoubleArray(),
+            actualPositions.map { it.y }.toDoubleArray()
+        )
         graph.seriesMap.values.forEach { it.marker = None() }
         graph.styler.theme = MatlabTheme()
         GraphUtil.saveGraph("sim/tankGVF", graph)

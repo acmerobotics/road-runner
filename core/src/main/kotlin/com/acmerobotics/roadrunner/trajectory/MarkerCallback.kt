@@ -1,4 +1,4 @@
-package com.acmerobotics.roadrunner.trajectory;
+package com.acmerobotics.roadrunner.trajectory
 
 fun interface MarkerCallback {
     fun onMarkerReached()

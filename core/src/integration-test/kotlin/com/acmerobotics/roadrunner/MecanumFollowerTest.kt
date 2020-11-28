@@ -21,10 +21,12 @@ private const val kV = 1.0 / 60.0
 private const val SIMULATION_HZ = 25
 private const val TRACK_WIDTH = 3.0
 
-private val VEL_CONSTRAINT = MinVelocityConstraint(listOf(
-    MecanumVelocityConstraint(50.0, TRACK_WIDTH),
-    AngularVelocityConstraint(PI / 2)
-))
+private val VEL_CONSTRAINT = MinVelocityConstraint(
+    listOf(
+        MecanumVelocityConstraint(50.0, TRACK_WIDTH),
+        AngularVelocityConstraint(PI / 2)
+    )
+)
 private val ACCEL_CONSTRAINT = ProfileAccelerationConstraint(25.0)
 
 private val VOLTAGE_NOISE_DIST = NormalDistribution(1.0, 0.05)
@@ -61,8 +63,11 @@ class MecanumFollowerTest {
     fun simulatePIDVAFollower() {
         val dt = 1.0 / SIMULATION_HZ
 
-        val trajectory = TrajectoryBuilder(Pose2d(0.0, 0.0, 0.0),
-            baseVelConstraint = VEL_CONSTRAINT, baseAccelConstraint = ACCEL_CONSTRAINT)
+        val trajectory = TrajectoryBuilder(
+            Pose2d(0.0, 0.0, 0.0),
+            baseVelConstraint = VEL_CONSTRAINT,
+            baseAccelConstraint = ACCEL_CONSTRAINT
+        )
                 .splineTo(Vector2d(15.0, 15.0), PI)
                 .splineTo(Vector2d(5.0, 35.0), PI / 3)
                 .build()
@@ -97,13 +102,15 @@ class MecanumFollowerTest {
         val graph = XYChart(600, 400)
         graph.title = "Mecanum PIDVA Follower Sim"
         graph.addSeries(
-                "Target Trajectory",
-                targetPositions.map { it.x }.toDoubleArray(),
-                targetPositions.map { it.y }.toDoubleArray())
+            "Target Trajectory",
+            targetPositions.map { it.x }.toDoubleArray(),
+            targetPositions.map { it.y }.toDoubleArray()
+        )
         graph.addSeries(
-                "Actual Trajectory",
-                actualPositions.map { it.x }.toDoubleArray(),
-                actualPositions.map { it.y }.toDoubleArray())
+            "Actual Trajectory",
+            actualPositions.map { it.x }.toDoubleArray(),
+            actualPositions.map { it.y }.toDoubleArray()
+        )
         graph.seriesMap.values.forEach { it.marker = None() }
         graph.styler.theme = MatlabTheme()
         GraphUtil.saveGraph("sim/mecanumPIDVA", graph)

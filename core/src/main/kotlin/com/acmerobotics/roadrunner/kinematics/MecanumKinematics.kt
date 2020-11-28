@@ -32,10 +32,10 @@ object MecanumKinematics {
     ): List<Double> {
         val k = (trackWidth + wheelBase) / 2.0
         return listOf(
-                robotVel.x - lateralMultiplier * robotVel.y - k * robotVel.heading,
-                robotVel.x + lateralMultiplier * robotVel.y - k * robotVel.heading,
-                robotVel.x - lateralMultiplier * robotVel.y + k * robotVel.heading,
-                robotVel.x + lateralMultiplier * robotVel.y + k * robotVel.heading
+            robotVel.x - lateralMultiplier * robotVel.y - k * robotVel.heading,
+            robotVel.x + lateralMultiplier * robotVel.y - k * robotVel.heading,
+            robotVel.x - lateralMultiplier * robotVel.y + k * robotVel.heading,
+            robotVel.x + lateralMultiplier * robotVel.y + k * robotVel.heading
         )
     }
 

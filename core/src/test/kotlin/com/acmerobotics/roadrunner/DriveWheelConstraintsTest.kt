@@ -25,8 +25,11 @@ class DriveWheelConstraintsTest {
         velConstraint: TrajectoryVelocityConstraint,
         robotToWheelVelocities: (vel: Pose2d) -> List<Double>
     ) {
-        val trajectory = TrajectoryBuilder(Pose2d(0.0, 0.0, 0.0),
-            baseVelConstraint = velConstraint, baseAccelConstraint = ACCEL_CONSTRAINT)
+        val trajectory = TrajectoryBuilder(
+            Pose2d(0.0, 0.0, 0.0),
+            baseVelConstraint = velConstraint,
+            baseAccelConstraint = ACCEL_CONSTRAINT
+        )
             .splineTo(Vector2d(15.0, 15.0), PI)
             .splineTo(Vector2d(5.0, 35.0), PI / 3)
             .build()
