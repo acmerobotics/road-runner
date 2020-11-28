@@ -12,7 +12,7 @@ buildscript {
 
 plugins {
     id 'kotlin'
-    id 'org.jetbrains.intellij' version '0.3.4'
+    id 'org.jetbrains.intellij' version '0.6.5'
 }
 apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'io.gitlab.arturbosch.detekt'
