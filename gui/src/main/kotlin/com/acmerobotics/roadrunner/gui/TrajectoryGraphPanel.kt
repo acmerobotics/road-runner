@@ -13,7 +13,9 @@ import javax.swing.JPanel
 
 private const val RESOLUTION = 1000
 val SERIES_COLORS = arrayOf(
-        Color(0x2979ff), Color(0xdd2c00), Color(0x4caf50)
+    Color(0x2979ff),
+    Color(0xdd2c00),
+    Color(0x4caf50)
 )
 
 /**
@@ -22,12 +24,17 @@ val SERIES_COLORS = arrayOf(
 class TrajectoryGraphPanel : JPanel() {
 
     private var chart: XYChart = QuickChart.getChart(
-        "", "time", "velocity",
+        "",
+        "time",
+        "velocity",
         arrayOf("ẋ ", "ẏ ", "ω"),
         doubleArrayOf(0.0),
-        arrayOf(doubleArrayOf(0.0),
-        doubleArrayOf(0.0),
-        doubleArrayOf(0.0)))
+        arrayOf(
+            doubleArrayOf(0.0),
+            doubleArrayOf(0.0),
+            doubleArrayOf(0.0)
+        )
+    )
 
     override fun paintComponent(g: Graphics?) {
         super.paintComponent(g)

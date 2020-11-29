@@ -163,19 +163,25 @@ class ConfigPanel : JPanel() {
                     TrajectoryGroupConfig.DriveType.GENERIC -> {
                         _config.copy(
                             driveType = TrajectoryGroupConfig.DriveType.GENERIC,
-                            trackWidth = null, wheelBase = null, lateralMultiplier = null
+                            trackWidth = null,
+                            wheelBase = null,
+                            lateralMultiplier = null
                         )
                     }
                     TrajectoryGroupConfig.DriveType.TANK -> {
                         _config.copy(
                             driveType = TrajectoryGroupConfig.DriveType.TANK,
-                            trackWidth = DEFAULT_TRACK_WIDTH, wheelBase = null, lateralMultiplier = null
+                            trackWidth = DEFAULT_TRACK_WIDTH,
+                            wheelBase = null,
+                            lateralMultiplier = null
                         )
                     }
                     TrajectoryGroupConfig.DriveType.MECANUM -> {
                         _config.copy(
                             driveType = TrajectoryGroupConfig.DriveType.MECANUM,
-                            trackWidth = DEFAULT_TRACK_WIDTH, wheelBase = null, lateralMultiplier = 1.0
+                            trackWidth = DEFAULT_TRACK_WIDTH,
+                            wheelBase = null,
+                            lateralMultiplier = 1.0
                         )
                     }
                 }

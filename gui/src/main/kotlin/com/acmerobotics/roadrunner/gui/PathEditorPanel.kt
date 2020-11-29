@@ -27,8 +27,12 @@ class WaypointPanel : JPanel() {
     private val removeButton = JButton("Remove")
 
     private val editableComponents = listOf<JComponent>(
-        xTextField, yTextField, headingTextField,
-        interpComboBox, tangentTextField, removeButton
+        xTextField,
+        yTextField,
+        headingTextField,
+        interpComboBox,
+        tangentTextField,
+        removeButton
     )
 
     var disabled = false
@@ -112,16 +116,28 @@ class WaypointPanel : JPanel() {
             if (_waypoint.interpolationType != newInterpType) {
                 _waypoint = when (newInterpType) {
                     TrajectoryConfig.HeadingInterpolationType.TANGENT -> {
-                        _waypoint.copy(interpolationType = TrajectoryConfig.HeadingInterpolationType.TANGENT, heading = 0.0)
+                        _waypoint.copy(
+                            interpolationType = TrajectoryConfig.HeadingInterpolationType.TANGENT,
+                            heading = 0.0
+                        )
                     }
                     TrajectoryConfig.HeadingInterpolationType.CONSTANT -> {
-                        _waypoint.copy(interpolationType = TrajectoryConfig.HeadingInterpolationType.CONSTANT, heading = 0.0)
+                        _waypoint.copy(
+                            interpolationType = TrajectoryConfig.HeadingInterpolationType.CONSTANT,
+                            heading = 0.0
+                        )
                     }
                     TrajectoryConfig.HeadingInterpolationType.LINEAR -> {
-                        _waypoint.copy(interpolationType = TrajectoryConfig.HeadingInterpolationType.LINEAR, heading = _waypoint.tangent)
+                        _waypoint.copy(
+                            interpolationType = TrajectoryConfig.HeadingInterpolationType.LINEAR,
+                            heading = _waypoint.tangent
+                        )
                     }
                     TrajectoryConfig.HeadingInterpolationType.SPLINE -> {
-                        _waypoint.copy(interpolationType = TrajectoryConfig.HeadingInterpolationType.SPLINE, heading = _waypoint.tangent)
+                        _waypoint.copy(
+                            interpolationType = TrajectoryConfig.HeadingInterpolationType.SPLINE,
+                            heading = _waypoint.tangent
+                        )
                     }
                 }
             }
@@ -173,8 +189,11 @@ class PathEditorPanel : JPanel() {
     private val addButton = JButton("Add")
 
     private val editableComponents = listOf<JComponent>(
-        xTextField, yTextField, headingTextField,
-        tangentTextField, addButton
+        xTextField,
+        yTextField,
+        headingTextField,
+        tangentTextField,
+        addButton
     )
 
     var disabled = false
@@ -222,13 +241,15 @@ class PathEditorPanel : JPanel() {
                     _config = _config.copy(waypoints = _config.waypoints.filterIndexed { j, _ -> i != j })
                 }
                 panel.onWaypointChange = { newWaypoint ->
-                    _config = _config.copy(waypoints = _config.waypoints.mapIndexed { j, waypoint ->
-                        if (i == j) {
-                            newWaypoint
-                        } else {
-                            waypoint
+                    _config = _config.copy(
+                        waypoints = _config.waypoints.mapIndexed { j, waypoint ->
+                            if (i == j) {
+                                newWaypoint
+                            } else {
+                                waypoint
+                            }
                         }
-                    })
+                    )
                 }
                 if (panel.waypoint !== waypoint) {
                     panel.waypoint = waypoint
@@ -245,13 +266,15 @@ class PathEditorPanel : JPanel() {
                     _config = _config.copy(waypoints = _config.waypoints.filterIndexed { j, _ -> i + startSize != j })
                 }
                 panel.onWaypointChange = { newWaypoint ->
-                    _config = _config.copy(waypoints = _config.waypoints.mapIndexed { j, waypoint ->
-                        if (i + startSize == j) {
-                            newWaypoint
-                        } else {
-                            waypoint
+                    _config = _config.copy(
+                        waypoints = _config.waypoints.mapIndexed { j, waypoint ->
+                            if (i + startSize == j) {
+         newWaypoint
+     } else {
+         waypoint
+     }
                         }
-                    })
+                    )
                 }
                 waypointPanelContainer.add(panel)
                 waypointPanels.add(panel)
@@ -315,17 +338,28 @@ class PathEditorPanel : JPanel() {
         headerContainer.add(JLabel("Heading", SwingConstants.CENTER))
 
         addButton.addActionListener {
-            _config = _config.copy(waypoints = _config.waypoints + listOf(_config.waypoints.lastOrNull()?.copy()
-                ?: TrajectoryConfig.Waypoint(_config.startPose.vec(), _config.startPose.heading,
-                    _config.startTangent, TrajectoryConfig.HeadingInterpolationType.TANGENT)
-            ))
+            _config = _config.copy(
+                waypoints = _config.waypoints + listOf(
+                    _config.waypoints.lastOrNull()?.copy()
+?: TrajectoryConfig.Waypoint(
+    _config.startPose.vec(),
+    _config.startPose.heading,
+    _config.startTangent,
+    TrajectoryConfig.HeadingInterpolationType.TANGENT
+)
+                )
+            )
         }
         headerContainer.add(addButton)
 
         headerContainer.border = BorderFactory.createEmptyBorder(0, 0, 0, 15)
         add(headerContainer, BorderLayout.NORTH)
 
-        val scrollPane = JScrollPane(waypointPanelContainer, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER)
+        val scrollPane = JScrollPane(
+            waypointPanelContainer,
+            JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+            JScrollPane.HORIZONTAL_SCROLLBAR_NEVER
+        )
         scrollPane.border = BorderFactory.createEmptyBorder()
 
         waypointPanelContainer.layout = BoxLayout(waypointPanelContainer, BoxLayout.PAGE_AXIS)

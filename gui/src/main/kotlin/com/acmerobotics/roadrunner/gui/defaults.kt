@@ -2,6 +2,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.trajectory.config.TrajectoryConfig
 import com.acmerobotics.roadrunner.trajectory.config.TrajectoryGroupConfig
+import kotlin.math.PI
 
 const val DEFAULT_ROBOT_SIZE = 18.0
 const val DEFAULT_TRACK_WIDTH = 18.0
@@ -15,8 +16,8 @@ val DEFAULT_TRAJECTORY_CONFIG = TrajectoryConfig(
 val DEFAULT_GROUP_CONFIG = TrajectoryGroupConfig(
     30.0,
     40.0,
-    Math.PI,
-    Math.PI,
+    PI,
+    PI,
     DEFAULT_ROBOT_SIZE,
     DEFAULT_ROBOT_SIZE,
     TrajectoryGroupConfig.DriveType.GENERIC,

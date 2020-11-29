@@ -2,6 +2,9 @@ package com.acmerobotics.roadrunner.trajectory.constraints
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
 
+/**
+ * Constraint limiting profile acceleration.
+ */
 class ProfileAccelerationConstraint(
     private val maxProfileAccel: Double
 ) : TrajectoryAccelerationConstraint {

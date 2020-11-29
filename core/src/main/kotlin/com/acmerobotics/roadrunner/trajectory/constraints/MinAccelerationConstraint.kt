@@ -2,6 +2,9 @@ package com.acmerobotics.roadrunner.trajectory.constraints
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
 
+/**
+ * Composite constraint representing the minimum of its constituent acceleration constraints.
+ */
 class MinAccelerationConstraint(
     private val constraints: List<TrajectoryAccelerationConstraint>
 ) : TrajectoryAccelerationConstraint {

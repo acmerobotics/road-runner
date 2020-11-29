@@ -83,7 +83,11 @@ class MainPanel : JPanel() {
             trajectoryConfig = it?.config
         }
         pathEditorPanel.onConfigChange = { (startPose, startTangent, waypoints) ->
-            trajectoryConfig = trajectoryConfig?.copy(startPose = startPose, startTangent = startTangent, waypoints = waypoints)
+            trajectoryConfig = trajectoryConfig?.copy(
+                startPose = startPose,
+                startTangent = startTangent,
+                waypoints = waypoints
+            )
         }
         trajectoryInfoPanel.onResolutionChange = {
             trajectoryConfig = trajectoryConfig?.copy(resolution = min(MIN_RESOLUTION, max(it, MAX_RESOLUTION)))
@@ -99,9 +103,11 @@ class MainPanel : JPanel() {
 
         val upperContent = JPanel()
         upperContent.layout = BoxLayout(upperContent, BoxLayout.LINE_AXIS)
-        upperContent.add(JPanel().apply {
-            add(trajectoryListPanel)
-        })
+        upperContent.add(
+            JPanel().apply {
+                add(trajectoryListPanel)
+            }
+        )
 
         val trajContent = JPanel()
         trajContent.layout = BoxLayout(trajContent, BoxLayout.PAGE_AXIS)
@@ -135,6 +141,7 @@ class MainPanel : JPanel() {
         add(statusPanel, BorderLayout.SOUTH)
     }
 
+    @Suppress("ComplexCondition", "TooGenericExceptionCaught")
     private fun updateTrajectoryInBackground(trajectoryConfig: TrajectoryConfig, groupConfig: TrajectoryGroupConfig) {
         if (groupConfig.maxVel epsilonEquals 0.0 || groupConfig.maxAccel epsilonEquals 0.0 ||
             groupConfig.maxAngVel epsilonEquals 0.0 || groupConfig.maxAngAccel epsilonEquals 0.0) {

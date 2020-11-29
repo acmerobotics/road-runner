@@ -4,6 +4,9 @@ import com.acmerobotics.roadrunner.geometry.Pose2d
 import kotlin.math.abs
 import kotlin.math.max
 
+/**
+ * Constraint limiting angular velocity.
+ */
 class AngularVelocityConstraint(
     private val maxAngularVel: Double
 ) : TrajectoryVelocityConstraint {

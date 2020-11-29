@@ -14,6 +14,7 @@ import java.io.InputStream
  */
 object TrajectoryConfigManager {
     @JvmField
+    @Suppress("MayBeConst")
     val GROUP_FILENAME = "_group.yaml"
 
     private val MAPPER = ObjectMapper(YAMLFactory())

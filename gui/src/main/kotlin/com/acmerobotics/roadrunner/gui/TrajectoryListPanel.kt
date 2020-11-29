@@ -180,10 +180,12 @@ class TrajectoryListPanel : JPanel() {
 
         trajListModel.clear()
         for (file in fileList) {
-            trajListModel.addElement(DiskTrajectoryConfig(
-                TrajectoryConfigManager.loadConfig(file) ?: return false,
-                file
-            ))
+            trajListModel.addElement(
+                DiskTrajectoryConfig(
+                    TrajectoryConfigManager.loadConfig(file) ?: return false,
+                    file
+                )
+            )
         }
 
         groupDir = dir
@@ -200,9 +202,12 @@ class TrajectoryListPanel : JPanel() {
         val diskTraj = trajListModel[trajIndex]
         val newFile = File(diskTraj.file.parent, "$newName.yaml")
         diskTraj.file.delete()
-        trajListModel.set(trajIndex, diskTraj.copy(
-            file = newFile
-        ))
+        trajListModel.set(
+            trajIndex,
+            diskTraj.copy(
+                file = newFile
+            )
+        )
         save(trajIndex)
     }
 
@@ -210,9 +215,12 @@ class TrajectoryListPanel : JPanel() {
         val diskTrajectoryConfig = trajListModel[trajIndex]
         if (diskTrajectoryConfig.dirty) {
             TrajectoryConfigManager.saveConfig(diskTrajectoryConfig.config, diskTrajectoryConfig.file)
-            trajListModel.set(trajIndex, diskTrajectoryConfig.copy(
-                dirty = false
-            ))
+            trajListModel.set(
+                trajIndex,
+                diskTrajectoryConfig.copy(
+                    dirty = false
+                )
+            )
         }
         if (groupConfigDirty) {
             TrajectoryConfigManager.saveGroupConfig(groupConfig, diskTrajectoryConfig.file.parentFile)

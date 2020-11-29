@@ -26,7 +26,8 @@ compileKotlin {
 detekt {
     toolVersion = detekt_version
     input = files("src/main/kotlin")
-    config = files("$rootDir/detekt-config.yml")
+    config = files("detekt-config.yml")
+    autoCorrect = true
 }
 
 dependencies {

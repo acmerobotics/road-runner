@@ -14,11 +14,13 @@ import javax.swing.event.DocumentListener
 import javax.swing.text.NumberFormatter
 
 fun JTextField.addChangeListener(listener: () -> Unit) {
-    document.addDocumentListener(object : DocumentListener {
-        override fun changedUpdate(e: DocumentEvent?) = listener()
-        override fun insertUpdate(e: DocumentEvent?) = listener()
-        override fun removeUpdate(e: DocumentEvent?) = listener()
-    })
+    document.addDocumentListener(
+        object : DocumentListener {
+override fun changedUpdate(e: DocumentEvent?) = listener()
+override fun insertUpdate(e: DocumentEvent?) = listener()
+override fun removeUpdate(e: DocumentEvent?) = listener()
+}
+    )
 }
 
 @Suppress("UNCHECKED_CAST")
@@ -54,7 +56,12 @@ fun Path2D.Double.lineTo(point: Point2D.Double) {
     lineTo(point.x, point.y)
 }
 
-fun circle(center: Vector2d, radius: Double) = Ellipse2D.Double(center.x - radius / 2, center.y - radius / 2, radius, radius)
+fun circle(center: Vector2d, radius: Double) = Ellipse2D.Double(
+    center.x - radius / 2,
+    center.y - radius / 2,
+    radius,
+    radius
+)
 
 @Suppress("UNCHECKED_CAST")
 fun <E> DefaultListModel<E>.asList() = this.toArray().asList() as List<E>

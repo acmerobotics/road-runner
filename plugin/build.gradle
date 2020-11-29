@@ -30,7 +30,8 @@ compileKotlin {
 detekt {
     toolVersion = detekt_version
     input = files("src/main/kotlin")
-    config = files("$rootDir/detekt-config.yml")
+    config = files("detekt-config.yml")
+    autoCorrect = true
 }
 
 tasks["detekt"].dependsOn(":custom-detekt-rules:assemble")

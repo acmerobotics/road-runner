@@ -4,6 +4,9 @@ import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.kinematics.Kinematics
 import kotlin.math.sqrt
 
+/**
+ * Constraint limiting translational velocity.
+ */
 class TranslationalVelocityConstraint(
     private val maxTranslationalVel: Double
 ) : TrajectoryVelocityConstraint {

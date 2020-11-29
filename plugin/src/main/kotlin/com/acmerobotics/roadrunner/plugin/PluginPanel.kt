@@ -48,19 +48,27 @@ class PluginPanel(private val project: Project) : JPanel() {
         groupLayout.autoCreateGaps = true
         groupLayout.autoCreateContainerGaps = true
 
-        groupLayout.setVerticalGroup(groupLayout.createSequentialGroup()
-                .addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
-                        .addComponent(moduleLabel)
-                        .addComponent(moduleComboBox)
-                        .addComponent(phantomLabel))
-                .addComponent(mainPanel))
+        groupLayout.setVerticalGroup(
+            groupLayout.createSequentialGroup()
+.addGroup(
+    groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
+.addComponent(moduleLabel)
+.addComponent(moduleComboBox)
+.addComponent(phantomLabel)
+)
+.addComponent(mainPanel)
+        )
 
-        groupLayout.setHorizontalGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
-                .addGroup(groupLayout.createSequentialGroup()
-                        .addComponent(moduleLabel)
-                        .addComponent(moduleComboBox)
-                        .addComponent(phantomLabel))
-                .addComponent(mainPanel))
+        groupLayout.setHorizontalGroup(
+            groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
+.addGroup(
+    groupLayout.createSequentialGroup()
+.addComponent(moduleLabel)
+.addComponent(moduleComboBox)
+.addComponent(phantomLabel)
+)
+.addComponent(mainPanel)
+        )
     }
 
     private fun updateModuleSelection() {

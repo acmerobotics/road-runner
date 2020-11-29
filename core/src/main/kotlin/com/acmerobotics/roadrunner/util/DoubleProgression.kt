@@ -65,6 +65,7 @@ data class DoubleProgression(
     /**
      * Iterator implementation for [DoubleProgression].
      */
+    @Suppress("IteratorNotThrowingNoSuchElementException")
     inner class IteratorImpl : Iterator<Double> {
         private val iterator: Iterator<Int> = IntRange(0, size - 1).iterator()
 
