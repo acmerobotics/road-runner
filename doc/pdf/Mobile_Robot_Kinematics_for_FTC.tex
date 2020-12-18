@@ -284,9 +284,9 @@ $$
 If placed properly, three tracking wheels are sufficient to determine the $(v_x, v_y, \omega)$ configuration:
 $$
 \begin{bmatrix}
-    \Delta \omega_1\\
-    \Delta \omega_2\\
-    \Delta \omega_3
+    \omega_1\\
+    \omega_2\\
+    \omega_3
 \end{bmatrix}
 =
 \frac{1}{R}
@@ -303,9 +303,9 @@ $$
 $$
 $$
 \begin{bmatrix}
-    \theta_1\\
-    \theta_2\\
-    \theta_3
+    \Delta \theta_1\\
+    \Delta \theta_2\\
+    \Delta \theta_3
 \end{bmatrix}
 =
 \frac{1}{R}
@@ -360,12 +360,11 @@ For example, take the common configuration of two tracking wheels placed paralle
     \end{bmatrix}
     \quad\leftrightarrow\quad
     \begin{aligned}[c]
-        \Delta x_R &= \frac{R}{2}(\theta_1 + \theta_2)\\
-        \Delta y_R &= R\bigg[\frac{x_0}{2y_0}(\theta_1 - \theta_2) + \theta_3\bigg]\\
-        \Delta \theta_R &= \frac{R}{2y_0}(\theta_2 - \theta_1)
+        \Delta x_R &= \frac{R}{2}(\Delta \theta_1 + \Delta \theta_2)\\
+        \Delta y_R &= R\bigg[\frac{x_0}{2y_0}(\Delta \theta_1 - \Delta \theta_2) + \Delta \theta_3\bigg]\\
+        \Delta \theta_R &= \frac{R}{2y_0}(\Delta \theta_2 - \Delta \theta_1)
     \end{aligned}
 \end{equation*}
-
 Two tracking wheels and a heading sensor is also sufficient for localization.
 $$
 \begin{bmatrix}
