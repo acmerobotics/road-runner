@@ -1,0 +1,232 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage[margin=1.5in]{geometry}
+\usepackage[T1]{fontenc}
+
+\newcommand{\norm}[1]{\lvert #1 \rvert}
+
+% see the following for various vector notations
+% http://www.tapdancinggoats.com/latex-vector-notation.htm
+
+\title{Quintic Splines for FTC}
+\author{Ryan Brott}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+In this paper, we explore the use of quintic splines for more sophisticated robot pathing in FTC. Traditionally, FTC robot autonomous motion consists of a series of linear movements (including holonomic drive strafing) and point turns. Although these simple path primitives generally suffice, they are not time-optimal under reasonable kinematic constraints, especially for nonholonomic (e.g., tank/differential) drivetrains. That is, the fastest route between two poses in general is not two point turns and a line.\footnote{The keen reader will realize that this is not necessarily the case for holonomic drives. All pose-to-pose movements can be executed with a combination of strafing and rotating. Nevertheless, splines can still be of use. For one, traveling along the tangent can reduce dead reckoning odometrical errors accrued from translating on the lateral axis (especially for mecanum drives). Additionally, splines can help navigate around obstacles in situations where piecewise linear paths would normally be required.} To address this, we propose the use of quintic splines to achieve quick, smooth motion on the field.
+
+In the first part of the paper, we will describe the problem in depth and give motivation for splines. In the second half, we explore some of the mathematics behind quintic splines (and parametric curves more generally) including interpolation, reparametrization, and heading computation.
+
+\section{Problem}
+In FTC, it's standard to have a sequence a poses that you want the robot to follow in autonomous (although pre-planned motions can also be utilized in TeleOp). For example, in the Relic Recovery game, a common movement task may be moving from one pose on the balancing stone to another in front of the cryptobox. This is traditionally handled with a series of straight lines and turns that are executed with 1D position PID controllers and potentially motor-based velocity PID (e.g., \texttt{RUN\_USING\_ENCODER}).
+
+For many game tasks and teams, this is a perfectly viable approach. However, in scenarios where speed is desirable (such as the effectively unlimited scoring potential in Relic Recovery autonomous), conventional methods tend to become less effective. Higher speeds usually lead to greater wheel accelerations and slippage, hindering odometry. Additionally, the feedback controllers may have more chaotic transient behavior or decreased steady-state performance. 
+
+In this case, motion profiling can be used to achieve higher speeds without sacrificing accuracy by observing the robot's physical constraints (e.g., maximum velocity, acceleration).\footnote{For a good introduction to motion profiling, see the canonical talk by mentors from FRC teams 254 and 971: \url{https://www.youtube.com/watch?v=8319J1BEHwM}}. However, this is only part of the solution; in fact, motion profiling amplifies the discontinuities between the elements of a conventional pose-to-pose path. Each transition between rotation and translations demands a full deceleration-acceleration cycle.
+
+To eliminate this unnecessary pause, we seek to combine the rotation and translation into a single smooth curve. Although many curves suffice, splines are typically employed for this purpose. For simplicity, this paper only considers polynomial  splines\footnote{\url{http://www.ryanjuckett.com/programming/biarc-interpolation/} is a great introduction to biarc splines.}. Quintic splines in particular were selected for their balance between continuity and curvature although the methods described can be easily extended to polynomials of arbitrary odd degree.
+
+\begin{figure}
+    \centering
+
+    \begin{tikzpicture}
+        \begin{axis}[
+            width=8cm,
+            height=8cm,
+            axis x line=center,
+            axis y line=center,
+            xtick={-72,-48,...,72},
+            ytick={-72,-48,...,72},
+            x dir=reverse,
+            xlabel={$y$},
+            ylabel={$x$},
+            xlabel style={below left, at={(-0.02, 0.5)}},
+            ylabel style={above right, at={(0.52, 0.98)}},
+            xmin=-80,
+            xmax=80,
+            ymin=-80,
+            ymax=80,
+            axis equal=true]
+            \addplot graphics[xmin=-72,ymin=-72,xmax=72,ymax=72] {../image/transparent_field.png};
+            \addplot [mark=none, style=very thick, black!30!green, domain=0:1] ({-108.00000*x^5+288.00000*x^4-216.00000*x^3+0.00000*x^2+0.00000*x+48.00000},{44.73506*x^5-119.29351*x^4+89.47013*x^3+0.00000*x^2-50.91169*x+48.00000});
+            \addplot[mark=none, style=very thick, black!30!green] coordinates {(-48,48) (-48,30) (-12,12)};
+        \end{axis}
+    \end{tikzpicture}
+    
+    \caption{Sample coordinate system for describing positions on the Relic Recovery field. This right-handed frame can be extended to three dimensions with the positive z-axis protruding from the origin. The path on the blue side is a typical autonomous route seen in FTC (don't forget there's a turn between the line segments --- three profiles in total). The path on the red side is a quintic spline version of roughly the same move. The spline path is 1.6 times faster than the conventional path with reasonable drive constraints.}
+    \label{fig:coordinate_system}
+\end{figure}
+
+\section{Preliminaries}
+
+\subsection{Coordinate System}
+Before constructing paths, it is imperative to define a consistent coordinate system. With this coordinate frame, points on the field can be uniquely described. This allows for the specification of robot poses which consist of the position and a heading direction. This heading is typically encoded as angle from the $x$-axis. \autoref{fig:coordinate_system} shows a sample coordinate system for the Relic Recovery field. When determining a coordinate system, it is advantageous to choose axes around the symmetries of the environment. For the standard square FTC field, this comprises putting the origin at the center and placing the planar axes perpendicular to the field walls.
+
+\subsection{Vectors and Parametric Curves}
+To fully understand the following mathematics, it helps to grasp a little vector calculus (don't be scared --- only basic knowledge of single-variable calculus is required). Recall that a Euclidean vector $\mathbf{v}$ in $n$ dimensions ($\mathbf{v} \in \mathbb{R}^n$) uniquely encodes a single point in the space (commonly represented as an arrow from the origin to the point). This vector can be decomposed into $n$ components:
+$$
+\mathbf{v} = (x_1, x_2, \ldots, x_n)
+$$
+The length of a vector is given by its norm:
+$$
+\norm{\mathbf{v}} = \sqrt{x_1^2 + x_2^2 + \ldots + x_n^2}
+$$
+
+Aside from vector addition and scalar multiplication, two additional operations are commonly defined between Euclidean vectors. First, the dot product is defined as the scalar sum of the element-wise products of two vectors:
+$$
+\mathbf{v} \cdot \mathbf{w} = v_1w_1 + v_2w_2 + ... + v_nw_n
+$$
+Note that the norm can be alternatively expressed as $\norm{\mathbf{v}} = \sqrt{\mathbf{v} \cdot \mathbf{v}}$. Second, the cross product is defined for three-dimensional vectors as the pseudo-determinant of this quasi-matrix:
+$$
+\mathbf{v} \times \mathbf{w} =
+\begin{vmatrix}
+    \hat{\imath} & \hat{\jmath} & \hat{k}\\[4pt]
+    v_1 & v_2 & v_3\\[4pt]
+    w_1 & w_2 & w_3
+\end{vmatrix}
+$$
+
+Two-dimensional curves can be represented as graphs of one-dimensional functions ($y = f(x)$). However, this puts unnecessary constraints on the set of possible curves (e.g., no two points on the curve can share the same x-value, no self-intersections, no vertical tangents), especially in higher dimensions. Instead, we will represent curves as a series of vectors that trace out the shape. This is analogous to a parametric curve $\mathbf{r}(t)$ which maps a single real parameter $t$ to the corresponding path vector ($\mathbf{r}:\mathbb R\to\mathbb R^n$). Intuitively, $\mathbf{r}(t)$ can be thought of as the trajectory of a fly located at $\mathbf{r}(t_0)$ in the instant $t=t_0$.
+
+Parametric curves can be represented as a vector of single-variable functions:
+$$
+\mathbf{v}(t) = (x_1(t), x_2(t), \ldots, x_n(t))
+$$
+As one might expect, $\mathbf{r}(t)$ can be differentiated component-by-component:
+$$
+\mathbf{v}'(t) = (x_1'(t), x_2'(t), \ldots, x_n'(t))
+$$
+Derivatives of dot products and cross products can also be computed:
+\begin{equation*}
+\begin{split}
+    \frac{d}{dt} \Big[\ \mathbf{r}_1(t) \cdot \mathbf{r}_2(t)\ \Big] &= \mathbf{r}_1(t) \cdot \mathbf{r}_2'(t) +\mathbf{r}_1'(t) \cdot \mathbf{r}_2(t) \\
+    \frac{d}{dt} \Big[\ \mathbf{r}_1(t) \times \mathbf{r}_2(t)\ \Big] &= \mathbf{r}_1(t) \times \mathbf{r}_2'(t) +\mathbf{r}_1'(t) \times \mathbf{r}_2(t)
+\end{split}
+\end{equation*}
+
+A parametric curve is said to be $C^n$ if its nth-order derivatives are defined and continuous everywhere on its domain ($n$ here is distinct from the $n$ in $\mathbb R^n$). For the rest of the paper, we will restrict our attention to two-dimensional parametric curves $\mathbf{r}(t)=(x(t), y(t))$.
+
+\section{Interpolation}
+Quintic splines consist of a series of segments assembled together into a single piecewise curve. Each of the segments is a parametric curve with a quintic polynomial for each component. The ith segment of a two-dimensional quintic spline of $n$ segments can be represented as the following:
+$$
+    \begin{cases}
+        x^{(i)}(t) = a^{(i)}_xt^5 + b^{(i)}_xt^4 + c^{(i)}_xt^3 + d^{(i)}_xt^2 + e^{(i)}_xt + f^{(i)}_x\\
+        y^{(i)}(t) = a^{(i)}_yt^5 + b^{(i)}_yt^4 + c^{(i)}_yt^3 + d^{(i)}_yt^2 + e^{(i)}_yt + f^{(i)}_y
+    \end{cases}
+    \quad \text{where} \quad 0 \leq t \leq 1
+$$
+Now the goal of interpolation is to ``fit'' these polynomials between a series of $n+1$ points (commonly referred to as knots) labeled $(x_i, y_i)$. To accomplish this, we can impose the conditions $x^{(i)}(0) = x_i$ and $x^{(i)}(1) = x_{i+1}$ (and correspondingly for $y^{(i)}(t)$). Additionally, to ensure greater continuity, we also match the first and second derivatives at each knot point\footnote{This is generally the best choice for splines in the context of path planning although other schemes are occasionally employed. For instance, one can instead force the third and fourth derivatives to equal zero.}:
+\begin{equation*}
+\begin{split}
+    \frac{dx^{(i)}}{dt}\biggr\rvert_{t=0} &= x'_i\\
+    \frac{dx^{(i)}}{dt}\biggr\rvert_{t=1} &= x'_{i+1}\\
+    \frac{d^2x^{(i)}}{dt^2}\biggr\rvert_{t=0} &= x^{\prime\prime}_i\\
+    \frac{d^2x^{(i)}}{dt^2}\biggr\rvert_{t=1} &= x^{\prime\prime}_{i+1}\\
+\end{split}
+\end{equation*}
+$$(\text{and analogously for }y)$$
+Collectively, these constraints guarantee that the overall spline will be (by construction) $C^2$. They also fully define the polynomial coefficients for each spline segment. To actually compute the coefficients, we simply need to solve the linear system with following matrix representation:
+\[
+\begin{bmatrix}
+    0 & 0 & 0 & 0 & 0 & 1 \\[4pt]
+    0 & 0 & 0 & 0 & 1 & 0 \\[4pt]
+    0 & 0 & 0 & 2 & 0 & 0 \\[4pt]
+    1 & 1 & 1 & 1 & 1 & 1 \\[4pt]
+    5 & 4 & 3 & 2 & 1 & 0 \\[4pt]
+    20 & 12 & 6 & 2 & 0 & 0
+\end{bmatrix}
+\begin{bmatrix}
+    a_x \\[4pt]
+    b_x \\[4pt]
+    c_x \\[4pt]
+    d_x \\[4pt]
+    e_x \\[4pt]
+    f_x
+\end{bmatrix}
+=
+\begin{bmatrix}
+    x_i \\[4pt]
+    x'_i \\[4pt]
+    x^{\prime\prime}_i \\[4pt]
+    x_{i+1} \\[4pt]
+    x'_{i+1} \\[4pt]
+    x^{\prime\prime}_{i+1}
+\end{bmatrix}
+\]
+This equation can then be solved to yield the coefficients with your favorite matrix library (or put in row echelon form to yield a set of back-substitutable equations).
+
+\section{Reparametrization}
+
+\subsection{Arc Length}
+Now that we've interpolated the spline segments, we have to join together all of the spline segments into a single piecewise function of a unified variable. To accomplish this, we're going to reparametrize $\mathbf{r}(t)$ from $t \in [0, 1]$ to the arc length parameter $s$. Although it sounds complex, $s$ is just the true displacement along the path, and it traces out the curve with unit speed ($\norm{\mathbf{r}'(s)} = \sqrt{\big(\frac{dx}{ds}\big)^2 + \big(\frac{dy}{ds}\big)^2} = 1$). This procedure is completely generic, allowing you to combine arbitrary parametric curve with (basically) the same knot derivatives.
+
+To shift from $t$ to $s$, we first have to define $t(s)$. This is difficult to represent analytically although the inverse function $s(t)$ is relatively simple:
+$$
+    s(t) = \int_0^t \! \norm{\mathbf{r}'(\tau)} \, d\tau = \int_0^t \! \sqrt{\bigg(\frac{dx}{d\tau}\bigg)^2 + \bigg(\frac{dy}{d\tau}\bigg)^2} \, d\tau
+$$
+In practice, $t(s)$ can be obtained by numerically evaluating the above integral and stopping when the integral sum reaches $s$.
+
+By computing $t(s)$, we can determine $\mathbf{r}(s)$ by composition: $\mathbf{r}(s) = \mathbf{r}(t(s))$. Next, differentiating yields the new parametrized derivative:
+\begin{equation*}
+\begin{split}
+    \mathbf{r}'(s) &= \mathbf{r}'(t)\ t'(s) \\
+                   &= \frac{\mathbf{r}'(t)}{s'(t)} \\
+                   &= \frac{\mathbf{r}'(t)}{\norm{\mathbf{r}'(t)}} \\
+\end{split}
+\end{equation*}
+This makes sense intuitively as $\frac{\mathbf{r}'(t)}{\norm{\mathbf{r}'(t)}}$ is just a normalized version of $\mathbf{r}'(t)$ that satisfies the condition $\norm{\mathbf{r}'(s)} = 1$. We similarly obtain the new second and third derivatives by differentiating again\footnote{This derivation depends heavily on the BAC-CAB identity: $\mathbf{a} \times (\mathbf{b} \times \mathbf{c}) = \mathbf{b} (\mathbf{a} \cdot \mathbf{c}) - \mathbf{c} (\mathbf{a} \cdot \mathbf{b})$.}$^{,}$\footnote{$\kappa(s) = \norm{\mathbf{r}''(s)}$ is the curvature of $\mathbf{r}(s)$. Note that quintic splines also guarantee continuous curvature.}:
+\begin{equation*}
+\begin{split}
+    \mathbf{r}''(s) &= \frac{\mathbf{r}''(t)}{\norm{\mathbf{r}'(t)}^2} - \frac{\mathbf{r}'(t)\ \mathbf{r}''(t) \cdot \mathbf{r}'(t)}{\norm{\mathbf{r}'(t)}^4} \\
+                    &= \frac{\mathbf{r}''(t)\ \mathbf{r}'(t) \cdot \mathbf{r}'(t) - \mathbf{r}'(t)\ \mathbf{r}''(t) \cdot \mathbf{r}'(t)}{\norm{\mathbf{r}'(t)}^4} \\
+                    &= \frac{\mathbf{r}'(t) \times (\mathbf{r}''(t) \times \mathbf{r}'(t))}{\norm{\mathbf{r}'(t)}^4} \\
+    \mathbf{r}'''(s) &= \frac{\mathbf{r}'(t) \times (\mathbf{r}'''(t) \times \mathbf{r}'(t)) + \mathbf{r}''(t) \times (\mathbf{r}''(t) \times \mathbf{r}'(t))}{\norm{\mathbf{r}'(t)}^9}
+\end{split}
+\end{equation*}
+
+\subsection{Trajectory}
+Now, all of the spline segments and various other parametric curves are combined into a single curve $\mathbf{r}(s)$. However, this still needs to be combined with the motion profile to yield the robot's kinematic state over time.
+
+Let $s(t)$ be the generated motion profile (note: this $t$ actually refers to time; it's different from the $t$ used earlier). Now the velocity and acceleration of the robot can be determined:
+\begin{equation*}
+\begin{split}
+    \mathbf{v}(t) &= \frac{d}{dt} \Big[\ \mathbf{r}(s(t))\ \Big] \\
+                  &= \mathbf{r}'(s(t)) s'(t) \\
+    \mathbf{a}(t) &= \frac{d}{dt} \Big[\ \mathbf{r}'(s(t)) s'(t)\ \Big] \\
+                  &= \mathbf{r}''(s(t)) [s'(t)]^2 + \mathbf{r}'(s(t)) s''(t)
+\end{split}
+\end{equation*}
+
+\section{Heading}
+The discussion in the previous sections has been limited to the translational components of the path. This, of course, must be accompanied by some sort of angular motion. For holonomic drives, the heading can be controlled completely independently. In this case, heading can be treated as a third independent path component that can be specified by an arbitrary parametric curve.
+
+However, for nonholonomic drives, the heading is constrained to the direction of travel. For parametric curves, this direction is given by the vector $\mathbf{r}'(s)$:
+$$
+    \theta(s) = \arctan \frac{y'(s)}{x'(s)}
+$$
+In practice, $\theta(s)$ is computed with the two-argument version of $\arctan$, eliminating issues arising from signs and cases when $x'(s) = 0$. Of course, the derivatives are also necessary:
+\begin{equation*}
+\begin{split}
+    \theta'(s) &= \frac{1}{\big(\frac{y'(s)}{x'(s)}\big)^2+1} \cdot \frac{x'(s)y''(s) - y'(s)x''(s)}{[x'(s)]^2} \\
+               &= \frac{x'(s)y''(s) - y'(s)x''(s)}{[x'(s)]^2 + [y'(s)]^2} \\
+               &= x'(s)y''(s) - y'(s)x''(s) \\
+    \theta''(s) &= \big[x''(s)y''(s) + x'(s)y'''(s)\big] - \big[y''(s)x''(s) - y'(s)x'''(s)\big] \\
+                &= x'(s)y'''(s) - y'(s)x'''(s)
+\end{split}
+\end{equation*}
+Notice that the expressions for $\theta^{(n)}(s)$ involve $\mathbf{r}(s)$ derivatives of order $n + 1$ and lower. Hence, $C^2$ $\mathbf{r}(s)$ only guarantees $C^1$ $\theta(s)$. This heading derivative continuity is one of the primary reasons for quintic over cubic splines.
+
+\section{Conclusion}
+This paper discussed the motivation for splines in FTC and some mathematics for generating basic quintic splines. The author hopes this will help further the proliferation of advanced motion planning techniques in FTC.
+
+\end{document}

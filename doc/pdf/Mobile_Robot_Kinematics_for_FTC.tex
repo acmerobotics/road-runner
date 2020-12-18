@@ -1,0 +1,413 @@
+\documentclass{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{gensymb}
+
+\usepackage{listings}
+\usepackage{color}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+  language=Java,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=4
+}
+
+\newcommand{\norm}[1]{\lvert\lvert \, #1 \, \rvert\rvert}
+\newcommand{\cross}{\times}
+\newcommand{\pvec}[1]{\vec{#1}^{\,\prime}}
+
+% see the following for various vector notations
+% http://www.tapdancinggoats.com/latex-vector-notation.htm
+
+\title{Mobile Robot Kinematics for FTC}
+\author{Ryan Brott}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+% Old introduction, not very FTC appropriate
+% While progress is being made with robotic legs and other articulating actuators, wheels remain the predominant locomotion method for mobile robots. These wheeled mobile robots (WMRs) come in a wide variety of configurations. Many are equipped with a simple pair of traction wheels and a caster that allow axial (i.e., longitudinal) translation and rotation. Other drives have wheel modules that are capable of rotating in the plane of the driving surface. Others still have strange wheels with rollers that adjust the wheel motion relative to its orientation (e.g., omni or mecanum wheels). In this paper, we first present a derivation of the kinematics for differential, mecanum, and swerve drivetrains. Then we apply these results to tracking wheel odometry and state-space models.
+
+In FIRST Tech Challenge (FTC), drive kinematics are implicitly used all time---they're essential to proper robot operation. However, few teams acknowledge them explicitly and understand where the relationships come from, especially in the case of holonomic drives. This paper intends to demystify the role and derivation of kinematics with a unified approach. While the entire content may not be accessible to all teams, everyone can benefit from a more systematic treatment of this material.
+
+\section{Drive Kinematics}
+
+The goal of this section is to systematically derive the forward and inverse kinematics of a variety of drives found in FTC (i.e., differential, mecanum, and swerve). The forward kinematics describe how the robot will move given the wheel velocities. The inverse kinematics describe the opposite---how the wheels should move to accomplish the desired robot motion. 
+
+\subsection{Robots as Rigid Bodies}
+
+All high-performing robots have a robust structure that holds all of the robot components together. When acted upon by a force, the robot does not deform, and everything remains fixed to a good approximation. In physics parlance such objects are called rigid bodies. All rigid bodies have the special property that their entire motion can be characterized by two velocity vectors\footnote{Forces, torques, and other dynamics are outside the scope of this paper.}. The first vector is the translational velocity that points in the direction of translation with magnitude equal to the speed. The second vector is the angular velocity that points along the axis of rotation in a direction consistent with the right-hand rule with magnitude equal to the angular speed.\\
+
+To find the velocity of an arbitrary point, let's begin with its position $\vec{r}$. This position can be written as the sum $\vec{R} + \pvec{r}$ where $\vec{R}$ points from the origin to the axis of rotation and $\pvec{r}$ extends to the final point perpendicular to $\vec{\omega}$. We can now differentiate to find the velocity relationship\footnote{The time derivative of a vector $\vec{v}$ in pure rotation described by $\vec{\omega}$ is $\frac{d\vec{v}}{dt} = \vec{\omega} \cross \vec{v}$.}:
+\begin{align*}
+    \frac{d\vec{r}}{dt} &= \frac{d\vec{R}}{dt} + \frac{d\pvec{r}}{dt} \\
+                        &= \vec{V} + \vec{\omega} \cross \pvec{r}
+\end{align*}
+
+As FTC robots are generally confined to a plane, $\vec{r} = x \, \hat{\imath} + y \, \hat{\jmath}$, $\vec{V} = v_x \, \hat{\imath} + v_y \, \hat{\jmath}$, and $\vec{\omega} = \omega \, \hat{k}$. This reduces the general relation above to the following system:
+$$
+    \vec{v} = (v_x - y \, \omega) \, \hat{\imath} + (v_y + x \, \omega) \, \hat{\jmath}
+$$
+
+Now for a given configuration $(v_x, v_y, \omega)$ it is possible to compute the two-dimensional velocity of any component of the robot. While this may not seem immediately useful, these equations can be applied to the wheel positions to determine wheel velocities.
+
+% a quick note on terminology: the velocity from the vector field is the desired velocity and the the velocity from the actuator/rotation is the tangential velocity.
+
+\subsection{Differential Drives}
+
+Perhaps the simplest practical mobile robot drive configuration is a differential drive with two coaxial wheels. These wheels both have a radius of $R$ and are spaced $2l$ units apart. The center of rotation coincides with the midpoint of the wheel positions. For convenience, the wheel axles lie parallel to the y-axis.\\
+
+Using the results of the previous subsection, the desired velocities are $\vec{v}_l = (v_x - l \, \omega) \, \hat{\imath} + v_y \, \hat{\jmath}$ and $\vec{v}_r = (v_x + l \, \omega) \, \hat{\imath} + v_y \, \hat{\jmath}$. Separately, the orientation of the wheels gives us the tangential velocities in terms of the wheel angular velocities: $\pvec{v}_l = \omega_l R \, \hat{\imath}$ and $\pvec{v}_r = \omega_r R \, \hat{\imath}$. For traction wheels like this, these tangential velocities must exactly match the desired velocities, yielding the following equations:
+\begin{align*}
+    v_x - l \, \omega &= \omega_l R \\
+    v_x + l \, \omega &= \omega_r R \\
+    v_y &= 0 \\
+    v_y &= 0
+\end{align*}
+
+From this we can easily obtain the forward and inverse kinematics:
+\begin{equation*}
+    \begin{aligned}[c]
+        v_x &= \frac{R}{2}(\omega_l + \omega_r) \\
+        v_y &= 0 \\
+        \omega &= \frac{R}{2l}(\omega_r - \omega_l)
+    \end{aligned}
+    \qquad\qquad
+    \begin{aligned}[c]
+        \omega_l &= \frac{v_x - l \, \omega}{R} \\
+        \omega_r &= \frac{v_x + l \, \omega}{R}
+    \end{aligned}
+\end{equation*}
+
+And finally expressed in matrix form:
+\begin{equation*}
+    \begin{bmatrix}
+        v_x \\
+        v_y \\
+        \omega
+    \end{bmatrix}
+    =
+    \frac{R}{2}
+    \begin{bmatrix}
+        1 & 1 \\
+        0 & 0 \\
+        -\frac{1}{l} & \frac{1}{l}
+    \end{bmatrix}
+    \begin{bmatrix}
+        \omega_l \\
+        \omega_r
+    \end{bmatrix}
+    \qquad\qquad
+    \begin{bmatrix}
+        \omega_l \\
+        \omega_r
+    \end{bmatrix}
+    =
+    \frac{1}{R}
+    \begin{bmatrix}
+        1 & 0 & -l \, \\
+        1 & 0 & l
+    \end{bmatrix}
+    \begin{bmatrix}
+        v_x \\
+        v_y \\
+        \omega
+    \end{bmatrix}
+\end{equation*}
+
+These same kinematics can be applied to differential drives with multiple wheels per side. However, you'll quickly realize that it is no longer possible to satisfy all the constraints. To rotate properly, the wheels must overcome static friction and slide parallel to the wheel axis. This slippage can be mathematically accounted for by treating this scrub direction as a passive degree of freedom (like an omni wheel) as we'll see in the next section. In the end, the calculations reach the same result as above.
+
+\subsection{Mecanum Drives}
+
+Mecanum drives usually consist of four mecanum wheels with rollers at $45\degree$ angles w.r.t. the axis positioned in a rectangle. This peculiar arrangement enables omnidirectional movement in contrast to the restricted motion of differential drives (i.e., $v_y = 0$). As before the wheel axles are parallel to the y-axis and the center of rotation is the origin. The track width (distance between opposing wheels) is $2l$ and the wheelbase (distance between adjacent wheels) is $2b$.\\
+
+We can now use the same procedure as before to find the desired velocities:
+\begin{align*}
+    \vec{v}_{fl} &= (v_x - l \, \omega) \, \hat{\imath} + (v_y + b \, \omega) \, \hat{\jmath}\\
+    \vec{v}_{bl} &= (v_x - l \, \omega) \, \hat{\imath} + (v_y - b \, \omega) \, \hat{\jmath}\\
+    \vec{v}_{br} &= (v_x + l \, \omega) \, \hat{\imath} + (v_y - b \, \omega) \, \hat{\jmath}\\
+    \vec{v}_{fr} &= (v_x + l \, \omega) \, \hat{\imath} + (v_y + b \, \omega) \, \hat{\jmath}
+\end{align*}
+
+Computing the tangential velocities from the angular velocities is a bit tricky for mecanum wheels. The tangential force acts $45\degree$ from the roller, resulting in a speed reduction of $\sqrt{2}$. The direction of the velocity points perpendicular to the roller axis (viewed from above).
+\begin{align*}
+    \pvec{v}_{fl} &= \frac{R \, \omega_{fl}}{2} (\hat{\imath} - \hat{\jmath})\\
+    \pvec{v}_{bl} &= \frac{R \, \omega_{bl}}{2} (\hat{\imath} + \hat{\jmath})\\
+    \pvec{v}_{br} &= \frac{R \, \omega_{br}}{2} (\hat{\imath} - \hat{\jmath})\\
+    \pvec{v}_{fr} &= \frac{R \, \omega_{fr}}{2} (\hat{\imath} + \hat{\jmath})
+\end{align*}
+
+As aforementioned, the vectors can't be directly equated for non-square configurations due to the passive motion of the rollers. Instead we just equate the portion of each vector in the tangential velocity direction: $\vec{v}_{fl} \cdot \pvec{v}_{fl} = \pvec{v}_{fl} \cdot \pvec{v}_{fl}$.
+\begin{align*}
+    \frac{R \, \omega_{fl}}{2}(v_x - l \, \omega - v_y - b \, \omega) &= \frac{R^2\omega_{fl}^2}{2}\\
+    \frac{R \, \omega_{bl}}{2}(v_x - l \, \omega + v_y - b \, \omega) &= \frac{R^2\omega_{bl}^2}{2}\\
+    \frac{R \, \omega_{br}}{2}(v_x + l \, \omega - v_y + b \, \omega) &= \frac{R^2\omega_{br}^2}{2}\\
+    \frac{R \, \omega_{fr}}{2}(v_x + l \, \omega + v_y + b \, \omega) &= \frac{R^2\omega_{fr}^2}{2}
+\end{align*}
+
+This yields the following matrix relations:
+\begin{equation*}
+    \begin{bmatrix}
+        v_x \\
+        v_y \\
+        \omega
+    \end{bmatrix}
+    =
+    \frac{R}{4}
+    \begin{bmatrix}
+        1 & 1 & 1 & 1 \\
+        -1 & 1 & -1 & 1 \\
+        -\frac{1}{l+b} & -\frac{1}{l+b} & \frac{1}{l+b} & \frac{1}{l+b}
+    \end{bmatrix}
+    \begin{bmatrix}
+        \omega_{lf} \\
+        \omega_{lb} \\
+        \omega_{rb} \\
+        \omega_{rf}
+    \end{bmatrix}
+    \qquad\qquad
+    \begin{bmatrix}
+        \omega_{lf} \\
+        \omega_{lb} \\
+        \omega_{rb} \\
+        \omega_{rf}
+    \end{bmatrix}
+    =
+    \frac{1}{R}
+    \begin{bmatrix}
+        1 & -1 & -(l + b) \\
+        1 & 1 & -(l + b) \\
+        1 & -1 & (l + b) \\
+        1 & 1 & (l + b)
+    \end{bmatrix}
+    \begin{bmatrix}
+        v_x \\
+        v_y \\
+        \omega
+    \end{bmatrix}
+\end{equation*}
+
+\subsection{Swerve Drives}
+Unlike the previous drives, swerve drives have controllable (non-constant) wheel directions. Nevertheless, swerve kinematics can still be derived within the same framework. Let each wheel have coordinates $(x_i, y_i)$, orientation $\phi_i$, tangential velocity $\vec{v}_i$, and angular velocity $\omega_i$.\\
+
+For simplicity, we will assume the swerve wheels do not slip and directly equate the tangential velocities: $v_x - y_i \, \omega = R \, \omega_i \operatorname{cos} \phi_i$ and $v_y + x_i \, \omega = R \, \omega_i \operatorname{sin} \phi_i$. This gives the following inverse kinematics\footnote{$\operatorname{atan2}$ is the standard two-argument arctangent function available in most programming environments}:
+\begin{align*}
+    \phi_i &= \operatorname{atan2} \big( v_y + x_i \, \omega, \; v_x - y_i \, \omega \big)\\
+    \omega_i &= \frac{1}{R} \sqrt{(v_x - y_i \, \omega)^2 + (v_y + x_i \, \omega)^2}
+\end{align*}
+
+Forward kinematics for a collection of multiple wheels can be computed by solving the corresponding overdetermined system.
+
+\section{Odometry}
+The previous section focused on finding the relationship between configuration and wheel velocities. This by itself is sufficient to employ the inverse kinematics for sending the appropriate control signals. However, the forward kinematics cannot be directly used for odometry. To localize the robot, the local velocities must be integrated into positions and transformed into the global frame.
+
+\subsection{Constant Velocity Odometry}
+For simplicity, this method assumes constant translational and rotational velocity over each measurement period. In practice, this is a good assumption so long as measurements are frequent enough (additionally, estimating acceleration or other higher order derivatives robustly from wheel position data is nontrivial).\\
+
+Without loss of generality, we take the robot heading $\theta$ to be $0$ initially. A measurement is then taken $\Delta t$ time later. During this period the robot's global velocity is the following:
+$$
+\begin{bmatrix}
+    \dot{x}_G \\
+    \dot{y}_G \\
+    \dot{\theta}_G
+\end{bmatrix}
+=
+\begin{bmatrix}
+    \operatorname{cos} \theta & -\operatorname{sin} \theta & 0 \\
+    \operatorname{sin} \theta & \operatorname{cos} \theta & 0 \\
+    0 & 0 & 1
+\end{bmatrix}
+\begin{bmatrix}
+    \dot{x}_R \\
+    \dot{y}_R \\
+    \dot{\theta}_R
+\end{bmatrix}
+$$
+
+Integrating this over time gives the following:
+$$
+\begin{bmatrix}
+    \Delta x_G \\
+    \Delta y_G \\
+    \Delta \theta_G
+\end{bmatrix}
+=
+\begin{bmatrix}
+    \frac{\operatorname{sin} \Delta \theta_R}{\Delta \theta_R} & -\frac{1 - \operatorname{cos} \Delta \theta_R}{\Delta \theta_R} & 0 \\[4pt]
+    \frac{1 - \operatorname{cos} \Delta \theta_R}{\Delta \theta_R} & \frac{\operatorname{sin} \Delta \theta_R}{\Delta \theta_R} & 0 \\[4pt]
+    0 & 0 & 1
+\end{bmatrix}
+\begin{bmatrix}
+    \Delta x_R \\
+    \Delta y_R \\
+    \Delta \theta_R
+\end{bmatrix}
+$$
+
+This can then be rotated and added to the previous estimate.
+$$
+\begin{bmatrix}
+    x_{G,\,t+1} \\
+    y_{G,\,t+1} \\
+    \theta_{G,\,t+1}
+\end{bmatrix}
+=
+\begin{bmatrix}
+    x_{G,\,t} \\
+    y_{G,\,t} \\
+    \theta_{G,\,t}
+\end{bmatrix}
++
+\begin{bmatrix}
+    \operatorname{cos} \theta_{G,\,t} & -\operatorname{sin} \theta_{G,\,t} & 0 \\
+    \operatorname{sin} \theta_{G,\,t} & \operatorname{cos} \theta_{G,\,t} & 0 \\
+    0 & 0 & 1
+\end{bmatrix}
+\begin{bmatrix}
+    \frac{\operatorname{sin} \Delta \theta_R}{\Delta \theta_R} & -\frac{1 - \operatorname{cos} \Delta \theta_R}{\Delta \theta_R} & 0 \\[4pt]
+    \frac{1 - \operatorname{cos} \Delta \theta_R}{\Delta \theta_R} & \frac{\operatorname{sin} \Delta \theta_R}{\Delta \theta_R} & 0 \\[4pt]
+    0 & 0 & 1
+\end{bmatrix}
+\begin{bmatrix}
+    \Delta x_R \\
+    \Delta y_R \\
+    \Delta \theta_R
+\end{bmatrix}
+$$
+
+\subsection{Tracking Wheels}
+Tracking wheels are passive omni wheels intended solely for odometry. Each wheel has an arbitrary position $(x_i, y_i)$ and orientation $\phi_i$ in the robot frame. Similar to swerve, the tangential velocities of each wheel are $\vec{v}_i = (v_x - y_i \, \omega) \, \hat{\imath} + (v_y + x_i \, \omega) \, \hat{\jmath}$ and $\pvec{v}_i = R \, \omega_i (\operatorname{cos} \phi_i \, \hat{\imath} + \operatorname{sin} \phi_i \, \hat{\jmath})$. 
+$$
+    \omega_i = \frac{1}{R}\Big[v_x \operatorname{cos} \phi_i + v_y \operatorname{sin} \phi_i + \omega \, (x_i \operatorname{sin} \phi_i - y_i \operatorname{cos} \phi_i)\Big]
+$$
+
+If placed properly, three tracking wheels are sufficient to determine the $(v_x, v_y, \omega)$ configuration:
+$$
+\begin{bmatrix}
+    \omega_1\\
+    \omega_2\\
+    \omega_3
+\end{bmatrix}
+=
+\frac{1}{R}
+\begin{bmatrix}
+    \operatorname{cos} \phi_1 & \operatorname{sin} \phi_1 & x_1 \operatorname{sin} \phi_1 - y_1 \operatorname{cos} \phi_1 \\
+    \operatorname{cos} \phi_2 & \operatorname{sin} \phi_2 & x_2 \operatorname{sin} \phi_2 - y_2 \operatorname{cos} \phi_2 \\
+    \operatorname{cos} \phi_3 & \operatorname{sin} \phi_3 & x_3 \operatorname{sin} \phi_3 - y_3 \operatorname{cos} \phi_3 \\
+\end{bmatrix}
+\begin{bmatrix}
+    v_x\\
+    v_y\\
+    \omega
+\end{bmatrix}
+$$
+$$
+\begin{bmatrix}
+    \theta_1\\
+    \theta_2\\
+    \theta_3
+\end{bmatrix}
+=
+\frac{1}{R}
+\begin{bmatrix}
+    \operatorname{cos} \phi_1 & \operatorname{sin} \phi_1 & x_1 \operatorname{sin} \phi_1 - y_1 \operatorname{cos} \phi_1 \\
+    \operatorname{cos} \phi_2 & \operatorname{sin} \phi_2 & x_2 \operatorname{sin} \phi_2 - y_2 \operatorname{cos} \phi_2 \\
+    \operatorname{cos} \phi_3 & \operatorname{sin} \phi_3 & x_3 \operatorname{sin} \phi_3 - y_3 \operatorname{cos} \phi_3 \\
+\end{bmatrix}
+\begin{bmatrix}
+    \Delta x_R\\
+    \Delta y_R\\
+    \Delta \theta_R
+\end{bmatrix}
+$$
+
+For example, take the common configuration of two tracking wheels placed parallel to the robot's $x$-axis at $(0,\pm y_0)$ and a third placed parallel to the robot's $y$-axis at $(x_0,0)$. For simplicity, all wheels point in the positive direction of their corresponding axis. This gives the following matrices:
+\begin{equation*}
+    \begin{bmatrix}
+        \theta_1\\
+        \theta_2\\
+        \theta_3
+    \end{bmatrix}
+    =
+    \frac{1}{R}
+    \begin{bmatrix}
+        1 & 0 & -y_0 \\
+        1 & 0 & y_0 \\
+        0 & 1 & x_0 \\
+    \end{bmatrix}
+    \begin{bmatrix}
+        \Delta x_R\\
+        \Delta y_R\\
+        \Delta \theta_R
+    \end{bmatrix}
+\end{equation*}
+\begin{equation*}
+    \begin{bmatrix}
+        \Delta x_R\\
+        \Delta y_R\\
+        \Delta \theta_R
+    \end{bmatrix}
+    =
+    \frac{R}{2y_0}
+    \begin{bmatrix}
+        y_0 & y_0 & 0\\
+        x_0 & -x_0 & 2y_0\\
+        -1 & 1 & 0\\
+    \end{bmatrix}
+    \begin{bmatrix}
+        \theta_1\\
+        \theta_2\\
+        \theta_3
+    \end{bmatrix}
+    \quad\leftrightarrow\quad
+    \begin{aligned}[c]
+        \Delta x_R &= \frac{R}{2}(\theta_1 + \theta_2)\\
+        \Delta y_R &= R\bigg[\frac{x_0}{2y_0}(\theta_1 - \theta_2) + \theta_3\bigg]\\
+        \Delta \theta_R &= \frac{R}{2y_0}(\theta_2 - \theta_1)
+    \end{aligned}
+\end{equation*}
+
+Two tracking wheels and a heading sensor is also sufficient for localization:
+$$
+\begin{bmatrix}
+    \theta_1\\
+    \theta_2\\
+    \theta_3
+\end{bmatrix}
+=
+\frac{1}{R}
+\begin{bmatrix}
+    \operatorname{cos} \phi_1 & \operatorname{sin} \phi_1 & x_1 \operatorname{sin} \phi_1 - y_1 \operatorname{cos} \phi_1 \\
+    \operatorname{cos} \phi_2 & \operatorname{sin} \phi_2 & x_2 \operatorname{sin} \phi_2 - y_2 \operatorname{cos} \phi_2 \\
+    0 & 0 & 1\\
+\end{bmatrix}
+\begin{bmatrix}
+    \Delta x_R\\
+    \Delta y_R\\
+    \Delta \theta_R
+\end{bmatrix}
+$$
+
+\end{document}
