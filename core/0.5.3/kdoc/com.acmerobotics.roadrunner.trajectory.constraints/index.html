@@ -1,0 +1,122 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>com.acmerobotics.roadrunner.trajectory.constraints - core</title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">core</a>&nbsp;/&nbsp;<a href="./index.html">com.acmerobotics.roadrunner.trajectory.constraints</a><br/>
+<br/>
+<h2>Package com.acmerobotics.roadrunner.trajectory.constraints</h2>
+<p>Specific constraints for trajectories and different drive types.</p>
+<h3>Types</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="-angular-velocity-constraint/index.html">AngularVelocityConstraint</a></h4>
+</td>
+<td>
+<p>Constraint limiting angular velocity.</p>
+<code><span class="keyword">class </span><span class="identifier">AngularVelocityConstraint</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-trajectory-velocity-constraint/index.html"><span class="identifier">TrajectoryVelocityConstraint</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-mecanum-velocity-constraint/index.html">MecanumVelocityConstraint</a></h4>
+</td>
+<td>
+<p>Mecanum-specific drive constraints that also limit maximum wheel velocities.</p>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">MecanumVelocityConstraint</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-trajectory-velocity-constraint/index.html"><span class="identifier">TrajectoryVelocityConstraint</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-min-acceleration-constraint/index.html">MinAccelerationConstraint</a></h4>
+</td>
+<td>
+<p>Composite constraint representing the minimum of its constituent acceleration constraints.</p>
+<code><span class="keyword">class </span><span class="identifier">MinAccelerationConstraint</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-trajectory-acceleration-constraint/index.html"><span class="identifier">TrajectoryAccelerationConstraint</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-min-velocity-constraint/index.html">MinVelocityConstraint</a></h4>
+</td>
+<td>
+<p>Composite constraint representing the minimum of its constituent velocity constraints.</p>
+<code><span class="keyword">class </span><span class="identifier">MinVelocityConstraint</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-trajectory-velocity-constraint/index.html"><span class="identifier">TrajectoryVelocityConstraint</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-profile-acceleration-constraint/index.html">ProfileAccelerationConstraint</a></h4>
+</td>
+<td>
+<p>Constraint limiting profile acceleration.</p>
+<code><span class="keyword">class </span><span class="identifier">ProfileAccelerationConstraint</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-trajectory-acceleration-constraint/index.html"><span class="identifier">TrajectoryAccelerationConstraint</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-swerve-velocity-constraint/index.html">SwerveVelocityConstraint</a></h4>
+</td>
+<td>
+<p>Mecanum-specific drive constraints that also limit maximum wheel velocities.</p>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">SwerveVelocityConstraint</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-trajectory-velocity-constraint/index.html"><span class="identifier">TrajectoryVelocityConstraint</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-tank-velocity-constraint/index.html">TankVelocityConstraint</a></h4>
+</td>
+<td>
+<p>Tank-specific drive constraints that also limit maximum wheel velocities.</p>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">TankVelocityConstraint</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-trajectory-velocity-constraint/index.html"><span class="identifier">TrajectoryVelocityConstraint</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-trajectory-acceleration-constraint/index.html">TrajectoryAccelerationConstraint</a></h4>
+</td>
+<td>
+<code><span class="keyword">interface </span><span class="identifier">TrajectoryAccelerationConstraint</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-trajectory-velocity-constraint/index.html">TrajectoryVelocityConstraint</a></h4>
+</td>
+<td>
+<code><span class="keyword">interface </span><span class="identifier">TrajectoryVelocityConstraint</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-translational-velocity-constraint/index.html">TranslationalVelocityConstraint</a></h4>
+</td>
+<td>
+<p>Constraint limiting translational velocity.</p>
+<code><span class="keyword">class </span><span class="identifier">TranslationalVelocityConstraint</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-trajectory-velocity-constraint/index.html"><span class="identifier">TrajectoryVelocityConstraint</span></a></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Exceptions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="-unsatisfiable-constraint/index.html">UnsatisfiableConstraint</a></h4>
+</td>
+<td>
+<p>Exception thrown when no velocity or acceleration combination exists that satisfies the constraint.</p>
+<code><span class="keyword">class </span><span class="identifier">UnsatisfiableConstraint</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-runtime-exception/index.html"><span class="identifier">RuntimeException</span></a></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="-no name provided-.html">&lt;no name provided&gt;</a></h4>
+</td>
+<td>
+<p>Motion profile acceleration constraint.</p>
+<code><span class="keyword">fun </span><span class="identifier">&lt;no name provided&gt;</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

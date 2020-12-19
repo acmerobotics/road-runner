@@ -1,0 +1,47 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>SwerveVelocityConstraint - core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">core</a>&nbsp;/&nbsp;<a href="../index.html">com.acmerobotics.roadrunner.trajectory.constraints</a>&nbsp;/&nbsp;<a href="./index.html">SwerveVelocityConstraint</a><br/>
+<br/>
+<h1>SwerveVelocityConstraint</h1>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">SwerveVelocityConstraint</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-trajectory-velocity-constraint/index.html"><span class="identifier">TrajectoryVelocityConstraint</span></a></code> <a href="https://github.com/acmerobotics/road-runner/blob/master/core/src/main/kotlin/com/acmerobotics/roadrunner/trajectory/constraints/SwerveVelocityConstraint.kt#L16">(source)</a>
+<p>Mecanum-specific drive constraints that also limit maximum wheel velocities.</p>
+<h3>Parameters</h3>
+<p><a name="maxWheelVel"></a>
+<code>maxWheelVel</code> - maximum wheel velocity</p>
+<p><a name="trackWidth"></a>
+<code>trackWidth</code> - track width</p>
+<p><a name="wheelBase"></a>
+<code>wheelBase</code> - wheel base</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="-init-.html">&lt;init&gt;</a></h4>
+</td>
+<td>
+<p>Mecanum-specific drive constraints that also limit maximum wheel velocities.</p>
+<code><span class="identifier">SwerveVelocityConstraint</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.constraints.SwerveVelocityConstraint$<init>(kotlin.Double, kotlin.Double, kotlin.Double)/maxWheelVel">maxWheelVel</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.constraints.SwerveVelocityConstraint$<init>(kotlin.Double, kotlin.Double, kotlin.Double)/trackWidth">trackWidth</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.constraints.SwerveVelocityConstraint$<init>(kotlin.Double, kotlin.Double, kotlin.Double)/wheelBase">wheelBase</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a>&nbsp;<span class="symbol">=</span>&nbsp;trackWidth<span class="symbol">)</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="get.html">get</a></h4>
+</td>
+<td>
+<p>Returns the maximum profile velocity.</p>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">get</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.constraints.SwerveVelocityConstraint$get(kotlin.Double, com.acmerobotics.roadrunner.geometry.Pose2d, com.acmerobotics.roadrunner.geometry.Pose2d, com.acmerobotics.roadrunner.geometry.Pose2d)/s">s</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.constraints.SwerveVelocityConstraint$get(kotlin.Double, com.acmerobotics.roadrunner.geometry.Pose2d, com.acmerobotics.roadrunner.geometry.Pose2d, com.acmerobotics.roadrunner.geometry.Pose2d)/pose">pose</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.constraints.SwerveVelocityConstraint$get(kotlin.Double, com.acmerobotics.roadrunner.geometry.Pose2d, com.acmerobotics.roadrunner.geometry.Pose2d, com.acmerobotics.roadrunner.geometry.Pose2d)/deriv">deriv</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.constraints.SwerveVelocityConstraint$get(kotlin.Double, com.acmerobotics.roadrunner.geometry.Pose2d, com.acmerobotics.roadrunner.geometry.Pose2d, com.acmerobotics.roadrunner.geometry.Pose2d)/baseRobotVel">baseRobotVel</span><span class="symbol">:</span>&nbsp;<a href="../../com.acmerobotics.roadrunner.geometry/-pose2d/index.html"><span class="identifier">Pose2d</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

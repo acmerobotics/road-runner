@@ -1,0 +1,72 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>com.acmerobotics.roadrunner.followers - core</title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">core</a>&nbsp;/&nbsp;<a href="./index.html">com.acmerobotics.roadrunner.followers</a><br/>
+<br/>
+<h2>Package com.acmerobotics.roadrunner.followers</h2>
+<p>A collection of path and trajectory followers for various drive types.</p>
+<h3>Types</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="-g-v-f-follower/index.html">GVFFollower</a></h4>
+</td>
+<td>
+<p>State-of-the-art path follower based on the <a href="../com.acmerobotics.roadrunner.util/-guiding-vector-field/index.html">GuidingVectorField</a>.</p>
+<code><span class="keyword">class </span><span class="identifier">GVFFollower</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-path-follower/index.html"><span class="identifier">PathFollower</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-holonomic-p-i-d-v-a-follower/index.html">HolonomicPIDVAFollower</a></h4>
+</td>
+<td>
+<p>Traditional PID controller with feedforward velocity and acceleration components to follow a trajectory. More
+specifically, the feedback is applied to the components of the robot's pose (x position, y position, and heading) to
+determine the velocity correction. The feedforward components are instead applied at the wheel level.</p>
+<code><span class="keyword">class </span><span class="identifier">HolonomicPIDVAFollower</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-trajectory-follower/index.html"><span class="identifier">TrajectoryFollower</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-path-follower/index.html">PathFollower</a></h4>
+</td>
+<td>
+<p>Generic <a href="../com.acmerobotics.roadrunner.path/-path/index.html">Path</a> follower for time-independent pose reference tracking.</p>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">PathFollower</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-ramsete-follower/index.html">RamseteFollower</a></h4>
+</td>
+<td>
+<p>Time-varying, non-linear feedback controller for nonholonomic drives. See equation 5.12 of
+<a href="https://www.dis.uniroma1.it/~labrob/pub/papers/Ramsete01.pdf">Ramsete01.pdf</a>.</p>
+<code><span class="keyword">class </span><span class="identifier">RamseteFollower</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-trajectory-follower/index.html"><span class="identifier">TrajectoryFollower</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-tank-p-i-d-v-a-follower/index.html">TankPIDVAFollower</a></h4>
+</td>
+<td>
+<p>Traditional PID controller with feedforward velocity and acceleration components to follow a trajectory. More
+specifically, one feedback loop controls the path displacement (that is, x in the robot reference frame), and
+another feedback loop to minimize cross track (lateral) error via heading correction (overall, very similar to
+<a href="-holonomic-p-i-d-v-a-follower/index.html">HolonomicPIDVAFollower</a> except adjusted for the nonholonomic constraint). Feedforward is applied at the wheel level.</p>
+<code><span class="keyword">class </span><span class="identifier">TankPIDVAFollower</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-trajectory-follower/index.html"><span class="identifier">TrajectoryFollower</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-trajectory-follower/index.html">TrajectoryFollower</a></h4>
+</td>
+<td>
+<p>Generic <a href="../com.acmerobotics.roadrunner.trajectory/-trajectory/index.html">Trajectory</a> follower for time-based pose reference tracking.</p>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">TrajectoryFollower</span></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

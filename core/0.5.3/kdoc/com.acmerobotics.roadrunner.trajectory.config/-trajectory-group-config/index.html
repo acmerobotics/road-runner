@@ -1,0 +1,129 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>TrajectoryGroupConfig - core</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">core</a>&nbsp;/&nbsp;<a href="../index.html">com.acmerobotics.roadrunner.trajectory.config</a>&nbsp;/&nbsp;<a href="./index.html">TrajectoryGroupConfig</a><br/>
+<br/>
+<h1>TrajectoryGroupConfig</h1>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">TrajectoryGroupConfig</span></code> <a href="https://github.com/acmerobotics/road-runner/blob/master/core/src/main/kotlin/com/acmerobotics/roadrunner/trajectory/config/TrajectoryGroupConfig.kt#L9">(source)</a>
+<p>Configuration describing constraints and other robot-specific parameters that are shared by a group of trajectories.</p>
+<h3>Types</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="-drive-type/index.html">DriveType</a></h4>
+</td>
+<td>
+<p>Type of drivetrain.</p>
+<code><span class="keyword">enum</span> <span class="keyword">class </span><span class="identifier">DriveType</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="-init-.html">&lt;init&gt;</a></h4>
+</td>
+<td>
+<p>Configuration describing constraints and other robot-specific parameters that are shared by a group of trajectories.</p>
+<code><span class="identifier">TrajectoryGroupConfig</span><span class="symbol">(</span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.config.TrajectoryGroupConfig$<init>(kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, com.acmerobotics.roadrunner.trajectory.config.TrajectoryGroupConfig.DriveType, kotlin.Double, kotlin.Double, kotlin.Double)/maxVel">maxVel</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.config.TrajectoryGroupConfig$<init>(kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, com.acmerobotics.roadrunner.trajectory.config.TrajectoryGroupConfig.DriveType, kotlin.Double, kotlin.Double, kotlin.Double)/maxAccel">maxAccel</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.config.TrajectoryGroupConfig$<init>(kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, com.acmerobotics.roadrunner.trajectory.config.TrajectoryGroupConfig.DriveType, kotlin.Double, kotlin.Double, kotlin.Double)/maxAngVel">maxAngVel</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.config.TrajectoryGroupConfig$<init>(kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, com.acmerobotics.roadrunner.trajectory.config.TrajectoryGroupConfig.DriveType, kotlin.Double, kotlin.Double, kotlin.Double)/maxAngAccel">maxAngAccel</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.config.TrajectoryGroupConfig$<init>(kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, com.acmerobotics.roadrunner.trajectory.config.TrajectoryGroupConfig.DriveType, kotlin.Double, kotlin.Double, kotlin.Double)/robotLength">robotLength</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.config.TrajectoryGroupConfig$<init>(kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, com.acmerobotics.roadrunner.trajectory.config.TrajectoryGroupConfig.DriveType, kotlin.Double, kotlin.Double, kotlin.Double)/robotWidth">robotWidth</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.config.TrajectoryGroupConfig$<init>(kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, com.acmerobotics.roadrunner.trajectory.config.TrajectoryGroupConfig.DriveType, kotlin.Double, kotlin.Double, kotlin.Double)/driveType">driveType</span><span class="symbol">:</span>&nbsp;<span class="identifier">DriveType</span><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.config.TrajectoryGroupConfig$<init>(kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, com.acmerobotics.roadrunner.trajectory.config.TrajectoryGroupConfig.DriveType, kotlin.Double, kotlin.Double, kotlin.Double)/trackWidth">trackWidth</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.config.TrajectoryGroupConfig$<init>(kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, com.acmerobotics.roadrunner.trajectory.config.TrajectoryGroupConfig.DriveType, kotlin.Double, kotlin.Double, kotlin.Double)/wheelBase">wheelBase</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="com.acmerobotics.roadrunner.trajectory.config.TrajectoryGroupConfig$<init>(kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, kotlin.Double, com.acmerobotics.roadrunner.trajectory.config.TrajectoryGroupConfig.DriveType, kotlin.Double, kotlin.Double, kotlin.Double)/lateralMultiplier">lateralMultiplier</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">?</span><span class="symbol">)</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="accel-constraint.html">accelConstraint</a></h4>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">accelConstraint</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.trajectory.constraints/-trajectory-acceleration-constraint/index.html"><span class="identifier">TrajectoryAccelerationConstraint</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="drive-type.html">driveType</a></h4>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">driveType</span><span class="symbol">: </span><span class="identifier">DriveType</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="lateral-multiplier.html">lateralMultiplier</a></h4>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">lateralMultiplier</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">?</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="max-accel.html">maxAccel</a></h4>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">maxAccel</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="max-ang-accel.html">maxAngAccel</a></h4>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">maxAngAccel</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="max-ang-vel.html">maxAngVel</a></h4>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">maxAngVel</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="max-vel.html">maxVel</a></h4>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">maxVel</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="robot-length.html">robotLength</a></h4>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">robotLength</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="robot-width.html">robotWidth</a></h4>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">robotWidth</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="track-width.html">trackWidth</a></h4>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">trackWidth</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">?</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="vel-constraint.html">velConstraint</a></h4>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">velConstraint</span><span class="symbol">: </span><a href="../../com.acmerobotics.roadrunner.trajectory.constraints/-trajectory-velocity-constraint/index.html"><span class="identifier">TrajectoryVelocityConstraint</span></a></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="wheel-base.html">wheelBase</a></h4>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">wheelBase</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">?</span></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>
