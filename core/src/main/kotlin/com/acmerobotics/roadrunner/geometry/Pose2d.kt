@@ -23,7 +23,7 @@ data class Pose2d @JvmOverloads constructor(
         Pose2d(x + other.x, y + other.y, heading + other.heading)
 
     operator fun minus(other: Pose2d) =
-        Pose2d(x - other.x, y - other.y, heading - other.heading)
+        Pose2d(x - other.x, y - other.y, Angle.normDelta(heading - other.heading))
 
     operator fun times(scalar: Double) =
         Pose2d(scalar * x, scalar * y, scalar * heading)

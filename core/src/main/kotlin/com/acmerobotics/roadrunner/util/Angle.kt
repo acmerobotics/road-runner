@@ -1,6 +1,8 @@
 package com.acmerobotics.roadrunner.util
 
 import kotlin.math.PI
+import kotlin.math.absoluteValue
+import kotlin.math.sign
 
 /**
  * Various utilities for working with angles.
@@ -31,8 +33,8 @@ object Angle {
     fun normDelta(angleDelta: Double): Double {
         var modifiedAngleDelta = norm(angleDelta)
 
-        if (modifiedAngleDelta > PI) {
-            modifiedAngleDelta -= TAU
+        if (modifiedAngleDelta.absoluteValue > PI) {
+            modifiedAngleDelta -= TAU * modifiedAngleDelta.sign
         }
 
         return modifiedAngleDelta
