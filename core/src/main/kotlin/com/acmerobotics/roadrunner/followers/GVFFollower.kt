@@ -69,7 +69,7 @@ class GVFFollower @JvmOverloads constructor(
 
         val targetPose = path[gvfResult.displacement]
 
-        lastError = Kinematics.calculatePoseError(targetPose, currentPose)
+        lastError = Kinematics.calculateRobotPoseError(targetPose, currentPose)
 
         // TODO: GVF acceleration FF?
         return DriveSignal(Pose2d(velocity, 0.0, omega))

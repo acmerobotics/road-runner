@@ -56,7 +56,7 @@ class HolonomicPIDVAFollower @JvmOverloads constructor(
         val targetRobotVel = Kinematics.fieldToRobotVelocity(targetPose, targetVel)
         val targetRobotAccel = Kinematics.fieldToRobotAcceleration(targetPose, targetVel, targetAccel)
 
-        val poseError = Kinematics.calculatePoseError(targetPose, currentPose)
+        val poseError = Kinematics.calculateRobotPoseError(targetPose, currentPose)
 
         // you can pass the error directly to PIDFController by setting setpoint = error and measurement = 0
         axialController.targetPosition = poseError.x

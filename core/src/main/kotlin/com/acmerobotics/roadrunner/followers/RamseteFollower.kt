@@ -46,8 +46,7 @@ class RamseteFollower @JvmOverloads constructor(
         val targetV = targetRobotVel.x
         val targetOmega = targetRobotVel.heading
 
-        // note: Ramsete operates on the "raw" field error, not the one returned by Kinematics.calculatePoseError()
-        val error = targetPose - currentPose
+        val error = Kinematics.calculateFieldPoseError(targetPose, currentPose)
 
         val k1 = 2 * zeta * sqrt(targetOmega * targetOmega + b * targetV * targetV)
         val k3 = k1
@@ -59,7 +58,7 @@ class RamseteFollower @JvmOverloads constructor(
                 (cos(currentPose.heading) * error.y - sin(currentPose.heading) * error.x) +
                 k3 * error.heading
 
-        lastError = error
+        lastError = Kinematics.calculateRobotPoseError(targetPose, currentPose)
 
         // TODO: is Ramsete acceleration FF worth?
         return DriveSignal(Pose2d(v, 0.0, omega))

@@ -8,6 +8,7 @@ import com.acmerobotics.roadrunner.followers.TankPIDVAFollower
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.path.PathBuilder
+import com.acmerobotics.roadrunner.trajectory.Trajectory
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
 import com.acmerobotics.roadrunner.trajectory.constraints.*
 import com.acmerobotics.roadrunner.util.DoubleProgression
@@ -120,18 +121,8 @@ class TankFollowerTest {
         GraphUtil.saveGraph("sim/tankPIDVA", graph)
     }
 
-    @Test
-    fun simulateRamseteFollower() {
+    fun simulateRamseteFollower(name: String, trajectory: Trajectory) {
         val dt = 1.0 / SIMULATION_HZ
-
-        val trajectory = TrajectoryBuilder(
-            Pose2d(0.0, 0.0, 0.0),
-            baseVelConstraint = VEL_CONSTRAINT,
-            baseAccelConstraint = ACCEL_CONSTRAINT
-        )
-            .splineTo(Vector2d(15.0, 15.0), PI)
-            .splineTo(Vector2d(5.0, 35.0), PI / 3)
-            .build()
 
         val clock = SimulatedClock()
         val drive = SimulatedTankDrive(dt, kV, TRACK_WIDTH)
@@ -174,7 +165,30 @@ class TankFollowerTest {
         )
         graph.seriesMap.values.forEach { it.marker = None() }
         graph.styler.theme = MatlabTheme()
-        GraphUtil.saveGraph("sim/tankRamsete", graph)
+        GraphUtil.saveGraph("sim/tankRamsete${name.capitalize()}", graph)
+    }
+
+    @Test
+    fun simulateRamseteComplex() {
+        simulateRamseteFollower("complex", TrajectoryBuilder(
+            Pose2d(0.0, 0.0, 0.0),
+            baseVelConstraint = VEL_CONSTRAINT,
+            baseAccelConstraint = ACCEL_CONSTRAINT
+        )
+            .splineTo(Vector2d(15.0, 15.0), PI)
+            .splineTo(Vector2d(5.0, 35.0), PI / 3)
+            .build())
+    }
+
+    @Test
+    fun simulateRamseteBackwards() {
+        simulateRamseteFollower("backwards", TrajectoryBuilder(
+            Pose2d(0.0, 0.0, PI / 2),
+            baseVelConstraint = VEL_CONSTRAINT,
+            baseAccelConstraint = ACCEL_CONSTRAINT
+        )
+            .back(100.0)
+            .build())
     }
 
     @Test

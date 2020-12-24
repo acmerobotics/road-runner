@@ -36,14 +36,26 @@ object Kinematics {
         ) * fieldVel.heading
 
     /**
-     * Returns the error between [targetFieldPose] and [currentFieldPose].
+     * Returns the error between [targetFieldPose] and [currentFieldPose] in the field frame.
      */
     @JvmStatic
-    fun calculatePoseError(targetFieldPose: Pose2d, currentFieldPose: Pose2d) =
+    fun calculateFieldPoseError(targetFieldPose: Pose2d, currentFieldPose: Pose2d) =
         Pose2d(
-            (targetFieldPose - currentFieldPose).vec().rotated(-currentFieldPose.heading),
+            (targetFieldPose - currentFieldPose).vec(),
             Angle.normDelta(targetFieldPose.heading - currentFieldPose.heading)
         )
+
+    /**
+     * Returns the error between [targetFieldPose] and [currentFieldPose] in the robot frame.
+     */
+    @JvmStatic
+    fun calculateRobotPoseError(targetFieldPose: Pose2d, currentFieldPose: Pose2d): Pose2d {
+        val errorInFieldFrame = calculateFieldPoseError(targetFieldPose, currentFieldPose)
+        return Pose2d(
+            errorInFieldFrame.vec().rotated(-currentFieldPose.heading),
+            errorInFieldFrame.heading
+        )
+    }
 
     /**
      * Computes the motor feedforward (i.e., open loop powers) for the given set of coefficients.
