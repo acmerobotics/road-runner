@@ -1,6 +1,6 @@
 buildscript {
     repositories {
-        jcenter()
+        mavenCentral()
     }
 
     dependencies {
@@ -12,10 +12,6 @@ plugins {
     id 'kotlin'
 }
 apply plugin: 'io.gitlab.arturbosch.detekt'
-
-repositories {
-    jcenter()
-}
 
 compileKotlin {
     kotlinOptions {

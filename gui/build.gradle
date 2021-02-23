@@ -1,11 +1,10 @@
 buildscript {
     repositories {
-        jcenter()
+        mavenCentral()
     }
     dependencies {
         classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.4'
         classpath "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:$detekt_version"
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
     }
 }
 
@@ -15,11 +14,6 @@ plugins {
 }
 apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'io.gitlab.arturbosch.detekt'
-apply plugin: 'com.jfrog.bintray'
-
-repositories {
-    jcenter()
-}
 
 compileKotlin {
     kotlinOptions {
@@ -104,23 +98,5 @@ publishing {
                 root.children().last() + pomConfig
             }
         }
-    }
-}
-
-bintray {
-    user = System.getenv('BINTRAY_USER')
-    key = System.getenv('BINTRAY_KEY')
-    publish = true
-    pkg {
-        repo = 'maven'
-        name = 'road-runner'
-        userOrg = 'acmerobotics'
-        licenses = ['MIT']
-        vcsUrl = 'https://github.com/acmerobotics/road-runner.git'
-        version {
-            name = road_runner_version
-            released  = new Date()
-        }
-        publications = ['maven']
     }
 }

@@ -6,18 +6,16 @@ buildscript {
     ext.road_runner_version = '0.5.3'
 
     repositories {
-        jcenter()
+        mavenCentral()
     }
 
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
     }
 }
-apply plugin: 'com.jfrog.bintray'
 
 allprojects {
     repositories {
-        jcenter()
+        mavenCentral()
     }
 }
