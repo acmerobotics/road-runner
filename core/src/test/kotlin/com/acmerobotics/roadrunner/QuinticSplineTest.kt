@@ -47,7 +47,7 @@ class QuinticSplineTest {
 
         assertDerivEquals(y, dy, ds, 0.01)
         assertDerivEquals(dy, d2y, ds, 0.01)
-        assertDerivEquals(d2y, d3y, ds, 0.02)
+        assertDerivEquals(d2y, d3y, ds, 0.01)
 
         assertDerivEquals(tangentAngle, tangentAngleDeriv, ds, 0.0001)
         assertDerivEquals(tangentAngleDeriv, tangentAngleSecondDeriv, ds, 0.0001)

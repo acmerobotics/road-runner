@@ -4,6 +4,7 @@ import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.util.epsilonEquals
 import kotlin.math.abs
 import kotlin.math.asin
+import kotlin.math.pow
 import kotlin.math.sqrt
 
 /**
@@ -186,13 +187,14 @@ class QuinticSpline(
         val deriv = internalDeriv(t)
         val secondDeriv = internalSecondDeriv(t)
         val thirdDeriv = internalThirdDeriv(t)
-        val firstNumerator = -(deriv.x * secondDeriv.x + deriv.y * secondDeriv.y)
-        val secondNumeratorFirstTerm = secondDeriv.x * secondDeriv.x + secondDeriv.y * secondDeriv.y +
-                deriv.x * thirdDeriv.x + deriv.y * thirdDeriv.y
-        val secondNumeratorSecondTerm = -4.0 * firstNumerator
+
+        val firstNumeratorSqrt = 2.0 * (deriv.x * secondDeriv.x + deriv.y * secondDeriv.y)
+        val secondNumerator = secondDeriv.x * secondDeriv.x + secondDeriv.y * secondDeriv.y +
+            deriv.x * thirdDeriv.x + deriv.y * thirdDeriv.y
+
         val denominator = deriv.x * deriv.x + deriv.y * deriv.y
-        return (secondNumeratorFirstTerm / Math.pow(denominator, 2.5) +
-                secondNumeratorSecondTerm / Math.pow(denominator, 3.5))
+        return firstNumeratorSqrt * firstNumeratorSqrt / denominator.pow(3.5) -
+            secondNumerator / denominator.pow(2.5)
     }
 
     override fun length() = length
