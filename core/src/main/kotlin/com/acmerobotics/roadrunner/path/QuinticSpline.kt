@@ -111,17 +111,13 @@ class QuinticSpline(
         vHi: Vector2d = internalGet(tHi),
         depth: Int = 0
     ) {
-        if (depth >= maxDepth) {
-            return
-        }
-
         val tMid = 0.5 * (tLo + tHi)
         val vMid = internalGet(tMid)
 
         val deltaK = abs(internalCurvature(tLo) - internalCurvature(tHi))
         val segmentLength = approxLength(vLo, vMid, vHi)
 
-        if (deltaK > maxDeltaK || segmentLength > maxSegmentLength) {
+        if (depth < maxDepth && (deltaK > maxDeltaK || segmentLength > maxSegmentLength)) {
             parameterize(tLo, tMid, vLo, vMid, depth + 1)
             parameterize(tMid, tHi, vMid, vHi, depth + 1)
         } else {
