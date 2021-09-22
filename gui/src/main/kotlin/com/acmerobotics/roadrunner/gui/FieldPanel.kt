@@ -18,6 +18,7 @@ import javax.swing.Timer
 import kotlin.math.min
 import kotlin.math.roundToInt
 
+
 private const val SPATIAL_RESOLUTION = 2.0 // in
 private const val TEMPORAL_RESOLUTION = 0.025 // sec
 private val FIELD_IMAGE = ImageIO.read(FieldPanel::class.java.getResource("/field.png"))
@@ -191,7 +192,9 @@ override fun mousePressed(e: MouseEvent?) {
         fieldTransform.scale(-1.0, 1.0)
 
         // draw field
-        g2d.drawImage(FIELD_IMAGE, offsetX, offsetY, fieldSize, fieldSize, null)
+        g2d.withAlpha(0.25f) {
+            drawImage(FIELD_IMAGE, offsetX, offsetY, fieldSize, fieldSize, null)
+        }
 
         g2d.color = SERIES_COLORS[2]
         g2d.paint = SERIES_COLORS[2]

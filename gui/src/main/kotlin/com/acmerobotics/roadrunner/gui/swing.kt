@@ -1,6 +1,8 @@
 package com.acmerobotics.roadrunner.gui
 
 import com.acmerobotics.roadrunner.geometry.Vector2d
+import java.awt.AlphaComposite
+import java.awt.Graphics2D
 import java.awt.geom.Ellipse2D
 import java.awt.geom.Path2D
 import java.awt.geom.Point2D
@@ -65,3 +67,10 @@ fun circle(center: Vector2d, radius: Double) = Ellipse2D.Double(
 
 @Suppress("UNCHECKED_CAST")
 fun <E> DefaultListModel<E>.asList() = this.toArray().asList() as List<E>
+
+fun Graphics2D.withAlpha(alpha: Float, callback: Graphics2D.() -> Unit) {
+    val ac = composite
+    composite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha)
+    callback()
+    composite = ac
+}
