@@ -64,18 +64,8 @@ class TankFollowerTest {
         override fun getWheelPositions() = positions
     }
 
-    @Test
-    fun simulatePIDVAFollower() {
+    fun simulatePIDVAFollower(name: String, trajectory: Trajectory) {
         val dt = 1.0 / SIMULATION_HZ
-
-        val trajectory = TrajectoryBuilder(
-            Pose2d(0.0, 0.0, 0.0),
-            baseVelConstraint = VEL_CONSTRAINT,
-            baseAccelConstraint = ACCEL_CONSTRAINT
-        )
-            .splineTo(Vector2d(15.0, 15.0), PI)
-            .splineTo(Vector2d(5.0, 35.0), PI / 3)
-            .build()
 
         val clock = SimulatedClock()
         val drive = SimulatedTankDrive(dt, kV, TRACK_WIDTH)
@@ -118,7 +108,35 @@ class TankFollowerTest {
         )
         graph.seriesMap.values.forEach { it.marker = None() }
         graph.styler.theme = MatlabTheme()
-        GraphUtil.saveGraph("sim/tankPIDVA", graph)
+        GraphUtil.saveGraph("sim/tankPIDVA${name.capitalize()}", graph)
+    }
+
+    @Test
+    fun simulatePIDVAComplex() {
+        simulatePIDVAFollower(
+            "complex",
+            TrajectoryBuilder(
+                Pose2d(0.0, 0.0, 0.0),
+                baseVelConstraint = VEL_CONSTRAINT,
+                baseAccelConstraint = ACCEL_CONSTRAINT
+            )
+                .splineTo(Vector2d(15.0, 15.0), PI)
+                .splineTo(Vector2d(5.0, 35.0), PI / 3)
+                .build()
+        )
+    }
+
+    @Test
+    fun simulatePIDVABackwards() {
+        simulatePIDVAFollower(
+            "backwards", TrajectoryBuilder(
+                Pose2d(0.0, 0.0, PI / 2),
+                baseVelConstraint = VEL_CONSTRAINT,
+                baseAccelConstraint = ACCEL_CONSTRAINT
+            )
+                .back(100.0)
+                .build()
+        )
     }
 
     fun simulateRamseteFollower(name: String, trajectory: Trajectory) {
