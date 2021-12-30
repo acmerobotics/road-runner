@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.util.MathUtil.solveQuadratic
 import com.acmerobotics.roadrunner.util.epsilonEquals
 import kotlin.math.abs
 import kotlin.math.ceil
+import kotlin.math.max
 import kotlin.math.sqrt
 
 private data class EvaluatedConstraint(
@@ -336,8 +337,8 @@ object MotionProfileGenerator {
      *
      * @param start start motion state
      * @param goal goal motion state
-     * @param velocityConstraints velocity constraints
-     * @param accelerationConstraints acceleration constraints
+     * @param velocityConstraint velocity constraint
+     * @param accelerationConstraint acceleration constraint
      * @param resolution separation between constraint samples
      */
     @JvmStatic
@@ -361,7 +362,8 @@ object MotionProfileGenerator {
 
         val length = goal.x - start.x
         // dx is an adjusted resolution that fits nicely within length
-        val samples = ceil(length / resolution).toInt()
+        // at least two samples are required to have a valid profile
+        val samples = max(2, ceil(length / resolution).toInt())
 
         val s = DoubleProgression.fromClosedInterval(0.0, length, samples)
         val constraintsList =

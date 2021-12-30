@@ -14,10 +14,10 @@ data class DoubleProgression(
     companion object {
         @JvmStatic
         fun fromClosedInterval(start: Double, endInclusive: Double, count: Int): DoubleProgression {
-            val step = if (count == 0) {
-                0.0
-            } else {
-                (endInclusive - start) / (count - 1)
+            val step = when (count) {
+                0 -> 0.0
+                1 -> 1.0
+                else -> (endInclusive - start) / (count - 1)
             }
             return DoubleProgression(start, step, count)
         }

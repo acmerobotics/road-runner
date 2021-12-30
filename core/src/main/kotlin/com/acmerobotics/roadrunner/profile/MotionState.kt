@@ -26,5 +26,10 @@ class MotionState @JvmOverloads constructor(
      */
     fun flipped() = MotionState(-x, -v, -a, -j)
 
+    /**
+     * Returns the state with velocity, acceleration, and jerk zeroed.
+     */
+    fun stationary() = MotionState(x, 0.0, 0.0, 0.0)
+
     override fun toString() = String.format("(x=%.3f, v=%.3f, a=%.3f, j=%.3f)", x, v, a, j)
 }

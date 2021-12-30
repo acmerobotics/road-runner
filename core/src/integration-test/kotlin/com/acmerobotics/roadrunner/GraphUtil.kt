@@ -33,9 +33,10 @@ object GraphUtil {
         includeAcceleration: Boolean = true,
         resolution: Int = 1000
     ) {
+        // start and end early to display profile extension
         val timeData = DoubleProgression.fromClosedInterval(
-            0.0,
-            profile.duration(),
+            -1.0,
+            profile.duration() + 1.0,
             resolution
         ).toList().toDoubleArray()
         val positionData = timeData.map { profile[it].x }.toDoubleArray()

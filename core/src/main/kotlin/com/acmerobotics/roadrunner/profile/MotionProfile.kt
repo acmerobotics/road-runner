@@ -1,28 +1,30 @@
 package com.acmerobotics.roadrunner.profile
 
-import kotlin.math.max
-import kotlin.math.min
-
 /**
  * Trapezoidal motion profile composed of motion segments.
  *
  * @param segments profile motion segments
  */
-class MotionProfile(segments: List<MotionSegment>) {
-    internal val segments: MutableList<MotionSegment> = segments.toMutableList()
+class MotionProfile(val segments: List<MotionSegment>) {
+    init {
+        assert(segments.isNotEmpty())
+    }
 
     /**
      * Returns the [MotionState] at time [t].
      */
     operator fun get(t: Double): MotionState {
-        var remainingTime = max(0.0, min(t, duration()))
+        if (t < 0.0) return segments.first().start.stationary()
+
+        var remainingTime = t
         for (segment in segments) {
             if (remainingTime <= segment.dt) {
                 return segment[remainingTime]
             }
             remainingTime -= segment.dt
         }
-        return segments.lastOrNull()?.end() ?: MotionState(0.0, 0.0)
+
+        return segments.last().end().stationary()
     }
 
     /**
@@ -43,12 +45,12 @@ class MotionProfile(segments: List<MotionSegment>) {
     /**
      * Returns the start [MotionState].
      */
-    fun start() = get(0.0)
+    fun start() = segments.first().start
 
     /**
      * Returns the end [MotionState].
      */
-    fun end() = get(duration())
+    fun end() = segments.last().end()
 
     /**
      * Returns a new motion profile with [other] concatenated.

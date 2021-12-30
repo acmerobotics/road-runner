@@ -42,7 +42,8 @@ class MotionProfileGeneratorTest {
         }
 
         // verify continuity
-        val t = DoubleProgression.fromClosedInterval(0.0, profile.duration(), RESOLUTION)
+        // stop before the profile end to avoid spurious failures from floating point arithmetic
+        val t = DoubleProgression.fromClosedInterval(0.0, profile.duration() - 1e-6, RESOLUTION)
         assertContinuous(t.map { profile[it].x }, 1.0)
         assertContinuous(t.map { profile[it].v }, 1.0)
         if (verifyAccel) {
@@ -65,6 +66,28 @@ class MotionProfileGeneratorTest {
                 5.0
             )
         )
+    }
+
+    @Test
+    fun testSimpleTriangleBounds() {
+        val profile = MotionProfileGenerator.generateSimpleMotionProfile(
+                MotionState(10.0, 0.0, 0.0),
+                MotionState(20.0, 0.0, 0.0),
+                1000.0,
+                5.0
+            )
+
+        val earlyState = profile[-1.0]
+        assertEquals(0.0, earlyState.j)
+        assertEquals(0.0, earlyState.a)
+        assertEquals(0.0, earlyState.v)
+        assertEquals(10.0, earlyState.x)
+
+        val lateState = profile[profile.duration() + 1.0]
+        assertEquals(0.0, lateState.j)
+        assertEquals(0.0, lateState.a)
+        assertEquals(0.0, lateState.v)
+        assertEquals(20.0, lateState.x)
     }
 
     @Test
