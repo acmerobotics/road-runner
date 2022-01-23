@@ -1,0 +1,124 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>com.acmerobotics.roadrunner.trajectory - core</title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">core</a>&nbsp;/&nbsp;<a href="./index.html">com.acmerobotics.roadrunner.trajectory</a><br/>
+<br/>
+<h2>Package com.acmerobotics.roadrunner.trajectory</h2>
+<p>Types for representing 2D robot trajectories, including time parametrizations of paths.</p>
+<h3>Types</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="-base-trajectory-builder/index.html">BaseTrajectoryBuilder</a></h4>
+</td>
+<td>
+<p>Easy-to-use builder for creating <a href="-trajectory/index.html">Trajectory</a> instances.</p>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">BaseTrajectoryBuilder</span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-base-trajectory-builder/index.html"><span class="identifier">BaseTrajectoryBuilder</span></a><span class="symbol">&lt;</span><span class="identifier">T</span><span class="symbol">&gt;</span><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-displacement-marker/index.html">DisplacementMarker</a></h4>
+</td>
+<td>
+<p>Trajectory marker that is triggered when the specified displacement passes.</p>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">DisplacementMarker</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-displacement-producer/index.html">DisplacementProducer</a></h4>
+</td>
+<td>
+<code><span class="keyword">interface </span><span class="identifier">DisplacementProducer</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-marker-callback/index.html">MarkerCallback</a></h4>
+</td>
+<td>
+<code><span class="keyword">interface </span><span class="identifier">MarkerCallback</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-simple-trajectory-builder/index.html">SimpleTrajectoryBuilder</a></h4>
+</td>
+<td>
+<p>Builder for trajectories with <em>static</em> constraints.</p>
+<code><span class="keyword">class </span><span class="identifier">SimpleTrajectoryBuilder</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-base-trajectory-builder/index.html"><span class="identifier">BaseTrajectoryBuilder</span></a><span class="symbol">&lt;</span><a href="-simple-trajectory-builder/index.html"><span class="identifier">SimpleTrajectoryBuilder</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-spatial-marker/index.html">SpatialMarker</a></h4>
+</td>
+<td>
+<p>Trajectory marker that is triggered when the trajectory passes the specified point.</p>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">SpatialMarker</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-temporal-marker/index.html">TemporalMarker</a></h4>
+</td>
+<td>
+<p>Trajectory marker that is triggered when the specified time passes.</p>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">TemporalMarker</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-time-producer/index.html">TimeProducer</a></h4>
+</td>
+<td>
+<code><span class="keyword">interface </span><span class="identifier">TimeProducer</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-trajectory/index.html">Trajectory</a></h4>
+</td>
+<td>
+<p>Trajectory backed by a <a href="../com.acmerobotics.roadrunner.path/-path/index.html">Path</a> and a <a href="../com.acmerobotics.roadrunner.profile/-motion-profile/index.html">MotionProfile</a>.</p>
+<code><span class="keyword">class </span><span class="identifier">Trajectory</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-trajectory-builder/index.html">TrajectoryBuilder</a></h4>
+</td>
+<td>
+<p>Builder for trajectories with <em>dynamic</em> constraints.</p>
+<code><span class="keyword">class </span><span class="identifier">TrajectoryBuilder</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-base-trajectory-builder/index.html"><span class="identifier">BaseTrajectoryBuilder</span></a><span class="symbol">&lt;</span><a href="-trajectory-builder/index.html"><span class="identifier">TrajectoryBuilder</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-trajectory-generator/index.html">TrajectoryGenerator</a></h4>
+</td>
+<td>
+<p>Trajectory generator for creating trajectories with dynamic and static constraints from paths.</p>
+<code><span class="keyword">object </span><span class="identifier">TrajectoryGenerator</span></code></td>
+</tr>
+<tr>
+<td>
+<h4><a href="-trajectory-marker/index.html">TrajectoryMarker</a></h4>
+</td>
+<td>
+<p>Trajectory marker that is triggered when the specified time passes.</p>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">TrajectoryMarker</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<h4><a href="-no name provided-.html">&lt;no name provided&gt;</a></h4>
+</td>
+<td>
+<p>SAM interface that produces a marker absolute displacement offset from the trajectory length.</p>
+<code><span class="keyword">fun </span><span class="identifier">&lt;no name provided&gt;</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>
