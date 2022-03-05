@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.path.heading.LinearInterpolator
 import com.acmerobotics.roadrunner.path.heading.SplineInterpolator
 import com.acmerobotics.roadrunner.path.heading.TangentInterpolator
 import com.acmerobotics.roadrunner.util.Angle
+import java.util.*
 import kotlin.math.PI
 
 /**
@@ -24,6 +25,8 @@ class PathContinuityViolationException : PathBuilderException()
  * Exception thrown when empty path segments are requested.
  */
 class EmptyPathSegmentException : PathBuilderException()
+
+private typealias Cont = ((Vector2d) -> Vector2d, (Double) -> Double) -> Pair<Pair<Pose2d?, Double?>, List<PathSegment>>
 
 /**
  * Easy-to-use builder for creating [Path] instances.
@@ -48,80 +51,68 @@ class PathBuilder private constructor(
 
     constructor(path: Path, s: Double) : this(null, null, path, s)
 
-    private var currentPose: Pose2d? = startPose
-    private var currentTangent: Double? = startTangent
-
-    private var segments = mutableListOf<PathSegment>()
-
-    private fun makeLine(end: Vector2d): LineSegment {
-        val start = if (currentPose == null) {
-            path!![s!!]
-        } else {
-            currentPose!!
-        }
-
-        if (start.vec() epsilonEquals end) {
-            throw EmptyPathSegmentException()
-        }
-
-        return LineSegment(start.vec(), end)
+    private var cont: Cont = { f, g ->
+        Pair(
+            Pair(
+                startPose?.let { Pose2d(f(it.vec()), g(it.heading)) },
+                startTangent?.let(g)
+            ), emptyList()
+        )
     }
 
-    private fun makeSpline(endPosition: Vector2d, endTangent: Double): QuinticSpline {
-        val startPose = if (currentPose == null) {
-            path!![s!!]
-        } else {
-            currentPose!!
-        }
-
-        if (startPose.vec() epsilonEquals endPosition) {
+    private fun makeLine(start: Vector2d?, end: Vector2d): LineSegment {
+        val start = start ?: path!![s!!].vec()
+        if (start epsilonEquals end) {
             throw EmptyPathSegmentException()
         }
 
-        val derivMag = (startPose.vec() distTo endPosition)
-        val (startWaypoint, endWaypoint) = if (currentPose == null) {
+        return LineSegment(start, end)
+    }
+
+    private fun makeSpline(
+        startPosition: Vector2d?, startTangent: Double?,
+        endPosition: Vector2d, endTangent: Double
+    ): QuinticSpline {
+        val startPosition = startPosition ?: path!![s!!].vec()
+        if (startPosition epsilonEquals endPosition) {
+            throw EmptyPathSegmentException()
+        }
+
+        val derivMag = startPosition distTo endPosition
+        val startWaypoint = if (startTangent == null) {
             val startDeriv = path!!.internalDeriv(s!!).vec()
             val startSecondDeriv = path.internalSecondDeriv(s).vec()
-            QuinticSpline.Knot(startPose.vec(), startDeriv, startSecondDeriv) to
-                QuinticSpline.Knot(endPosition, Vector2d.polar(derivMag, endTangent))
+            QuinticSpline.Knot(startPosition, startDeriv, startSecondDeriv)
         } else {
-            QuinticSpline.Knot(startPose.vec(), Vector2d.polar(derivMag, currentTangent!!)) to
-                QuinticSpline.Knot(endPosition, Vector2d.polar(derivMag, endTangent))
+            QuinticSpline.Knot(startPosition, Vector2d.polar(derivMag, startTangent))
         }
+        val endWaypoint = QuinticSpline.Knot(endPosition, Vector2d.polar(derivMag, endTangent))
 
         return QuinticSpline(startWaypoint, endWaypoint)
     }
 
-    private fun makeTangentInterpolator(curve: ParametricCurve): TangentInterpolator {
-        if (currentPose == null) {
-            val prevInterpolator = path!!.segment(s!!).first.interpolator
-            if (prevInterpolator !is TangentInterpolator) {
-                throw PathContinuityViolationException()
-            }
-            return TangentInterpolator(prevInterpolator.offset)
-        }
+    private fun makeTangentInterpolator(startHeading: Double?, startTangent: Double?, curve: ParametricCurve): TangentInterpolator {
+        val startHeading = startHeading ?: path!![s!!].heading
+        // TODO: Path should probably have tangentAngle()
+        val startTangent = startTangent ?: path!!.deriv(s!!).vec().angle()
 
-        val startHeading = curve.tangentAngle(0.0, 0.0)
-
-        val interpolator = TangentInterpolator(currentPose!!.heading - startHeading)
+        val interpolator = TangentInterpolator(startHeading - startTangent)
         interpolator.init(curve)
+
         return interpolator
     }
 
-    private fun makeConstantInterpolator(): ConstantInterpolator {
-        val currentHeading = currentPose?.heading ?: throw PathContinuityViolationException()
+    private fun makeConstantInterpolator(heading: Double?) =
+        ConstantInterpolator(heading ?: path!![s!!].heading)
 
-        return ConstantInterpolator(currentHeading)
-    }
-
-    private fun makeLinearInterpolator(endHeading: Double): LinearInterpolator {
-        val startHeading = currentPose?.heading ?: throw PathContinuityViolationException()
-
+    private fun makeLinearInterpolator(startHeading: Double?, endHeading: Double) : LinearInterpolator {
+        val startHeading = startHeading ?: path!![s!!].heading
+        // TODO: missing init()?
         return LinearInterpolator(startHeading, Angle.normDelta(endHeading - startHeading))
     }
 
-    private fun makeSplineInterpolator(endHeading: Double): SplineInterpolator {
-        return if (currentPose == null) {
+    private fun makeSplineInterpolator(startHeading: Double?, endHeading: Double): SplineInterpolator {
+        return if (startHeading == null) {
             SplineInterpolator(
                 path!![s!!].heading,
                 endHeading,
@@ -131,30 +122,19 @@ class PathBuilder private constructor(
                 null
             )
         } else {
-            SplineInterpolator(currentPose?.heading!!, endHeading)
+            SplineInterpolator(startHeading, endHeading)
         }
     }
 
-    private fun addSegment(segment: PathSegment): PathBuilder {
-        if (segments.isNotEmpty()) {
-            val lastSegment = segments.last()
-            if (!(lastSegment.end() epsilonEqualsHeading segment.start() &&
-                lastSegment.endDeriv() epsilonEquals segment.startDeriv() &&
-                lastSegment.endSecondDeriv().vec() epsilonEquals segment.startSecondDeriv().vec())) {
-                throw PathContinuityViolationException()
-            }
-        } else if (currentPose == null) {
-            if (!(path!![s!!] epsilonEqualsHeading segment.start() &&
-                path.deriv(s) epsilonEquals segment.startDeriv() &&
-                path.secondDeriv(s).vec() epsilonEquals segment.startSecondDeriv().vec())) {
-                throw PathContinuityViolationException()
-            }
+    private fun addSegment(make: ((Vector2d) -> Vector2d, (Double) -> Double, Pose2d?, Double?) -> PathSegment): PathBuilder {
+        // TODO: mutable captures suck!
+        val k = cont
+        cont = { f, g ->
+            val (lastConfig, lastSegments) = k(f, g)
+            val (lastPose, lastTangent) = lastConfig
+            val seg = make(f, g, lastPose, lastTangent)
+            Pair(Pair(seg.end(), seg.endTangentAngle()), lastSegments + listOf(seg))
         }
-
-        currentPose = segment.end()
-        currentTangent = segment.endTangentAngle()
-
-        segments.add(segment)
 
         return this
     }
@@ -164,13 +144,10 @@ class PathBuilder private constructor(
      *
      * @param endPosition end position
      */
-    fun lineTo(endPosition: Vector2d): PathBuilder {
-        val line = makeLine(endPosition)
-        val interpolator = makeTangentInterpolator(line)
-
-        addSegment(PathSegment(line, interpolator))
-
-        return this
+    fun lineTo(endPosition: Vector2d) = addSegment { f, _, lastPose, lastTangent ->
+        val line = makeLine(lastPose?.vec(), f(endPosition))
+        val interpolator = makeTangentInterpolator(lastPose?.heading, lastTangent, line)
+        PathSegment(line, interpolator)
     }
 
     /**
@@ -178,8 +155,12 @@ class PathBuilder private constructor(
      *
      * @param endPosition end position
      */
-    fun lineToConstantHeading(endPosition: Vector2d) =
-        addSegment(PathSegment(makeLine(endPosition), makeConstantInterpolator()))
+    fun lineToConstantHeading(endPosition: Vector2d) = addSegment { f, _, lastPose, _ ->
+        PathSegment(
+            makeLine(lastPose?.vec(), f(endPosition)),
+            makeConstantInterpolator(lastPose?.heading)
+        )
+    }
 
     /**
      * Adds a strafe segment (i.e., a line segment with constant heading interpolation).
@@ -193,31 +174,31 @@ class PathBuilder private constructor(
      *
      * @param endPose end pose
      */
-    fun lineToLinearHeading(endPose: Pose2d) =
-        addSegment(PathSegment(makeLine(endPose.vec()), makeLinearInterpolator(endPose.heading)))
+    fun lineToLinearHeading(endPose: Pose2d) = addSegment { f, g, lastPose, _ ->
+        PathSegment(
+            makeLine(lastPose?.vec(), f(endPose.vec())),
+            makeLinearInterpolator(lastPose?.heading, g(endPose.heading))
+        )
+    }
 
     /**
      * Adds a line segment with spline heading interpolation.
      *
      * @param endPose end pose
      */
-    fun lineToSplineHeading(endPose: Pose2d) =
-        addSegment(PathSegment(makeLine(endPose.vec()), makeSplineInterpolator(endPose.heading)))
+    fun lineToSplineHeading(endPose: Pose2d) = addSegment { f, g, lastPose, _ ->
+        PathSegment(
+            makeLine(lastPose?.vec(), f(endPose.vec())),
+            makeSplineInterpolator(lastPose?.heading, g(endPose.heading))
+        )
+    }
 
     /**
      * Adds a line straight forward.
      *
      * @param distance distance to travel forward
      */
-    fun forward(distance: Double): PathBuilder {
-        val start = if (currentPose == null) {
-            path!![s!!]
-        } else {
-            currentPose!!
-        }
-
-        return lineTo(start.vec() + Vector2d.polar(distance, start.heading))
-    }
+    fun forward(distance: Double): PathBuilder = TODO()
 
     /**
      * Adds a line straight backward.
@@ -234,15 +215,7 @@ class PathBuilder private constructor(
      *
      * @param distance distance to strafe left
      */
-    fun strafeLeft(distance: Double): PathBuilder {
-        val start = if (currentPose == null) {
-            path!![s!!]
-        } else {
-            currentPose!!
-        }
-
-        return strafeTo(start.vec() + Vector2d.polar(distance, start.heading + PI / 2))
-    }
+    fun strafeLeft(distance: Double): PathBuilder = TODO()
 
     /**
      * Adds a segment that strafes right in the robot reference frame.
@@ -259,11 +232,10 @@ class PathBuilder private constructor(
      * @param endPosition end position
      * @param endTangent end tangent
      */
-    fun splineTo(endPosition: Vector2d, endTangent: Double): PathBuilder {
-        val spline = makeSpline(endPosition, endTangent)
-        val interpolator = makeTangentInterpolator(spline)
-
-        return addSegment(PathSegment(spline, interpolator))
+    fun splineTo(endPosition: Vector2d, endTangent: Double) = addSegment { f, g, lastPose, lastTangent ->
+        val spline = makeSpline(lastPose?.vec(), lastTangent, f(endPosition), g(endTangent))
+        val interpolator = makeTangentInterpolator(lastPose?.heading, lastTangent, spline)
+        PathSegment(spline, interpolator)
     }
 
     /**
@@ -272,8 +244,12 @@ class PathBuilder private constructor(
      * @param endPosition end position
      * @param endTangent end tangent
      */
-    fun splineToConstantHeading(endPosition: Vector2d, endTangent: Double) =
-        addSegment(PathSegment(makeSpline(endPosition, endTangent), makeConstantInterpolator()))
+    fun splineToConstantHeading(endPosition: Vector2d, endTangent: Double) = addSegment { f, g, lastPose, lastTangent ->
+        PathSegment(
+            makeSpline(lastPose?.vec(), lastTangent, f(endPosition), g(endTangent)),
+            makeConstantInterpolator(lastPose?.heading)
+        )
+    }
 
     /**
      * Adds a spline segment with linear heading interpolation.
@@ -281,8 +257,12 @@ class PathBuilder private constructor(
      * @param endPose end pose
      * @param endTangent end tangent
      */
-    fun splineToLinearHeading(endPose: Pose2d, endTangent: Double) =
-        addSegment(PathSegment(makeSpline(endPose.vec(), endTangent), makeLinearInterpolator(endPose.heading)))
+    fun splineToLinearHeading(endPose: Pose2d, endTangent: Double) = addSegment { f, g, lastPose, lastTangent ->
+        PathSegment(
+            makeSpline(lastPose?.vec(), lastTangent, f(endPose.vec()), g(endTangent)),
+            makeLinearInterpolator(lastPose?.heading, g(endPose.heading))
+        )
+    }
 
     /**
      * Adds a spline segment with spline heading interpolation.
@@ -290,13 +270,39 @@ class PathBuilder private constructor(
      * @param endPose end pose
      * @param endTangent end tangent
      */
-    fun splineToSplineHeading(endPose: Pose2d, endTangent: Double) =
-        addSegment(PathSegment(makeSpline(endPose.vec(), endTangent), makeSplineInterpolator(endPose.heading)))
+    fun splineToSplineHeading(endPose: Pose2d, endTangent: Double) = addSegment { f, g, lastPose, lastTangent ->
+        PathSegment(
+            makeSpline(lastPose?.vec(), lastTangent, f(endPose.vec()), g(endTangent)),
+            makeSplineInterpolator(lastPose?.heading, g(endPose.heading))
+        )
+    }
 
     /**
      * Constructs the [Path] instance.
      */
-    fun build(): Path {
+    @JvmOverloads
+    fun build(positionMap: (Vector2d) -> Vector2d = { it }, angleMap: (Double) -> Double = { it }): Path {
+        val (_, segments) = cont(positionMap, angleMap)
+
+        if (path != null && segments.isNotEmpty()) {
+            val seg1 = segments[0]
+            if (!(path[s!!] epsilonEqualsHeading seg1.start() &&
+                    path.deriv(s) epsilonEquals seg1.startDeriv() &&
+                    path.secondDeriv(s).vec() epsilonEquals seg1.startSecondDeriv().vec())
+            ) {
+                throw PathContinuityViolationException()
+            }
+        }
+
+        segments.zip(segments.drop(1))
+            .map { (seg1, seg2) ->
+                if (!(seg1.end() epsilonEqualsHeading seg2.start() &&
+                        seg1.endDeriv() epsilonEquals seg2.startDeriv() &&
+                        seg1.endSecondDeriv().vec() epsilonEquals seg2.startSecondDeriv().vec())) {
+                    throw PathContinuityViolationException()
+                }
+            }
+
         return Path(segments)
     }
 }
