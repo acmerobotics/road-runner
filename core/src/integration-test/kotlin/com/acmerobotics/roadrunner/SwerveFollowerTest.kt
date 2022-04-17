@@ -2,7 +2,6 @@ package com.acmerobotics.roadrunner
 
 import com.acmerobotics.roadrunner.control.PIDCoefficients
 import com.acmerobotics.roadrunner.drive.SwerveDrive
-import com.acmerobotics.roadrunner.followers.HolonomicPIDVAFollower
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder

@@ -2,7 +2,6 @@ package com.acmerobotics.roadrunner.trajectory.constraints
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.kinematics.Kinematics
-import com.acmerobotics.roadrunner.kinematics.SwerveKinematics
 import kotlin.math.abs
 import kotlin.math.max
 

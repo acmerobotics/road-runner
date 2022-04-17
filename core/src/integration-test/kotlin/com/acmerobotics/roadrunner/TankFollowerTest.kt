@@ -3,8 +3,6 @@ package com.acmerobotics.roadrunner
 import com.acmerobotics.roadrunner.control.PIDCoefficients
 import com.acmerobotics.roadrunner.drive.TankDrive
 import com.acmerobotics.roadrunner.followers.GVFFollower
-import com.acmerobotics.roadrunner.followers.RamseteFollower
-import com.acmerobotics.roadrunner.followers.TankPIDVAFollower
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.acmerobotics.roadrunner.path.PathBuilder
