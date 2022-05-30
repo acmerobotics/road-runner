@@ -1,142 +1,101 @@
 package com.acmerobotics.roadrunner
 
-import kotlin.math.*
-
 interface Num<N> {
+    operator fun plus(other: N): N
+    operator fun times(other: N): N
 
+    fun sqrt(): N
 }
+
+// TODO: I think I need a more recent Kotlin stdlib to do this
+//@kotlin.jvm.JvmInline
+//value
+//class DoubleNum(val value: Double) : Num<DoubleNum> {
+//    override fun plus(other: DoubleNum) = DoubleNum(value + other.value)
+//
+//    override fun times(other: DoubleNum) = DoubleNum(value * other.value)
+//
+//    override fun sqrt() = DoubleNum(kotlin.math.sqrt(value))
+//}
 
 class DualNum<Param>(val values: DoubleArray) : Num<DualNum<Param>> {
+    companion object {
+        fun <Param> constant(x: Double, n: Int) = DualNum<Param>(DoubleArray(n) {
+            when (it) {
+                0 -> x
+                else -> 0.0
+            }
+        })
+    }
 
+    init {
+        require(values.size <= 4)
+    }
+
+    // TODO: do we need a more efficient version?
+    fun drop(n: Int) = DualNum<Param>(DoubleArray(values.size - n) { values[it + n] })
+
+    override fun plus(other: DualNum<Param>): DualNum<Param> {
+        require(values.size == other.values.size)
+
+        val out = DualNum<Param>(DoubleArray(values.size))
+        for (i in out.values.indices) {
+            out.values[i] = values[i] + other.values[i]
+        }
+
+        return out
+    }
+
+    override fun times(other: DualNum<Param>): DualNum<Param> {
+        require(values.size == other.values.size)
+
+        val out = DualNum<Param>(DoubleArray(values.size))
+        if (out.values.isEmpty()) return out
+
+        out.values[0] = values[0] * other.values[0]
+        if (out.values.size == 1) return out
+
+        out.values[1] = values[0] * other.values[1] + values[1] * other.values[0]
+        if (out.values.size == 2) return out
+
+        out.values[2] = values[0] * other.values[2] + values[2] * other.values[0] +
+            2 * values[1] * other.values[1]
+        if (out.values.size == 3) return out
+
+        out.values[3] = values[0] * other.values[3] + values[0] * other.values[3] +
+            3 * (values[2] * other.values[1] + values[1] * other.values[2])
+        return out
+    }
+
+    fun recip(): DualNum<Param> {
+        val out = DualNum<Param>(DoubleArray(values.size))
+        if (out.values.isEmpty()) return out
+
+        val recip = 1.0 / values[0]
+        out.values[0] = recip
+        if (out.values.size == 1) return out
+
+        val negRecip = -recip
+        val negRecip2 = recip * negRecip
+        val deriv = negRecip2 * values[1]
+        out.values[1] = deriv
+        if (out.values.size == 2) return out
+
+        val int1 = 2 * negRecip * deriv
+        val deriv2 = int1 * values[1] + negRecip2 * values[2]
+        out.values[2] = deriv2
+        if (out.values.size == 3) return out
+
+        val int2 = int1 * values[2]
+        out.values[3] =
+            int2 + negRecip2 * values[3] +
+                int2 - 2 * (deriv * deriv + recip * deriv2) * values[1]
+        return out
+    }
+
+    override fun sqrt(): DualNum<Param> {
+        TODO("Not yet implemented")
+    }
+
+    fun <NewParam> reparam(oldParam: DualNum<NewParam>): DualNum<NewParam> = TODO()
 }
-
-//interface Num<N> {
-//    operator fun minus(other: N): N
-//    operator fun plus(other: N): N
-//    operator fun times(other: N): N
-//    operator fun div(other: N): N
-//    operator fun unaryMinus(): N
-//
-//    fun sqrt(): N
-//    fun atan(): N
-//    fun asin(): N
-//    fun cos(): N
-//    fun sin(): N
-//
-//    fun value(): Double
-//
-//    operator fun plus(other: Double): N
-//    operator fun times(other: Double): N
-//    operator fun div(other: Double): N
-//}
-//
-//operator fun <N : Num<N>> Double.minus(other: N) = -other + this
-//operator fun <N : Num<N>> Double.times(other: N) = other * this
-//
-//data class DoubleNum(val value: Double) : Num<DoubleNum> {
-//    override fun plus(other: DoubleNum) = DoubleNum(value + other.value)
-//    override fun minus(other: DoubleNum) = DoubleNum(value - other.value)
-//    override fun times(other: DoubleNum) = DoubleNum(value * other.value)
-//    override fun div(other: DoubleNum) = DoubleNum(value / other.value)
-//    override fun unaryMinus() = DoubleNum(-value)
-//
-//    override fun sqrt() = DoubleNum(sqrt(value))
-//
-//    override fun sin() = DoubleNum(sin(value))
-//    override fun cos() = DoubleNum(cos(value))
-//
-//    override fun asin() = DoubleNum(asin(value))
-//    override fun atan() = DoubleNum(atan(value))
-//
-//    override fun value() = value
-//
-//    override fun plus(other: Double) = DoubleNum(value + other)
-//    override fun times(other: Double) = DoubleNum(value * other)
-//    override fun div(other: Double) = DoubleNum(value / other)
-//}
-//
-//data class DualNum<Param>(
-//    val values: List<Double>
-//) : Num<DualNum<Param>> {
-//    companion object {
-//        fun <Param> constant(x: Double, n: Int): DualNum<Param> =
-//            if (n <= 1) DualNum(listOf(x))
-//            else DualNum(listOf(x) + List(n - 1) { 0.0 })
-//
-//        fun <Param> variable(x: Double, n: Int): DualNum<Param> =
-//            when {
-//                n <= 1 -> DualNum(listOf(x))
-//                n == 2 -> DualNum(listOf(x, 1.0))
-//                else -> DualNum(listOf(x, 1.0) + List(n - 2) { 0.0 })
-//            }
-//    }
-//
-//    constructor(head: Double, tail: DualNum<Param>) : this(listOf(head) + tail.values)
-//
-//    fun drop(n: Int) = DualNum<Param>(values.drop(n))
-//    fun take(n: Int) = DualNum<Param>(values.take(n))
-//
-//    fun constant() = DoubleNum(values.first())
-//
-//    private fun dropLast(n: Int) = DualNum<Param>(values.dropLast(n))
-//
-//    override operator fun plus(other: DualNum<Param>) =
-//        DualNum<Param>(values.zip(other.values).map { it.first + it.second })
-//
-//    override operator fun minus(other: DualNum<Param>) =
-//        DualNum<Param>(values.zip(other.values).map { it.first - it.second })
-//
-//    override operator fun times(other: DualNum<Param>): DualNum<Param> =
-//        if (values.isEmpty() || other.values.isEmpty()) {
-//            DualNum(emptyList())
-//        } else {
-//            DualNum(
-//                values.first() * other.values.first(),
-//                this * other.drop(1) + drop(1) * other
-//            )
-//        }
-//
-//    fun constantLike(x: Double) = constant<Param>(x, values.size)
-//    fun variableLike(x: Double) = variable<Param>(x, values.size)
-//
-//    override operator fun times(other: Double): DualNum<Param> = this * constantLike(other)
-//    override operator fun plus(other: Double): DualNum<Param> = this + constantLike(other)
-//    operator fun minus(other: Double): DualNum<Param> = this - constantLike(other)
-//    override operator fun div(other: Double): DualNum<Param> = this / constantLike(other)
-//
-//    fun lift(f: (Double) -> Double, df: DualNum<Param>.() -> DualNum<Param>): DualNum<Param> =
-//        if (values.isEmpty()) {
-//            DualNum(emptyList())
-//        } else {
-//            // dropLast() here ensures the recursive arguments decrease
-//            DualNum(f(values.first()), dropLast(1).df() * drop(1))
-//        }
-//
-//    fun recip(): DualNum<Param> = lift({ 1.0 / it }) { -recip().sqr() }
-//    override operator fun div(other: DualNum<Param>) = this * other.recip()
-//
-//    override fun sqrt(): DualNum<Param> = lift(::sqrt) { 0.5 * recip().sqrt() }
-//
-//    override fun sin(): DualNum<Param> = lift(::sin, DualNum<Param>::cos)
-//    override fun cos(): DualNum<Param> = lift(::cos) { -sin() }
-//
-//    override operator fun unaryMinus() = constantLike(0.0) - this
-//
-//    fun sqr() = this * this
-//
-//    override fun asin(): DualNum<Param> = lift(::asin) { (constantLike(1.0) - sqr()).sqrt().recip() }
-//    override fun atan(): DualNum<Param> = lift(::atan) { (constantLike(1.0) + sqr()).recip() }
-//
-//    fun <NewParam> reparam(oldParam: DualNum<NewParam>): DualNum<NewParam> =
-//        if (values.isEmpty()) {
-//            DualNum(emptyList())
-//        } else {
-//            DualNum(value(), drop(1).reparam(oldParam) * oldParam.drop(1))
-//        }
-//
-//    override fun value() = values.first()
-//}
-//
-//operator fun <Param> Double.times(other: DualNum<Param>) = other * this
-//operator fun <Param> Double.plus(other: DualNum<Param>): DualNum<Param> = other + this
-//operator fun <Param> Double.minus(other: DualNum<Param>) = other.constantLike(this) - other
