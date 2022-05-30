@@ -13,8 +13,7 @@ class WheelDeltas(
 )
 
 // TODO: how to integrate this with constraints?
-@JvmOverloads
-class MecanumKinematics(
+class MecanumKinematics @JvmOverloads constructor(
     val trackWidth: Double,
     val lateralMultiplier: Double = 1.0
 ) {

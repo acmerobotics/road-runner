@@ -1,6 +1,5 @@
 package com.acmerobotics.roadrunner
 
-import com.acmerobotics.roadrunner.util.epsilonEquals
 import kotlin.math.sign
 
 
@@ -44,10 +43,11 @@ class Feedforward(
 ) {
     fun compute(vel: Double, accel: Double): Double {
         val basePower = vel * kV + accel * kA
-        return if (basePower epsilonEquals 0.0) {
-            0.0
-        } else {
-            basePower + sign(basePower) * kS
-        }
+        return 0.0
+//        return if (basePower epsilonEquals 0.0) {
+//            0.0
+//        } else {
+//            basePower + sign(basePower) * kS
+//        }
     }
 }

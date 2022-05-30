@@ -1,6 +1,6 @@
 package com.acmerobotics.roadrunner.path
 
-import com.acmerobotics.roadrunner.geometry.Vector2d
+import Vector2d
 
 /**
  * Parametric representation of a line.

@@ -1,5 +1,3 @@
-import com.acmerobotics.roadrunner.geometry.Vector2d
-
 import kotlin.math.*
 
 class Twist2d(
