@@ -2,21 +2,27 @@ package com.acmerobotics.roadrunner
 
 interface Num<N> {
     operator fun plus(other: N): N
+    operator fun minus(other: N): N
     operator fun times(other: N): N
+    operator fun unaryMinus(): N
 
     fun sqrt(): N
+
+    operator fun times(other: Double): N
 }
 
-// TODO: I think I need a more recent Kotlin stdlib to do this
-//@kotlin.jvm.JvmInline
-//value
-//class DoubleNum(val value: Double) : Num<DoubleNum> {
-//    override fun plus(other: DoubleNum) = DoubleNum(value + other.value)
-//
-//    override fun times(other: DoubleNum) = DoubleNum(value * other.value)
-//
-//    override fun sqrt() = DoubleNum(kotlin.math.sqrt(value))
-//}
+// TODO: specialization of the geometry classes seems inevitable
+@JvmInline
+value class DoubleNum(val value: Double) : Num<DoubleNum> {
+    override fun plus(other: DoubleNum) = DoubleNum(value + other.value)
+    override fun minus(other: DoubleNum) = DoubleNum(value - other.value)
+    override fun times(other: DoubleNum) = DoubleNum(value * other.value)
+    override fun unaryMinus() = DoubleNum(-value)
+
+    override fun sqrt() = DoubleNum(kotlin.math.sqrt(value))
+
+    override fun times(other: Double) = DoubleNum(value * other)
+}
 
 class DualNum<Param>(val values: DoubleArray) : Num<DualNum<Param>> {
     companion object {
@@ -35,12 +41,25 @@ class DualNum<Param>(val values: DoubleArray) : Num<DualNum<Param>> {
     // TODO: do we need a more efficient version?
     fun drop(n: Int) = DualNum<Param>(DoubleArray(values.size - n) { values[it + n] })
 
+    fun constant() = DoubleNum(values.first())
+
     override fun plus(other: DualNum<Param>): DualNum<Param> {
         require(values.size == other.values.size)
 
         val out = DualNum<Param>(DoubleArray(values.size))
         for (i in out.values.indices) {
             out.values[i] = values[i] + other.values[i]
+        }
+
+        return out
+    }
+
+    override fun minus(other: DualNum<Param>): DualNum<Param> {
+        require(values.size == other.values.size)
+
+        val out = DualNum<Param>(DoubleArray(values.size))
+        for (i in out.values.indices) {
+            out.values[i] = values[i] - other.values[i]
         }
 
         return out
@@ -64,6 +83,16 @@ class DualNum<Param>(val values: DoubleArray) : Num<DualNum<Param>> {
 
         out.values[3] = values[0] * other.values[3] + values[0] * other.values[3] +
             3 * (values[2] * other.values[1] + values[1] * other.values[2])
+        return out
+    }
+
+
+    override fun unaryMinus(): DualNum<Param> {
+        val out = DualNum<Param>(DoubleArray(values.size))
+        for (i in out.values.indices) {
+            out.values[i] = -values[i]
+        }
+
         return out
     }
 
@@ -95,6 +124,15 @@ class DualNum<Param>(val values: DoubleArray) : Num<DualNum<Param>> {
 
     override fun sqrt(): DualNum<Param> {
         TODO("Not yet implemented")
+    }
+
+    override fun times(other: Double): DualNum<Param> {
+        val out = DualNum<Param>(DoubleArray(values.size))
+        for (i in out.values.indices) {
+            out.values[i] = values[i] * other
+        }
+
+        return out
     }
 
     fun <NewParam> reparam(oldParam: DualNum<NewParam>): DualNum<NewParam> = TODO()

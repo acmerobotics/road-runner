@@ -247,6 +247,7 @@ class CompositePosePath(val paths: List<PosePath>) : PosePath {
 //            val s = paths.first()[0.0, 1]
 //            return Transform2.constant(s.x.values[0], s.y.values[0], n)
             TODO("really need proper constant support")
+//            paths.first()[0.0, 1].
         }
 
         for ((offset, path) in offsets.zip(paths)) {
@@ -260,8 +261,4 @@ class CompositePosePath(val paths: List<PosePath>) : PosePath {
 //        return Position2.constant(s.x.values[0], s.y.values[0], n)
         TODO("proper constant support")
     }
-}
-
-fun main() {
-//    ArcApproxArcCurve2()
 }

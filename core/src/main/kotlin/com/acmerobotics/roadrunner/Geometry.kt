@@ -26,7 +26,12 @@ fun <Param> Position2<DualNum<Param>>.tangent() = Rotation2(x.drop(1), y.drop(1)
 fun <Param, NewParam> Position2<DualNum<Param>>.reparam(oldParam: DualNum<NewParam>) =
     Position2(x.reparam(oldParam), y.reparam(oldParam))
 
+//fun <Param> Position2<DualNum<Param>>.constant() = Position2(x.constant(), y.constant())
+
 data class Vector2<N : Num<N>>(val x: N, val y: N) {
+    operator fun plus(other: Vector2<N>) = Vector2(x + other.x, y + other.y)
+    operator fun unaryMinus() = Vector2(-x, -y)
+
     infix fun dot(other: Vector2<N>) = x * other.x + y * other.y
     fun sqrNorm() = this dot this
     fun norm() = sqrNorm().sqrt()
@@ -34,11 +39,40 @@ data class Vector2<N : Num<N>>(val x: N, val y: N) {
 
 fun <Param> Vector2<DualNum<Param>>.drop(n: Int) = Vector2(x.drop(n), y.drop(n))
 
-class Rotation2<N : Num<N>>(real: N, imag: N) {
+fun <Param> Vector2<DualNum<Param>>.constant() = Vector2(x.constant(), y.constant())
 
+class Rotation2<N : Num<N>>(val real: N, val imag: N) {
+    operator fun times(vector: Vector2<N>) = Vector2(
+        real * vector.x - imag * vector.y,
+        imag * vector.x + real * vector.y
+    )
+
+    operator fun times(other: Rotation2<N>) = Rotation2(
+        real * other.real - imag * other.imag,
+        real * other.imag + imag * other.real
+    )
+
+    fun inverse() = Rotation2(real, -imag)
 }
+
+fun <Param> Rotation2<DualNum<Param>>.dropOne() =
+    real * imag.drop(1) + real.drop(1) * imag
+
+fun <Param> Rotation2<DualNum<Param>>.constant() = Rotation2(real.constant(), imag.constant())
 
 class Transform2<N : Num<N>>(
     val rotation: Rotation2<N>,
     val translation: Vector2<N>
-)
+) {
+    operator fun times(other: Transform2<N>): Transform2<N> =
+        Transform2(rotation * other.rotation, rotation * other.translation + translation)
+
+    fun inverse() = Transform2<N>(rotation.inverse(), rotation.inverse() * -translation)
+}
+
+// TODO: is this proper?
+fun <Param> Transform2<DualNum<Param>>.dropOne() = Twist2(rotation.dropOne(), translation.drop(1))
+
+fun <Param> Transform2<DualNum<Param>>.constant() = Transform2(rotation.constant(), translation.constant())
+
+data class Twist2<N : Num<N>>(val rotation: N, val translation: Vector2<N>)
