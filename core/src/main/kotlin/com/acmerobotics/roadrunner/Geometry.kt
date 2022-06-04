@@ -63,6 +63,8 @@ data class Vector2Dual<Param>(val x: DualNum<Param>, val y: DualNum<Param>) {
 
     operator fun div(other: Double) = Vector2Dual(x / other, y / other)
 
+    operator fun plus(other: Position2) = Position2Dual(x + other.x, y + other.y)
+
     infix fun dot(other: Vector2Dual<Param>) = x * other.x + y * other.y
     fun sqrNorm() = this dot this
     fun norm() = sqrNorm().sqrt()

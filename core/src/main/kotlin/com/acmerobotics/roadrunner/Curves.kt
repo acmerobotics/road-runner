@@ -45,7 +45,7 @@ class QuinticSpline1(
 interface PositionPath<Param> {
     // TODO: can I stomach length here?
     val maxParam: Double
-    operator fun get(param: Double, n: Int): Position2<DualNum<Param>>
+    operator fun get(param: Double, n: Int): Position2Dual<Param>
 }
 
 class QuinticSpline2(
@@ -53,20 +53,19 @@ class QuinticSpline2(
     private val y: QuinticSpline1,
 ) : PositionPath<Internal> {
     override val maxParam = 1.0
-    override fun get(param: Double, n: Int) = Position2(x[param, n], y[param, n])
+    override fun get(param: Double, n: Int) = Position2Dual(x[param, n], y[param, n])
 }
 
 class Line(
-        val begin: Position2<DoubleNum>,
-        val end: Position2<DoubleNum>,
+        val begin: Position2,
+        val end: Position2,
 ) : PositionPath<ArcLength> {
     val diff = end - begin
-    override val maxParam = diff.norm().value
+    override val maxParam = diff.norm()
     val dir = diff / maxParam
 
     override fun get(param: Double, n: Int) =
-            // TODO: add begin
-            DualNum.variable<ArcLength>(param, n) * dir
+            DualNum.variable<ArcLength>(param, n) * dir + begin
 }
 
 data class ScanResult(
@@ -153,7 +152,7 @@ class ArcCurve2(
         }
     }
 
-    override fun get(param: Double, n: Int): Position2<DualNum<ArcLength>> {
+    override fun get(param: Double, n: Int): Position2Dual<ArcLength> {
         val t = reparam(param)
         val point = curve[t, n]
 
@@ -180,11 +179,11 @@ class CompositePositionPath<Param>(val paths: List<PositionPath<Param>>) : Posit
         require(paths.isNotEmpty())
     }
 
-    override fun get(param: Double, n: Int): Position2<DualNum<Param>> {
+    override fun get(param: Double, n: Int): Position2Dual<Param> {
         if (param < 0.0) {
             // TODO: asConst() would help (or just const() perhaps)
             val s = paths.first()[0.0, 1]
-            return Position2.constant(s.x.values[0], s.y.values[0], n)
+            return Position2Dual.constant(s.x.values[0], s.y.values[0], n)
         }
 
         for ((offset, path) in offsets.zip(paths)) {
@@ -195,7 +194,7 @@ class CompositePositionPath<Param>(val paths: List<PositionPath<Param>>) : Posit
 
         // TODO: see TODO above
         val s = paths.last()[paths.last().maxParam, 1]
-        return Position2.constant(s.x.values[0], s.y.values[0], n)
+        return Position2Dual.constant(s.x.values[0], s.y.values[0], n)
     }
 }
 
@@ -229,12 +228,12 @@ fun <Param> splitPositionPath(path: PositionPath<Param>, cuts: List<Double>): Li
 }
 
 interface HeadingPath {
-    operator fun get(s: Double, n: Int): Rotation2<DualNum<ArcLength>>
+    operator fun get(s: Double, n: Int): Rotation2Dual<ArcLength>
 }
 
 interface PosePath {
     val length: Double
-    operator fun get(s: Double, n: Int): Transform2<DualNum<ArcLength>>
+    operator fun get(s: Double, n: Int): Transform2Dual<ArcLength>
 }
 
 class TangentPath(val path: PositionPath<ArcLength>) : PosePath {
@@ -242,7 +241,7 @@ class TangentPath(val path: PositionPath<ArcLength>) : PosePath {
 
     // TODO: the n+1 is an annoying leak but probably an acceptable price for eagerness
     override operator fun get(s: Double, n: Int) = path[s, n + 1].let {
-        Transform2(it.tangent(), it.free())
+        Transform2Dual(it.free(), it.tangent())
     }
 }
 
@@ -255,7 +254,7 @@ class CompositePosePath(val paths: List<PosePath>) : PosePath {
         require(paths.isNotEmpty())
     }
 
-    override fun get(s: Double, n: Int): Transform2<DualNum<ArcLength>> {
+    override fun get(s: Double, n: Int): Transform2Dual<ArcLength> {
         if (s < 0.0) {
             // TODO: asConst() would help (or just const() perhaps)
 //            val s = paths.first()[0.0, 1]

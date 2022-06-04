@@ -110,6 +110,15 @@ class DualNum<Param>(val values: DoubleArray) {
         TODO("Not yet implemented")
     }
 
+    operator fun plus(other: Double): DualNum<Param> {
+        val out = DualNum<Param>(DoubleArray(values.size))
+        for (i in out.values.indices) {
+            out.values[i] = values[i] + other
+        }
+
+        return out
+    }
+
     operator fun times(other: Double): DualNum<Param> {
         val out = DualNum<Param>(DoubleArray(values.size))
         for (i in out.values.indices) {
@@ -128,14 +137,8 @@ class DualNum<Param>(val values: DoubleArray) {
         return out
     }
 
-//
-//        val out = DualNum<Param>(DoubleArray(values.size))
-//        for (i in out.values.indices) {
-//            out.values[i] = values[i] * other
-//        }
-//
-//        return out
-//    }
+    operator fun times(other: Vector2) =
+            Vector2Dual(this * other.x, this * other.y)
 
     fun <NewParam> reparam(oldParam: DualNum<NewParam>): DualNum<NewParam> = TODO()
 }
