@@ -1,32 +1,6 @@
 package com.acmerobotics.roadrunner
 
-interface Num<N> {
-    operator fun plus(other: N): N
-    operator fun minus(other: N): N
-    operator fun times(other: N): N
-    operator fun unaryMinus(): N
-
-    fun sqrt(): N
-
-    operator fun times(other: Double): N
-    operator fun div(other: Double): N
-}
-
-// TODO: specialization of the geometry classes seems inevitable
-@JvmInline
-value class DoubleNum(val value: Double) : Num<DoubleNum> {
-    override fun plus(other: DoubleNum) = DoubleNum(value + other.value)
-    override fun minus(other: DoubleNum) = DoubleNum(value - other.value)
-    override fun times(other: DoubleNum) = DoubleNum(value * other.value)
-    override fun unaryMinus() = DoubleNum(-value)
-
-    override fun sqrt() = DoubleNum(kotlin.math.sqrt(value))
-
-    override fun times(other: Double) = DoubleNum(value * other)
-    override fun div(other: Double) = DoubleNum(value / other)
-}
-
-class DualNum<Param>(val values: DoubleArray) : Num<DualNum<Param>> {
+class DualNum<Param>(val values: DoubleArray) {
     companion object {
         fun <Param> constant(x: Double, n: Int) = DualNum<Param>(DoubleArray(n) {
             when (it) {
@@ -51,9 +25,9 @@ class DualNum<Param>(val values: DoubleArray) : Num<DualNum<Param>> {
     // TODO: do we need a more efficient version?
     fun drop(n: Int) = DualNum<Param>(DoubleArray(values.size - n) { values[it + n] })
 
-    fun constant() = DoubleNum(values.first())
+    fun constant() = values.first()
 
-    override fun plus(other: DualNum<Param>): DualNum<Param> {
+    operator fun plus(other: DualNum<Param>): DualNum<Param> {
         require(values.size == other.values.size)
 
         val out = DualNum<Param>(DoubleArray(values.size))
@@ -64,7 +38,7 @@ class DualNum<Param>(val values: DoubleArray) : Num<DualNum<Param>> {
         return out
     }
 
-    override fun minus(other: DualNum<Param>): DualNum<Param> {
+    operator fun minus(other: DualNum<Param>): DualNum<Param> {
         require(values.size == other.values.size)
 
         val out = DualNum<Param>(DoubleArray(values.size))
@@ -75,7 +49,7 @@ class DualNum<Param>(val values: DoubleArray) : Num<DualNum<Param>> {
         return out
     }
 
-    override fun times(other: DualNum<Param>): DualNum<Param> {
+    operator fun times(other: DualNum<Param>): DualNum<Param> {
         require(values.size == other.values.size)
 
         val out = DualNum<Param>(DoubleArray(values.size))
@@ -97,7 +71,7 @@ class DualNum<Param>(val values: DoubleArray) : Num<DualNum<Param>> {
     }
 
 
-    override fun unaryMinus(): DualNum<Param> {
+    operator fun unaryMinus(): DualNum<Param> {
         val out = DualNum<Param>(DoubleArray(values.size))
         for (i in out.values.indices) {
             out.values[i] = -values[i]
@@ -132,11 +106,11 @@ class DualNum<Param>(val values: DoubleArray) : Num<DualNum<Param>> {
         return out
     }
 
-    override fun sqrt(): DualNum<Param> {
+    fun sqrt(): DualNum<Param> {
         TODO("Not yet implemented")
     }
 
-    override fun times(other: Double): DualNum<Param> {
+    operator fun times(other: Double): DualNum<Param> {
         val out = DualNum<Param>(DoubleArray(values.size))
         for (i in out.values.indices) {
             out.values[i] = values[i] * other
@@ -145,7 +119,7 @@ class DualNum<Param>(val values: DoubleArray) : Num<DualNum<Param>> {
         return out
     }
 
-    override fun div(other: Double): DualNum<Param> {
+    operator fun div(other: Double): DualNum<Param> {
         val out = DualNum<Param>(DoubleArray(values.size))
         for (i in out.values.indices) {
             out.values[i] = values[i] / other
@@ -153,10 +127,6 @@ class DualNum<Param>(val values: DoubleArray) : Num<DualNum<Param>> {
 
         return out
     }
-
-    // TODO: see how gross this is! we don't even save much code
-    operator fun times(other: Vector2<DoubleNum>): Vector2<DualNum<Param>> =
-            Vector2(this * other.x.value, this * other.y.value)
 
 //
 //        val out = DualNum<Param>(DoubleArray(values.size))
