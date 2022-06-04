@@ -1,7 +1,5 @@
 package com.acmerobotics.roadrunner.path.heading
 
-import com.acmerobotics.roadrunner.path.ParametricCurve
-
 /**
  * Interpolator for specifying the heading for holonomic paths.
  */

@@ -2,9 +2,6 @@ package com.acmerobotics.roadrunner
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
-import com.acmerobotics.roadrunner.path.Path
-import com.acmerobotics.roadrunner.path.PathSegment
-import com.acmerobotics.roadrunner.path.QuinticSpline
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
 import com.acmerobotics.roadrunner.trajectory.TrajectoryGenerator
 import com.acmerobotics.roadrunner.trajectory.constraints.*

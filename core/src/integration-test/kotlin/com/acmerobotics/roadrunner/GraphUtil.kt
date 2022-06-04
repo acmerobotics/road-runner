@@ -1,7 +1,5 @@
 package com.acmerobotics.roadrunner
 
-import com.acmerobotics.roadrunner.path.ParametricCurve
-import com.acmerobotics.roadrunner.path.Path
 import com.acmerobotics.roadrunner.profile.MotionProfile
 import com.acmerobotics.roadrunner.trajectory.Trajectory
 import com.acmerobotics.roadrunner.util.DoubleProgression

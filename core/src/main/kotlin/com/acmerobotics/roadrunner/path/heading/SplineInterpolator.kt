@@ -1,7 +1,5 @@
 package com.acmerobotics.roadrunner.path.heading
 
-import com.acmerobotics.roadrunner.path.ParametricCurve
-import com.acmerobotics.roadrunner.path.QuinticPolynomial
 import com.acmerobotics.roadrunner.util.Angle
 
 /**

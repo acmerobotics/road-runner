@@ -1,7 +1,6 @@
 package com.acmerobotics.roadrunner
 
 import com.acmerobotics.roadrunner.TestUtil.assertDerivEquals
-import com.acmerobotics.roadrunner.path.QuinticSpline
 import com.acmerobotics.roadrunner.util.DoubleProgression
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test

@@ -1,7 +1,6 @@
 package com.acmerobotics.roadrunner.trajectory
 
 import com.acmerobotics.roadrunner.geometry.Pose2d
-import com.acmerobotics.roadrunner.path.Path
 import com.acmerobotics.roadrunner.profile.MotionProfile
 
 /**

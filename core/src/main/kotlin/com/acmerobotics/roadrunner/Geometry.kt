@@ -1,5 +1,8 @@
 package com.acmerobotics.roadrunner
 
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.sin
 import kotlin.math.sqrt
 
 // TODO: why not Point2?
@@ -75,6 +78,10 @@ data class Vector2Dual<Param>(val x: DualNum<Param>, val y: DualNum<Param>) {
 
 
 class Rotation2(val real: Double, val imag: Double) {
+    companion object {
+        fun exp(theta: Double) = Rotation2(cos(theta), sin(theta))
+    }
+
     operator fun times(vector: Vector2) = Vector2(
         real * vector.x - imag * vector.y,
         imag * vector.x + real * vector.y
@@ -86,26 +93,64 @@ class Rotation2(val real: Double, val imag: Double) {
     )
 
     fun inverse() = Rotation2(real, -imag)
+
+    fun <Param> constant(n: Int) =
+            Rotation2Dual<Param>(DualNum.constant(real, n), DualNum.constant(imag, n))
 }
 
 class Rotation2Dual<Param>(val real: DualNum<Param>, val imag: DualNum<Param>) {
-    operator fun times(vector: Vector2Dual<Param>) = Vector2Dual<Param>(
+    init {
+        require(real.size == imag.size)
+        require(real.size <= 3)
+    }
+
+    companion object {
+        fun <Param> exp(theta: DualNum<Param>) = Rotation2Dual<Param>(theta.cos(), theta.sin())
+    }
+
+//    operator fun plus(other: DualNum<Param>) = this * exp(other)
+//    operator fun plus(other: Double) = this * exp(other)
+
+    operator fun times(vector: Vector2Dual<Param>) = Vector2Dual(
             real * vector.x - imag * vector.y,
             imag * vector.x + real * vector.y
     )
 
-    operator fun times(other: Rotation2Dual<Param>) = Rotation2Dual<Param>(
+    operator fun times(other: Rotation2Dual<Param>) = Rotation2Dual(
+            real * other.real - imag * other.imag,
+            real * other.imag + imag * other.real
+    )
+
+    operator fun times(other: Rotation2) = Rotation2Dual(
             real * other.real - imag * other.imag,
             real * other.imag + imag * other.real
     )
 
     fun inverse() = Rotation2Dual(real, -imag)
 
+    // TODO: is this subsumed by log()?
     // TODO: is deriv() not more appropriate?
     // I slightly prefer velocity because it emphasizes the difference between a 2d rotation matrix and a scalar angular velocity
     fun velocity() = real * imag.drop(1) + real.drop(1) * imag
 
     fun constant() = Rotation2(real.constant(), imag.constant())
+
+    fun <NewParam> reparam(oldParam: DualNum<NewParam>) =
+            Rotation2Dual(real.reparam(oldParam), imag.reparam(oldParam))
+
+    operator fun minus(other: Rotation2Dual<Param>) = (other.inverse() * this).log()
+
+    fun log() = DualNum<Param>(DoubleArray(size) {
+        when (it) {
+            0 -> atan2(imag[0], real[0])
+            1 -> real[0] * imag[1] - imag[0] * real[1]
+            2 -> real[0] * imag[2] - imag[0] * real[2]
+            // ensured by init{} check
+            else -> throw AssertionError()
+        }
+    })
+
+    val size get() = real.size
 }
 
 class Transform2(

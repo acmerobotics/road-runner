@@ -110,6 +110,9 @@ class DualNum<Param>(val values: DoubleArray) {
         TODO("Not yet implemented")
     }
 
+    fun sin(): DualNum<Param> = TODO()
+    fun cos(): DualNum<Param> = TODO()
+
     operator fun plus(other: Double): DualNum<Param> {
         val out = DualNum<Param>(DoubleArray(values.size))
         for (i in out.values.indices) {
@@ -141,4 +144,8 @@ class DualNum<Param>(val values: DoubleArray) {
             Vector2Dual(this * other.x, this * other.y)
 
     fun <NewParam> reparam(oldParam: DualNum<NewParam>): DualNum<NewParam> = TODO()
+
+    operator fun get(i: Int) = values[i]
+
+    val size get() = values.size
 }

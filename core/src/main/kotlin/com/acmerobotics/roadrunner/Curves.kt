@@ -8,23 +8,24 @@ private fun lerp(x: Double, fromLo: Double, fromHi: Double, toLo: Double, toHi: 
     toLo + (x - fromLo) * (toHi - toLo) / (fromHi - fromLo)
 
 class QuinticSpline1(
-    start: Double,
-    startDeriv: Double,
-    startSecondDeriv: Double,
-    end: Double,
-    endDeriv: Double,
-    endSecondDeriv: Double,
+        begin: DualNum<Internal>,
+        end: DualNum<Internal>,
 ) {
+    init {
+        require(begin.size >= 3)
+        require(end.size >= 3)
+    }
+
     // TODO: this needs a test
-    val a = -6.0 * start - 3.0 * startDeriv - 0.5 * startSecondDeriv +
-        6.0 * end - 3.0 * endDeriv + 0.5 * endSecondDeriv
-    val b = 15.0 * start + 8.0 * startDeriv + 1.5 * startSecondDeriv -
-        15.0 * end + 7.0 * endDeriv - endSecondDeriv
-    val c = -10.0 * start - 6.0 * startDeriv - 1.5 * startSecondDeriv +
-        10.0 * end - 4.0 * endDeriv + 0.5 * endSecondDeriv
-    val d = 0.5 * startSecondDeriv
-    val e = startDeriv
-    val f = start
+    val a = -6.0 * begin[0] - 3.0 * begin[1] - 0.5 * begin[2] +
+        6.0 * end[0] - 3.0 * end[1] + 0.5 * end[2]
+    val b = 15.0 * begin[0] + 8.0 * begin[1] + 1.5 * begin[2] -
+        15.0 * end[0] + 7.0 * end[1] - end[2]
+    val c = -10.0 * begin[0] - 6.0 * begin[1] - 1.5 * begin[2] +
+        10.0 * end[0] - 4.0 * end[1] + 0.5 * end[2]
+    val d = 0.5 * begin[2]
+    val e = begin[1]
+    val f = begin[0]
 
     // TODO: this needs a test
     operator fun get(t: Double, n: Int) = DualNum<Internal>(DoubleArray(n) {
@@ -128,10 +129,6 @@ class ArcCurve2(
     }, 0.0, curve.maxParam, 1e-6)
     override val maxParam = samples.sums.last()
 
-    init {
-        println(samples.sums.last())
-    }
-
     fun reparam(s: Double): Double {
         val index = samples.sums.binarySearch(s)
         return if (index >= 0) {
@@ -231,17 +228,58 @@ interface HeadingPath {
     operator fun get(s: Double, n: Int): Rotation2Dual<ArcLength>
 }
 
+class ConstantHeadingPath(
+        val heading: Rotation2,
+) : HeadingPath {
+    override fun get(s: Double, n: Int) = heading.constant<ArcLength>(n)
+}
+
+class LinearHeadingPath(
+        val begin: Rotation2,
+        val angle: Double,
+        val length: Double,
+) : HeadingPath {
+    override fun get(s: Double, n: Int) =
+            Rotation2Dual.exp(DualNum.variable<ArcLength>(s, n) / length * angle) * begin
+}
+
+class SplineHeadingPath(
+        val begin: Rotation2Dual<ArcLength>,
+        val end: Rotation2Dual<ArcLength>,
+        val length: Double,
+) : HeadingPath {
+    init {
+        require(begin.size >= 3)
+        require(end.size >= 3)
+    }
+
+    val spline = QuinticSpline1(
+            DualNum.constant(0.0, 3),
+            (end - begin).reparam(
+                    // s(t) = t * len
+                    DualNum.variable<Internal>(1.0, 3) * length)
+    )
+
+    override fun get(s: Double, n: Int) =
+            Rotation2Dual.exp(spline[s / length, n].reparam(
+                    // t(s) = s / len
+                    DualNum.variable<ArcLength>(s, n) / length)) * begin
+}
+
 interface PosePath {
     val length: Double
     operator fun get(s: Double, n: Int): Transform2Dual<ArcLength>
 }
 
-class TangentPath(val path: PositionPath<ArcLength>) : PosePath {
+class TangentPath(
+        val path: PositionPath<ArcLength>,
+        val offset: Rotation2
+) : PosePath {
     override val length = path.maxParam
 
     // TODO: the n+1 is an annoying leak but probably an acceptable price for eagerness
     override operator fun get(s: Double, n: Int) = path[s, n + 1].let {
-        Transform2Dual(it.free(), it.tangent())
+        Transform2Dual(it.free(), it.tangent() * offset)
     }
 }
 
