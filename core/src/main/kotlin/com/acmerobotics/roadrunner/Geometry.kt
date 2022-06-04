@@ -55,7 +55,9 @@ class Rotation2<N : Num<N>>(val real: N, val imag: N) {
     fun inverse() = Rotation2(real, -imag)
 }
 
-fun <Param> Rotation2<DualNum<Param>>.dropOne() =
+// TODO: is deriv() not more appropriate?
+// I slightly prefer velocity because it emphasizes the difference between a 2d rotation matrix and a scalar angular velocity
+fun <Param> Rotation2<DualNum<Param>>.velocity() =
     real * imag.drop(1) + real.drop(1) * imag
 
 fun <Param> Rotation2<DualNum<Param>>.constant() = Rotation2(real.constant(), imag.constant())
@@ -71,8 +73,10 @@ class Transform2<N : Num<N>>(
 }
 
 // TODO: is this proper?
-fun <Param> Transform2<DualNum<Param>>.dropOne() = Twist2(rotation.dropOne(), translation.drop(1))
+fun <Param> Transform2<DualNum<Param>>.velocity() = Twist2(translation.drop(1), rotation.velocity())
 
 fun <Param> Transform2<DualNum<Param>>.constant() = Transform2(rotation.constant(), translation.constant())
 
-data class Twist2<N : Num<N>>(val rotation: N, val translation: Vector2<N>)
+// TODO: what goes inside? a rotation velocity
+class Twist2<N : Num<N>>(val transVel: Vector2<N>, val rotVel: N)
+//class TwistIncr2<N : Num<N>>(val translation: Vector2<N>, val rotation: N)
