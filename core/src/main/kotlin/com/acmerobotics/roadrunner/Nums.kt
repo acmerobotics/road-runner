@@ -9,6 +9,7 @@ interface Num<N> {
     fun sqrt(): N
 
     operator fun times(other: Double): N
+    operator fun div(other: Double): N
 }
 
 // TODO: specialization of the geometry classes seems inevitable
@@ -22,6 +23,7 @@ value class DoubleNum(val value: Double) : Num<DoubleNum> {
     override fun sqrt() = DoubleNum(kotlin.math.sqrt(value))
 
     override fun times(other: Double) = DoubleNum(value * other)
+    override fun div(other: Double) = DoubleNum(value / other)
 }
 
 class DualNum<Param>(val values: DoubleArray) : Num<DualNum<Param>> {
@@ -29,6 +31,14 @@ class DualNum<Param>(val values: DoubleArray) : Num<DualNum<Param>> {
         fun <Param> constant(x: Double, n: Int) = DualNum<Param>(DoubleArray(n) {
             when (it) {
                 0 -> x
+                else -> 0.0
+            }
+        })
+
+        fun <Param> variable(x: Double, n: Int) = DualNum<Param>(DoubleArray(n) {
+            when (it) {
+                0 -> x
+                1 -> 1.0
                 else -> 0.0
             }
         })
@@ -134,6 +144,28 @@ class DualNum<Param>(val values: DoubleArray) : Num<DualNum<Param>> {
 
         return out
     }
+
+    override fun div(other: Double): DualNum<Param> {
+        val out = DualNum<Param>(DoubleArray(values.size))
+        for (i in out.values.indices) {
+            out.values[i] = values[i] / other
+        }
+
+        return out
+    }
+
+    // TODO: see how gross this is! we don't even save much code
+    operator fun times(other: Vector2<DoubleNum>): Vector2<DualNum<Param>> =
+            Vector2(this * other.x.value, this * other.y.value)
+
+//
+//        val out = DualNum<Param>(DoubleArray(values.size))
+//        for (i in out.values.indices) {
+//            out.values[i] = values[i] * other
+//        }
+//
+//        return out
+//    }
 
     fun <NewParam> reparam(oldParam: DualNum<NewParam>): DualNum<NewParam> = TODO()
 }

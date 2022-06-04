@@ -1,19 +1,29 @@
 package com.acmerobotics.roadrunner
 
-class PositionPathBuilder(
+class PositionPathBuilder private constructor(
+        val paths: List<PositionPath<ArcLength>>,
         val beginPos: Position2<DoubleNum>,
         val beginTangent: Rotation2<DoubleNum>,
-        val prefix: List<PositionPath<ArcLength>> = listOf(),
 ) {
+    constructor(
+            beginPos: Position2<DoubleNum>,
+            beginTangent: Rotation2<DoubleNum>,
+    ) : this(listOf(), beginPos, beginTangent)
+
     // TODO: yikes! we really need monomorphization
     fun splineTo(pos: Position2<DoubleNum>, tangent: Rotation2<DoubleNum>): PositionPathBuilder {
 //        QuinticSpline2(
 //                QuinticSpline1()
 //        )
-        return PositionPathBuilder(pos, tangent, prefix + listOf(TODO("spline")))
+        return PositionPathBuilder(paths + listOf(TODO("spline")), pos, tangent)
     }
 
-    fun build() = CompositePositionPath(prefix)
+//    fun addPath(path: PositionPath<ArcLength>): PositionPathBuilder {
+//        require(path[0.0, 2])
+//    }
+
+
+    fun build() = CompositePositionPath(paths)
 }
 
 class PosePathBuilder(

@@ -14,7 +14,7 @@ data class Position2<N : Num<N>>(val x: N, val y: N) {
 //        fun <Origin, Point, N : Num<N>> bind(v: Vector2<N>) = Position2<Origin, Point, N>(v.x, v.y)
 //    }
 //
-//    operator fun <End> minus(other: Position2<Origin, End, N>) = Vector2(x - other.x, y - other.y)
+    operator fun minus(other: Position2<N>) = Vector2(x - other.x, y - other.y)
 //    operator fun <End> plus(diff: Vector2<N>) = Position2<Origin, End, N>(x + diff.x, y + diff.y)
 //
 //    infix fun <OtherPoint> distTo(other: Position2<Origin, OtherPoint, N>) = (this - other).norm()
@@ -32,6 +32,8 @@ fun <Param, NewParam> Position2<DualNum<Param>>.reparam(oldParam: DualNum<NewPar
 data class Vector2<N : Num<N>>(val x: N, val y: N) {
     operator fun plus(other: Vector2<N>) = Vector2(x + other.x, y + other.y)
     operator fun unaryMinus() = Vector2(-x, -y)
+
+    operator fun div(other: Double) = Vector2(x / other, y / other)
 
     infix fun dot(other: Vector2<N>) = x * other.x + y * other.y
     fun sqrNorm() = this dot this

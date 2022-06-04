@@ -56,6 +56,19 @@ class QuinticSpline2(
     override fun get(param: Double, n: Int) = Position2(x[param, n], y[param, n])
 }
 
+class Line(
+        val begin: Position2<DoubleNum>,
+        val end: Position2<DoubleNum>,
+) : PositionPath<ArcLength> {
+    val diff = end - begin
+    override val maxParam = diff.norm().value
+    val dir = diff / maxParam
+
+    override fun get(param: Double, n: Int) =
+            // TODO: add begin
+            DualNum.variable<ArcLength>(param, n) * dir
+}
+
 data class ScanResult(
     val values: List<Double>,
     val sums: List<Double>,
