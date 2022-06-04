@@ -194,6 +194,7 @@ class PositionPathView<Param>(
     override fun get(param: Double, n: Int) = path[param + offset, n]
 }
 
+// TODO: is this actually necessary with the builders?
 fun <Param> splitPositionPath(path: PositionPath<Param>, cuts: List<Double>): List<PositionPath<Param>> {
     if (cuts.isEmpty()) {
         return listOf(path)

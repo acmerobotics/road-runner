@@ -1,5 +1,6 @@
 package com.acmerobotics.roadrunner
 
+// TODO: why not Point2?
 data class Position2<N : Num<N>>(val x: N, val y: N) {
     companion object {
         fun <Param> constant(x: Double, y: Double, n: Int) = Position2<DualNum<Param>>(
