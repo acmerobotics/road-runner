@@ -45,7 +45,7 @@ class QuinticSpline1(
 // this is where laziness would be very helpful
 interface PositionPath<Param> {
     // TODO: can I stomach length here?
-    val maxParam: Double
+    val length: Double
     operator fun get(param: Double, n: Int): Position2Dual<Param>
 }
 
@@ -53,7 +53,7 @@ class QuinticSpline2(
     private val x: QuinticSpline1,
     private val y: QuinticSpline1,
 ) : PositionPath<Internal> {
-    override val maxParam = 1.0
+    override val length = 1.0
     override fun get(param: Double, n: Int) = Position2Dual(x[param, n], y[param, n])
 }
 
@@ -62,8 +62,8 @@ class Line(
         val end: Position2,
 ) : PositionPath<ArcLength> {
     val diff = end - begin
-    override val maxParam = diff.norm()
-    val dir = diff / maxParam
+    override val length = diff.norm()
+    val dir = diff / length
 
     override fun get(param: Double, n: Int) =
             DualNum.variable<ArcLength>(param, n) * dir + begin
@@ -126,8 +126,8 @@ class ArcCurve2(
     val samples = integralScan({
         // TODO: there should be a method to extract the "value" of a dual num
         curve[it, 2].free().drop(1).norm().values[0]
-    }, 0.0, curve.maxParam, 1e-6)
-    override val maxParam = samples.sums.last()
+    }, 0.0, curve.length, 1e-6)
+    override val length = samples.sums.last()
 
     fun reparam(s: Double): Double {
         val index = samples.sums.binarySearch(s)
@@ -169,8 +169,8 @@ class ArcCurve2(
 // could it be useful for trajectories and such? (copying is probably better tbh)
 class CompositePositionPath<Param>(val paths: List<PositionPath<Param>>) : PositionPath<Param> {
     // TODO: partialSumByDouble() when?
-    val offsets = paths.scan(0.0) { acc, path -> acc + path.maxParam }
-    override val maxParam = offsets.last()
+    val offsets = paths.scan(0.0) { acc, path -> acc + path.length }
+    override val length = offsets.last()
 
     init {
         require(paths.isNotEmpty())
@@ -190,15 +190,15 @@ class CompositePositionPath<Param>(val paths: List<PositionPath<Param>>) : Posit
         }
 
         // TODO: see TODO above
-        val s = paths.last()[paths.last().maxParam, 1]
+        val s = paths.last()[paths.last().length, 1]
         return Position2Dual.constant(s.x.values[0], s.y.values[0], n)
     }
 }
 
 class PositionPathView<Param>(
-    val path: PositionPath<Param>,
-    val offset: Double,
-    override val maxParam: Double,
+        val path: PositionPath<Param>,
+        val offset: Double,
+        override val length: Double,
 ) : PositionPath<Param> {
     override fun get(param: Double, n: Int) = path[param + offset, n]
 }
@@ -211,7 +211,7 @@ fun <Param> splitPositionPath(path: PositionPath<Param>, cuts: List<Double>): Li
 
     require(cuts.zip(cuts.drop(1)).all { (a, b) -> a < b })
     require(cuts.first() > 0.0)
-    require(cuts.last() < path.maxParam)
+    require(cuts.last() < path.length)
 
     val views = mutableListOf<PositionPath<Param>>()
     val finalBegin = cuts.fold(0.0) { begin, end ->
@@ -219,7 +219,7 @@ fun <Param> splitPositionPath(path: PositionPath<Param>, cuts: List<Double>): Li
         end
     }
 
-    views.add(PositionPathView(path, finalBegin, path.maxParam - finalBegin))
+    views.add(PositionPathView(path, finalBegin, path.length - finalBegin))
 
     return views
 }
@@ -275,12 +275,22 @@ class TangentPath(
         val path: PositionPath<ArcLength>,
         val offset: Rotation2
 ) : PosePath {
-    override val length = path.maxParam
+    override val length get() = path.length
 
     // TODO: the n+1 is an annoying leak but probably an acceptable price for eagerness
     override operator fun get(s: Double, n: Int) = path[s, n + 1].let {
         Transform2Dual(it.free(), it.tangent() * offset)
     }
+}
+
+class HeadingPosePath(
+        val posPath: PositionPath<ArcLength>,
+        val headingPath: HeadingPath,
+) : PosePath {
+    override val length get() = posPath.length
+
+    override fun get(s: Double, n: Int) =
+            Transform2Dual(posPath[s, n].free(), headingPath[s, n])
 }
 
 class CompositePosePath(val paths: List<PosePath>) : PosePath {
