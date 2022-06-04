@@ -53,6 +53,7 @@ data class Vector2(val x: Double, val y: Double) {
     operator fun plus(other: Vector2) = Vector2(x + other.x, y + other.y)
     operator fun unaryMinus() = Vector2(-x, -y)
 
+    operator fun times(other: Double) = Vector2(x * other, y * other)
     operator fun div(other: Double) = Vector2(x / other, y / other)
 
     infix fun dot(other: Vector2) = x * other.x + y * other.y
@@ -96,6 +97,8 @@ class Rotation2(val real: Double, val imag: Double) {
 
     fun <Param> constant(n: Int) =
             Rotation2Dual<Param>(DualNum.constant(real, n), DualNum.constant(imag, n))
+
+    fun vec() = Vector2(real, imag)
 }
 
 class Rotation2Dual<Param>(val real: DualNum<Param>, val imag: DualNum<Param>) {

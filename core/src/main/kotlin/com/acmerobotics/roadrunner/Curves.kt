@@ -50,8 +50,8 @@ interface PositionPath<Param> {
 }
 
 class QuinticSpline2(
-    private val x: QuinticSpline1,
-    private val y: QuinticSpline1,
+    val x: QuinticSpline1,
+    val y: QuinticSpline1,
 ) : PositionPath<Internal> {
     override val length = 1.0
     override fun get(param: Double, n: Int) = Position2Dual(x[param, n], y[param, n])
