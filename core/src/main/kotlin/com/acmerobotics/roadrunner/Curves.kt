@@ -4,6 +4,7 @@ package com.acmerobotics.roadrunner
 object Internal
 
 // TODO: should this go somewhere else?
+// yes, lerp and integrateScan should go in a generic math utilities file (like kotlin.math)
 private fun lerp(x: Double, fromLo: Double, fromHi: Double, toLo: Double, toHi: Double) =
     toLo + (x - fromLo) * (toHi - toLo) / (fromHi - fromLo)
 

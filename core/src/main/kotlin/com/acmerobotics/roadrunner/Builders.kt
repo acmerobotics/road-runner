@@ -36,16 +36,16 @@ class PositionPathBuilder private constructor(
     fun build() = CompositePositionPath(paths)
 }
 
-class PosePathBuilder(
-        val positionPath: PositionPath<ArcLength>,
-        val beginDisp: Double,
-        val prefix: List<PosePath>,
-) {
-    fun tangentTo(disp: Double): PosePathBuilder {
-        require(disp > beginDisp)
-        return PosePathBuilder(positionPath, disp, prefix +
-                listOf(TangentPath(PositionPathView(positionPath, beginDisp, disp, ))))
-    }
-
-    fun build() = CompositePosePath(prefix)
-}
+//class PosePathBuilder(
+//        val positionPath: PositionPath<ArcLength>,
+//        val beginDisp: Double,
+//        val prefix: List<PosePath>,
+//) {
+//    fun tangentTo(disp: Double): PosePathBuilder {
+//        require(disp > beginDisp)
+//        return PosePathBuilder(positionPath, disp, prefix +
+//                listOf(TangentPath(PositionPathView(positionPath, beginDisp, disp, ))))
+//    }
+//
+//    fun build() = CompositePosePath(prefix)
+//}
