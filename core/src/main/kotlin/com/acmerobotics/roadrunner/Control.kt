@@ -1,7 +1,5 @@
 package com.acmerobotics.roadrunner
 
-import kotlin.math.sign
-
 
 // TODO: time is explicit!
 

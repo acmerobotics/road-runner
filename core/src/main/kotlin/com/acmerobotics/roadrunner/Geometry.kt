@@ -184,4 +184,4 @@ class Transform2Dual<Param>(
 class Twist2(val transVel: Vector2, val rotVel: Double)
 class Twist2Dual<Param>(val transVel: Vector2Dual<Param>, val rotVel: DualNum<Param>)
 
-//class TwistIncr2<N : Num<N>>(val translation: Vector2<N>, val rotation: N)
+class Twist2Incr(val transIncr: Vector2, val rotIncr: Double)

@@ -3,6 +3,8 @@ package com.acmerobotics.roadrunner
 import kotlin.math.ceil
 import kotlin.math.max
 
+object Time
+
 data class Interval(val min: Double, val max: Double)
 
 // TODO: List<Double> vs DoubleArray
