@@ -5,18 +5,6 @@ import kotlin.math.max
 
 object Time
 
-data class Interval(val min: Double, val max: Double)
-
-// TODO: List<Double> vs DoubleArray
-// What's the right line of non-pessimization?
-fun range(begin: Double, end: Double, samples: Int): List<Double> {
-    require(samples >= 1)
-    return when (samples) {
-        1 -> listOf(begin)
-        else -> (0 until samples).map { begin + (end - begin) * it / (samples - 1).toDouble() }
-    }
-}
-
 // TODO: what does a safe API look like?
 fun profile(
     length: Double,
