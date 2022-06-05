@@ -2,7 +2,6 @@ package com.acmerobotics.roadrunner
 
 import kotlin.math.min
 
-// TODO: these all need tests of course
 class DualNum<Param>(val values: DoubleArray) {
     companion object {
         fun <Param> constant(x: Double, n: Int) = DualNum<Param>(DoubleArray(n) {
@@ -21,19 +20,19 @@ class DualNum<Param>(val values: DoubleArray) {
         })
     }
 
+    val size get() = values.size
+
     init {
         require(values.size <= 4)
     }
 
-    // TODO: do we need a more efficient version?
+    fun constant() = values.first()
+    operator fun get(i: Int) = values[i]
+
     fun drop(n: Int) = DualNum<Param>(DoubleArray(values.size - n) { values[it + n] })
 
-    fun constant() = values.first()
-
     operator fun plus(other: DualNum<Param>): DualNum<Param> {
-        require(values.size == other.values.size)
-
-        val out = DualNum<Param>(DoubleArray(values.size))
+        val out = DualNum<Param>(DoubleArray(min(size, other.size)))
         for (i in out.values.indices) {
             out.values[i] = values[i] + other.values[i]
         }
@@ -68,7 +67,6 @@ class DualNum<Param>(val values: DoubleArray) {
             3 * (values[2] * other.values[1] + values[1] * other.values[2])
         return out
     }
-
 
     operator fun unaryMinus(): DualNum<Param> {
         val out = DualNum<Param>(DoubleArray(values.size))
@@ -105,6 +103,8 @@ class DualNum<Param>(val values: DoubleArray) {
         return out
     }
 
+    operator fun div(other: DualNum<Param>) = this * other.recip()
+
     fun sqrt(): DualNum<Param> {
         val out = DualNum<Param>(DoubleArray(values.size))
         if (out.values.isEmpty()) return out
@@ -126,10 +126,8 @@ class DualNum<Param>(val values: DoubleArray) {
         if (out.values.size == 3) return out
 
         val int2 = 2 * int1
-        val thirdDeriv = recip * values[3] + int2 * values[2] +
-                (deriv * negRecip * int2 +
-                negRecip2 * int1) * values[1]
-        out.values[3] = thirdDeriv
+        out.values[3] = recip * values[3] + int2 * values[2] +
+                (deriv * negRecip * int2 + negRecip2 * secondDeriv) * values[1]
 
         return out
     }
@@ -152,7 +150,7 @@ class DualNum<Param>(val values: DoubleArray) {
         if (out.values.size == 3) return out
 
         out.values[3] = cos * values[3] -
-                3 * sin * values[1] * values[2] +
+                3 * sin * values[1] * values[2] -
                 deriv * inDeriv2
 
         return out
@@ -179,6 +177,26 @@ class DualNum<Param>(val values: DoubleArray) {
         out.values[3] = deriv * negInDeriv * values[1] +
                 3 * int * values[2] -
                 sin * values[3]
+
+        return out
+    }
+
+    fun <NewParam> reparam(oldParam: DualNum<NewParam>): DualNum<NewParam> {
+        val out = DualNum<NewParam>(DoubleArray(min(size, oldParam.size)))
+        if (out.values.isEmpty()) return out
+
+        out.values[0] = values[0]
+        if (out.values.size == 1) return out
+
+        out.values[1] = values[1] * oldParam[1]
+        if (out.values.size == 2) return out
+
+        val oldDeriv2 = oldParam.values[1] * oldParam.values[1]
+        out.values[2] = oldDeriv2 * values[2] + oldParam.values[2] * values[1]
+        if (out.values.size == 3) return out
+
+        out.values[3] = values[1] * oldParam.values[3] +
+                (3 * values[2] * oldParam.values[2] + values[3] * oldDeriv2) * oldParam.values[1]
 
         return out
     }
@@ -212,29 +230,4 @@ class DualNum<Param>(val values: DoubleArray) {
 
     operator fun times(other: Vector2) =
             Vector2Dual(this * other.x, this * other.y)
-
-    fun <NewParam> reparam(oldParam: DualNum<NewParam>): DualNum<NewParam> {
-        // TODO: min() should probably be standard here
-        val out = DualNum<NewParam>(DoubleArray(min(size, oldParam.size)))
-        if (out.values.isEmpty()) return out
-
-        out.values[0] = values[0]
-        if (out.values.size == 1) return out
-
-        out.values[1] = values[1] * oldParam[1]
-        if (out.values.size == 2) return out
-
-        val oldDeriv2 = oldParam.values[1] * oldParam.values[1]
-        out.values[2] = oldDeriv2 * values[2] + oldParam.values[2] * values[1]
-        if (out.values.size == 3) return out
-
-        out.values[3] = values[1] * oldParam.values[3] +
-                (3 * values[2] * oldParam.values[2] + values[3] * oldDeriv2) * oldParam.values[1]
-
-        return out
-    }
-
-    operator fun get(i: Int) = values[i]
-
-    val size get() = values.size
 }
