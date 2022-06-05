@@ -11,8 +11,7 @@ class WheelVelocities<Param>(
     val backLeft: DualNum<Param>,
     val backRight: DualNum<Param>,
 ) {
-    // TODO: necessary?
-    fun toList() = listOf(frontLeft, frontRight, backLeft, backRight)
+    fun all() = listOf(frontLeft, frontRight, backLeft, backRight)
 }
 
 class WheelIncrements(

@@ -43,9 +43,12 @@ data class Position2Dual<Param>(val x: DualNum<Param>, val y: DualNum<Param>) {
     fun free() = Vector2Dual(x, y)
 
     fun tangent() = Rotation2Dual(x.drop(1), y.drop(1))
+    fun tangentVec() = Vector2Dual(x.drop(1), y.drop(1))
 
     fun <NewParam> reparam(oldParam: DualNum<NewParam>) =
             Position2Dual(x.reparam(oldParam), y.reparam(oldParam))
+
+    fun constant() = Position2(x.constant(), y.constant())
 }
 
 // TODO: units?
@@ -59,6 +62,8 @@ data class Vector2(val x: Double, val y: Double) {
     infix fun dot(other: Vector2) = x * other.x + y * other.y
     fun sqrNorm() = this dot this
     fun norm() = sqrt(sqrNorm())
+
+    fun bind() = Position2(x, y)
 }
 
 data class Vector2Dual<Param>(val x: DualNum<Param>, val y: DualNum<Param>) {
@@ -75,6 +80,11 @@ data class Vector2Dual<Param>(val x: DualNum<Param>, val y: DualNum<Param>) {
 
     fun drop(n: Int) = Vector2Dual(x.drop(n), y.drop(n))
     fun constant() = Vector2(x.constant(), y.constant())
+
+    fun <NewParam> reparam(oldParam: DualNum<NewParam>) =
+            Vector2Dual(x.reparam(oldParam), y.reparam(oldParam))
+
+    fun bind() = Position2Dual(x, y)
 }
 
 
@@ -99,6 +109,8 @@ class Rotation2(val real: Double, val imag: Double) {
             Rotation2Dual<Param>(DualNum.constant(real, n), DualNum.constant(imag, n))
 
     fun vec() = Vector2(real, imag)
+
+    fun log() = atan2(imag, real)
 }
 
 class Rotation2Dual<Param>(val real: DualNum<Param>, val imag: DualNum<Param>) {
@@ -115,6 +127,11 @@ class Rotation2Dual<Param>(val real: DualNum<Param>, val imag: DualNum<Param>) {
 //    operator fun plus(other: Double) = this * exp(other)
 
     operator fun times(vector: Vector2Dual<Param>) = Vector2Dual(
+            real * vector.x - imag * vector.y,
+            imag * vector.x + real * vector.y
+    )
+
+    operator fun times(vector: Vector2) = Vector2Dual(
             real * vector.x - imag * vector.y,
             imag * vector.x + real * vector.y
     )
@@ -160,10 +177,58 @@ class Transform2(
         val translation: Vector2,
         val rotation: Rotation2,
 ) {
+    companion object {
+        // see (133), (134) in https://ethaneade.com/lie.pdf
+        private fun entries(theta: Double) : Pair<Double, Double> {
+            // TODO: better singularity math
+//        val A = if (theta epsilonEquals 0.0) {
+//            1.0 - theta * theta / 6.0
+//        } else {
+//            theta.sin() / theta
+//        }
+//        val B = if (theta.value() epsilonEquals 0.0) {
+//            theta / 2.0
+//        } else {
+//            (1.0 - theta.cos()) / theta
+//        }
+            return Pair(sin(theta) / theta, (1.0 - cos(theta)) / theta)
+        }
+
+        fun exp(incr: Twist2Incr): Transform2 {
+            val rotation = Rotation2.exp(incr.rotIncr)
+
+            val (A, B) = entries(incr.rotIncr)
+            val translation = Vector2(
+                    A * incr.transIncr.x - B * incr.transIncr.y,
+                    B * incr.transIncr.x + A * incr.transIncr.y
+            )
+
+            return Transform2(translation, rotation)
+        }
+    }
+
     operator fun times(other: Transform2) =
         Transform2(rotation * other.translation + translation, rotation * other.rotation)
 
     fun inverse() = Transform2(rotation.inverse() * -translation, rotation.inverse())
+
+    fun log(): Twist2Incr {
+        val theta = rotation.log()
+
+        val (A, B) = entries(theta)
+        val denom = Vector2(A, B).sqrNorm()
+
+        val (x, y) = translation
+        return Twist2Incr(
+                Vector2(
+                    (A * x + B * y) / denom,
+                    (-B * x + A * y) / denom,
+                ),
+                theta,
+        )
+    }
+
+    operator fun minus(other: Transform2) = (other.inverse() * this).log()
 }
 
 class Transform2Dual<Param>(
@@ -173,11 +238,20 @@ class Transform2Dual<Param>(
     operator fun times(other: Transform2Dual<Param>) =
             Transform2Dual(rotation * other.translation + translation, rotation * other.rotation)
 
+    operator fun times(other: Transform2) =
+            Transform2Dual(rotation * other.translation + translation, rotation * other.rotation)
+
+    // TODO: is this the right ordering?
+    operator fun plus(other: Twist2Incr) = this * Transform2.exp(other)
+
     fun inverse() = Transform2Dual(rotation.inverse() * -translation, rotation.inverse())
 
     fun velocity() = Twist2Dual(translation.drop(1), rotation.velocity())
 
     fun constant() = Transform2(translation.constant(), rotation.constant())
+
+    fun <NewParam> reparam(oldParam: DualNum<NewParam>) =
+            Transform2Dual(translation.reparam(oldParam), rotation.reparam(oldParam))
 }
 
 // TODO: what goes inside? a rotation velocity
