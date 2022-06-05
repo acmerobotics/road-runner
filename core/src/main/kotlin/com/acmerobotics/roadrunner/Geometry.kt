@@ -120,7 +120,7 @@ class Rotation2Dual<Param>(val real: DualNum<Param>, val imag: DualNum<Param>) {
     }
 
     companion object {
-        fun <Param> exp(theta: DualNum<Param>) = Rotation2Dual<Param>(theta.cos(), theta.sin())
+        fun <Param> exp(theta: DualNum<Param>) = Rotation2Dual(theta.cos(), theta.sin())
     }
 
 //    operator fun plus(other: DualNum<Param>) = this * exp(other)

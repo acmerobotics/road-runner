@@ -41,7 +41,7 @@ class Profile(val segments: List<Segment>) {
         }
 
         override fun getByDisp(s: Double) =
-                DualNum<Time>(doubleArrayOf(clamp(s, 0.0, distance), vel, 0.0, 0.0, 0.0))
+                DualNum<Time>(doubleArrayOf(clamp(s, 0.0, distance), vel, 0.0, 0.0))
     }
 
     val duration = segments.sumOf { it.duration }

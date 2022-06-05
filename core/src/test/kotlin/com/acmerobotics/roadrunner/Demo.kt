@@ -31,8 +31,8 @@ fun main() {
 
     var s = 0.0
     var pose = Transform2Dual<Time>(
-            Vector2Dual(DualNum.constant(1.0, 4), DualNum.constant(-3.0, 4)),
-            Rotation2Dual.exp(DualNum.constant(cos(PI / 8), 4)),
+            Vector2Dual(DualNum.constant(1.0, 3), DualNum.constant(-3.0, 3)),
+            Rotation2Dual.exp(DualNum.constant(cos(PI / 8), 3)),
     ) * trajectory[0.0, 3]
 
     val measured = mutableListOf<Transform2>()

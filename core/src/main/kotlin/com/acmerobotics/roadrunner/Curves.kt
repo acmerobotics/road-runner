@@ -327,7 +327,7 @@ class CompositePosePath(val paths: List<PosePath>) : PosePath {
 
 fun project(path: PosePath, query: Position2, init: Double): Double {
     return (1..10).fold(init) { s, _ ->
-        val guess = path[s, 2].translation.bind()
+        val guess = path[s, 3].translation.bind()
         val ds = (query - guess.constant()) dot guess.tangent().constant().vec()
         clamp(s + ds, 0.0, path.length)
     }
