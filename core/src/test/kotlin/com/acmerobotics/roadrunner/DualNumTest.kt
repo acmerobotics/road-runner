@@ -103,14 +103,56 @@ fun testRandomMonadic(
         val values = listOf(r.nextDouble(), r.nextDouble(), r.nextDouble(), r.nextDouble())
         assertDualEquals(
                 expected(RefDualNum(values)),
-                actual(DualNum(values.toDoubleArray()))
+                actual(DualNum(values.toDoubleArray())),
+        )
+    }
+}
+
+fun testRandomDyadic(
+        expected: (RefDualNum<TestParam>, RefDualNum<TestParam>) -> RefDualNum<TestParam>,
+        actual: (DualNum<TestParam>, DualNum<TestParam>) -> DualNum<TestParam>,
+        n: Int = 100
+) {
+    val r = Random.Default
+    repeat(n) {
+        val values1 = listOf(r.nextDouble(), r.nextDouble(), r.nextDouble(), r.nextDouble())
+        val values2 = listOf(r.nextDouble(), r.nextDouble(), r.nextDouble(), r.nextDouble())
+        assertDualEquals(
+                expected(RefDualNum(values1), RefDualNum(values2)),
+                actual(DualNum(values1.toDoubleArray()), DualNum(values2.toDoubleArray())),
+        )
+    }
+}
+
+fun testRandomDyadicDouble(
+        expected: (RefDualNum<TestParam>, Double) -> RefDualNum<TestParam>,
+        actual: (DualNum<TestParam>, Double) -> DualNum<TestParam>,
+        n: Int = 100
+) {
+    val r = Random.Default
+    repeat(n) {
+        val values = listOf(r.nextDouble(), r.nextDouble(), r.nextDouble(), r.nextDouble())
+        val x = r.nextDouble()
+        assertDualEquals(
+                expected(RefDualNum(values), x),
+                actual(DualNum(values.toDoubleArray()), x),
         )
     }
 }
 
 class DualNumTest {
+    @Test fun testPlus() = testRandomDyadic({ a, b -> a + b }, { a, b -> a + b })
+    @Test fun testMinus() = testRandomDyadic({ a, b -> a - b }, { a, b -> a - b })
+    @Test fun testTimes() = testRandomDyadic({ a, b -> a * b }, { a, b -> a * b })
+
     @Test fun testRecip() = testRandomMonadic({ it.recip() }, { it.recip() })
     @Test fun testSqrt() = testRandomMonadic({ it.sqrt() }, { it.sqrt() })
     @Test fun testSin() = testRandomMonadic({ it.sin() }, { it.sin() })
     @Test fun testCos() = testRandomMonadic({ it.cos() }, { it.cos() })
+
+    @Test fun testReparam() = testRandomDyadic({ a, b -> a.reparam(b) }, { a, b -> a.reparam(b) })
+
+    @Test fun testDoublePlus() = testRandomDyadicDouble({ a, b -> a + b }, { a, b -> a + b })
+    @Test fun testDoubleTimes() = testRandomDyadicDouble({ a, b -> a * b }, { a, b -> a * b })
+    @Test fun testDoubleDiv() = testRandomDyadicDouble({ a, b -> a / b }, { a, b -> a / b })
 }
