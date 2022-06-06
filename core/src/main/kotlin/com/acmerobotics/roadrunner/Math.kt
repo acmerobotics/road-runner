@@ -20,13 +20,18 @@ fun epsCopySign(x: Double) =
 //    return sin(u) / u
 //}
 
-data class Interval(val min: Double, val max: Double)
+data class Interval(val min: Double, val max: Double) {
+    fun pair() = Pair(min, max)
+}
 
-fun range(begin: Double, end: Double, samples: Int): List<Double> {
+fun range(begin: Double, end: Double, samples: Int): Pair<Double, List<Double>> {
     require(samples >= 1)
     return when (samples) {
-        1 -> listOf(begin)
-        else -> (0 until samples).map { begin + (end - begin) * it / (samples - 1).toDouble() }
+        1 -> Pair(0.0, listOf(begin))
+        else -> {
+            val dx = (end - begin) / (samples - 1)
+            Pair(dx, (0 until samples).map { begin + dx * it })
+        }
     }
 }
 

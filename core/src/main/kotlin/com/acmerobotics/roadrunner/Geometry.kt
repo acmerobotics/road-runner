@@ -221,7 +221,6 @@ data class Transform2Dual<Param>(
     operator fun times(other: Transform2) =
             Transform2Dual(rotation * other.translation + translation, rotation * other.rotation)
 
-    // TODO: is this the right ordering?
     operator fun plus(other: Twist2Incr) = this * Transform2.exp(other)
 
     fun constant() = Transform2(translation.constant(), rotation.constant())
