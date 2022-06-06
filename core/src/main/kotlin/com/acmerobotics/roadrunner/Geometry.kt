@@ -5,21 +5,8 @@ import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-// TODO: why not Point2?
-data class Position2(val x: Double, val y: Double) {
-//
-//        fun <Origin> origin() = Position2<Origin, Origin, DoubleNum>(DoubleNum(0.0), DoubleNum(0.0))
-//        fun <Origin, Param> origin(n : Int) = Position2<Origin, Origin, DualNum<Param>>(DualNum.constant(0.0, n), DualNum.constant(0.0, n))
-//
-//        fun <Origin, Point, N : Num<N>> bind(v: Vector2<N>) = Position2<Origin, Point, N>(v.x, v.y)
-//    }
-//
+class Position2(val x: Double, val y: Double) {
     operator fun minus(other: Position2) = Vector2(x - other.x, y - other.y)
-//    operator fun <End> plus(diff: Vector2<N>) = Position2<Origin, End, N>(x + diff.x, y + diff.y)
-//
-//    infix fun <OtherPoint> distTo(other: Position2<Origin, OtherPoint, N>) = (this - other).norm()
-//
-    fun free() = Vector2(x, y)
 }
 
 data class Position2Dual<Param>(val x: DualNum<Param>, val y: DualNum<Param>) {
@@ -28,18 +15,9 @@ data class Position2Dual<Param>(val x: DualNum<Param>, val y: DualNum<Param>) {
                 DualNum.constant(x, n), DualNum.constant(y, n)
         )
     }
-    //
-//        fun <Origin> origin() = Position2<Origin, Origin, DoubleNum>(DoubleNum(0.0), DoubleNum(0.0))
-//        fun <Origin, Param> origin(n : Int) = Position2<Origin, Origin, DualNum<Param>>(DualNum.constant(0.0, n), DualNum.constant(0.0, n))
-//
-//        fun <Origin, Point, N : Num<N>> bind(v: Vector2<N>) = Position2<Origin, Point, N>(v.x, v.y)
-//    }
-//
+
     operator fun minus(other: Position2Dual<Param>) = Vector2Dual(x - other.x, y - other.y)
-    //    operator fun <End> plus(diff: Vector2<N>) = Position2<Origin, End, N>(x + diff.x, y + diff.y)
-//
-//    infix fun <OtherPoint> distTo(other: Position2<Origin, OtherPoint, N>) = (this - other).norm()
-//
+
     fun free() = Vector2Dual(x, y)
 
     fun tangent() = Rotation2Dual(x.drop(1), y.drop(1))
@@ -51,9 +29,10 @@ data class Position2Dual<Param>(val x: DualNum<Param>, val y: DualNum<Param>) {
     fun constant() = Position2(x.constant(), y.constant())
 }
 
-// TODO: units?
+// TODO: I'm just using data for the component functions. Is there any downside to making this a data class?
 data class Vector2(val x: Double, val y: Double) {
     operator fun plus(other: Vector2) = Vector2(x + other.x, y + other.y)
+    operator fun minus(other: Vector2) = Vector2(x - other.x, y - other.y)
     operator fun unaryMinus() = Vector2(-x, -y)
 
     operator fun times(other: Double) = Vector2(x * other, y * other)
@@ -62,11 +41,9 @@ data class Vector2(val x: Double, val y: Double) {
     infix fun dot(other: Vector2) = x * other.x + y * other.y
     fun sqrNorm() = this dot this
     fun norm() = sqrt(sqrNorm())
-
-    fun bind() = Position2(x, y)
 }
 
-data class Vector2Dual<Param>(val x: DualNum<Param>, val y: DualNum<Param>) {
+class Vector2Dual<Param>(val x: DualNum<Param>, val y: DualNum<Param>) {
     operator fun plus(other: Vector2Dual<Param>) = Vector2Dual(x + other.x, y + other.y)
     operator fun unaryMinus() = Vector2Dual(-x, -y)
 
@@ -88,7 +65,7 @@ data class Vector2Dual<Param>(val x: DualNum<Param>, val y: DualNum<Param>) {
 }
 
 
-class Rotation2(val real: Double, val imag: Double) {
+data class Rotation2(val real: Double, val imag: Double) {
     companion object {
         fun exp(theta: Double) = Rotation2(cos(theta), sin(theta))
     }
@@ -104,6 +81,8 @@ class Rotation2(val real: Double, val imag: Double) {
     )
 
     fun inverse() = Rotation2(real, -imag)
+
+    operator fun minus(other: Rotation2) = (other.inverse() * this).log()
 
     fun <Param> constant(n: Int) =
             Rotation2Dual<Param>(DualNum.constant(real, n), DualNum.constant(imag, n))
@@ -122,9 +101,6 @@ class Rotation2Dual<Param>(val real: DualNum<Param>, val imag: DualNum<Param>) {
     companion object {
         fun <Param> exp(theta: DualNum<Param>) = Rotation2Dual(theta.cos(), theta.sin())
     }
-
-//    operator fun plus(other: DualNum<Param>) = this * exp(other)
-//    operator fun plus(other: Double) = this * exp(other)
 
     operator fun times(vector: Vector2Dual<Param>) = Vector2Dual(
             real * vector.x - imag * vector.y,
@@ -148,11 +124,6 @@ class Rotation2Dual<Param>(val real: DualNum<Param>, val imag: DualNum<Param>) {
 
     fun inverse() = Rotation2Dual(real, -imag)
 
-    // TODO: is this subsumed by log()?
-    // TODO: is deriv() not more appropriate?
-    // I slightly prefer velocity because it emphasizes the difference between a 2d rotation matrix and a scalar angular velocity
-    fun velocity() = real * imag.drop(1) + real.drop(1) * imag
-
     fun constant() = Rotation2(real.constant(), imag.constant())
 
     fun <NewParam> reparam(oldParam: DualNum<NewParam>) =
@@ -173,25 +144,18 @@ class Rotation2Dual<Param>(val real: DualNum<Param>, val imag: DualNum<Param>) {
     val size get() = real.size
 }
 
-class Transform2(
+data class Transform2(
         val translation: Vector2,
         val rotation: Rotation2,
 ) {
     companion object {
         // see (133), (134) in https://ethaneade.com/lie.pdf
         private fun entries(theta: Double) : Pair<Double, Double> {
-            // TODO: better singularity math
-//        val A = if (theta epsilonEquals 0.0) {
-//            1.0 - theta * theta / 6.0
-//        } else {
-//            theta.sin() / theta
-//        }
-//        val B = if (theta.value() epsilonEquals 0.0) {
-//            theta / 2.0
-//        } else {
-//            (1.0 - theta.cos()) / theta
-//        }
-            return Pair(sin(theta) / theta, (1.0 - cos(theta)) / theta)
+            val u = theta + epsCopySign(theta)
+            return Pair(
+                sin(u) / u,
+                (1.0 - cos(u)) / u
+            )
         }
 
         fun exp(incr: Twist2Incr): Transform2 {
@@ -209,6 +173,8 @@ class Transform2(
 
     operator fun times(other: Transform2) =
         Transform2(rotation * other.translation + translation, rotation * other.rotation)
+
+    operator fun times(other: Vector2) = rotation * other + translation
 
     fun inverse() = Transform2(rotation.inverse() * -translation, rotation.inverse())
 
@@ -231,6 +197,16 @@ class Transform2(
     operator fun minus(other: Transform2) = (other.inverse() * this).log()
 }
 
+data class Transform2Error(val transError: Vector2, val rotError: Double)
+
+// TODO: SE(2) minus() "mixes" the frame orientations
+// we want the error in the "actual" frame
+fun localError(txWorldTarget: Transform2, txWorldActual: Transform2): Transform2Error {
+    val transErrorWorld = txWorldTarget.translation - txWorldActual.translation
+    val rotError = txWorldTarget.rotation - txWorldActual.rotation
+    return Transform2Error(txWorldActual.inverse() * transErrorWorld, rotError)
+}
+
 class Transform2Dual<Param>(
         val translation: Vector2Dual<Param>,
         val rotation: Rotation2Dual<Param>,
@@ -244,18 +220,13 @@ class Transform2Dual<Param>(
     // TODO: is this the right ordering?
     operator fun plus(other: Twist2Incr) = this * Transform2.exp(other)
 
-    fun inverse() = Transform2Dual(rotation.inverse() * -translation, rotation.inverse())
-
-    fun velocity() = Twist2Dual(translation.drop(1), rotation.velocity())
-
     fun constant() = Transform2(translation.constant(), rotation.constant())
 
     fun <NewParam> reparam(oldParam: DualNum<NewParam>) =
             Transform2Dual(translation.reparam(oldParam), rotation.reparam(oldParam))
 }
 
-// TODO: what goes inside? a rotation velocity
 class Twist2(val transVel: Vector2, val rotVel: Double)
 class Twist2Dual<Param>(val transVel: Vector2Dual<Param>, val rotVel: DualNum<Param>)
 
-class Twist2Incr(val transIncr: Vector2, val rotIncr: Double)
+data class Twist2Incr(val transIncr: Vector2, val rotIncr: Double)

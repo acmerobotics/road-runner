@@ -1,7 +1,5 @@
 package com.acmerobotics.roadrunner
 
-import kotlin.math.sqrt
-
 
 fun clamp(x: Double, lo: Double, hi: Double): Double {
     if (x < lo) {

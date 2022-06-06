@@ -2,7 +2,7 @@ package com.acmerobotics.roadrunner
 
 import kotlin.math.min
 
-class DualNum<Param>(val values: DoubleArray) {
+data class DualNum<Param>(val values: DoubleArray) {
     companion object {
         fun <Param> constant(x: Double, n: Int) = DualNum<Param>(DoubleArray(n) {
             when (it) {

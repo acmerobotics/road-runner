@@ -1,5 +1,25 @@
 package com.acmerobotics.roadrunner
 
+import kotlin.math.sin
+
+
+// TODO: Math.ulp(1.0) should be fixed by spec... can we inline it?
+val EPS = 10.0 * Math.ulp(1.0)
+
+fun epsCopySign(x: Double) =
+    if (x >= 0.0) {
+        EPS
+    } else {
+        -EPS
+    }
+
+// TODO: putting this here because Ramsete needs it
+// TODO: maybe premature?
+//fun sinc(x: Double): Double {
+//    val u = x + epsCopySign(x)
+//    return sin(u) / u
+//}
+
 data class Interval(val min: Double, val max: Double)
 
 fun range(begin: Double, end: Double, samples: Int): List<Double> {
