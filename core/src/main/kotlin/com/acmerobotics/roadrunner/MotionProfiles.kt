@@ -7,53 +7,64 @@ import kotlin.math.sqrt
 
 object Time
 
-// TODO: what does a safe API look like?
 fun profile(
     length: Double,
-    // TODO: do we need to separate these functions?
+    minVel: Double,
     maxVel: (Double) -> Double,
     minMaxAccel: (Double) -> Interval,
     resolution: Double,
-    minVel: Double,
 ): MotionProfile {
     require(length > 0.0)
     require(resolution > 0.0)
     require(minVel >= 0.0)
 
-    val samples = max(2, ceil(length / resolution).toInt())
+    val samples = max(1, ceil(length / resolution).toInt())
 
-    val (dx, velDisps) = range(0.0, length, samples)
+    val velDisps = rangeMiddle(0.0, length, samples)
     val maxVels = velDisps.map(maxVel)
-    val (minAccels, maxAccels) = velDisps
-        .drop(1)
-        .map { minMaxAccel(it - 0.5 * dx).pair() }
-        .unzip()
+    val (minAccels, maxAccels) = velDisps.map { minMaxAccel(it).pair() }.unzip()
 
-    return forwardProfile(length, minVel, maxVels.drop(1), maxAccels).merge(
-        backwardProfile(length, maxVels.dropLast(1), minAccels, minVel))
+    val disps = range(0.0, length, samples + 1)
+    return merge(
+        forwardProfile(disps, minVel, maxVels, maxAccels),
+        backwardProfile(disps, maxVels, minVel, minAccels),
+    )
 }
 
 fun forwardProfile(
         length: Double,
-        // TODO: should this have a default?
         beginVel: Double,
         maxVel: (Double) -> Double,
         maxAccel: (Double) -> Double,
         resolution: Double,
 ): MotionProfile {
-    val samples = max(2, ceil(length / resolution).toInt())
+    val samples = max(1, ceil(length / resolution).toInt())
 
-    val (dx, velDisps) = range(0.0, length, samples)
-    return velDisps
-        .drop(1)
-        .let {
-            val maxVels = it.map(maxVel)
-            val maxAccels = it.map { x -> maxAccel(x - 0.5 * dx) }
-            forwardProfile(dx, beginVel, maxVels, maxAccels)
-        }
+    val disps = rangeMiddle(0.0, length, samples)
+    val maxVels = disps.map(maxVel)
+    val maxAccels = disps.map(maxAccel)
+    return forwardProfile(
+        range(0.0, length, samples + 1),
+        beginVel, maxVels, maxAccels)
 }
 
-// TODO: naming
+fun backwardProfile(
+    length: Double,
+    maxVel: (Double) -> Double,
+    endVel: Double,
+    minAccel: (Double) -> Double,
+    resolution: Double,
+): MotionProfile {
+    val samples = max(1, ceil(length / resolution).toInt())
+
+    val disps = rangeMiddle(0.0, length, samples)
+    val maxVels = disps.map(maxVel)
+    val minAccels = disps.map(minAccel)
+    return backwardProfile(
+        range(0.0, length, samples + 1),
+        maxVels, endVel, minAccels)
+}
+
 data class MotionProfile(
     val disps: List<Double>,
     val vels: List<Double>,
@@ -63,136 +74,138 @@ data class MotionProfile(
         require(disps.size == vels.size)
         require(disps.size == accels.size + 1)
     }
+}
 
-    fun reversed() = MotionProfile(
-        disps.reversed(),
-        vels.reversed(),
-        accels.reversed().map { -it },
-    )
+fun merge(p1: MotionProfile, p2: MotionProfile): MotionProfile {
+    val disps = mutableListOf(0.0)
+    val vels = mutableListOf(min(p1.vels[0], p2.vels[0]))
+    val accels = mutableListOf<Double>()
 
-    fun merge(p: MotionProfile): MotionProfile {
-        val disps = mutableListOf(0.0)
-        val vels = mutableListOf(min(vels[0], p.vels[0]))
-        val accels = mutableListOf<Double>()
+    var lastMin1 = p1.vels[0] < p2.vels[0]
 
-        var lastMinThis = vels[0] < p.vels[0]
+    var i = 1; var j = 1
+    while (i < p1.disps.size && j < p2.disps.size) {
+        val endDisp = min(p1.disps[i], p2.disps[j])
+        val accel1 = p1.accels[i - 1]
+        val accel2 = p2.accels[j - 1]
 
-        // TODO: this is nasty no matter how you slice it
-        var i = 1; var j = 1
-        while (i < disps.size && j < p.disps.size) {
-            if (disps[i] < p.disps[j]) {
-                val v = sqrt(
-                    p.vels[j] * p.vels[j] +
-                    2 * p.accels[j - 1] * (disps[i] - p.disps[j - 1])
-                )
-
-                val minThis = vels[i] < v
-                if (lastMinThis == minThis) {
-                    disps.add(disps[i])
-                    if (minThis) {
-                        disps.add(vels[i])
-                        disps.add(accels[i - 1])
-                    } else {
-                        disps.add(v)
-                        disps.add(p.accels[j - 1])
-                    }
-                } else {
-                    val dx = (v * v - vels[i] * vels[i]) / (2 * (p.accels[j - 1] - accels[i - 1]))
-                    disps.add(disps[i] - dx)
-                    vels.add(sqrt(v * v - 2 * p.accels[j - 1] * dx))
-                    accels.add(max(accels[i - 1], p.accels[j - 1]))
-
-                    disps.add(disps[i])
-                    vels.add(min(vels[i], v))
-                    accels.add(min(accels[i - 1], p.accels[j - 1]))
-                }
-
-                lastMinThis = minThis
-
+        val (endVel1, endVel2) =
+            if (p1.disps[i] == p2.disps[j]) {
                 i++
-            } else {
-                val v = sqrt(
-                    vels[i] * vels[i] +
-                        2 * accels[i - 1] * (p.disps[j] - disps[i - 1])
-                )
-
-                val minThis = v < p.vels[j]
-                if (lastMinThis == minThis) {
-                    disps.add(p.disps[j])
-                    if (minThis) {
-                        disps.add(v)
-                        disps.add(accels[i - 1])
-                    } else {
-                        disps.add(p.vels[j])
-                        disps.add(p.accels[j - 1])
-                    }
-                } else {
-                    val dx = (v * v - p.vels[j] * p.vels[j]) / (2 * (accels[i - 1] - p.accels[j - 1]))
-                    disps.add(p.disps[j] - dx)
-                    vels.add(sqrt(v * v - 2 * accels[i - 1] * dx))
-                    accels.add(max(accels[i - 1], p.accels[j - 1]))
-
-                    disps.add(p.disps[j])
-                    vels.add(min(p.vels[j], v))
-                    accels.add(min(accels[i - 1], p.accels[j - 1]))
-                }
-
-                lastMinThis = minThis
-
                 j++
+                Pair(
+                    p1.vels[i - 1],
+                    p2.vels[j - 1],
+                )
+            } else if (p1.disps[i] < p2.disps[j]) {
+                i++
+                Pair(
+                    p1.vels[i - 1],
+                    sqrt(p2.vels[j] * p2.vels[j] +
+                            2 * accel2 * (p1.disps[i - 1] - endDisp))
+                )
+            } else {
+                j++
+                Pair(
+                    sqrt(p1.vels[i] * p1.vels[i] +
+                            2 * accel1 * (p2.disps[j - 1] - endDisp)),
+                    p2.vels[j - 1]
+                )
             }
+
+        val min1 = endVel1 < endVel2
+        if (min1 == lastMin1) {
+            disps.add(endDisp)
+            if (min1) {
+                vels.add(endVel1)
+                accels.add(accel1)
+            } else {
+                vels.add(endVel2)
+                accels.add(accel2)
+            }
+        } else if (accel1 == accel2) {
+            disps.add(endDisp)
+            vels.add(endVel1)
+            accels.add(0.0)
+        } else {
+            val dx = (endVel2 * endVel2 - endVel1 * endVel1) / (2 * (accel2 - accel1))
+            disps.add(endDisp - dx)
+            vels.add(sqrt(endVel1 * endVel1 - 2 * accel1 * dx))
+            accels.add(max(accel1, accel2))
+
+            disps.add(endDisp)
+            vels.add(min(endVel1, endVel2))
+            accels.add(min(accel1, accel2))
         }
 
-        return MotionProfile(disps, vels, accels)
+        lastMin1 = min1
     }
+
+    return MotionProfile(disps, vels, accels)
 }
 
 // TODO: doesn't enforce invariants => private
-// maxVels are sampled at the *end*
-// maxAccels are sampled in the *middle*
+// maxVels, maxAccels are sampled in the *middle*
+// TODO: we should have displacement samples to avoid floating point stuff
 @Suppress("NAME_SHADOWING")
 private fun forwardProfile(
-    dx: Double,
+    disps: List<Double>,
     beginVel: Double,
     maxVels: List<Double>,
     maxAccels: List<Double>,
 ): MotionProfile {
-    val disps = mutableListOf(0.0)
+    val newDisps = mutableListOf(0.0)
     val vels = mutableListOf(beginVel)
     val accels = mutableListOf<Double>()
 
     maxVels
         .zip(maxAccels)
-        .forEach { (maxVel, maxAccel) ->
-            val beginDisp = disps.last()
-            val beginVel = vels.last()
-            val endVel = sqrt(beginVel * beginVel + 2 * maxAccel * dx)
-            if (endVel <= maxVel) {
-                disps.add(beginDisp + dx)
-                vels.add(endVel)
-                accels.add(maxAccel)
-            } else {
-                val accelDx = (maxVel * maxVel - beginVel * beginVel) / (2 * maxAccel)
-                disps.add(beginDisp + accelDx)
-                vels.add(maxVel)
-                accels.add(maxAccel)
+        .zip(disps.drop(1))
+        .fold(disps[0]) { beginDisp, (c, endDisp) ->
+            val (maxVel, maxAccel) = c
 
-                disps.add(beginDisp + dx)
+            val beginVel = vels.last()
+            if (beginVel >= maxVel) {
+                newDisps.add(endDisp)
                 vels.add(maxVel)
                 accels.add(0.0)
+            } else {
+                val endVel = sqrt(beginVel * beginVel + 2 * maxAccel * (endDisp - beginDisp))
+                if (endVel <= maxVel) {
+                    newDisps.add(endDisp)
+                    vels.add(endVel)
+                    accels.add(maxAccel)
+                } else {
+                    val accelDx = (maxVel * maxVel - beginVel * beginVel) / (2 * maxAccel)
+                    newDisps.add(beginDisp + accelDx)
+                    vels.add(maxVel)
+                    accels.add(maxAccel)
+
+                    newDisps.add(endDisp)
+                    vels.add(maxVel)
+                    accels.add(0.0)
+                }
             }
+
+            endDisp
         }
 
-    return MotionProfile(disps, vels, accels)
+    return MotionProfile(newDisps, vels, accels)
 }
 
-// maxVels are sampled at the *begin*
-// minAccels are sampled in the *middle*
+// maxVels, minAccels are sampled in the *middle*
 private fun backwardProfile(
-        dx: Double,
+        disps: List<Double>,
         maxVels: List<Double>,
-        minAccels: List<Double>,
         endVel: Double,
+        minAccels: List<Double>,
 ) = forwardProfile(
-            dx, endVel, maxVels.reversed(), minAccels.reversed().map { -it }
-    ).reversed()
+            disps, endVel, maxVels.reversed(), minAccels.reversed().map { -it }
+    ).let {
+        MotionProfile(
+            it.disps.map { x -> it.disps.last() - x }.reversed(),
+            it.vels.reversed(),
+            it.accels.reversed().map { a -> -a },
+        )
+    }
+

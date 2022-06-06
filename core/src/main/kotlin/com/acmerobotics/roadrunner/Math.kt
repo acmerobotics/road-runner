@@ -24,15 +24,16 @@ data class Interval(val min: Double, val max: Double) {
     fun pair() = Pair(min, max)
 }
 
-fun range(begin: Double, end: Double, samples: Int): Pair<Double, List<Double>> {
+fun range(begin: Double, end: Double, samples: Int): List<Double> {
+    require(samples >= 2)
+    val dx = (end - begin) / (samples - 1)
+    return (0 until samples).map { begin + dx * it }
+}
+
+fun rangeMiddle(begin: Double, end: Double, samples: Int): List<Double> {
     require(samples >= 1)
-    return when (samples) {
-        1 -> Pair(0.0, listOf(begin))
-        else -> {
-            val dx = (end - begin) / (samples - 1)
-            Pair(dx, (0 until samples).map { begin + dx * it })
-        }
-    }
+    val dx = (end - begin) / (samples - 1)
+    return (0 until samples).map { begin + 0.5 * dx + dx * it }
 }
 
 fun lerp(x: Double, fromLo: Double, fromHi: Double, toLo: Double, toHi: Double) =
