@@ -5,16 +5,16 @@ import kotlin.math.cos
 
 fun main() {
     val path = TangentPath(ArcCurve2(
-            QuinticSpline2(
-                    QuinticSpline1(
-                            DualNum(doubleArrayOf(0.0, 0.0, 30.0)),
-                            DualNum(doubleArrayOf(20.0, 30.0, 0.0)),
-                    ),
-                    QuinticSpline1(
-                            DualNum(doubleArrayOf(0.0, 0.0, 10.0)),
-                            DualNum(doubleArrayOf(20.0, 15.0, 0.0)),
-                    ),
-            )
+        QuinticSpline2(
+            QuinticSpline1(
+                DualNum(doubleArrayOf(0.0, 10.0, 30.0)),
+                DualNum(doubleArrayOf(20.0, 30.0, 0.0)),
+            ),
+            QuinticSpline1(
+                DualNum(doubleArrayOf(0.0, 15.0, 10.0)),
+                DualNum(doubleArrayOf(20.0, 20.0, 0.0)),
+            ),
+        )
     ), Rotation2.exp(0.0))
 
     val maxVel = 1.0
@@ -52,16 +52,21 @@ fun main() {
         measured.add(pose.constant())
         targets.add(targetPose.constant())
 
-        val error = targetPose.constant() - pose.constant()
+//        val error = targetPose.constant() - pose.constant()
+        val error = localError(targetPose.constant(), pose.constant())
         val correction = Twist2(
-                error.transIncr * 10.0,
-                error.rotIncr * 0.01,
+                error.transError * 10.0,
+                error.rotError * 0.01,
         )
+
+        val velocity = (targetPose.velocity() + correction).constant()
+
+        // TODO: now we need to add feedforward
 
         val dt = 0.01
         pose += Twist2Incr(
-                correction.transVel * dt,
-                correction.rotVel * dt,
+                velocity.transVel * dt,
+                velocity.rotVel * dt,
         )
     }
 }

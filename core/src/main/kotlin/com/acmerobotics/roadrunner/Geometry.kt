@@ -43,13 +43,15 @@ data class Vector2(val x: Double, val y: Double) {
     fun norm() = sqrt(sqrNorm())
 }
 
-class Vector2Dual<Param>(val x: DualNum<Param>, val y: DualNum<Param>) {
+data class Vector2Dual<Param>(val x: DualNum<Param>, val y: DualNum<Param>) {
     operator fun plus(other: Vector2Dual<Param>) = Vector2Dual(x + other.x, y + other.y)
     operator fun unaryMinus() = Vector2Dual(-x, -y)
 
     operator fun div(other: Double) = Vector2Dual(x / other, y / other)
 
     operator fun plus(other: Position2) = Position2Dual(x + other.x, y + other.y)
+
+    operator fun plus(other: Vector2) = Vector2Dual(x + other.x, y + other.y)
 
     infix fun dot(other: Vector2Dual<Param>) = x * other.x + y * other.y
     fun sqrNorm() = this dot this
@@ -92,7 +94,7 @@ data class Rotation2(val real: Double, val imag: Double) {
     fun log() = atan2(imag, real)
 }
 
-class Rotation2Dual<Param>(val real: DualNum<Param>, val imag: DualNum<Param>) {
+data class Rotation2Dual<Param>(val real: DualNum<Param>, val imag: DualNum<Param>) {
     init {
         require(real.size == imag.size)
         require(real.size <= 3)
@@ -140,6 +142,8 @@ class Rotation2Dual<Param>(val real: DualNum<Param>, val imag: DualNum<Param>) {
             else -> throw AssertionError()
         }
     })
+
+    fun velocity() = real * imag.drop(1) - imag * real.drop(1)
 
     val size get() = real.size
 }
@@ -207,7 +211,7 @@ fun localError(txWorldTarget: Transform2, txWorldActual: Transform2): Transform2
     return Transform2Error(txWorldActual.inverse() * transErrorWorld, rotError)
 }
 
-class Transform2Dual<Param>(
+data class Transform2Dual<Param>(
         val translation: Vector2Dual<Param>,
         val rotation: Rotation2Dual<Param>,
 ) {
@@ -222,11 +226,18 @@ class Transform2Dual<Param>(
 
     fun constant() = Transform2(translation.constant(), rotation.constant())
 
+    fun velocity() = Twist2Dual(translation.drop(1), rotation.velocity())
+
     fun <NewParam> reparam(oldParam: DualNum<NewParam>) =
             Transform2Dual(translation.reparam(oldParam), rotation.reparam(oldParam))
 }
 
 class Twist2(val transVel: Vector2, val rotVel: Double)
-class Twist2Dual<Param>(val transVel: Vector2Dual<Param>, val rotVel: DualNum<Param>)
+
+class Twist2Dual<Param>(val transVel: Vector2Dual<Param>, val rotVel: DualNum<Param>) {
+    operator fun plus(other: Twist2) = Twist2Dual(transVel + other.transVel, rotVel + other.rotVel)
+
+    fun constant() = Twist2(transVel.constant(), rotVel.constant())
+}
 
 data class Twist2Incr(val transIncr: Vector2, val rotIncr: Double)
