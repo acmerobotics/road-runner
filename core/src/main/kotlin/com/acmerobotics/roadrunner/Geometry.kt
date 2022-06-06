@@ -208,7 +208,7 @@ data class Transform2Error(val transError: Vector2, val rotError: Double)
 fun localError(txWorldTarget: Transform2, txWorldActual: Transform2): Transform2Error {
     val transErrorWorld = txWorldTarget.translation - txWorldActual.translation
     val rotError = txWorldTarget.rotation - txWorldActual.rotation
-    return Transform2Error(txWorldActual.inverse() * transErrorWorld, rotError)
+    return Transform2Error(txWorldActual.rotation.inverse() * transErrorWorld, rotError)
 }
 
 data class Transform2Dual<Param>(
@@ -232,9 +232,9 @@ data class Transform2Dual<Param>(
             Transform2Dual(translation.reparam(oldParam), rotation.reparam(oldParam))
 }
 
-class Twist2(val transVel: Vector2, val rotVel: Double)
+data class Twist2(val transVel: Vector2, val rotVel: Double)
 
-class Twist2Dual<Param>(val transVel: Vector2Dual<Param>, val rotVel: DualNum<Param>) {
+data class Twist2Dual<Param>(val transVel: Vector2Dual<Param>, val rotVel: DualNum<Param>) {
     operator fun plus(other: Twist2) = Twist2Dual(transVel + other.transVel, rotVel + other.rotVel)
 
     fun constant() = Twist2(transVel.constant(), rotVel.constant())
