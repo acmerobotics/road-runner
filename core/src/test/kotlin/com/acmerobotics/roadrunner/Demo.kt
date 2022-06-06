@@ -1,7 +1,9 @@
 package com.acmerobotics.roadrunner
 
-import kotlin.math.PI
-import kotlin.math.cos
+import org.knowm.xchart.XYChartBuilder
+import org.knowm.xchart.style.markers.Circle
+import org.knowm.xchart.style.theme.MatlabTheme
+
 
 fun main() {
     val path = TangentPath(ArcCurve2(
@@ -30,10 +32,6 @@ fun main() {
     val trajectory = Trajectory(path, profile)
 
     var s = 0.0
-//    var pose = Transform2Dual<Time>(
-//            Vector2Dual(DualNum.constant(1.0, 3), DualNum.constant(-3.0, 3)),
-//            Rotation2Dual.exp(DualNum.constant(cos(PI / 8), 3)),
-//    ) * trajectory[0.0, 3]
     var pose = Transform2Dual<Time>(
         Vector2Dual(
             DualNum.constant(5.0, 3),
@@ -59,8 +57,8 @@ fun main() {
 
         val error = localError(targetPose.constant(), pose.constant())
         val correction = Twist2(
-                error.transError * 1.0,
-                error.rotError * 1.0,
+                error.transError * 0.5,
+                error.rotError * 0.01,
         )
 
         val velocity = (targetPose.velocity() + correction).constant()
@@ -71,4 +69,28 @@ fun main() {
                 velocity.rotVel * dt,
         )
     }
+
+    val chart = XYChartBuilder()
+        .width(600).height(500)
+        .title("Demo").xAxisTitle("x").yAxisTitle("y")
+        .build()
+    chart.styler.theme = MatlabTheme()
+
+    chart.addSeries("Target",
+            targets.map { it.translation.x }.toDoubleArray(),
+            targets.map { it.translation.y }.toDoubleArray(),
+    ).let {
+        it.marker = Circle()
+        it.lineWidth = 0.0f
+    }
+
+    chart.addSeries("Actual",
+            measured.map { it.translation.x }.toDoubleArray(),
+            measured.map { it.translation.y }.toDoubleArray(),
+    ).let {
+        it.marker = Circle()
+        it.lineWidth = 0.0f
+    }
+
+    saveChart("demo", chart)
 }
