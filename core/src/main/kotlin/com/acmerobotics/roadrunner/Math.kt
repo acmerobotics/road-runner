@@ -20,6 +20,16 @@ fun epsCopySign(x: Double) =
 //    return sin(u) / u
 //}
 
+fun clamp(x: Double, lo: Double, hi: Double): Double {
+    if (x < lo) {
+        return lo
+    }
+    if (x > hi) {
+        return hi
+    }
+    return x
+}
+
 data class Interval(val min: Double, val max: Double) {
     fun pair() = Pair(min, max)
 }

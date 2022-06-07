@@ -19,17 +19,13 @@ fun main() {
         )
     ), Rotation2.exp(0.0))
 
-    val maxVel = 1.0
-    val profile = Profile(
-            listOf(
-                    Profile.ConstVelSegment(
-                            DualNum.constant(0.0, 4),
-                            maxVel, path.length / maxVel
-                    )
-            )
+    val profile = DisplacementProfile(
+        listOf(0.0, path.length),
+        listOf(1.0, 1.0),
+        listOf(0.0)
     )
 
-    val trajectory = Trajectory(path, profile)
+    val trajectory = DisplacementTrajectory(path, profile)
 
     var s = 0.0
     var pose = Transform2Dual<Time>(
@@ -50,7 +46,7 @@ fun main() {
             break
         }
 
-        val targetPose = trajectory.getByDisp(s, 3)
+        val targetPose = trajectory[s, 3]
 
         measured.add(pose.constant())
         targets.add(targetPose.constant())
