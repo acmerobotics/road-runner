@@ -33,15 +33,8 @@ class MotionProfilesTest {
     @Test
     fun testSimpleProfile() {
         saveChart("simpleProfile", chartProfile(
-            profile(10.0, 0.0, { 5.0 }, { Interval(-5.0, 5.0) }, 10.0)
+            profile(10.0, 0.0, { 5.0 }, { Interval(-5.0, 5.0) }, 0.1)
         ))
-//
-//        val f = forwardProfile(10.0, 0.0, { 5.0 }, { 5.0 }, 5.0)
-//        val b = backwardProfile(10.0, { 5.0 }, 0.0, { -5.0 }, 5.0)
-//        println(f)
-//        println(b)
-//        println(merge(f, b))
-//        println(merge(b, f))
     }
 
     @Test
@@ -69,8 +62,6 @@ class MotionProfilesTest {
                 { -5.0 },
                 0.1
             )
-
-        println(p)
 
 //        assert(isSorted(p.disps))
 
@@ -107,5 +98,14 @@ class MotionProfilesTest {
 //        assert(isSorted(p.disps))
 
         saveChart("profileNonZero", chartProfile(p))
+    }
+
+    @Test
+    fun testSimpleAsymmetricProfile() {
+        saveChart(
+            "asymmetricProfile", chartProfile(
+                profile(10.0, 0.0, { 5.0 }, { Interval(-2.0, 5.0) }, 10.0)
+            )
+        )
     }
 }

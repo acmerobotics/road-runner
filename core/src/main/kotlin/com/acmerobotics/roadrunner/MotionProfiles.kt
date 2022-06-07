@@ -124,10 +124,16 @@ data class TimeProfile(
     operator fun get(t: Double): DualNum<Time> {
         val index = times.binarySearch(t)
         return when {
-            index > 0 -> DualNum(doubleArrayOf(
-                dispProfile.disps[index], dispProfile.vels[index], dispProfile.accels[index - 1]))
-            index == 0 -> DualNum(doubleArrayOf(
-                dispProfile.disps[0], dispProfile.vels[0], 0.0))
+            index > 0 -> DualNum(
+                doubleArrayOf(
+                    dispProfile.disps[index], dispProfile.vels[index], dispProfile.accels[index - 1]
+                )
+            )
+            index == 0 -> DualNum(
+                doubleArrayOf(
+                    dispProfile.disps[0], dispProfile.vels[0], 0.0
+                )
+            )
             else -> {
                 val insIndex = -(index + 1)
                 when {
@@ -138,16 +144,20 @@ data class TimeProfile(
                         val x0 = dispProfile.disps[insIndex]
                         val v0 = dispProfile.vels[insIndex]
                         val a = dispProfile.accels[insIndex]
-                        DualNum(doubleArrayOf(
-                            (0.5 * a * dt + v0) * dt + x0,
-                            a * dt + v0,
-                            a
-                        ))
+                        DualNum(
+                            doubleArrayOf(
+                                (0.5 * a * dt + v0) * dt + x0,
+                                a * dt + v0,
+                                a
+                            )
+                        )
                     }
                 }
             }
         }
     }
+
+    fun getByPos(x: Double) = dispProfile[x]
 }
 
 fun merge(p1: DisplacementProfile, p2: DisplacementProfile): DisplacementProfile {

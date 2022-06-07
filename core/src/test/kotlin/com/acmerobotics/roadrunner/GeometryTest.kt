@@ -41,4 +41,25 @@ class GeometryTest {
         assertEquals(0.0, e.transError.y, 1e-6)
         assertEquals(-PI / 2, e.rotError, 1e-6)
     }
+
+//    @Test
+//    fun testKinematicsExpr() {
+//        val txWorldRobot = Transform2Dual<Time>(
+//            Vector2Dual(
+//                DualNum(doubleArrayOf(1.0, 2.0, 3.0)),
+//                DualNum(doubleArrayOf(4.0, 5.0, 6.0)),
+//            ),
+//            Rotation2Dual.exp(
+//                DualNum(doubleArrayOf(7.0, 8.0, 9.0))
+//            )
+//        )
+//
+//        val derivWorld = txWorldRobot.velocity().constant()
+//        val derivRobot = txWorldRobot.constant().inverse() * derivWorld
+//        println(Twist2Dual.constant<Time>(derivRobot, 1))
+//
+//        println(txWorldRobot.constant().rotation.inverse() * derivWorld.transVel)
+//
+//        println(txWorldRobot.inverse().velocity())
+//    }
 }

@@ -29,7 +29,6 @@ data class Position2Dual<Param>(val x: DualNum<Param>, val y: DualNum<Param>) {
     fun constant() = Position2(x.constant(), y.constant())
 }
 
-// TODO: I'm just using data for the component functions. Is there any downside to making this a data class?
 data class Vector2(val x: Double, val y: Double) {
     operator fun plus(other: Vector2) = Vector2(x + other.x, y + other.y)
     operator fun minus(other: Vector2) = Vector2(x - other.x, y - other.y)
@@ -44,6 +43,11 @@ data class Vector2(val x: Double, val y: Double) {
 }
 
 data class Vector2Dual<Param>(val x: DualNum<Param>, val y: DualNum<Param>) {
+    companion object {
+        fun <Param> constant(v: Vector2, n: Int) =
+            Vector2Dual<Param>(DualNum.constant(v.x, n), DualNum.constant(v.y, n))
+    }
+
     operator fun plus(other: Vector2Dual<Param>) = Vector2Dual(x + other.x, y + other.y)
     operator fun unaryMinus() = Vector2Dual(-x, -y)
 
@@ -180,6 +184,8 @@ data class Transform2(
 
     operator fun times(other: Vector2) = rotation * other + translation
 
+    operator fun times(other: Twist2) = Twist2(rotation * other.transVel, other.rotVel)
+
     fun inverse() = Transform2(rotation.inverse() * -translation, rotation.inverse())
 
     fun log(): Twist2Incr {
@@ -225,6 +231,10 @@ data class Transform2Dual<Param>(
 
     fun constant() = Transform2(translation.constant(), rotation.constant())
 
+    fun inverse() = Transform2Dual(rotation.inverse() * -translation, rotation.inverse())
+
+    operator fun times(other: Twist2Dual<Param>) = Twist2Dual(rotation * other.transVel, other.rotVel)
+
     fun velocity() = Twist2Dual(translation.drop(1), rotation.velocity())
 
     fun <NewParam> reparam(oldParam: DualNum<NewParam>) =
@@ -234,6 +244,11 @@ data class Transform2Dual<Param>(
 data class Twist2(val transVel: Vector2, val rotVel: Double)
 
 data class Twist2Dual<Param>(val transVel: Vector2Dual<Param>, val rotVel: DualNum<Param>) {
+    companion object {
+        fun <Param> constant(t: Twist2, n: Int) =
+            Twist2Dual<Param>(Vector2Dual.constant(t.transVel, n), DualNum.constant(t.rotVel, n))
+    }
+
     operator fun plus(other: Twist2) = Twist2Dual(transVel + other.transVel, rotVel + other.rotVel)
 
     fun constant() = Twist2(transVel.constant(), rotVel.constant())

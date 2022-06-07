@@ -29,7 +29,11 @@ class TimeTrajectory(
 ) {
     val timeProfile = TimeProfile(dispTrajectory.dispProfile)
 
-    operator fun get(t: Double, n: Int) = dispTrajectory.path[timeProfile[t].constant(), n].reparam(timeProfile[t])
+    operator fun get(t: Double, n: Int) = timeProfile[t].let { s ->
+        dispTrajectory.path[s.constant(), n].reparam(s)
+    }
+
+    fun getByDisp(s: Double, n: Int) = dispTrajectory[s, n]
 
     fun project(query: Position2Dual<Time>, init: Double) = dispTrajectory.project(query, init)
 }
