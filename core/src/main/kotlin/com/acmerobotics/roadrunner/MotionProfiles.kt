@@ -9,14 +9,14 @@ object Time
 
 fun profile(
     length: Double,
-    minVel: Double,
+    beginEndVel: Double,
     maxVel: (Double) -> Double,
     minMaxAccel: (Double) -> Interval,
     resolution: Double,
-): MotionProfile {
+): DisplacementProfile {
     require(length > 0.0)
     require(resolution > 0.0)
-    require(minVel >= 0.0)
+    require(beginEndVel >= 0.0)
 
     val samples = max(1, ceil(length / resolution).toInt())
 
@@ -26,8 +26,8 @@ fun profile(
 
     val disps = range(0.0, length, samples + 1)
     return merge(
-        forwardProfile(disps, minVel, maxVels, maxAccels),
-        backwardProfile(disps, maxVels, minVel, minAccels),
+        forwardProfile(disps, beginEndVel, maxVels, maxAccels),
+        backwardProfile(disps, maxVels, beginEndVel, minAccels),
     )
 }
 
@@ -37,7 +37,7 @@ fun forwardProfile(
         maxVel: (Double) -> Double,
         maxAccel: (Double) -> Double,
         resolution: Double,
-): MotionProfile {
+): DisplacementProfile {
     val samples = max(1, ceil(length / resolution).toInt())
 
     val disps = rangeMiddle(0.0, length, samples)
@@ -54,7 +54,7 @@ fun backwardProfile(
     endVel: Double,
     minAccel: (Double) -> Double,
     resolution: Double,
-): MotionProfile {
+): DisplacementProfile {
     val samples = max(1, ceil(length / resolution).toInt())
 
     val disps = rangeMiddle(0.0, length, samples)
@@ -65,7 +65,7 @@ fun backwardProfile(
         maxVels, endVel, minAccels)
 }
 
-data class MotionProfile(
+data class DisplacementProfile(
     val disps: List<Double>,
     val vels: List<Double>,
     val accels: List<Double>,
@@ -74,9 +74,83 @@ data class MotionProfile(
         require(disps.size == vels.size)
         require(disps.size == accels.size + 1)
     }
+
+    operator fun get(x: Double): DualNum<Time> {
+        val index = disps.binarySearch(x)
+        return when {
+            index > 0 -> DualNum(doubleArrayOf(x, vels[index], accels[index - 1]))
+            index == 0 -> DualNum(doubleArrayOf(x, vels[0], 0.0))
+            else -> {
+                val insIndex = -(index + 1)
+                when {
+                    insIndex <= 0 -> DualNum(doubleArrayOf(0.0, 0.0, 0.0))
+                    insIndex >= disps.size -> DualNum(doubleArrayOf(disps.last(), 0.0, 0.0))
+                    else -> {
+                        DualNum(doubleArrayOf(x,
+                            sqrt(vels[insIndex] * vels[insIndex] +
+                                    2 * accels[insIndex - 1] * (x - disps[insIndex])),
+                            accels[insIndex - 1]))
+                    }
+                }
+            }
+        }
+    }
 }
 
-fun merge(p1: MotionProfile, p2: MotionProfile): MotionProfile {
+fun timeScan(p: DisplacementProfile): List<Double> {
+    val times = mutableListOf(0.0)
+    for (i in p.accels.indices) {
+        times.add(times.last() +
+            if (p.accels[i] == 0.0) {
+                (p.disps[i + 1] - p.disps[i]) / p.vels[i]
+            } else {
+                (p.vels[i + 1] - p.vels[i]) / p.accels[i]
+            }
+        )
+    }
+    return times
+}
+
+data class TimeProfile(
+    val dispProfile: DisplacementProfile,
+    val times: List<Double>,
+) {
+    constructor(dispProfile: DisplacementProfile) : this(dispProfile, timeScan(dispProfile))
+
+    init {
+        require(times.size == dispProfile.disps.size)
+    }
+
+    operator fun get(t: Double): DualNum<Time> {
+        val index = times.binarySearch(t)
+        return when {
+            index > 0 -> DualNum(doubleArrayOf(
+                dispProfile.disps[index], dispProfile.vels[index], dispProfile.accels[index - 1]))
+            index == 0 -> DualNum(doubleArrayOf(
+                dispProfile.disps[0], dispProfile.vels[0], 0.0))
+            else -> {
+                val insIndex = -(index + 1)
+                when {
+                    insIndex <= 0 -> DualNum(doubleArrayOf(0.0, 0.0, 0.0))
+                    insIndex >= times.size -> DualNum(doubleArrayOf(dispProfile.disps.last(), 0.0, 0.0))
+                    else -> {
+                        val dt = t - times[insIndex]
+                        val x0 = dispProfile.disps[insIndex]
+                        val v0 = dispProfile.vels[insIndex]
+                        val a = dispProfile.accels[insIndex]
+                        DualNum(doubleArrayOf(
+                            (0.5 * a * dt + v0) * dt + x0,
+                            a * dt + v0,
+                            a
+                        ))
+                    }
+                }
+            }
+        }
+    }
+}
+
+fun merge(p1: DisplacementProfile, p2: DisplacementProfile): DisplacementProfile {
     val disps = mutableListOf(0.0)
     val vels = mutableListOf(min(p1.vels[0], p2.vels[0]))
     val accels = mutableListOf<Double>()
@@ -141,7 +215,7 @@ fun merge(p1: MotionProfile, p2: MotionProfile): MotionProfile {
         lastMin1 = min1
     }
 
-    return MotionProfile(disps, vels, accels)
+    return DisplacementProfile(disps, vels, accels)
 }
 
 // TODO: doesn't enforce invariants => private
@@ -153,7 +227,7 @@ private fun forwardProfile(
     beginVel: Double,
     maxVels: List<Double>,
     maxAccels: List<Double>,
-): MotionProfile {
+): DisplacementProfile {
     val newDisps = mutableListOf(0.0)
     val vels = mutableListOf(beginVel)
     val accels = mutableListOf<Double>()
@@ -190,7 +264,7 @@ private fun forwardProfile(
             endDisp
         }
 
-    return MotionProfile(newDisps, vels, accels)
+    return DisplacementProfile(newDisps, vels, accels)
 }
 
 // maxVels, minAccels are sampled in the *middle*
@@ -202,7 +276,7 @@ private fun backwardProfile(
 ) = forwardProfile(
             disps, endVel, maxVels.reversed(), minAccels.reversed().map { -it }
     ).let {
-        MotionProfile(
+        DisplacementProfile(
             it.disps.map { x -> it.disps.last() - x }.reversed(),
             it.vels.reversed(),
             it.accels.reversed().map { a -> -a },

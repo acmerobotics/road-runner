@@ -21,7 +21,7 @@ class MotionProfileGeneratorTest {
         name: String,
         start: MotionState,
         goal: MotionState,
-        profile: MotionProfile,
+        profile: DisplacementProfile,
         verifyAccel: Boolean = false
     ) {
         // save it

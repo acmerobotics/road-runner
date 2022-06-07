@@ -1,7 +1,5 @@
 package com.acmerobotics.roadrunner
 
-import com.acmerobotics.roadrunner.profile.MotionProfile
-import com.acmerobotics.roadrunner.trajectory.Trajectory
 import com.acmerobotics.roadrunner.util.DoubleProgression
 import java.io.File
 import java.nio.file.Paths
@@ -27,7 +25,7 @@ object GraphUtil {
 
     fun saveMotionProfile(
         name: String,
-        profile: MotionProfile,
+        profile: DisplacementProfile,
         includeAcceleration: Boolean = true,
         resolution: Int = 1000
     ) {
