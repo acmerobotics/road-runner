@@ -61,34 +61,10 @@ fun main() {
     }
 }
 
-//
 //// TODO: should I replace trajectory sequences with basic fsms?
 //// I guess you would lose duration, position for dashboard display
 //// maybe there should be two layers
 
-
-
-//// or is this calculus that can be eliminated?
-//// good markers definitely help with this use case
-//
-//fun pidManualTime() {
-//    // TODO: simulated clock?
-//    val currTs = mutableListOf(0.0)
-//    val cont = PIDFController(
-//        PIDCoefficients(0.0, 0.0, 0.0),
-//        clock = object : NanoClock() {
-//            override fun seconds() = currTs[0]
-//        })
-//
-//    cont.targetPosition = 0.0
-//    while (true) {
-//        val ts = 0.0
-//        val pos = 0.0
-//        currTs[0] = ts
-//        val power = cont.update(pos)
-//    }
-//}
-//
 //fun complementaryLocalizer() {
 //
 //}
@@ -98,10 +74,12 @@ fun main() {
 //
 //}
 //
-//fun buildinTrajGui() {
+//fun builtinTrajGui() {
 //
 //}
 //
+// TODO: should constraints have a time builder?
+// I suppose overrides can be built in a layer on top of that
 //fun slowTrajectory() {
 //    val traj = TrajectoryBuilder(Pose2d(0.0, 0.0, 0.0), false,
 //        TranslationalVelocityConstraint(20.0),
@@ -120,25 +98,48 @@ fun main() {
 //
 //}
 //
-//// current TS impl is only magically exception safe
 
-//fun persistentBuilders() {
-//    val builder =
-//}
+// current TS impl is only magically exception safe
+fun persistentBuilders() {
+    val builder = PositionPathBuilder(
+        Position2(0.0, 0.0),
+        Rotation2.exp(0.0)
+    )
+        .splineTo(
+            Position2(15.0, 15.0),
+            Rotation2.exp(PI),
+        )
 
-//
+    val posPath1 = builder
+        .splineTo(
+            Position2(5.0, 35.0),
+            Rotation2.exp(PI / 3),
+        )
+        .build()
+
+    val posPath2 = builder
+        .splineTo(
+            Position2(5.0, 25.0),
+            Rotation2.exp(PI / 3),
+        )
+        .build()
+}
+
+// TODO: mirroring can be done to the inputs or the outputs
+// output might just win for being easiest
 //fun mirrorPaths() {
 //
 //}
-//
+
 //fun goingBackwards() {
 //
 //}
-//
+
+// TODO: important?
 //fun customWaypointDerivMag() {
 //
 //}
-//
+
 //fun admissibleTrajFollowing() {
 //    val follower = HolonomicPIDVAFollower(
 //        PIDCoefficients(0.0, 0.0, 0.0),
@@ -148,19 +149,23 @@ fun main() {
 //        timeout = 0.25
 //    )
 //}
-//
+
 //fun orbitMode() {
 //
 //}
-//
 
-//fun fieldCentric(drive: Drive, leftStick: Vector2d, rightStick: Vector2d) {
-//    drive.setDrivePower(Pose2d(
-//        leftStick.rotated(-drive.poseEstimate.heading),
-//        rightStick.x
-//    ))
+fun setWheelPowers(powers: WheelVelocities<Time>) {
 
-//}
+}
+
+fun fieldCentric(kinematics: MecanumKinematics, poseEstimate: Transform2, leftStick: Vector2, rightStick: Vector2) {
+    setWheelPowers(kinematics.inverse(
+        Twist2Dual.constant(
+            poseEstimate.inverse() * Twist2(leftStick, rightStick.x),
+            1
+        )
+    ))
+}
 
 fun getWheelIncrements(): WheelIncrements {
     return WheelIncrements(
@@ -222,24 +227,10 @@ fun turnWithProfile(kinematics: MecanumKinematics, initialPoseEstimate: Transfor
     }
 }
 
-//fun cancelFollowing(clock: NanoClock, drive: Drive) {
-//    val beginTs = clock.seconds()
-//    val follower = HolonomicPIDVAFollower(
-//        PIDCoefficients(0.0, 0.0, 0.0),
-//        PIDCoefficients(0.0, 0.0, 0.0),
-//        PIDCoefficients(0.0, 0.0, 0.0)
-//    )
-//    while (clock.seconds() < beginTs + 0.5 && follower.isFollowing()) {
-//        drive.updatePoseEstimate()
-//        drive.setDriveSignal(follower.update(drive.poseEstimate))
-//    }
-//    drive.setDriveSignal(DriveSignal())
-//}
-//
 //fun spliceTraj() {
 //
 //}
-//
+
 //fun slowRegion() {
 //    class RectangleMaskConstraint(
 //        val minX: Double, val minY: Double,
@@ -265,29 +256,3 @@ fun turnWithProfile(kinematics: MecanumKinematics, initialPoseEstimate: Transfor
 //        .splineTo(Vector2d(40.0, 60.0), PI / 2)
 //        .build()
 //}
-//
-//fun odometry() {
-//    var pose = Pose2d(0.0, 0.0, 0.0)
-//    while (true) {
-//        val delta = Pose2d() // TODO
-//        pose = Kinematics.relativeOdometryUpdate(pose, delta)
-//    }
-//}
-//
-//fun arm() {
-//    val kG = 0.0
-//    val elevCont = PIDFController(
-//        PIDCoefficients(0.0, 0.0, 0.0),
-//        0.0, 0.0, 0.0,
-//        { _, _ -> kG }
-//    )
-//
-//    elevCont.targetPosition = 0.0
-//    while (true) {
-//        val elevPos = 0.0
-//        val elevVel = 0.0
-//        val elevPower = elevCont.update(elevPos, elevVel)
-//    }
-//}
-//
-//
