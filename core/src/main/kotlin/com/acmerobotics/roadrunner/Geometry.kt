@@ -76,6 +76,8 @@ data class Rotation2(val real: Double, val imag: Double) {
         fun exp(theta: Double) = Rotation2(cos(theta), sin(theta))
     }
 
+    operator fun plus(x: Double) = this * exp(x)
+
     operator fun times(vector: Vector2) = Vector2(
         real * vector.x - imag * vector.y,
         imag * vector.x + real * vector.y
@@ -213,6 +215,7 @@ data class Transform2Error(val transError: Vector2, val rotError: Double)
 
 // TODO: SE(2) minus() "mixes" the frame orientations
 // we want the error in the "actual" frame
+// TODO: maybe hide the "tx" names inside the API
 fun localError(txWorldTarget: Transform2, txWorldActual: Transform2): Transform2Error {
     val transErrorWorld = txWorldTarget.translation - txWorldActual.translation
     val rotError = txWorldTarget.rotation - txWorldActual.rotation

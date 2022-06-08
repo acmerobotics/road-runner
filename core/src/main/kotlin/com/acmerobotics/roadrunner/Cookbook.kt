@@ -139,7 +139,10 @@ val ROT_GAIN = 0.1
 
 fun goToPoint(kinematics: MecanumKinematics, initialPoseEstimate: Transform2, targetPose: Transform2) {
     var poseEstimate = initialPoseEstimate
+    // TODO: termination criterion
     while (true) {
+        // TODO: forward() may need some calculus to handle velocity measurements
+        // here it would be nice as a termination criterion
         poseEstimate += kinematics.forward(getWheelIncrements())
         val error = localError(targetPose, poseEstimate)
         // TODO: one could write some sugar
@@ -148,18 +151,38 @@ fun goToPoint(kinematics: MecanumKinematics, initialPoseEstimate: Transform2, ta
             error.transError * TRANS_GAIN,
             error.rotError * ROT_GAIN,
         ), 1)
+        // TODO: this leaves out feedforward
         setWheelVelocities(kinematics.inverse(command))
     }
 }
 
-//fun profiledTurn() {
-//
-//}
-//
-//fun profiledTurn180() {
-//
-//}
-//
+fun clock(): Double {
+    return 0.0
+}
+
+fun turnWithProfile(kinematics: MecanumKinematics, initialPoseEstimate: Transform2,
+                    maxAngVel: Double, maxAbsAngAccel: Double, angle: Double) {
+    // TODO: constant constraint overload would be nice with the resolution
+    val profile = TimeProfile(profile(
+        angle, 0.0,
+        { maxAngVel }, { Interval(-maxAbsAngAccel, maxAbsAngAccel) }, angle))
+    // TODO: termination criterion
+
+    var poseEstimate = initialPoseEstimate
+    while (true) {
+        poseEstimate += kinematics.forward(getWheelIncrements())
+
+        val targetTurn = profile[clock()]
+        val targetRot = initialPoseEstimate.rotation + targetTurn[0]
+        val angError = targetRot - poseEstimate.rotation
+
+        setWheelVelocities(kinematics.inverse(Twist2Dual(
+            Vector2Dual.constant(Vector2(0.0, 0.0), 2),
+            Rotation2Dual.exp(targetTurn).velocity() + angError * ROT_GAIN
+        )))
+    }
+}
+
 //fun cancelFollowing(clock: NanoClock, drive: Drive) {
 //    val beginTs = clock.seconds()
 //    val follower = HolonomicPIDVAFollower(
