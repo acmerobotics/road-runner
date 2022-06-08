@@ -179,6 +179,8 @@ data class Transform2(
         }
     }
 
+    operator fun plus(t: Twist2Incr) = this * exp(t)
+
     operator fun times(other: Transform2) =
         Transform2(rotation * other.translation + translation, rotation * other.rotation)
 

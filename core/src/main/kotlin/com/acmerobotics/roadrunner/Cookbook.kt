@@ -20,30 +20,16 @@ package com.acmerobotics.roadrunner
 //
 //// TODO: include all the builtin paths
 //// TODO: include all the markers
+
+
+
 //
 //// TODO: should I replace trajectory sequences with basic fsms?
 //// I guess you would lose duration, position for dashboard display
 //// maybe there should be two layers
-//
-//
-////is there a way
-////to offset a trajectory by displacement
-////like "i want to start at 2 inches displacement"
-////or something like that
-////im trying to do some like cancellation stuff with trajectories for cycling the warehouse
-////but doing it by time is kinda iffy because my accel values for going into the warehouse vs going out are different
-//
-//// Is this an argument for trajectory interfaces?
-//// Anything an API class accepts should probably be an interface to remain flexible
-//// There's only so much direct flow control that can be accomplished
-//
-//// Like which of the following is better?
-//// class Trajectory(val mp: Profile, val p: Path) { fun get(t: Double): DualNum<Pose2d, Vector2d, Time> { ... } }
-//// trajGet(val s: DualNum<Disp, Double, Time>, val x: DualNum<Pose2d, Vector2d, Disp>): DualNum<Pose2d, Vector2d, Time> { ... }
-//
-//// same with trajectory followers... should they have memory?
-//// convergence to the target is a separate question
-//
+
+
+
 //// or is this calculus that can be eliminated?
 //// good markers definitely help with this use case
 //
@@ -97,9 +83,11 @@ package com.acmerobotics.roadrunner
 //}
 //
 //// current TS impl is only magically exception safe
+
 //fun persistentBuilders() {
-//
+//    val builder =
 //}
+
 //
 //fun mirrorPaths() {
 //
@@ -127,17 +115,43 @@ package com.acmerobotics.roadrunner
 //
 //}
 //
+
 //fun fieldCentric(drive: Drive, leftStick: Vector2d, rightStick: Vector2d) {
 //    drive.setDrivePower(Pose2d(
 //        leftStick.rotated(-drive.poseEstimate.heading),
 //        rightStick.x
 //    ))
+
 //}
-//
-//fun goToPoint() {
-//
-//}
-//
+
+fun getWheelIncrements(): WheelIncrements {
+    return WheelIncrements(
+        0.0, 0.0, 0.0, 0.0  // TODO: real measurements
+    )
+}
+
+fun setWheelVelocities(vels: WheelVelocities<Time>) {
+
+}
+
+val TRANS_GAIN = 10.0
+val ROT_GAIN = 0.1
+
+fun goToPoint(kinematics: MecanumKinematics, initialPoseEstimate: Transform2, targetPose: Transform2) {
+    var poseEstimate = initialPoseEstimate
+    while (true) {
+        poseEstimate += kinematics.forward(getWheelIncrements())
+        val error = localError(targetPose, poseEstimate)
+        // TODO: one could write some sugar
+        // inverse() could take a Twist2
+        val command = Twist2Dual.constant<Time>(Twist2(
+            error.transError * TRANS_GAIN,
+            error.rotError * ROT_GAIN,
+        ), 1)
+        setWheelVelocities(kinematics.inverse(command))
+    }
+}
+
 //fun profiledTurn() {
 //
 //}
