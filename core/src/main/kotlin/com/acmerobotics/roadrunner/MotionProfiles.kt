@@ -138,7 +138,7 @@ data class TimeProfile(
                 val insIndex = -(index + 1)
                 when {
                     insIndex <= 0 -> DualNum(doubleArrayOf(0.0, 0.0, 0.0))
-                    insIndex >= times.size -> DualNum(doubleArrayOf(dispProfile.disps.last(), 0.0, 0.0))
+                    insIndex >= dispProfile.accels.size -> DualNum(doubleArrayOf(dispProfile.disps.last(), 0.0, 0.0))
                     else -> {
                         val dt = t - times[insIndex]
                         val x0 = dispProfile.disps[insIndex]
@@ -261,6 +261,7 @@ private fun forwardProfile(
                     accels.add(maxAccel)
                 } else {
                     val accelDx = (maxVel * maxVel - beginVel * beginVel) / (2 * maxAccel)
+
                     newDisps.add(beginDisp + accelDx)
                     vels.add(maxVel)
                     accels.add(maxAccel)

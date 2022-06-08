@@ -1,5 +1,7 @@
 package com.acmerobotics.roadrunner
 
+import kotlin.math.abs
+
 class WheelVelocities<Param>(
     val frontLeft: DualNum<Param>,
     val frontRight: DualNum<Param>,
@@ -46,6 +48,6 @@ class MecanumKinematics @JvmOverloads constructor(
         val derivWorld = txWorldRobot.velocity()
         val derivRobot = txWorldRobot.inverse() * derivWorld
         val wheelDerivs = inverse(derivRobot)
-        wheelDerivs.all().minOf { maxWheelVel / it[0] }
+        wheelDerivs.all().minOf { abs(maxWheelVel / it[0]) }
     }
 }

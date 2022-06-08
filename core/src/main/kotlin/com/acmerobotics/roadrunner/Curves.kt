@@ -100,15 +100,19 @@ class ArcCurve2(
         val t = reparam(param)
         val point = curve[t, n]
 
+        val tValues = DoubleArray(n)
+        tValues[0] = t
+        if (n <= 1) return point.reparam(DualNum(tValues))
+
         val tDerivs = point.free().drop(1).norm().recip()
+        tValues[1] = tDerivs[0]
+        if (n <= 2) return point.reparam(DualNum(tValues))
 
-        // TODO: I think we just accept the ouroboros
-        // is there any unnecessary computation?
-        val dtds = tDerivs.values[0]
-        val d2tds2 = tDerivs.reparam(DualNum<ArcLength>(doubleArrayOf(t, dtds))).values[1]
-        val d3tds3 = tDerivs.reparam(DualNum<ArcLength>(doubleArrayOf(t, dtds, d2tds2))).values[2]
+        tValues[2] = tDerivs.reparam(DualNum<ArcLength>(tValues))[1]
+        if (n <= 3) return point.reparam(DualNum(tValues))
 
-        return point.reparam(DualNum(doubleArrayOf(t, dtds, d2tds2, d3tds3)))
+        tValues[3] = tDerivs.reparam(DualNum<ArcLength>(tValues))[2]
+        return point.reparam(DualNum(tValues))
     }
 }
 
@@ -130,8 +134,8 @@ class CompositePositionPath<Param>(val paths: List<PositionPath<Param>>) : Posit
             return Position2Dual.constant(s.x.values[0], s.y.values[0], n)
         }
 
-        for ((offset, path) in offsets.zip(paths)) {
-            if (param < offset) {
+        for ((offset, path) in offsets.zip(paths).reversed()) {
+            if (param >= offset) {
                 return path[param - offset, n]
             }
         }
