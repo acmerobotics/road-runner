@@ -1,5 +1,7 @@
 package com.acmerobotics.roadrunner
 
+import kotlin.math.PI
+
 //import com.acmerobotics.roadrunner.control.PIDCoefficients
 //import com.acmerobotics.roadrunner.control.PIDFController
 //import com.acmerobotics.roadrunner.drive.Drive
@@ -21,7 +23,43 @@ package com.acmerobotics.roadrunner
 //// TODO: include all the builtin paths
 //// TODO: include all the markers
 
+//fun displacementMarkers() {
 
+fun getDisp(): Double {
+    return 0.0
+}
+
+fun isFollowing(): Boolean {
+    return false
+}
+
+fun main() {
+    val posPath = PositionPathBuilder(
+        Position2(0.0, 0.0),
+        Rotation2.exp(0.0)
+    )
+        .splineTo(
+            Position2(15.0, 15.0),
+            Rotation2.exp(PI),
+        )
+        .splineTo(
+            Position2(5.0, 35.0),
+            Rotation2.exp(PI / 3),
+        )
+        .build()
+
+    val marker = posPath.offsets[1]
+    var markerExecuted = false
+    while (isFollowing()) {
+        if (getDisp() > marker && !markerExecuted) {
+            // execute marker action
+            markerExecuted = true
+        }
+    }
+    if (!markerExecuted) {
+        // execute marker action
+    }
+}
 
 //
 //// TODO: should I replace trajectory sequences with basic fsms?
@@ -142,6 +180,7 @@ fun goToPoint(kinematics: MecanumKinematics, initialPoseEstimate: Transform2, ta
     // TODO: termination criterion
     while (true) {
         // TODO: forward() may need some calculus to handle velocity measurements
+        //  (eeeeeek then we need a dualized WheelIncr)
         // here it would be nice as a termination criterion
         poseEstimate += kinematics.forward(getWheelIncrements())
         val error = localError(targetPose, poseEstimate)

@@ -23,11 +23,11 @@ class PositionPathBuilder private constructor(
         val spline = ArcCurve2(QuinticSpline2(
                 QuinticSpline1(
                         DualNum(doubleArrayOf(beginPos.x, beginDeriv.x, 0.0)),
-                        DualNum(doubleArrayOf(beginPos.y, beginDeriv.y, 0.0)),
+                    DualNum(doubleArrayOf(pos.y, endDeriv.y, 0.0))
                 ),
                 QuinticSpline1(
+                    DualNum(doubleArrayOf(beginPos.y, beginDeriv.y, 0.0)),
                         DualNum(doubleArrayOf(pos.x, endDeriv.x, 0.0)),
-                        DualNum(doubleArrayOf(pos.y, endDeriv.y, 0.0))
                 )
         ))
         return PositionPathBuilder(paths + listOf(spline), pos, tangent)
@@ -36,45 +36,45 @@ class PositionPathBuilder private constructor(
     fun build() = CompositePositionPath(paths)
 }
 
-sealed interface BuilderState
-class Fixed(val ps: List<PosePath>, val r: Rotation2Dual<ArcLength>) : BuilderState
-class Flexible(val f: (Rotation2Dual<ArcLength>) -> List<PosePath>) : BuilderState
-
-class PosePathBuilder(
-    val posPath: PositionPath<ArcLength>,
-//        val beginRot: Rotation2Dual<ArcLength>,
-        val beginDisp: Double,
-        val state: BuilderState,
-) {
-    fun tangentTo(disp: Double): PosePathBuilder {
-        require(disp > beginDisp)
-
-        when (state) {
-            is Fixed -> PosePathBuilder()
-        }
-
-        return PosePathBuilder(
-            posPath,
-//            posPath[disp, 3].tangent(),
-            disp,
-        ) {
-//            segmentsFun(beginRot)
-
-        }
-//        return PosePathBuilder(positionPath, disp, prefix +
-//                listOf(TangentPath(PositionPathView(positionPath, beginDisp, disp - beginDisp),
-//                Rotation2.exp(0.0))))
-    }
-
-    fun line(disp: Double, angle: Double): PosePathBuilder {
-        require(disp > beginDisp)
-        return PosePathBuilder(posPath, disp) {
-            LinearHeadingPath()
-        }
-    }
-
-//    fun lineTo(disp: Double, endRot: Rotation2) =
-//        line(disp, endRot - )
-
-    fun build() = CompositePosePath(posePathCont())
-}
+//sealed interface BuilderState
+//class Fixed(val ps: List<PosePath>, val r: Rotation2Dual<ArcLength>) : BuilderState
+//class Flexible(val f: (Rotation2Dual<ArcLength>) -> List<PosePath>) : BuilderState
+//
+//class PosePathBuilder(
+//    val posPath: PositionPath<ArcLength>,
+////        val beginRot: Rotation2Dual<ArcLength>,
+//        val beginDisp: Double,
+//        val state: BuilderState,
+//) {
+//    fun tangentTo(disp: Double): PosePathBuilder {
+//        require(disp > beginDisp)
+//
+//        when (state) {
+//            is Fixed -> PosePathBuilder()
+//        }
+//
+//        return PosePathBuilder(
+//            posPath,
+////            posPath[disp, 3].tangent(),
+//            disp,
+//        ) {
+////            segmentsFun(beginRot)
+//
+//        }
+////        return PosePathBuilder(positionPath, disp, prefix +
+////                listOf(TangentPath(PositionPathView(positionPath, beginDisp, disp - beginDisp),
+////                Rotation2.exp(0.0))))
+//    }
+//
+//    fun line(disp: Double, angle: Double): PosePathBuilder {
+//        require(disp > beginDisp)
+//        return PosePathBuilder(posPath, disp) {
+//            LinearHeadingPath()
+//        }
+//    }
+//
+////    fun lineTo(disp: Double, endRot: Rotation2) =
+////        line(disp, endRot - )
+//
+//    fun build() = CompositePosePath(posePathCont())
+//}
