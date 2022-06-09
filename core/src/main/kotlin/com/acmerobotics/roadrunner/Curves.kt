@@ -224,13 +224,13 @@ interface PosePath {
 
 class TangentPath(
         val path: PositionPath<ArcLength>,
-        val offset: Rotation2
+        val offset: Double
 ) : PosePath {
     override val length get() = path.length
 
     // TODO: the n+1 is an annoying leak but probably an acceptable price for eagerness
     override operator fun get(s: Double, n: Int) = path[s, n + 1].let {
-        Transform2Dual(it.free(), it.tangent() * offset)
+        Transform2Dual(it.free(), it.tangent() + offset)
     }
 }
 

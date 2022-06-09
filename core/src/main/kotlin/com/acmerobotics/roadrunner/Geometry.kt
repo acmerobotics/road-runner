@@ -110,6 +110,8 @@ data class Rotation2Dual<Param>(val real: DualNum<Param>, val imag: DualNum<Para
         fun <Param> exp(theta: DualNum<Param>) = Rotation2Dual(theta.cos(), theta.sin())
     }
 
+    operator fun plus(x: Double) = this * Rotation2.exp(x)
+
     operator fun times(vector: Vector2Dual<Param>) = Vector2Dual(
             real * vector.x - imag * vector.y,
             imag * vector.x + real * vector.y

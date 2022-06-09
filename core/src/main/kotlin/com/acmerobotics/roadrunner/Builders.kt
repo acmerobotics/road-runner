@@ -36,45 +36,147 @@ class PositionPathBuilder private constructor(
     fun build() = CompositePositionPath(paths)
 }
 
-//sealed interface BuilderState
-//class Fixed(val ps: List<PosePath>, val r: Rotation2Dual<ArcLength>) : BuilderState
-//class Flexible(val f: (Rotation2Dual<ArcLength>) -> List<PosePath>) : BuilderState
-//
-//class PosePathBuilder(
-//    val posPath: PositionPath<ArcLength>,
-////        val beginRot: Rotation2Dual<ArcLength>,
-//        val beginDisp: Double,
-//        val state: BuilderState,
-//) {
-//    fun tangentTo(disp: Double): PosePathBuilder {
-//        require(disp > beginDisp)
-//
-//        when (state) {
-//            is Fixed -> PosePathBuilder()
-//        }
-//
-//        return PosePathBuilder(
-//            posPath,
-////            posPath[disp, 3].tangent(),
-//            disp,
-//        ) {
-////            segmentsFun(beginRot)
-//
-//        }
-////        return PosePathBuilder(positionPath, disp, prefix +
-////                listOf(TangentPath(PositionPathView(positionPath, beginDisp, disp - beginDisp),
-////                Rotation2.exp(0.0))))
-//    }
-//
-//    fun line(disp: Double, angle: Double): PosePathBuilder {
-//        require(disp > beginDisp)
-//        return PosePathBuilder(posPath, disp) {
-//            LinearHeadingPath()
-//        }
-//    }
-//
-////    fun lineTo(disp: Double, endRot: Rotation2) =
-////        line(disp, endRot - )
-//
-//    fun build() = CompositePosePath(posePathCont())
-//}
+class PosePathBuilder(
+    val posPath: PositionPath<ArcLength>,
+        val beginDisp: Double,
+        val state: State,
+) {
+    constructor(path: PositionPath<ArcLength>, beginDisp: Double, beginRot: Rotation2) :
+            this(path, beginDisp, Lazy({ emptyList() }, beginRot))
+
+    sealed interface State {
+        // TODO: naming
+        fun rotation(): Rotation2
+    }
+
+    class Eager(val ps: List<PosePath>, val r: Rotation2Dual<ArcLength>) : State {
+        override fun rotation() = r.constant()
+    }
+
+    class Lazy(val f: (Rotation2Dual<ArcLength>) -> List<PosePath>, val r: Rotation2) : State {
+        override fun rotation() = r
+    }
+
+//    fun checkDeriv
+
+    fun tangentTo(disp: Double): PosePathBuilder {
+        require(disp > beginDisp)
+
+        val rot = posPath[disp, 4].tangent()
+        val posePath = TangentPath(
+            PositionPathView(posPath, beginDisp, disp - beginDisp),
+            state.rotation() - rot.constant(),
+        )
+
+        return PosePathBuilder(posPath, disp, Eager(
+            when (state) {
+                    is Eager -> {
+                        // TODO: check derivatives
+                        state.ps
+                    }
+                    is Lazy -> state.f(rot)
+                }
+                + listOf(posePath), rot)
+        )
+    }
+
+    fun constantTo(disp: Double): PosePathBuilder {
+        require (disp > beginDisp)
+
+        val beginRot = state.rotation()
+        val headingPath = ConstantHeadingPath(beginRot)
+
+        val posePath = HeadingPosePath(
+            posPath,
+            headingPath,
+        )
+
+        val rot = headingPath[disp, 3]
+
+        // TODO: pull out Eager
+        return PosePathBuilder(posPath, disp,
+            when (state) {
+                is Eager -> {
+                    // TODO: check derivatives
+                    Eager(state.ps + listOf(posePath), rot)
+                }
+                is Lazy ->
+                    Eager(state.f(rot) + listOf(posePath), rot)
+            })
+    }
+
+    fun lineTo(disp: Double, rot: Rotation2): PosePathBuilder {
+        require (disp > beginDisp)
+
+        val beginRot = state.rotation()
+        val headingPath = LinearHeadingPath(beginRot, rot - beginRot, disp - beginDisp)
+
+        val posePath = HeadingPosePath(
+            posPath,
+            headingPath,
+        )
+
+        val rot = headingPath[disp, 3]
+
+        // TODO: same
+        return PosePathBuilder(posPath, disp,
+            when (state) {
+                is Eager -> {
+                    // TODO: check derivatives
+                    Eager(state.ps + listOf(posePath), rot)
+                }
+                is Lazy ->
+                    Eager(state.f(rot) + listOf(posePath), rot)
+            })
+    }
+
+    fun splineTo(disp: Double, rot: Rotation2): PosePathBuilder {
+        require(disp > beginDisp)
+
+        return when (state) {
+            is Eager -> PosePathBuilder(posPath, disp, Lazy({
+                val headingPath = SplineHeadingPath(state.r, it, disp - beginDisp)
+
+                val posePath = HeadingPosePath(
+                    posPath,
+                    headingPath,
+                )
+
+                state.ps + listOf(posePath)
+            }, rot))
+
+            is Lazy -> PosePathBuilder(posPath, disp, Lazy({
+                val beginRot = posPath[disp, 3].tangent()
+
+                val headingPath = SplineHeadingPath(
+                    Rotation2Dual(
+                        DualNum(doubleArrayOf(state.r.real, beginRot.real[1], beginRot.real[2])),
+                        DualNum(doubleArrayOf(state.r.imag, beginRot.imag[1], beginRot.imag[2])),
+                    ),
+                    it, disp - beginDisp
+                )
+
+                val posePath = HeadingPosePath(
+                    posPath,
+                    headingPath,
+                )
+
+                state.f(beginRot) + listOf(posePath)
+            }, rot))
+        }
+    }
+
+    fun build() = when (state) {
+        is Eager -> CompositePosePath(state.ps)
+        is Lazy -> {
+            val beginRot = posPath[beginDisp, 3].tangent()
+
+            CompositePosePath(state.f(
+                Rotation2Dual(
+                    DualNum(doubleArrayOf(state.r.real, beginRot.real[1], beginRot.real[2])),
+                    DualNum(doubleArrayOf(state.r.imag, beginRot.imag[1], beginRot.imag[2])),
+                ),
+            ))
+        }
+    }
+}
