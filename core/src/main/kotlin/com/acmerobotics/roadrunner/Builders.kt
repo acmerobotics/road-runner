@@ -41,8 +41,8 @@ class PosePathBuilder(
         val beginDisp: Double,
         val state: State,
 ) {
-    constructor(path: PositionPath<ArcLength>, beginDisp: Double, beginRot: Rotation2) :
-            this(path, beginDisp, Lazy({ emptyList() }, beginRot))
+    constructor(path: PositionPath<ArcLength>, beginRot: Rotation2) :
+            this(path, 0.0, Lazy({ emptyList() }, beginRot))
 
     sealed interface State {
         // TODO: naming
@@ -59,7 +59,9 @@ class PosePathBuilder(
 
 //    fun checkDeriv
 
+    // TODO: default disp to length?
     fun tangentTo(disp: Double): PosePathBuilder {
+        // TODO: also require before the end?
         require(disp > beginDisp)
 
         val rot = posPath[disp, 4].tangent()
@@ -81,10 +83,10 @@ class PosePathBuilder(
     }
 
     fun constantTo(disp: Double): PosePathBuilder {
-        require (disp > beginDisp)
+        require(disp > beginDisp)
 
         val beginRot = state.rotation()
-        val headingPath = ConstantHeadingPath(beginRot)
+        val headingPath = ConstantHeadingPath(beginRot, disp - beginDisp)
 
         val posePath = HeadingPosePath(
             posPath,
@@ -106,7 +108,7 @@ class PosePathBuilder(
     }
 
     fun lineTo(disp: Double, rot: Rotation2): PosePathBuilder {
-        require (disp > beginDisp)
+        require(disp > beginDisp)
 
         val beginRot = state.rotation()
         val headingPath = LinearHeadingPath(beginRot, rot - beginRot, disp - beginDisp)
@@ -146,7 +148,7 @@ class PosePathBuilder(
             }, rot))
 
             is Lazy -> PosePathBuilder(posPath, disp, Lazy({
-                val beginRot = posPath[disp, 3].tangent()
+                val beginRot = posPath[disp, 4].tangent()
 
                 val headingPath = SplineHeadingPath(
                     Rotation2Dual(
@@ -166,10 +168,11 @@ class PosePathBuilder(
         }
     }
 
+    // TODO: error if path is not consumed? probably good - a view can always be passed first
     fun build() = when (state) {
         is Eager -> CompositePosePath(state.ps)
         is Lazy -> {
-            val beginRot = posPath[beginDisp, 3].tangent()
+            val beginRot = posPath[beginDisp, 4].tangent()
 
             CompositePosePath(state.f(
                 Rotation2Dual(

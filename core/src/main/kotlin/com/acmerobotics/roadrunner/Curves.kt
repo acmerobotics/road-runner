@@ -176,11 +176,12 @@ fun <Param> splitPositionPath(path: PositionPath<Param>, cuts: List<Double>): Li
 }
 
 interface HeadingPath {
+    val length: Double
     operator fun get(s: Double, n: Int): Rotation2Dual<ArcLength>
 }
 
 class ConstantHeadingPath(
-        val heading: Rotation2,
+    val heading: Rotation2, override val length: Double,
 ) : HeadingPath {
     override fun get(s: Double, n: Int) = heading.constant<ArcLength>(n)
 }
@@ -188,7 +189,7 @@ class ConstantHeadingPath(
 class LinearHeadingPath(
         val begin: Rotation2,
         val angle: Double,
-        val length: Double,
+        override val length: Double,
 ) : HeadingPath {
     override fun get(s: Double, n: Int) =
             Rotation2Dual.exp(DualNum.variable<ArcLength>(s, n) / length * angle) * begin
@@ -197,7 +198,7 @@ class LinearHeadingPath(
 class SplineHeadingPath(
         val begin: Rotation2Dual<ArcLength>,
         val end: Rotation2Dual<ArcLength>,
-        val length: Double,
+        override val length: Double,
 ) : HeadingPath {
     init {
         require(begin.size >= 3)
@@ -238,7 +239,7 @@ class HeadingPosePath(
         val posPath: PositionPath<ArcLength>,
         val headingPath: HeadingPath,
 ) : PosePath {
-    override val length get() = posPath.length
+    override val length get() = headingPath.length
 
     override fun get(s: Double, n: Int) =
             Transform2Dual(posPath[s, n].free(), headingPath[s, n])

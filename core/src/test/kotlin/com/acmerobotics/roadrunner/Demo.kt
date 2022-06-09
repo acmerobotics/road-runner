@@ -17,7 +17,7 @@ fun main() {
                 DualNum(doubleArrayOf(20.0, 0.0, 0.0)),
             ),
         )
-    ), Rotation2.exp(0.0))
+    ), 0.0)
 
     val profile = DisplacementProfile(
         listOf(0.0, path.length),

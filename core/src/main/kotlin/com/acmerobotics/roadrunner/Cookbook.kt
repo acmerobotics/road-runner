@@ -48,6 +48,7 @@ fun main() {
         )
         .build()
 
+    // TODO: wrap this in a disposable command?
     val marker = posPath.offsets[1]
     var markerExecuted = false
     while (isFollowing()) {
