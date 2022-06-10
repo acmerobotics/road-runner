@@ -118,9 +118,11 @@ class ArcCurve2(
 
 // TODO: perhaps this can be made more generic?
 // could it be useful for trajectories and such? (copying is probably better tbh)
-class CompositePositionPath<Param>(val paths: List<PositionPath<Param>>) : PositionPath<Param> {
+data class CompositePositionPath<Param>(
+    val paths: List<PositionPath<Param>>,
+    val offsets: List<Double> = paths.scan(0.0) { acc, path -> acc + path.length }
+) : PositionPath<Param> {
     // TODO: partialSumByDouble() when?
-    val offsets = paths.scan(0.0) { acc, path -> acc + path.length }
     override val length = offsets.last()
 
     init {
@@ -146,7 +148,7 @@ class CompositePositionPath<Param>(val paths: List<PositionPath<Param>>) : Posit
     }
 }
 
-class PositionPathView<Param>(
+data class PositionPathView<Param>(
         val path: PositionPath<Param>,
         val offset: Double,
         override val length: Double,
@@ -223,7 +225,7 @@ interface PosePath {
     operator fun get(s: Double, n: Int): Transform2Dual<ArcLength>
 }
 
-class TangentPath(
+data class TangentPath(
         val path: PositionPath<ArcLength>,
         val offset: Double
 ) : PosePath {
@@ -235,7 +237,7 @@ class TangentPath(
     }
 }
 
-class HeadingPosePath(
+data class HeadingPosePath(
         val posPath: PositionPath<ArcLength>,
         val headingPath: HeadingPath,
 ) : PosePath {
@@ -245,9 +247,11 @@ class HeadingPosePath(
             Transform2Dual(posPath[s, n].free(), headingPath[s, n])
 }
 
-class CompositePosePath(val paths: List<PosePath>) : PosePath {
+data class CompositePosePath(
+    val paths: List<PosePath>,
+    val offsets: List<Double> = paths.scan(0.0) { acc, path -> acc + path.length },
+) : PosePath {
     // TODO: partialSumByDouble() when?
-    val offsets = paths.scan(0.0) { acc, path -> acc + path.length }
     override val length = offsets.last()
 
     init {
@@ -256,23 +260,19 @@ class CompositePosePath(val paths: List<PosePath>) : PosePath {
 
     override fun get(s: Double, n: Int): Transform2Dual<ArcLength> {
         if (s < 0.0) {
-            // TODO: asConst() would help (or just const() perhaps)
-//            val s = paths.first()[0.0, 1]
-//            return Transform2.constant(s.x.values[0], s.y.values[0], n)
-            TODO("really need proper constant support")
-//            paths.first()[0.0, 1].
+            return Transform2Dual.constant(paths.first()[0.0, 1].constant(), n)
         }
 
-        for ((offset, path) in offsets.zip(paths)) {
-            if (s < offset) {
+        // TODO: the order is all wrong now
+        for ((offset, path) in offsets.zip(paths).reversed()) {
+            if (s >= offset) {
                 return path[s - offset, n]
             }
         }
 
-        // TODO: see TODO above
-//        val s = paths.last()[paths.last().maxParam, 1]
-//        return Position2.constant(s.x.values[0], s.y.values[0], n)
-        TODO("proper constant support")
+        val lastPath = paths.last()
+        // TODO: sugar for getting begin/end positions/poses?
+        return Transform2Dual.constant(lastPath[lastPath.length, 1].constant(), n)
     }
 }
 

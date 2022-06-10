@@ -108,6 +108,9 @@ data class Rotation2Dual<Param>(val real: DualNum<Param>, val imag: DualNum<Para
 
     companion object {
         fun <Param> exp(theta: DualNum<Param>) = Rotation2Dual(theta.cos(), theta.sin())
+
+        fun <Param> constant(r: Rotation2, n: Int) =
+            Rotation2Dual<Param>(DualNum.constant(r.real, n), DualNum.constant(r.imag, n))
     }
 
     operator fun plus(x: Double) = this * Rotation2.exp(x)
@@ -228,6 +231,11 @@ data class Transform2Dual<Param>(
         val translation: Vector2Dual<Param>,
         val rotation: Rotation2Dual<Param>,
 ) {
+    companion object {
+        fun <Param> constant(t: Transform2, n: Int) =
+            Transform2Dual<Param>(Vector2Dual.constant(t.translation, n), Rotation2Dual.constant(t.rotation, n))
+    }
+
     operator fun times(other: Transform2Dual<Param>) =
             Transform2Dual(rotation * other.translation + translation, rotation * other.rotation)
 

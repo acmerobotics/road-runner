@@ -17,17 +17,20 @@ class PositionPathBuilder private constructor(
     }
 
     fun splineTo(pos: Position2, tangent: Rotation2): PositionPathBuilder {
+        // TODO: wpilib has a funny 1.2 multiplier that just "makes things better"
+        // NOTE: First derivatives will be normalized by arc length reparam, so the
+        // magnitudes need not match at knots.
         val dist = (pos - beginPos).norm()
         val beginDeriv = beginTangent.vec() * dist
         val endDeriv = tangent.vec() * dist
         val spline = ArcCurve2(QuinticSpline2(
                 QuinticSpline1(
                         DualNum(doubleArrayOf(beginPos.x, beginDeriv.x, 0.0)),
-                    DualNum(doubleArrayOf(pos.y, endDeriv.y, 0.0))
+                    DualNum(doubleArrayOf(pos.x, endDeriv.x, 0.0))
                 ),
                 QuinticSpline1(
                     DualNum(doubleArrayOf(beginPos.y, beginDeriv.y, 0.0)),
-                        DualNum(doubleArrayOf(pos.x, endDeriv.x, 0.0)),
+                        DualNum(doubleArrayOf(pos.y, endDeriv.y, 0.0)),
                 )
         ))
         return PositionPathBuilder(paths + listOf(spline), pos, tangent)
@@ -89,7 +92,7 @@ class PosePathBuilder(
         val headingPath = ConstantHeadingPath(beginRot, disp - beginDisp)
 
         val posePath = HeadingPosePath(
-            posPath,
+            PositionPathView(posPath, beginDisp, disp - beginDisp),
             headingPath,
         )
 
@@ -114,7 +117,7 @@ class PosePathBuilder(
         val headingPath = LinearHeadingPath(beginRot, rot - beginRot, disp - beginDisp)
 
         val posePath = HeadingPosePath(
-            posPath,
+            PositionPathView(posPath, beginDisp, disp - beginDisp),
             headingPath,
         )
 
@@ -140,7 +143,7 @@ class PosePathBuilder(
                 val headingPath = SplineHeadingPath(state.r, it, disp - beginDisp)
 
                 val posePath = HeadingPosePath(
-                    posPath,
+                    PositionPathView(posPath, beginDisp, disp - beginDisp),
                     headingPath,
                 )
 
@@ -159,7 +162,7 @@ class PosePathBuilder(
                 )
 
                 val posePath = HeadingPosePath(
-                    posPath,
+                    PositionPathView(posPath, beginDisp, disp - beginDisp),
                     headingPath,
                 )
 
