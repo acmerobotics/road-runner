@@ -1,6 +1,5 @@
 package com.acmerobotics.roadrunner
 
-// TODO: is this okay being an object on the Java side?
 object Internal
 
 class QuinticSpline1(
@@ -37,10 +36,7 @@ class QuinticSpline1(
     })
 }
 
-// TODO: computing unnecessary derivatives is unnecessarily expensive
-// this is where laziness would be very helpful
 interface PositionPath<Param> {
-    // TODO: can I stomach length here?
     val length: Double
     operator fun get(param: Double, n: Int): Position2Dual<Param>
 }
@@ -71,8 +67,7 @@ class ArcCurve2(
     val curve: PositionPath<Internal>,
 ) : PositionPath<ArcLength> {
     val samples = integralScan(0.0, curve.length, 1e-6) {
-        // TODO: there should be a method to extract the "value" of a dual num
-        curve[it, 2].free().drop(1).norm().values[0]
+        curve[it, 2].free().drop(1).norm().constant()
     }
     override val length = samples.sums.last()
 
@@ -120,9 +115,10 @@ class ArcCurve2(
 // could it be useful for trajectories and such? (copying is probably better tbh)
 data class CompositePositionPath<Param>(
     val paths: List<PositionPath<Param>>,
+    // TODO: partialSumByDouble() when?
+    // actually, maybe this should be a real utility method
     val offsets: List<Double> = paths.scan(0.0) { acc, path -> acc + path.length }
 ) : PositionPath<Param> {
-    // TODO: partialSumByDouble() when?
     override val length = offsets.last()
 
     init {
@@ -130,10 +126,10 @@ data class CompositePositionPath<Param>(
     }
 
     override fun get(param: Double, n: Int): Position2Dual<Param> {
-        if (param < 0.0) {
-            // TODO: asConst() would help (or just const() perhaps)
-            val s = paths.first()[0.0, 1]
-            return Position2Dual.constant(s.x.values[0], s.y.values[0], n)
+        if (param >= length) {
+            return Position2Dual.constant(
+                paths.last()[paths.last().length, 1].constant(), n
+            )
         }
 
         for ((offset, path) in offsets.zip(paths).reversed()) {
@@ -142,9 +138,7 @@ data class CompositePositionPath<Param>(
             }
         }
 
-        // TODO: see TODO above
-        val s = paths.last()[paths.last().length, 1]
-        return Position2Dual.constant(s.x.values[0], s.y.values[0], n)
+        return Position2Dual.constant(paths.first()[0.0, 1].constant(), n)
     }
 }
 
@@ -231,7 +225,7 @@ data class TangentPath(
 ) : PosePath {
     override val length get() = path.length
 
-    // TODO: the n+1 is an annoying leak but probably an acceptable price for eagerness
+    // NOTE: n+1 guarantees enough derivatives for tangent
     override operator fun get(s: Double, n: Int) = path[s, n + 1].let {
         Transform2Dual(it.free(), it.tangent() + offset)
     }
@@ -259,20 +253,17 @@ data class CompositePosePath(
     }
 
     override fun get(s: Double, n: Int): Transform2Dual<ArcLength> {
-        if (s < 0.0) {
-            return Transform2Dual.constant(paths.first()[0.0, 1].constant(), n)
+        if (s >= length) {
+            return Transform2Dual.constant(paths.last()[paths.last().length, 1].constant(), n)
         }
 
-        // TODO: the order is all wrong now
         for ((offset, path) in offsets.zip(paths).reversed()) {
             if (s >= offset) {
                 return path[s - offset, n]
             }
         }
 
-        val lastPath = paths.last()
-        // TODO: sugar for getting begin/end positions/poses?
-        return Transform2Dual.constant(lastPath[lastPath.length, 1].constant(), n)
+        return Transform2Dual.constant(paths.first()[0.0, 1].constant(), n)
     }
 }
 

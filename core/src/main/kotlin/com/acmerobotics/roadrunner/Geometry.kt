@@ -11,8 +11,8 @@ class Position2(val x: Double, val y: Double) {
 
 data class Position2Dual<Param>(val x: DualNum<Param>, val y: DualNum<Param>) {
     companion object {
-        fun <Param> constant(x: Double, y: Double, n: Int) = Position2Dual<Param>(
-                DualNum.constant(x, n), DualNum.constant(y, n)
+        fun <Param> constant(p: Position2, n: Int) = Position2Dual<Param>(
+                DualNum.constant(p.x, n), DualNum.constant(p.y, n)
         )
     }
 
@@ -221,6 +221,7 @@ data class Transform2Error(val transError: Vector2, val rotError: Double)
 // TODO: SE(2) minus() "mixes" the frame orientations
 // we want the error in the "actual" frame
 // TODO: maybe hide the "tx" names inside the API
+// TODO: is actual the term I want to use? I think I like target over reference; not sure about the other frame name (measured)
 fun localError(txWorldTarget: Transform2, txWorldActual: Transform2): Transform2Error {
     val transErrorWorld = txWorldTarget.translation - txWorldActual.translation
     val rotError = txWorldTarget.rotation - txWorldActual.rotation

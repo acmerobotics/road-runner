@@ -15,6 +15,9 @@ fun doubleInner(xs: List<Double>) = listOf(xs.first()) +
         double(xs.slice(1 until xs.lastIndex)) +
         listOf(xs.last())
 
+// TODO: change this to sampling
+// should fix the broken appearance of constant limit profiles
+// extend the displacement range in both directions
 fun chartProfile(p: DisplacementProfile) = QuickChart.getChart(
         "Profile",
         "x",

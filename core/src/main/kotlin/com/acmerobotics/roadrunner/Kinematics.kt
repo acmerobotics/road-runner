@@ -42,7 +42,7 @@ class MecanumKinematics @JvmOverloads constructor(
         t.transVel.x + t.transVel.y * lateralMultiplier + t.rotVel * trackWidth,
     )
 
-    // TODO: is the currying a bit much?
+    // TODO: is the currying a bit much? yeah... a class is more idiomatic Java
     // txWorldRobot has n=2
     fun maxRobotVel(maxWheelVel: Double) = { txWorldRobot: Transform2Dual<ArcLength> ->
         val derivWorld = txWorldRobot.velocity()

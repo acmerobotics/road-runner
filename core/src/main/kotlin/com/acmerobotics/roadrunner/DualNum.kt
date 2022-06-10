@@ -26,6 +26,8 @@ data class DualNum<Param>(val values: DoubleArray) {
         require(size <= 4)
     }
 
+    // TODO: constant here and elsewhere bothers me
+    // value() is what I had before, and I think that may be the way to go
     fun constant() = values.first()
     operator fun get(i: Int) = values[i]
 

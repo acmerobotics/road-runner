@@ -9,7 +9,7 @@ import kotlin.random.Random
 import kotlin.test.assertEquals
 
 fun <Param> chartPosPath(posPath: PositionPath<Param>) : XYChart {
-    val params = range(0.0, posPath.length, 1000)
+    val params = range(-1.0, posPath.length + 1.0, 1000)
     val positions = params.map { posPath[it, 4] }
 
     return QuickChart.getChart(
@@ -34,7 +34,7 @@ fun <Param> chartPosPath(posPath: PositionPath<Param>) : XYChart {
     }
 
 fun chartPosePath(posePath: PosePath) : XYChart {
-    val params = range(0.0, posePath.length, 1000)
+    val params = range(-1.0, posePath.length + 1.0, 1000)
     val poses = params.map { posePath[it, 3] }
 
     return QuickChart.getChart(
