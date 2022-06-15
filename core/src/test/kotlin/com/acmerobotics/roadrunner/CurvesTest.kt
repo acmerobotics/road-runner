@@ -191,4 +191,37 @@ class CurvesTest {
                 }
         }
     }
+
+    @Test
+    fun testSplineHeadingInterpolation() {
+        val r = Random.Default
+        repeat(100) {
+            val begin = Rotation2Dual.exp(
+                DualNum<ArcLength>(doubleArrayOf(r.nextDouble(), r.nextDouble(), r.nextDouble()))
+            )
+            val end = Rotation2Dual.exp(
+                DualNum<ArcLength>(doubleArrayOf(r.nextDouble(), r.nextDouble(), r.nextDouble()))
+            )
+
+            val spline = SplineHeadingPath(begin, end, abs(r.nextDouble()))
+
+            val splineBegin = spline.begin(3)
+            assertEquals(begin.real[0], splineBegin.real[0], 1e-6)
+            assertEquals(begin.real[1], splineBegin.real[1], 1e-6)
+            assertEquals(begin.real[2], splineBegin.real[2], 1e-6)
+
+            assertEquals(begin.imag[0], splineBegin.imag[0], 1e-6)
+            assertEquals(begin.imag[1], splineBegin.imag[1], 1e-6)
+            assertEquals(begin.imag[2], splineBegin.imag[2], 1e-6)
+
+            val splineEnd = spline.end(3)
+            assertEquals(end.real[0], splineEnd.real[0], 1e-6)
+            assertEquals(end.real[1], splineEnd.real[1], 1e-6)
+            assertEquals(end.real[2], splineEnd.real[2], 1e-6)
+
+            assertEquals(end.imag[0], splineEnd.imag[0], 1e-6)
+            assertEquals(end.imag[1], splineEnd.imag[1], 1e-6)
+            assertEquals(end.imag[2], splineEnd.imag[2], 1e-6)
+        }
+    }
 }
