@@ -171,4 +171,24 @@ class CurvesTest {
             assertEquals(end[2], splineEnd[2], 1e-6)
         }
     }
+
+    @Test
+    fun testSplineGet() {
+        val r = Random.Default
+        repeat(100) {
+            val spline = QuinticSpline1(
+                DualNum(doubleArrayOf(r.nextDouble(), r.nextDouble(), r.nextDouble())),
+                DualNum(doubleArrayOf(r.nextDouble(), r.nextDouble(), r.nextDouble())),
+            )
+
+            val t = DualNum.variable<Internal>(r.nextDouble(1.0), 4)
+            spline[t.value(), 4].values
+                .zip(
+                    (t * (t * (t * (t * (t * spline.a + spline.b)
+                            + spline.c) + spline.d) + spline.e) + spline.f).values)
+                .forEach {
+                    assertEquals(it.first, it.second, 1e-6)
+                }
+        }
+    }
 }

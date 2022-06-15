@@ -11,7 +11,6 @@ class QuinticSpline1(
         require(end.size >= 3)
     }
 
-    // TODO: this needs a test
     val a = -6.0 * begin[0] - 3.0 * begin[1] - 0.5 * begin[2] +
         6.0 * end[0] - 3.0 * end[1] + 0.5 * end[2]
     val b = 15.0 * begin[0] + 8.0 * begin[1] + 1.5 * begin[2] -
@@ -22,7 +21,6 @@ class QuinticSpline1(
     val e = begin[1]
     val f = begin[0]
 
-    // TODO: this needs a test
     operator fun get(t: Double, n: Int) = DualNum<Internal>(DoubleArray(n) {
         when (it) {
             0 -> ((((a * t + b) * t + c) * t + d) * t + e) * t + f
