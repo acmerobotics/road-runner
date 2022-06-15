@@ -67,7 +67,7 @@ class ArcCurve2(
     val curve: PositionPath<Internal>,
 ) : PositionPath<ArcLength> {
     val samples = integralScan(0.0, curve.length, 1e-6) {
-        curve[it, 2].free().drop(1).norm().constant()
+        curve[it, 2].free().drop(1).norm().value()
     }
     override val length = samples.sums.last()
 
@@ -179,7 +179,7 @@ interface HeadingPath {
 class ConstantHeadingPath(
     val heading: Rotation2, override val length: Double,
 ) : HeadingPath {
-    override fun get(s: Double, n: Int) = heading.constant<ArcLength>(n)
+    override fun get(s: Double, n: Int) = Rotation2Dual.constant<ArcLength>(heading, n)
 }
 
 class LinearHeadingPath(
@@ -254,7 +254,7 @@ data class CompositePosePath(
 
     override fun get(s: Double, n: Int): Transform2Dual<ArcLength> {
         if (s >= length) {
-            return Transform2Dual.constant(paths.last()[paths.last().length, 1].constant(), n)
+            return Transform2Dual.constant(paths.last()[paths.last().length, 1].value(), n)
         }
 
         for ((offset, path) in offsets.zip(paths).reversed()) {
@@ -263,14 +263,14 @@ data class CompositePosePath(
             }
         }
 
-        return Transform2Dual.constant(paths.first()[0.0, 1].constant(), n)
+        return Transform2Dual.constant(paths.first()[0.0, 1].value(), n)
     }
 }
 
 fun project(path: PosePath, query: Position2, init: Double): Double {
     return (1..10).fold(init) { s, _ ->
         val guess = path[s, 3].translation.bind()
-        val ds = (query - guess.constant()) dot guess.tangent().constant().vec()
+        val ds = (query - guess.constant()) dot guess.tangent().value().vec()
         clamp(s + ds, 0.0, path.length)
     }
 }

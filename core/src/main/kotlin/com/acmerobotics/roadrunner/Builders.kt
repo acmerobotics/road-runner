@@ -13,7 +13,7 @@ class PositionPathBuilder private constructor(
     fun lineTo(pos: Position2): PositionPathBuilder {
         val line = Line(beginPos, pos)
         return PositionPathBuilder(paths + listOf(line), pos,
-                line[0.0, 2].tangent().constant())
+                line[0.0, 2].tangent().value())
     }
 
     fun splineTo(pos: Position2, tangent: Rotation2): PositionPathBuilder {
@@ -53,7 +53,7 @@ class PosePathBuilder(
     }
 
     class Eager(val ps: List<PosePath>, val r: Rotation2Dual<ArcLength>) : State {
-        override fun rotation() = r.constant()
+        override fun rotation() = r.value()
     }
 
     class Lazy(val f: (Rotation2Dual<ArcLength>) -> List<PosePath>, val r: Rotation2) : State {
@@ -70,7 +70,7 @@ class PosePathBuilder(
         val rot = posPath[disp, 4].tangent()
         val posePath = TangentPath(
             PositionPathView(posPath, beginDisp, disp - beginDisp),
-            state.rotation() - rot.constant(),
+            state.rotation() - rot.value(),
         )
 
         return PosePathBuilder(posPath, disp, Eager(

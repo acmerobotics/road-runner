@@ -3,8 +3,7 @@ package com.acmerobotics.roadrunner
 import kotlin.math.sin
 
 
-// TODO: Math.ulp(1.0) should be fixed by spec... can we inline it?
-val EPS = 10.0 * Math.ulp(1.0)
+val EPS = 2.2e-15
 
 fun epsCopySign(x: Double) =
     if (x >= 0.0) {
@@ -13,8 +12,7 @@ fun epsCopySign(x: Double) =
         -EPS
     }
 
-// TODO: putting this here because Ramsete needs it
-// TODO: maybe premature?
+// TODO: putting this here because Ramsete needs it (maybe premature)
 //fun sinc(x: Double): Double {
 //    val u = x + epsCopySign(x)
 //    return sin(u) / u

@@ -42,12 +42,12 @@ class MecanumKinematics @JvmOverloads constructor(
         t.transVel.x + t.transVel.y * lateralMultiplier + t.rotVel * trackWidth,
     )
 
-    // TODO: is the currying a bit much? yeah... a class is more idiomatic Java
-    // txWorldRobot has n=2
-    fun maxRobotVel(maxWheelVel: Double) = { txWorldRobot: Transform2Dual<ArcLength> ->
-        val derivWorld = txWorldRobot.velocity()
-        val derivRobot = txWorldRobot.inverse() * derivWorld
-        val wheelDerivs = inverse(derivRobot)
-        wheelDerivs.all().minOf { abs(maxWheelVel / it[0]) }
+    // TODO: this should inherit from something?
+    inner class MaxWheelVelocityConstraint(val maxWheelVel: Double) {
+        fun maxRobotVel(robotPose: Transform2Dual<ArcLength>) {
+            inverse(robotPose.inverse() * robotPose.velocity())
+                .all()
+                .minOf { abs(maxWheelVel / it[0]) }
+        }
     }
 }

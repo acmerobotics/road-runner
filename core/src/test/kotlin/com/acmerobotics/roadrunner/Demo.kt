@@ -40,7 +40,7 @@ fun main() {
     val targets = mutableListOf<Transform2>()
 
     while (true) {
-        s = trajectory.project(pose.translation.bind(), s).constant()
+        s = trajectory.project(pose.translation.bind(), s).value()
 
         if (s >= path.length - 0.25) {
             break
@@ -48,10 +48,10 @@ fun main() {
 
         val targetPose = trajectory[s, 3]
 
-        measured.add(pose.constant())
-        targets.add(targetPose.constant())
+        measured.add(pose.value())
+        targets.add(targetPose.value())
 
-        val error = localError(targetPose.constant(), pose.constant())
+        val error = localError(targetPose.value(), pose.value())
         val correction = Twist2(
                 error.transError * 0.5,
                 error.rotError * 0.01,

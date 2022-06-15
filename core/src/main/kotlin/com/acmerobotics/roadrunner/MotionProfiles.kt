@@ -228,9 +228,7 @@ fun merge(p1: DisplacementProfile, p2: DisplacementProfile): DisplacementProfile
     return DisplacementProfile(disps, vels, accels)
 }
 
-// TODO: doesn't enforce invariants => private
 // maxVels, maxAccels are sampled in the *middle*
-// TODO: we should have displacement samples to avoid floating point stuff
 @Suppress("NAME_SHADOWING")
 private fun forwardProfile(
     disps: List<Double>,

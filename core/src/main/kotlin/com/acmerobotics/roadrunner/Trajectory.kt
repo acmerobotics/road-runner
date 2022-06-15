@@ -1,6 +1,5 @@
 package com.acmerobotics.roadrunner
 
-// TODO: separate or equal? getByDisp() is awkward but nice to unify profiles and trajectories
 class DisplacementTrajectory(
     val path: PosePath,
     val dispProfile: DisplacementProfile,
@@ -19,8 +18,7 @@ class DisplacementTrajectory(
 
             val dsdt = (query.tangentVec() dot drds) * ((d dot d2rds2) + (-1.0)).recip()
 
-            // TODO: "Time" here should be inferred... we might need a method
-            DualNum<Time>(doubleArrayOf(s) + dsdt.values)
+            dsdt.addFirst(s)
         }
 }
 
@@ -30,7 +28,7 @@ class TimeTrajectory(
     val timeProfile = TimeProfile(dispTrajectory.dispProfile)
 
     operator fun get(t: Double, n: Int) = timeProfile[t].let { s ->
-        dispTrajectory.path[s.constant(), n].reparam(s)
+        dispTrajectory.path[s.value(), n].reparam(s)
     }
 
     fun getByDisp(s: Double, n: Int) = dispTrajectory[s, n]

@@ -26,10 +26,16 @@ data class DualNum<Param>(val values: DoubleArray) {
         require(size <= 4)
     }
 
-    // TODO: constant here and elsewhere bothers me
-    // value() is what I had before, and I think that may be the way to go
-    fun constant() = values.first()
+    fun value() = values.first()
     operator fun get(i: Int) = values[i]
+
+    fun addFirst(x: Double) = DualNum<Param>(DoubleArray(size + 1) {
+        if (it == 0) {
+            x
+        } else {
+            values[it - 1]
+        }
+    })
 
     fun drop(n: Int) = DualNum<Param>(DoubleArray(size - n) { values[it + n] })
 

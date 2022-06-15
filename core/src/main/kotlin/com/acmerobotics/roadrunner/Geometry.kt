@@ -26,7 +26,7 @@ data class Position2Dual<Param>(val x: DualNum<Param>, val y: DualNum<Param>) {
     fun <NewParam> reparam(oldParam: DualNum<NewParam>) =
             Position2Dual(x.reparam(oldParam), y.reparam(oldParam))
 
-    fun constant() = Position2(x.constant(), y.constant())
+    fun constant() = Position2(x.value(), y.value())
 }
 
 data class Vector2(val x: Double, val y: Double) {
@@ -62,7 +62,7 @@ data class Vector2Dual<Param>(val x: DualNum<Param>, val y: DualNum<Param>) {
     fun norm() = sqrNorm().sqrt()
 
     fun drop(n: Int) = Vector2Dual(x.drop(n), y.drop(n))
-    fun constant() = Vector2(x.constant(), y.constant())
+    fun value() = Vector2(x.value(), y.value())
 
     fun <NewParam> reparam(oldParam: DualNum<NewParam>) =
             Vector2Dual(x.reparam(oldParam), y.reparam(oldParam))
@@ -91,9 +91,6 @@ data class Rotation2(val real: Double, val imag: Double) {
     fun inverse() = Rotation2(real, -imag)
 
     operator fun minus(other: Rotation2) = (other.inverse() * this).log()
-
-    fun <Param> constant(n: Int) =
-            Rotation2Dual<Param>(DualNum.constant(real, n), DualNum.constant(imag, n))
 
     fun vec() = Vector2(real, imag)
 
@@ -137,7 +134,7 @@ data class Rotation2Dual<Param>(val real: DualNum<Param>, val imag: DualNum<Para
 
     fun inverse() = Rotation2Dual(real, -imag)
 
-    fun constant() = Rotation2(real.constant(), imag.constant())
+    fun value() = Rotation2(real.value(), imag.value())
 
     fun <NewParam> reparam(oldParam: DualNum<NewParam>) =
             Rotation2Dual(real.reparam(oldParam), imag.reparam(oldParam))
@@ -218,14 +215,12 @@ data class Transform2(
 
 data class Transform2Error(val transError: Vector2, val rotError: Double)
 
-// TODO: SE(2) minus() "mixes" the frame orientations
-// we want the error in the "actual" frame
-// TODO: maybe hide the "tx" names inside the API
-// TODO: is actual the term I want to use? I think I like target over reference; not sure about the other frame name (measured)
-fun localError(txWorldTarget: Transform2, txWorldActual: Transform2): Transform2Error {
-    val transErrorWorld = txWorldTarget.translation - txWorldActual.translation
-    val rotError = txWorldTarget.rotation - txWorldActual.rotation
-    return Transform2Error(txWorldActual.rotation.inverse() * transErrorWorld, rotError)
+// NOTE: SE(2) minus mixes the frame orientations, and we need it purely in the actual frame
+// TODO: does this need its own type?
+fun localError(targetPose: Transform2, actualPose: Transform2): Transform2Error {
+    val transErrorWorld = targetPose.translation - actualPose.translation
+    val rotError = targetPose.rotation - actualPose.rotation
+    return Transform2Error(actualPose.rotation.inverse() * transErrorWorld, rotError)
 }
 
 data class Transform2Dual<Param>(
@@ -245,7 +240,7 @@ data class Transform2Dual<Param>(
 
     operator fun plus(other: Twist2Incr) = this * Transform2.exp(other)
 
-    fun constant() = Transform2(translation.constant(), rotation.constant())
+    fun value() = Transform2(translation.value(), rotation.value())
 
     fun inverse() = Transform2Dual(rotation.inverse() * -translation, rotation.inverse())
 
@@ -267,7 +262,7 @@ data class Twist2Dual<Param>(val transVel: Vector2Dual<Param>, val rotVel: DualN
 
     operator fun plus(other: Twist2) = Twist2Dual(transVel + other.transVel, rotVel + other.rotVel)
 
-    fun constant() = Twist2(transVel.constant(), rotVel.constant())
+    fun constant() = Twist2(transVel.value(), rotVel.value())
 }
 
 data class Twist2Incr(val transIncr: Vector2, val rotIncr: Double)

@@ -35,7 +35,7 @@ object KinematicsTest {
             val pose = trajectory[time, 2]
             kinematics.inverse(pose.inverse() * pose.velocity())
                 .all()
-                .map { it.constant() }
+                .map { it.value() }
                 .maxOf { abs(it) }
         }
         assert(maxWheelVelMag < 10.1)
