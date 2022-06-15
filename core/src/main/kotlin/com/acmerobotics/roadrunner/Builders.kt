@@ -50,6 +50,7 @@ class PositionPathBuilder private constructor(
     fun build() = CompositePositionPath(paths)
 }
 
+// TODO: document a guarantee about continuity
 class PosePathBuilder private constructor(
     // invariant: state encodes heading for [0.0, beginDisp)
     val posPath: PositionPath<ArcLength>,
@@ -59,129 +60,93 @@ class PosePathBuilder private constructor(
     constructor(path: PositionPath<ArcLength>, beginRot: Rotation2) :
             this(path, 0.0, Lazy({ emptyList() }, beginRot))
 
-    // bad look to do pattern matching and polymorphism at the same time :/
     sealed interface State {
-        // TODO: naming
-        fun rotation(): Rotation2
+        val endRot: Rotation2
     }
 
-    class Eager(val ps: List<PosePath>, val r: Rotation2Dual<ArcLength>) : State {
-        override fun rotation() = r.value()
+    class Eager(val paths: List<PosePath>, val endRotDual: Rotation2Dual<ArcLength>) : State {
+        override val endRot = endRotDual.value()
     }
 
-    class Lazy(val f: (Rotation2Dual<ArcLength>) -> List<PosePath>, val r: Rotation2) : State {
-        override fun rotation() = r
-    }
+    class Lazy(val makePaths: (Rotation2Dual<ArcLength>) -> List<PosePath>, override val endRot: Rotation2) : State
 
-//    fun checkDeriv
-
-    // TODO: default disp to length?
-    fun tangentTo(disp: Double): PosePathBuilder {
-        // TODO: also require before the end?
+    // TODO: keep this private?
+    // pro: easier to make breaking changes in the future
+    // con: more difficult to extend the builder
+    private fun addEagerPosePath(disp: Double, posePath: PosePath): PosePathBuilder {
         require(disp > beginDisp)
 
-        val rot = posPath[disp, 4].tangent()
-        val posePath = TangentPath(
-            PositionPathView(posPath, beginDisp, disp - beginDisp),
-            state.rotation() - rot.value(),
-        )
+        val beginRotDual = posePath.begin(3).rotation
 
         return PosePathBuilder(posPath, disp, Eager(
             when (state) {
-                    is Eager -> {
-                        // TODO: check derivatives
-                        state.ps
-                    }
-                    is Lazy -> state.f(rot)
-                }
-                + listOf(posePath), rot)
-        )
-    }
-
-    fun constantTo(disp: Double): PosePathBuilder {
-        require(disp > beginDisp)
-
-        val beginRot = state.rotation()
-        val headingPath = ConstantHeadingPath(beginRot, disp - beginDisp)
-
-        val posePath = HeadingPosePath(
-            PositionPathView(posPath, beginDisp, disp - beginDisp),
-            headingPath,
-        )
-
-        val rot = headingPath[disp, 3]
-
-        // TODO: pull out Eager
-        return PosePathBuilder(posPath, disp,
-            when (state) {
                 is Eager -> {
-                    // TODO: check derivatives
-                    Eager(state.ps + listOf(posePath), rot)
+                    // TODO: Rotation2.epsilonEquals?
+                    require(state.endRotDual.real.epsilonEquals(beginRotDual.real))
+                    require(state.endRotDual.imag.epsilonEquals(beginRotDual.imag))
+
+                    state.paths
                 }
-                is Lazy ->
-                    Eager(state.f(rot) + listOf(posePath), rot)
-            })
+                is Lazy -> state.makePaths(beginRotDual)
+            } + listOf(posePath),
+            posePath.end(3).rotation
+        ))
     }
 
-    fun lineTo(disp: Double, rot: Rotation2): PosePathBuilder {
-        require(disp > beginDisp)
+    private fun viewTo(disp: Double) =
+        PositionPathView(posPath, beginDisp, disp - beginDisp)
 
-        val beginRot = state.rotation()
-        val headingPath = LinearHeadingPath(beginRot, rot - beginRot, disp - beginDisp)
-
-        val posePath = HeadingPosePath(
-            PositionPathView(posPath, beginDisp, disp - beginDisp),
-            headingPath,
+    fun tangentTo(disp: Double) = addEagerPosePath(disp,
+        TangentPath(
+            viewTo(disp),
+        state.endRot - posPath[disp, 2].tangent().value()
         )
+    )
 
-        val rot = headingPath[disp, 3]
+    fun constantTo(disp: Double) = addEagerPosePath(disp,
+        HeadingPosePath(
+            viewTo(disp),
+            ConstantHeadingPath(state.endRot, disp - beginDisp),
+        )
+    )
 
-        // TODO: same
-        return PosePathBuilder(posPath, disp,
-            when (state) {
-                is Eager -> {
-                    // TODO: check derivatives
-                    Eager(state.ps + listOf(posePath), rot)
-                }
-                is Lazy ->
-                    Eager(state.f(rot) + listOf(posePath), rot)
-            })
-    }
+    fun lineTo(disp: Double, rot: Rotation2) = addEagerPosePath(disp,
+        HeadingPosePath(
+            viewTo(disp),
+            LinearHeadingPath(state.endRot, rot - state.endRot, disp - beginDisp)
+        )
+    )
 
     fun splineTo(disp: Double, rot: Rotation2): PosePathBuilder {
         require(disp > beginDisp)
 
-        return when (state) {
-            is Eager -> PosePathBuilder(posPath, disp, Lazy({
-                val headingPath = SplineHeadingPath(state.r, it, disp - beginDisp)
+        return PosePathBuilder(posPath, disp, Lazy(
+            when (state) {
+                is Eager -> {{
+                    state.paths + listOf(
+                        HeadingPosePath(
+                            viewTo(disp),
+                            SplineHeadingPath(state.endRotDual, it, disp - beginDisp),
+                        )
+                    )
+                }}
+                is Lazy -> {{
+                    val beginRot = posPath[beginDisp, 4].tangent()
 
-                val posePath = HeadingPosePath(
-                    PositionPathView(posPath, beginDisp, disp - beginDisp),
-                    headingPath,
-                )
+                    val posePath = HeadingPosePath(
+                        viewTo(disp),
+                        SplineHeadingPath(
+                            Rotation2Dual(
+                                beginRot.real.drop(1).addFirst(state.endRot.real),
+                                beginRot.imag.drop(1).addFirst(state.endRot.imag),
+                            ),
+                            it, disp - beginDisp
+                        )
+                    )
 
-                state.ps + listOf(posePath)
+                    state.makePaths(beginRot) + listOf(posePath)
+                }}
             }, rot))
-
-            is Lazy -> PosePathBuilder(posPath, disp, Lazy({
-                val beginRot = posPath[disp, 4].tangent()
-
-                val headingPath = SplineHeadingPath(
-                    Rotation2Dual(
-                        DualNum(doubleArrayOf(state.r.real, beginRot.real[1], beginRot.real[2])),
-                        DualNum(doubleArrayOf(state.r.imag, beginRot.imag[1], beginRot.imag[2])),
-                    ),
-                    it, disp - beginDisp
-                )
-
-                val posePath = HeadingPosePath(
-                    PositionPathView(posPath, beginDisp, disp - beginDisp),
-                    headingPath,
-                )
-
-                state.f(beginRot) + listOf(posePath)
-            }, rot))
-        }
     }
 
     fun tangentToEnd() = tangentTo(posPath.length).build()
@@ -189,18 +154,19 @@ class PosePathBuilder private constructor(
     fun lineToEnd(rot: Rotation2) = lineTo(posPath.length, rot).build()
     fun splineToEnd(rot: Rotation2) = splineTo(posPath.length, rot).build()
 
-    private fun build(): PosePath {
+    // NOTE: must be at the end of the pose path
+    fun build(): PosePath {
         require(beginDisp == posPath.length)
 
         return when(state) {
-            is Eager -> CompositePosePath(state.ps)
+            is Eager -> CompositePosePath(state.paths)
             is Lazy -> {
                 val beginRot = posPath[beginDisp, 4].tangent()
 
-                CompositePosePath(state.f(
+                CompositePosePath(state.makePaths(
                     Rotation2Dual(
-                        DualNum(doubleArrayOf(state.r.real, beginRot.real[1], beginRot.real[2])),
-                        DualNum(doubleArrayOf(state.r.imag, beginRot.imag[1], beginRot.imag[2])),
+                        beginRot.real.drop(1).addFirst(state.endRot.real),
+                        beginRot.imag.drop(1).addFirst(state.endRot.imag),
                     ),
                 ))
             }

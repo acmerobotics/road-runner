@@ -1,5 +1,6 @@
 package com.acmerobotics.roadrunner
 
+import kotlin.math.abs
 import kotlin.math.min
 
 data class DualNum<Param>(val values: DoubleArray) {
@@ -236,4 +237,8 @@ data class DualNum<Param>(val values: DoubleArray) {
 
     operator fun times(other: Vector2) =
             Vector2Dual(this * other.x, this * other.y)
+
+    // TODO: I don't like this function here - maybe inline
+    fun epsilonEquals(n: DualNum<Param>) =
+        values.zip(n.values).all { (x, y) -> abs(x - y) < 1e-6 }
 }

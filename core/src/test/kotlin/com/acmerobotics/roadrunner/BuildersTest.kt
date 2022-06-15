@@ -76,16 +76,15 @@ class BuildersTest {
             )
             .build()
 
-        saveChart("posPathBuilder", chartPosPath(posPath))
-
         val posePath = PosePathBuilder(posPath, Rotation2.exp(0.0))
             .tangentTo((posPath.offsets[0] + posPath.offsets[1]) / 2)
             .splineToEnd(Rotation2.exp(-PI / 3))
 
 //        println(posePath.offsets)
 //        posePath.paths.forEach { println(it.length) }
-        println(posePath)
+//        println(posePath)
 
+        saveChart("posPathBuilder", chartPosPath(posPath))
         saveChart("posePathBuilder", chartPosePath(posePath))
     }
 }

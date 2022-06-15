@@ -112,12 +112,8 @@ class ArcCurve2(
     }
 }
 
-// TODO: perhaps this can be made more generic?
-// could it be useful for trajectories and such? (copying is probably better tbh)
 data class CompositePositionPath<Param>(
     val paths: List<PositionPath<Param>>,
-    // TODO: partialSumByDouble() when?
-    // actually, maybe this should be a real utility method
     val offsets: List<Double> = paths.scan(0.0) { acc, path -> acc + path.length }
 ) : PositionPath<Param> {
     override val length = offsets.last()
