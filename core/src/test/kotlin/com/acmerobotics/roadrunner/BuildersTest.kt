@@ -1,12 +1,50 @@
 package com.acmerobotics.roadrunner
 
+import com.sun.xml.internal.bind.v2.model.annotation.Quick
 import org.junit.jupiter.api.Test
 import org.knowm.xchart.QuickChart
 import org.knowm.xchart.XYChart
+import org.knowm.xchart.style.theme.MatlabTheme
 import kotlin.math.PI
 import kotlin.math.sqrt
 import kotlin.random.Random
 import kotlin.test.assertEquals
+
+fun chartSpline(q: QuinticSpline1): XYChart {
+    val ts = range(0.0, 1.0, 1000)
+    val xs = ts.map { q[it, 3] }
+
+    return QuickChart.getChart(
+        "Spline", "t", "",
+        arrayOf("x", "dx", "d2x"),
+        ts.toDoubleArray(),
+        arrayOf(
+            xs.map { it[0] }.toDoubleArray(),
+            xs.map { it[1] }.toDoubleArray(),
+            xs.map { it[2] }.toDoubleArray(),
+        )
+    ).also {
+        it.styler.theme = MatlabTheme()
+    }
+}
+
+fun chartSplineExpLog(q: QuinticSpline1): XYChart {
+    val ts = range(0.0, 1.0, 1000)
+    val xs = ts.map { (Rotation2Dual.exp(q[it, 3]) + 0.3).log() }
+
+    return QuickChart.getChart(
+        "Spline", "t", "",
+        arrayOf("x", "dx", "d2x"),
+        ts.toDoubleArray(),
+        arrayOf(
+            xs.map { it[0] }.toDoubleArray(),
+            xs.map { it[1] }.toDoubleArray(),
+            xs.map { it[2] }.toDoubleArray(),
+        )
+    ).also {
+        it.styler.theme = MatlabTheme()
+    }
+}
 
 fun <Param> chartPosPath(posPath: PositionPath<Param>) : XYChart {
     val params = range(-1.0, posPath.length + 1.0, 1000)
@@ -66,7 +104,8 @@ fun chartPosePathHeading(posePath: PosePath) : XYChart {
     return QuickChart.getChart(
         "Path", "param", "",
         arrayOf(
-//                "x", "y", "theta",
+//                "x", "y",
+                "theta",
             "theta'",
             "theta''",
         ),
@@ -74,7 +113,7 @@ fun chartPosePathHeading(posePath: PosePath) : XYChart {
         arrayOf(
 //            poses.map { it.translation.x[0] }.toDoubleArray(),
 //            poses.map { it.translation.y[0] }.toDoubleArray(),
-//            poses.map { it.rotation.log()[0] }.toDoubleArray(),
+            poses.map { it.rotation.log()[0] }.toDoubleArray(),
             poses.map { it.rotation.velocity()[0] }.toDoubleArray(),
             poses.map { it.rotation.velocity()[1] }.toDoubleArray(),
         )
@@ -125,6 +164,64 @@ class BuildersTest {
             assertEquals(endPos.y, posPath.end(1).value().y, 1e-6)
             assertEquals(0.0, endTangent - posPath.end(2).tangent().value(), 1e-6)
         }
+    }
+
+    @Test
+    fun testTangentHeading() {
+        val posPath = PositionPathBuilder(
+            Position2(0.0, 0.0),
+            Rotation2.exp(0.0)
+        )
+            .splineTo(
+                Position2(15.0, 15.0),
+                Rotation2.exp(PI),
+            )
+            .build()
+
+        val posePath = PosePathBuilder(posPath, Rotation2.exp(PI))
+            .tangentToEnd()
+
+        saveChart("poseBuilder/tangent", chartPosePathHeading(posePath))
+    }
+
+    @Test
+    fun testSplineHeading() {
+        val posPathPre = PositionPathBuilder(
+            Position2(0.0, 0.0),
+            Rotation2.exp(0.0)
+        )
+            .splineTo(
+                Position2(15.0, 15.0),
+                Rotation2.exp(PI),
+            )
+//            .lineTo(
+//                Position2(100.0, 0.0)
+//            )
+            .build()
+
+        val posPath = PositionPathBuilder(
+            Position2(0.0, 0.0),
+            Rotation2.exp(0.0)
+        )
+            .splineTo(
+                (Vector2(15.0, 15.0) / posPathPre.length).bind(),
+                Rotation2.exp(PI),
+            )
+            .build()
+
+        val posePath = PosePathBuilder(posPath, Rotation2.exp(PI))
+            .splineToEnd(Rotation2.exp(-PI / 3))
+
+        saveChart("poseBuilder/spline", chartPosePathHeading(posePath))
+        saveChart("poseBuilder/spline2", chartSpline(
+            (((posePath as CompositePosePath).paths[0]
+                    as HeadingPosePath).headingPath
+                    as SplineHeadingPath).spline))
+        saveChart("poseBuilder/spline3", chartSplineExpLog(
+            (((posePath as CompositePosePath).paths[0]
+                    as HeadingPosePath).headingPath
+                    as SplineHeadingPath).spline)
+        )
     }
 
     @Test

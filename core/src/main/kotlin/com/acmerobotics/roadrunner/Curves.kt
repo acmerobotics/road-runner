@@ -123,7 +123,7 @@ data class CompositePositionPath<Param>(
     }
 
     override fun get(param: Double, n: Int): Position2Dual<Param> {
-        if (param >= length) {
+        if (param > length) {
             return Position2Dual.constant(paths.last().end(1).value(), n)
         }
 
@@ -200,10 +200,10 @@ class SplineHeadingPath(
     }
 
     val spline = QuinticSpline1(
-            DualNum.constant(0.0, 3),
-            (end - begin).reparam(
-                    // s(t) = t * len
-                    DualNum.variable<Internal>(1.0, 3) * length)
+        DualNum.constant(0.0, 3),
+        (end - begin).reparam(
+            // s(t) = t * len
+            DualNum.variable<Internal>(1.0, 3) * length)
     )
 
     override fun get(s: Double, n: Int) =
@@ -236,7 +236,11 @@ data class HeadingPosePath(
         val posPath: PositionPath<ArcLength>,
         val headingPath: HeadingPath,
 ) : PosePath {
-    override val length get() = headingPath.length
+    override val length get() = posPath.length
+
+    init {
+        require(posPath.length == headingPath.length)
+    }
 
     override fun get(s: Double, n: Int) =
             Transform2Dual(posPath[s, n].free(), headingPath[s, n])
@@ -246,7 +250,6 @@ data class CompositePosePath(
     val paths: List<PosePath>,
     val offsets: List<Double> = paths.scan(0.0) { acc, path -> acc + path.length },
 ) : PosePath {
-    // TODO: partialSumByDouble() when?
     override val length = offsets.last()
 
     init {
@@ -254,7 +257,7 @@ data class CompositePosePath(
     }
 
     override fun get(s: Double, n: Int): Transform2Dual<ArcLength> {
-        if (s >= length) {
+        if (s > length) {
             return Transform2Dual.constant(paths.last().end(1).value(), n)
         }
 

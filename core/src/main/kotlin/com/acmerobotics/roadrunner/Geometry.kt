@@ -22,6 +22,7 @@ data class Position2Dual<Param>(val x: DualNum<Param>, val y: DualNum<Param>) {
 
     fun free() = Vector2Dual(x, y)
 
+    // TODO: this won't be a valid rotation without arc length param
     fun tangent() = Rotation2Dual(x.drop(1), y.drop(1))
     fun tangentVec() = Vector2Dual(x.drop(1), y.drop(1))
 
@@ -145,6 +146,7 @@ data class Rotation2Dual<Param>(val real: DualNum<Param>, val imag: DualNum<Para
 
     operator fun minus(other: Rotation2Dual<Param>) = (other.inverse() * this).log()
 
+    // TODO: I'd like to somehow merge this with velocity()
     fun log() = DualNum<Param>(DoubleArray(size) {
         when (it) {
             0 -> atan2(imag[0], real[0])
@@ -155,6 +157,7 @@ data class Rotation2Dual<Param>(val real: DualNum<Param>, val imag: DualNum<Para
         }
     })
 
+    // derivative of atan2 under unit norm assumption
     fun velocity() = real * imag.drop(1) - imag * real.drop(1)
 
     val size get() = real.size

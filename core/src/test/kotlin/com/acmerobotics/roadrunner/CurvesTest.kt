@@ -1,6 +1,9 @@
 package com.acmerobotics.roadrunner
 
 import org.junit.jupiter.api.Test
+import org.knowm.xchart.QuickChart
+import org.knowm.xchart.XYChart
+import org.knowm.xchart.style.theme.MatlabTheme
 import kotlin.math.*
 import kotlin.random.Random
 import kotlin.test.assertEquals
@@ -127,6 +130,39 @@ class ArcApproxArcCurve2(
     }
 }
 
+fun numericalDerivative(x: List<Double>, ds: Double): List<Double> {
+    val deriv = (0 until x.size - 2).map {
+        (x[it + 2] - x[it]) / (2 * ds)
+    }.toMutableList()
+    deriv.add(0, deriv.first())
+    deriv.add(deriv.last())
+    return deriv
+}
+
+fun chartSplineHeadingPath(p: SplineHeadingPath): XYChart {
+    val ts = range(0.0, p.length, 1000)
+    val rs = ts.map { p[it, 3] }
+
+    return QuickChart.getChart(
+        "Spline Heading Path", "t", "",
+        arrayOf("r", "dr", "d2r", "dr num", "d2r num"),
+//        , "i", "di", "d2i"),
+        ts.toDoubleArray(),
+        arrayOf(
+            rs.map { it.real[0] }.toDoubleArray(),
+            rs.map { it.real[1] }.toDoubleArray(),
+            rs.map { it.real[2] }.toDoubleArray(),
+            numericalDerivative(rs.map { it.real[0] }, p.length / 1000).toDoubleArray(),
+            numericalDerivative(rs.map { it.real[1] }, p.length / 1000).toDoubleArray(),
+//            rs.map { it.imag[0] }.toDoubleArray(),
+//            rs.map { it.imag[1] }.toDoubleArray(),
+//            rs.map { it.imag[2] }.toDoubleArray(),
+        )
+    ).also {
+        it.styler.theme = MatlabTheme()
+    }
+}
+
 class CurvesTest {
     @Test
     fun testArcLengthReparam() {
@@ -214,6 +250,12 @@ class CurvesTest {
             assertEquals(begin.imag[1], splineBegin.imag[1], 1e-6)
             assertEquals(begin.imag[2], splineBegin.imag[2], 1e-6)
 
+            assertEquals(begin.velocity()[0], splineBegin.velocity()[0], 1e-6)
+            assertEquals(begin.velocity()[1], splineBegin.velocity()[1], 1e-6)
+
+            assertEquals(begin.log()[1], splineBegin.log()[1], 1e-6)
+            assertEquals(begin.log()[2], splineBegin.log()[2], 1e-6)
+
             val splineEnd = spline.end(3)
             assertEquals(end.real[0], splineEnd.real[0], 1e-6)
             assertEquals(end.real[1], splineEnd.real[1], 1e-6)
@@ -222,6 +264,24 @@ class CurvesTest {
             assertEquals(end.imag[0], splineEnd.imag[0], 1e-6)
             assertEquals(end.imag[1], splineEnd.imag[1], 1e-6)
             assertEquals(end.imag[2], splineEnd.imag[2], 1e-6)
+
+            assertEquals(end.velocity()[0], splineEnd.velocity()[0], 1e-6)
+            assertEquals(end.velocity()[1], splineEnd.velocity()[1], 1e-6)
+
+            assertEquals(end.log()[1], splineEnd.log()[1], 1e-6)
+            assertEquals(end.log()[2], splineEnd.log()[2], 1e-6)
         }
+    }
+
+    @Test
+    fun testSplineHeadingPath() {
+        val p = SplineHeadingPath(
+            Rotation2Dual.exp(DualNum(doubleArrayOf(PI / 2, 1.0, -1.0))),
+            Rotation2Dual.exp(DualNum(doubleArrayOf(-PI / 6, -0.5, 1.5))),
+            1.0,
+        )
+
+        saveChart("splineHeadingPathSpline", chartSpline(p.spline))
+        saveChart("splineHeadingPath", chartSplineHeadingPath(p))
     }
 }

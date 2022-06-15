@@ -131,18 +131,22 @@ class PosePathBuilder private constructor(
                     )
                 }}
                 is Lazy -> {{
-                    val beginTangent = posPath[beginDisp, 4].tangent()
-                    val beginHeading = Rotation2Dual(
-                        beginTangent.real.drop(1).addFirst(state.endHeading.real),
-                        beginTangent.imag.drop(1).addFirst(state.endHeading.imag),
-                    )
+//                    val beginTangent = posPath[beginDisp, 4].tangent()
+//                    val beginHeading = Rotation2Dual.exp(
+////                        beginTangent.log().drop(1)
+//                        DualNum<ArcLength>(doubleArrayOf(0.0, 0.0))
+//                            .addFirst(state.endHeading.log()))
 
-                    val posePath = HeadingPosePath(
-                        viewTo(disp),
-                        SplineHeadingPath(beginHeading, it, disp - beginDisp)
-                    )
+//                    state.makePaths(beginHeading)
 
-                    state.makePaths(beginHeading) + listOf(posePath)
+                    val beginHeading = posPath[beginDisp, 4].tangent()
+
+                    state.makePaths(beginHeading) + listOf(
+                        HeadingPosePath(
+                            viewTo(disp),
+                            SplineHeadingPath(beginHeading, it, disp - beginDisp)
+                        )
+                    )
                 }}
             }, heading))
     }
@@ -156,18 +160,21 @@ class PosePathBuilder private constructor(
     fun build(): PosePath {
         require(beginDisp == posPath.length)
 
-        return when(state) {
-            is Eager -> CompositePosePath(state.paths)
+        return CompositePosePath(when(state) {
+            is Eager -> state.paths
             is Lazy -> {
-                val beginHeading = posPath[beginDisp, 4].tangent()
+//                val endTangent = posPath[beginDisp, 4].tangent()
+                // TODO: semantically, is there anything different with exp/log
+//                val endHeading = Rotation2Dual.exp(
+////                    endTangent.log().drop(1)
+//                    DualNum<ArcLength>(doubleArrayOf(0.0, 0.0))
+//                        .addFirst(state.endHeading.log()))
 
-                CompositePosePath(state.makePaths(
-                    Rotation2Dual(
-                        beginHeading.real.drop(1).addFirst(state.endHeading.real),
-                        beginHeading.imag.drop(1).addFirst(state.endHeading.imag),
-                    ),
-                ))
+//                println(endHeading.log())
+
+//                state.makePaths(endHeading)
+                state.makePaths(posPath[beginDisp, 4].tangent())
             }
-        }
+        })
     }
 }
