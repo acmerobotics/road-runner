@@ -199,6 +199,7 @@ class SplineHeadingPath(
         require(end.size >= 3)
     }
 
+    // TODO: funky stuff here?
     val spline = QuinticSpline1(
             DualNum.constant(0.0, 3),
             (end - begin).reparam(

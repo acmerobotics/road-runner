@@ -59,6 +59,28 @@ fun chartPosePath(posePath: PosePath) : XYChart {
     )
 }
 
+fun chartPosePathHeading(posePath: PosePath) : XYChart {
+    val params = range(-1.0, posePath.length + 1.0, 1000)
+    val poses = params.map { posePath[it, 3] }
+
+    return QuickChart.getChart(
+        "Path", "param", "",
+        arrayOf(
+//                "x", "y", "theta",
+            "theta'",
+            "theta''",
+        ),
+        params.toDoubleArray(),
+        arrayOf(
+//            poses.map { it.translation.x[0] }.toDoubleArray(),
+//            poses.map { it.translation.y[0] }.toDoubleArray(),
+//            poses.map { it.rotation.log()[0] }.toDoubleArray(),
+            poses.map { it.rotation.velocity()[0] }.toDoubleArray(),
+            poses.map { it.rotation.velocity()[1] }.toDoubleArray(),
+        )
+    )
+}
+
 class BuildersTest {
     @Test
     fun testLineTo() {
@@ -103,6 +125,63 @@ class BuildersTest {
             assertEquals(endPos.y, posPath.end(1).value().y, 1e-6)
             assertEquals(0.0, endTangent - posPath.end(2).tangent().value(), 1e-6)
         }
+    }
+
+    @Test
+    fun testLinearSplineHeading() {
+        val posPath = PositionPathBuilder(
+            Position2(0.0, 0.0),
+            Rotation2.exp(0.0)
+        )
+            .splineTo(
+                Position2(15.0, 15.0),
+                Rotation2.exp(PI),
+            )
+            .build()
+
+        val posePath = PosePathBuilder(posPath, Rotation2.exp(PI))
+            .lineTo(posPath.length / 2, Rotation2.exp(PI / 2))
+            .splineToEnd(Rotation2.exp(-PI / 3))
+
+        saveChart("poseBuilder/linearSpline", chartPosePathHeading(posePath))
+    }
+
+    @Test
+    fun testSplineLinearHeading() {
+        val posPath = PositionPathBuilder(
+            Position2(0.0, 0.0),
+            Rotation2.exp(0.0)
+        )
+            .splineTo(
+                Position2(15.0, 15.0),
+                Rotation2.exp(PI),
+            )
+            .build()
+
+        val posePath = PosePathBuilder(posPath, Rotation2.exp(PI))
+            .splineTo(posPath.length / 2, Rotation2.exp(-PI / 3))
+            .lineToEnd(Rotation2.exp(PI / 2))
+
+        saveChart("poseBuilder/splineLinear", chartPosePathHeading(posePath))
+    }
+
+    @Test
+    fun testSplineSplineHeading() {
+        val posPath = PositionPathBuilder(
+            Position2(0.0, 0.0),
+            Rotation2.exp(0.0)
+        )
+            .splineTo(
+                Position2(15.0, 15.0),
+                Rotation2.exp(PI),
+            )
+            .build()
+
+        val posePath = PosePathBuilder(posPath, Rotation2.exp(PI))
+            .splineTo(posPath.length / 2, Rotation2.exp(-PI / 3))
+            .splineToEnd(Rotation2.exp(PI / 2))
+
+        saveChart("poseBuilder/splineSpline", chartPosePathHeading(posePath))
     }
 
     @Test

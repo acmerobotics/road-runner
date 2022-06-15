@@ -131,17 +131,15 @@ class PosePathBuilder private constructor(
                     )
                 }}
                 is Lazy -> {{
-                    val beginHeading = posPath[beginDisp, 4].tangent()
+                    val beginTangent = posPath[beginDisp, 4].tangent()
+                    val beginHeading = Rotation2Dual(
+                        beginTangent.real.drop(1).addFirst(state.endHeading.real),
+                        beginTangent.imag.drop(1).addFirst(state.endHeading.imag),
+                    )
 
                     val posePath = HeadingPosePath(
                         viewTo(disp),
-                        SplineHeadingPath(
-                            Rotation2Dual(
-                                beginHeading.real.drop(1).addFirst(state.endHeading.real),
-                                beginHeading.imag.drop(1).addFirst(state.endHeading.imag),
-                            ),
-                            it, disp - beginDisp
-                        )
+                        SplineHeadingPath(beginHeading, it, disp - beginDisp)
                     )
 
                     state.makePaths(beginHeading) + listOf(posePath)
