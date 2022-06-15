@@ -2,6 +2,7 @@ package com.acmerobotics.roadrunner
 
 import org.junit.jupiter.api.Test
 import kotlin.math.*
+import kotlin.random.Random
 import kotlin.test.assertEquals
 
 infix fun Vector2.det(other: Vector2) = x * other.y - y * other.x
@@ -148,5 +149,26 @@ class CurvesTest {
             .forEach {
                 assertEquals(curveExp.reparam(it), curveActual.reparam(it), 1e-2)
             }
+    }
+
+    @Test
+    fun testSplineInterpolation() {
+        val r = Random.Default
+        repeat(100) {
+            val begin = DualNum<Internal>(doubleArrayOf(r.nextDouble(), r.nextDouble(), r.nextDouble()))
+            val end = DualNum<Internal>(doubleArrayOf(r.nextDouble(), r.nextDouble(), r.nextDouble()))
+
+            val spline = QuinticSpline1(begin, end)
+
+            val splineBegin = spline[0.0, 3]
+            assertEquals(begin[0], splineBegin[0], 1e-6)
+            assertEquals(begin[1], splineBegin[1], 1e-6)
+            assertEquals(begin[2], splineBegin[2], 1e-6)
+
+            val splineEnd = spline[1.0, 3]
+            assertEquals(end[0], splineEnd[0], 1e-6)
+            assertEquals(end[1], splineEnd[1], 1e-6)
+            assertEquals(end[2], splineEnd[2], 1e-6)
+        }
     }
 }
