@@ -61,7 +61,52 @@ fun chartPosePath(posePath: PosePath) : XYChart {
 
 class BuildersTest {
     @Test
-    fun test() {
+    fun testLineTo() {
+        val r = Random.Default
+        repeat(100) {
+            val beginPos = Position2(r.nextDouble(), r.nextDouble())
+            val beginTangent = Rotation2.exp(r.nextDouble())
+            val endPos = beginPos + beginTangent.vec() * r.nextDouble()
+
+            val posPath = PositionPathBuilder(beginPos, beginTangent)
+                .lineTo(endPos)
+                .build()
+
+            assertEquals(beginPos.x, posPath.begin(1).value().x, 1e-6)
+            assertEquals(beginPos.y, posPath.begin(1).value().y, 1e-6)
+            assertEquals(0.0, beginTangent - posPath.begin(2).tangent().value(), 1e-6)
+
+            assertEquals(endPos.x, posPath.end(1).value().x, 1e-6)
+            assertEquals(endPos.y, posPath.end(1).value().y, 1e-6)
+            assertEquals(0.0, beginTangent - posPath.end(2).tangent().value(), 1e-6)
+        }
+    }
+
+    @Test
+    fun testSplineTo() {
+        val r = Random.Default
+        repeat(100) {
+            val beginPos = Position2(r.nextDouble(), r.nextDouble())
+            val beginTangent = Rotation2.exp(r.nextDouble())
+            val endPos = Position2(r.nextDouble(), r.nextDouble())
+            val endTangent = Rotation2.exp(r.nextDouble())
+
+            val posPath = PositionPathBuilder(beginPos, beginTangent)
+                .splineTo(endPos, endTangent)
+                .build()
+
+            assertEquals(beginPos.x, posPath.begin(1).value().x, 1e-6)
+            assertEquals(beginPos.y, posPath.begin(1).value().y, 1e-6)
+            assertEquals(0.0, beginTangent - posPath.begin(2).tangent().value(), 1e-6)
+
+            assertEquals(endPos.x, posPath.end(1).value().x, 1e-6)
+            assertEquals(endPos.y, posPath.end(1).value().y, 1e-6)
+            assertEquals(0.0, endTangent - posPath.end(2).tangent().value(), 1e-6)
+        }
+    }
+
+    @Test
+    fun testComplex() {
         val posPath = PositionPathBuilder(
             Position2(0.0, 0.0),
             Rotation2.exp(0.0)

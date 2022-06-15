@@ -6,6 +6,8 @@ import kotlin.math.sin
 import kotlin.math.sqrt
 
 class Position2(val x: Double, val y: Double) {
+    operator fun plus(v: Vector2) = Position2(x + v.x, y + v.y)
+
     operator fun minus(other: Position2) = Vector2(x - other.x, y - other.y)
 }
 
@@ -40,6 +42,8 @@ data class Vector2(val x: Double, val y: Double) {
     infix fun dot(other: Vector2) = x * other.x + y * other.y
     fun sqrNorm() = this dot this
     fun norm() = sqrt(sqrNorm())
+
+    fun bind() = Position2(x, y)
 }
 
 data class Vector2Dual<Param>(val x: DualNum<Param>, val y: DualNum<Param>) {

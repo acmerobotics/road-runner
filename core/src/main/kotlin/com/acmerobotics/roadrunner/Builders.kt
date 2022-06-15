@@ -57,18 +57,18 @@ class PosePathBuilder private constructor(
         val beginDisp: Double,
         val state: State,
 ) {
-    constructor(path: PositionPath<ArcLength>, beginRot: Rotation2) :
-            this(path, 0.0, Lazy({ emptyList() }, beginRot))
+    constructor(path: PositionPath<ArcLength>, beginHeading: Rotation2) :
+            this(path, 0.0, Lazy({ emptyList() }, beginHeading))
 
     sealed interface State {
-        val endRot: Rotation2
+        val endHeading: Rotation2
     }
 
-    class Eager(val paths: List<PosePath>, val endRotDual: Rotation2Dual<ArcLength>) : State {
-        override val endRot = endRotDual.value()
+    class Eager(val paths: List<PosePath>, val endHeadingDual: Rotation2Dual<ArcLength>) : State {
+        override val endHeading = endHeadingDual.value()
     }
 
-    class Lazy(val makePaths: (Rotation2Dual<ArcLength>) -> List<PosePath>, override val endRot: Rotation2) : State
+    class Lazy(val makePaths: (Rotation2Dual<ArcLength>) -> List<PosePath>, override val endHeading: Rotation2) : State
 
     // TODO: keep this private?
     // pro: easier to make breaking changes in the future
@@ -76,18 +76,18 @@ class PosePathBuilder private constructor(
     private fun addEagerPosePath(disp: Double, posePath: PosePath): PosePathBuilder {
         require(disp > beginDisp)
 
-        val beginRotDual = posePath.begin(3).rotation
+        val beginHeadingDual = posePath.begin(3).rotation
 
         return PosePathBuilder(posPath, disp, Eager(
             when (state) {
                 is Eager -> {
                     // TODO: Rotation2.epsilonEquals?
-                    require(state.endRotDual.real.epsilonEquals(beginRotDual.real))
-                    require(state.endRotDual.imag.epsilonEquals(beginRotDual.imag))
+                    require(state.endHeadingDual.real.epsilonEquals(beginHeadingDual.real))
+                    require(state.endHeadingDual.imag.epsilonEquals(beginHeadingDual.imag))
 
                     state.paths
                 }
-                is Lazy -> state.makePaths(beginRotDual)
+                is Lazy -> state.makePaths(beginHeadingDual)
             } + listOf(posePath),
             posePath.end(3).rotation
         ))
@@ -99,25 +99,25 @@ class PosePathBuilder private constructor(
     fun tangentTo(disp: Double) = addEagerPosePath(disp,
         TangentPath(
             viewTo(disp),
-        state.endRot - posPath[disp, 2].tangent().value()
+        state.endHeading - posPath[disp, 2].tangent().value()
         )
     )
 
     fun constantTo(disp: Double) = addEagerPosePath(disp,
         HeadingPosePath(
             viewTo(disp),
-            ConstantHeadingPath(state.endRot, disp - beginDisp),
+            ConstantHeadingPath(state.endHeading, disp - beginDisp),
         )
     )
 
-    fun lineTo(disp: Double, rot: Rotation2) = addEagerPosePath(disp,
+    fun lineTo(disp: Double, heading: Rotation2) = addEagerPosePath(disp,
         HeadingPosePath(
             viewTo(disp),
-            LinearHeadingPath(state.endRot, rot - state.endRot, disp - beginDisp)
+            LinearHeadingPath(state.endHeading, heading - state.endHeading, disp - beginDisp)
         )
     )
 
-    fun splineTo(disp: Double, rot: Rotation2): PosePathBuilder {
+    fun splineTo(disp: Double, heading: Rotation2): PosePathBuilder {
         require(disp > beginDisp)
 
         return PosePathBuilder(posPath, disp, Lazy(
@@ -126,33 +126,33 @@ class PosePathBuilder private constructor(
                     state.paths + listOf(
                         HeadingPosePath(
                             viewTo(disp),
-                            SplineHeadingPath(state.endRotDual, it, disp - beginDisp),
+                            SplineHeadingPath(state.endHeadingDual, it, disp - beginDisp),
                         )
                     )
                 }}
                 is Lazy -> {{
-                    val beginRot = posPath[beginDisp, 4].tangent()
+                    val beginHeading = posPath[beginDisp, 4].tangent()
 
                     val posePath = HeadingPosePath(
                         viewTo(disp),
                         SplineHeadingPath(
                             Rotation2Dual(
-                                beginRot.real.drop(1).addFirst(state.endRot.real),
-                                beginRot.imag.drop(1).addFirst(state.endRot.imag),
+                                beginHeading.real.drop(1).addFirst(state.endHeading.real),
+                                beginHeading.imag.drop(1).addFirst(state.endHeading.imag),
                             ),
                             it, disp - beginDisp
                         )
                     )
 
-                    state.makePaths(beginRot) + listOf(posePath)
+                    state.makePaths(beginHeading) + listOf(posePath)
                 }}
-            }, rot))
+            }, heading))
     }
 
     fun tangentToEnd() = tangentTo(posPath.length).build()
     fun constantToEnd() = constantTo(posPath.length).build()
-    fun lineToEnd(rot: Rotation2) = lineTo(posPath.length, rot).build()
-    fun splineToEnd(rot: Rotation2) = splineTo(posPath.length, rot).build()
+    fun lineToEnd(heading: Rotation2) = lineTo(posPath.length, heading).build()
+    fun splineToEnd(heading: Rotation2) = splineTo(posPath.length, heading).build()
 
     // NOTE: must be at the end of the pose path
     fun build(): PosePath {
@@ -161,12 +161,12 @@ class PosePathBuilder private constructor(
         return when(state) {
             is Eager -> CompositePosePath(state.paths)
             is Lazy -> {
-                val beginRot = posPath[beginDisp, 4].tangent()
+                val beginHeading = posPath[beginDisp, 4].tangent()
 
                 CompositePosePath(state.makePaths(
                     Rotation2Dual(
-                        beginRot.real.drop(1).addFirst(state.endRot.real),
-                        beginRot.imag.drop(1).addFirst(state.endRot.imag),
+                        beginHeading.real.drop(1).addFirst(state.endHeading.real),
+                        beginHeading.imag.drop(1).addFirst(state.endHeading.imag),
                     ),
                 ))
             }
