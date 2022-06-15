@@ -1,6 +1,7 @@
 package com.acmerobotics.roadrunner
 
 class PositionPathBuilder private constructor(
+    // invariant: beginPose and beginTangent match the end pose and tangent of paths.last()
         val paths: List<PositionPath<ArcLength>>,
         val beginPos: Position2,
         val beginTangent: Rotation2,
@@ -12,8 +13,12 @@ class PositionPathBuilder private constructor(
 
     fun lineTo(pos: Position2): PositionPathBuilder {
         val line = Line(beginPos, pos)
-        return PositionPathBuilder(paths + listOf(line), pos,
-                line[0.0, 2].tangent().value())
+        val lineEnd = line.end(2)
+        return PositionPathBuilder(
+            paths + listOf(line),
+            lineEnd.value(),
+            lineEnd.tangent().value(),
+        )
     }
 
     fun splineTo(pos: Position2, tangent: Rotation2): PositionPathBuilder {
@@ -22,6 +27,7 @@ class PositionPathBuilder private constructor(
         val dist = (pos - beginPos).norm()
         val beginDeriv = beginTangent.vec() * dist
         val endDeriv = tangent.vec() * dist
+
         val spline = ArcCurve2(QuinticSpline2(
                 QuinticSpline1(
                         DualNum(doubleArrayOf(beginPos.x, beginDeriv.x, 0.0)),
@@ -32,13 +38,20 @@ class PositionPathBuilder private constructor(
                         DualNum(doubleArrayOf(pos.y, endDeriv.y, 0.0)),
                 )
         ))
-        return PositionPathBuilder(paths + listOf(spline), pos, tangent)
+
+        val splineEnd = spline.end(2)
+        return PositionPathBuilder(
+            paths + listOf(spline),
+            splineEnd.value(),
+            splineEnd.tangent().value(),
+        )
     }
 
     fun build() = CompositePositionPath(paths)
 }
 
-class PosePathBuilder(
+class PosePathBuilder private constructor(
+    // invariant: state encodes heading for [0.0, beginDisp)
     val posPath: PositionPath<ArcLength>,
         val beginDisp: Double,
         val state: State,
@@ -46,6 +59,7 @@ class PosePathBuilder(
     constructor(path: PositionPath<ArcLength>, beginRot: Rotation2) :
             this(path, 0.0, Lazy({ emptyList() }, beginRot))
 
+    // bad look to do pattern matching and polymorphism at the same time :/
     sealed interface State {
         // TODO: naming
         fun rotation(): Rotation2
@@ -170,18 +184,26 @@ class PosePathBuilder(
         }
     }
 
-    // TODO: error if path is not consumed? probably good - a view can always be passed first
-    fun build() = when (state) {
-        is Eager -> CompositePosePath(state.ps)
-        is Lazy -> {
-            val beginRot = posPath[beginDisp, 4].tangent()
+    fun tangentToEnd() = tangentTo(posPath.length).build()
+    fun constantToEnd() = constantTo(posPath.length).build()
+    fun lineToEnd(rot: Rotation2) = lineTo(posPath.length, rot).build()
+    fun splineToEnd(rot: Rotation2) = splineTo(posPath.length, rot).build()
 
-            CompositePosePath(state.f(
-                Rotation2Dual(
-                    DualNum(doubleArrayOf(state.r.real, beginRot.real[1], beginRot.real[2])),
-                    DualNum(doubleArrayOf(state.r.imag, beginRot.imag[1], beginRot.imag[2])),
-                ),
-            ))
+    private fun build(): PosePath {
+        require(beginDisp == posPath.length)
+
+        return when(state) {
+            is Eager -> CompositePosePath(state.ps)
+            is Lazy -> {
+                val beginRot = posPath[beginDisp, 4].tangent()
+
+                CompositePosePath(state.f(
+                    Rotation2Dual(
+                        DualNum(doubleArrayOf(state.r.real, beginRot.real[1], beginRot.real[2])),
+                        DualNum(doubleArrayOf(state.r.imag, beginRot.imag[1], beginRot.imag[2])),
+                    ),
+                ))
+            }
         }
     }
 }

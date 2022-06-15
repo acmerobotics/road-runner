@@ -80,8 +80,7 @@ class BuildersTest {
 
         val posePath = PosePathBuilder(posPath, Rotation2.exp(0.0))
             .tangentTo((posPath.offsets[0] + posPath.offsets[1]) / 2)
-            .splineTo(posPath.length, Rotation2.exp(-PI / 3))
-            .build()
+            .splineToEnd(Rotation2.exp(-PI / 3))
 
 //        println(posePath.offsets)
 //        posePath.paths.forEach { println(it.length) }
