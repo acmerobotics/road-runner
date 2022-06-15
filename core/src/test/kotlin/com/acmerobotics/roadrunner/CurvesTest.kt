@@ -2,7 +2,6 @@ package com.acmerobotics.roadrunner
 
 import org.junit.jupiter.api.Test
 import kotlin.math.*
-import kotlin.random.Random
 import kotlin.test.assertEquals
 
 infix fun Vector2.det(other: Vector2) = x * other.y - y * other.x
@@ -77,7 +76,7 @@ class ArcApproxArcCurve2(
             val pMid = curve[tMid, 3]
 
             val deltaK = abs(pLo.curvature() - pHi.curvature())
-            val length = approxLength(pLo.constant(), pMid.constant(), pHi.constant())
+            val length = approxLength(pLo.value(), pMid.value(), pHi.value())
 
             return if (depth < maxDepth && (deltaK > maxDeltaK || length > maxSegmentLength)) {
                 val loSamples = helper(sLo, tLo, tMid, pLo, pMid, depth + 1)

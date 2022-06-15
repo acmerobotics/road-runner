@@ -17,7 +17,6 @@ class PositionPathBuilder private constructor(
     }
 
     fun splineTo(pos: Position2, tangent: Rotation2): PositionPathBuilder {
-        // TODO: wpilib has a funny 1.2 multiplier that just "makes things better"
         // NOTE: First derivatives will be normalized by arc length reparam, so the
         // magnitudes need not match at knots.
         val dist = (pos - beginPos).norm()

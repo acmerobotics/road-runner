@@ -7,7 +7,7 @@ class DisplacementTrajectory(
     operator fun get(s: Double, n: Int) = path[s, n].reparam(dispProfile[s])
 
     fun project(query: Position2Dual<Time>, init: Double) =
-        project(path, query.constant(), init).let { s ->
+        project(path, query.value(), init).let { s ->
             val r = path[s, 3].translation
                 .bind()
                 .reparam(dispProfile[s])

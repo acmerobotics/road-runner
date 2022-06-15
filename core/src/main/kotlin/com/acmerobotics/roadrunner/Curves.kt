@@ -39,6 +39,9 @@ class QuinticSpline1(
 interface PositionPath<Param> {
     val length: Double
     operator fun get(param: Double, n: Int): Position2Dual<Param>
+
+    fun begin(n: Int) = get(0.0, n)
+    fun end(n: Int) = get(length, n)
 }
 
 class QuinticSpline2(
@@ -127,9 +130,7 @@ data class CompositePositionPath<Param>(
 
     override fun get(param: Double, n: Int): Position2Dual<Param> {
         if (param >= length) {
-            return Position2Dual.constant(
-                paths.last()[paths.last().length, 1].constant(), n
-            )
+            return Position2Dual.constant(paths.last().end(1).value(), n)
         }
 
         for ((offset, path) in offsets.zip(paths).reversed()) {
@@ -138,7 +139,7 @@ data class CompositePositionPath<Param>(
             }
         }
 
-        return Position2Dual.constant(paths.first()[0.0, 1].constant(), n)
+        return Position2Dual.constant(paths.first()[0.0, 1].value(), n)
     }
 }
 
@@ -174,6 +175,9 @@ fun <Param> splitPositionPath(path: PositionPath<Param>, cuts: List<Double>): Li
 interface HeadingPath {
     val length: Double
     operator fun get(s: Double, n: Int): Rotation2Dual<ArcLength>
+
+    fun begin(n: Int) = get(0.0, n)
+    fun end(n: Int) = get(length, n)
 }
 
 class ConstantHeadingPath(
@@ -217,6 +221,9 @@ class SplineHeadingPath(
 interface PosePath {
     val length: Double
     operator fun get(s: Double, n: Int): Transform2Dual<ArcLength>
+
+    fun begin(n: Int) = get(0.0, n)
+    fun end(n: Int) = get(length, n)
 }
 
 data class TangentPath(
@@ -254,7 +261,7 @@ data class CompositePosePath(
 
     override fun get(s: Double, n: Int): Transform2Dual<ArcLength> {
         if (s >= length) {
-            return Transform2Dual.constant(paths.last()[paths.last().length, 1].value(), n)
+            return Transform2Dual.constant(paths.last().end(1).value(), n)
         }
 
         for ((offset, path) in offsets.zip(paths).reversed()) {
@@ -270,7 +277,7 @@ data class CompositePosePath(
 fun project(path: PosePath, query: Position2, init: Double): Double {
     return (1..10).fold(init) { s, _ ->
         val guess = path[s, 3].translation.bind()
-        val ds = (query - guess.constant()) dot guess.tangent().value().vec()
+        val ds = (query - guess.value()) dot guess.tangent().value().vec()
         clamp(s + ds, 0.0, path.length)
     }
 }

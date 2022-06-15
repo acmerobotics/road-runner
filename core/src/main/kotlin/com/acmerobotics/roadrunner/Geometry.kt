@@ -26,7 +26,7 @@ data class Position2Dual<Param>(val x: DualNum<Param>, val y: DualNum<Param>) {
     fun <NewParam> reparam(oldParam: DualNum<NewParam>) =
             Position2Dual(x.reparam(oldParam), y.reparam(oldParam))
 
-    fun constant() = Position2(x.value(), y.value())
+    fun value() = Position2(x.value(), y.value())
 }
 
 data class Vector2(val x: Double, val y: Double) {
