@@ -7,6 +7,13 @@ import kotlin.math.sqrt
 
 object Time
 
+fun constantProfile(
+    length: Double,
+    beginEndVel: Double,
+    maxVel: Double,
+    minMaxAccel: Interval,
+) = profile(length, beginEndVel, { maxVel }, { minMaxAccel }, length)
+
 fun profile(
     length: Double,
     beginEndVel: Double,
@@ -80,11 +87,10 @@ data class DisplacementProfile(
     operator fun get(x: Double): DualNum<Time> {
         val index = disps.binarySearch(x)
         return when {
-            // TODO: this is basically measure zero
-            index > 0 ->
-                DualNum(doubleArrayOf(x, vels[index], accels[index - 1]))
-            index == 0 ->
-                DualNum(doubleArrayOf(x, vels[0], 0.0))
+            index >= disps.lastIndex ->
+                DualNum(doubleArrayOf(x, vels[index], 0.0))
+            index >= 0 ->
+                DualNum(doubleArrayOf(x, vels[index], accels[index]))
             else -> {
                 val insIndex = -(index + 1)
                 when {
@@ -138,17 +144,19 @@ data class TimeProfile(
     operator fun get(t: Double): DualNum<Time> {
         val index = times.binarySearch(t)
         return when {
-            index > 0 -> DualNum(
-                doubleArrayOf(
-                    dispProfile.disps[index], dispProfile.vels[index], dispProfile.accels[index - 1]
+            index >= times.lastIndex ->
+                DualNum(
+                    doubleArrayOf(
+                        dispProfile.disps[index], dispProfile.vels[index], 0.0
+                    )
                 )
-            )
-            index == 0 -> DualNum(
-                doubleArrayOf(
-                    dispProfile.disps[0], dispProfile.vels[0], 0.0
+           index >= 0 ->
+                DualNum(
+                    doubleArrayOf(
+                        dispProfile.disps[index], dispProfile.vels[index], dispProfile.accels[index]
+                    )
                 )
-            )
-            else -> {
+           else -> {
                 val insIndex = -(index + 1)
                 when {
                     insIndex <= 0 ->

@@ -5,6 +5,7 @@ import org.knowm.xchart.QuickChart
 import org.knowm.xchart.XYChart
 import org.knowm.xchart.style.theme.MatlabTheme
 import kotlin.math.pow
+import kotlin.test.assertEquals
 
 fun isSorted(xs: List<Double>) =
     xs
@@ -16,9 +17,6 @@ fun doubleInner(xs: List<Double>) = listOf(xs.first()) +
         double(xs.slice(1 until xs.lastIndex)) +
         listOf(xs.last())
 
-// TODO: change this to sampling
-// should fix the broken appearance of constant limit profiles
-// extend the displacement range in both directions
 fun chartDispProfile(p: DisplacementProfile): XYChart {
     val xs = range(-0.1 * p.length, 1.1 * p.length, 1000)
 
@@ -69,6 +67,13 @@ fun saveProfiles(s: String, p: TimeProfile) {
 }
 
 class MotionProfilesTest {
+    @Test
+    fun testBeginAccel() {
+        val p = TimeProfile(constantProfile(10.0, 0.0, 5.0, Interval(-5.0, 5.0)))
+        assertEquals(5.0, p.dispProfile[0.0][2], 1e-6)
+        assertEquals(5.0, p[0.0][2], 1e-6)
+    }
+
     @Test
     fun testSimpleProfile() =
         saveProfiles("simpleProfile", TimeProfile(
