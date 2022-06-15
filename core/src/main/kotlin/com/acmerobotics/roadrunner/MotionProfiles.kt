@@ -70,6 +70,8 @@ data class DisplacementProfile(
     val vels: List<Double>,
     val accels: List<Double>,
 ) {
+    val length = disps.last()
+
     init {
         require(disps.size == vels.size)
         require(disps.size == accels.size + 1)
@@ -78,18 +80,28 @@ data class DisplacementProfile(
     operator fun get(x: Double): DualNum<Time> {
         val index = disps.binarySearch(x)
         return when {
-            index > 0 -> DualNum(doubleArrayOf(x, vels[index], accels[index - 1]))
-            index == 0 -> DualNum(doubleArrayOf(x, vels[0], 0.0))
+            // TODO: this is basically measure zero
+            index > 0 ->
+                DualNum(doubleArrayOf(x, vels[index], accels[index - 1]))
+            index == 0 ->
+                DualNum(doubleArrayOf(x, vels[0], 0.0))
             else -> {
                 val insIndex = -(index + 1)
                 when {
-                    insIndex <= 0 -> DualNum(doubleArrayOf(0.0, 0.0, 0.0))
-                    insIndex >= disps.size -> DualNum(doubleArrayOf(disps.last(), 0.0, 0.0))
+                    insIndex <= 0 ->
+                        DualNum(doubleArrayOf(0.0, 0.0, 0.0))
+                    insIndex >= disps.size ->
+                        DualNum(doubleArrayOf(length, 0.0, 0.0))
                     else -> {
-                        DualNum(doubleArrayOf(x,
-                            sqrt(vels[insIndex] * vels[insIndex] +
-                                    2 * accels[insIndex - 1] * (x - disps[insIndex])),
-                            accels[insIndex - 1]))
+                        val dx = x - disps[insIndex - 1]
+                        val v0 = vels[insIndex - 1]
+                        val a = accels[insIndex - 1]
+
+                        DualNum(doubleArrayOf(
+                            x,
+                            sqrt(v0 * v0 + 2 * a * dx),
+                            a
+                        ))
                     }
                 }
             }
@@ -115,6 +127,8 @@ data class TimeProfile(
     val dispProfile: DisplacementProfile,
     val times: List<Double>,
 ) {
+    val duration = times.last()
+
     constructor(dispProfile: DisplacementProfile) : this(dispProfile, timeScan(dispProfile))
 
     init {
@@ -137,20 +151,21 @@ data class TimeProfile(
             else -> {
                 val insIndex = -(index + 1)
                 when {
-                    insIndex <= 0 -> DualNum(doubleArrayOf(0.0, 0.0, 0.0))
-                    insIndex >= dispProfile.accels.size -> DualNum(doubleArrayOf(dispProfile.disps.last(), 0.0, 0.0))
+                    insIndex <= 0 ->
+                        DualNum(doubleArrayOf(0.0, 0.0, 0.0))
+                    insIndex >= times.size ->
+                        DualNum(doubleArrayOf(dispProfile.length, 0.0, 0.0))
                     else -> {
-                        val dt = t - times[insIndex]
-                        val x0 = dispProfile.disps[insIndex]
-                        val v0 = dispProfile.vels[insIndex]
-                        val a = dispProfile.accels[insIndex]
-                        DualNum(
-                            doubleArrayOf(
-                                (0.5 * a * dt + v0) * dt + x0,
-                                a * dt + v0,
-                                a
-                            )
-                        )
+                        val dt = t - times[insIndex - 1]
+                        val x0 = dispProfile.disps[insIndex - 1]
+                        val v0 = dispProfile.vels[insIndex - 1]
+                        val a = dispProfile.accels[insIndex - 1]
+
+                        DualNum(doubleArrayOf(
+                            (0.5 * a * dt + v0) * dt + x0,
+                            a * dt + v0,
+                            a
+                        ))
                     }
                 }
             }
@@ -286,7 +301,7 @@ private fun backwardProfile(
             disps, endVel, maxVels.reversed(), minAccels.reversed().map { -it }
     ).let {
         DisplacementProfile(
-            it.disps.map { x -> it.disps.last() - x }.reversed(),
+            it.disps.map { x -> it.length - x }.reversed(),
             it.vels.reversed(),
             it.accels.reversed().map { a -> -a },
         )

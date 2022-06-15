@@ -44,10 +44,9 @@ class MecanumKinematics @JvmOverloads constructor(
 
     // TODO: this should inherit from something?
     inner class MaxWheelVelocityConstraint(val maxWheelVel: Double) {
-        fun maxRobotVel(robotPose: Transform2Dual<ArcLength>) {
+        fun maxRobotVel(robotPose: Transform2Dual<ArcLength>) =
             inverse(robotPose.inverse() * robotPose.velocity())
                 .all()
                 .minOf { abs(maxWheelVel / it[0]) }
-        }
     }
 }

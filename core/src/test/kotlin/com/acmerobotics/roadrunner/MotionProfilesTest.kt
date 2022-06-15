@@ -2,6 +2,7 @@ package com.acmerobotics.roadrunner
 
 import org.junit.jupiter.api.Test
 import org.knowm.xchart.QuickChart
+import org.knowm.xchart.XYChart
 import org.knowm.xchart.style.theme.MatlabTheme
 import kotlin.math.pow
 
@@ -18,46 +19,76 @@ fun doubleInner(xs: List<Double>) = listOf(xs.first()) +
 // TODO: change this to sampling
 // should fix the broken appearance of constant limit profiles
 // extend the displacement range in both directions
-fun chartProfile(p: DisplacementProfile) = QuickChart.getChart(
+fun chartDispProfile(p: DisplacementProfile): XYChart {
+    val xs = range(-0.1 * p.length, 1.1 * p.length, 1000)
+
+    val chart = QuickChart.getChart(
         "Profile",
         "x",
         "",
         arrayOf("v", "a"),
-        doubleInner(p.disps).toDoubleArray(),
-        arrayOf(
-            doubleInner(p.vels).toDoubleArray(),
-            double(p.accels).toDoubleArray(),
-        )
-    ).also {
-        it.styler.theme = MatlabTheme()
-    }
+        xs.toDoubleArray(),
+        xs.map {
+            val xDual = p[it]
+            Pair(xDual[1], xDual[2])
+        }.unzip().let {
+            arrayOf(it.first.toDoubleArray(), it.second.toDoubleArray())
+        },
+    )
+
+    chart.styler.theme = MatlabTheme()
+
+    return chart
+}
+
+fun chartTimeProfile(p: TimeProfile): XYChart {
+    val ts = range(-0.1 * p.duration, 1.1 * p.duration, 1000)
+
+    val chart = QuickChart.getChart(
+        "Profile",
+        "t",
+        "",
+        arrayOf("v", "a"),
+        ts.toDoubleArray(),
+        ts.map {
+            val xDual = p[it]
+            Pair(xDual[1], xDual[2])
+        }.unzip().let {
+            arrayOf(it.first.toDoubleArray(), it.second.toDoubleArray())
+        },
+    )
+
+    chart.styler.theme = MatlabTheme()
+
+    return chart
+}
+
+fun saveProfiles(s: String, p: TimeProfile) {
+    saveChart(s + "Disp", chartDispProfile(p.dispProfile))
+    saveChart(s + "Time", chartTimeProfile(p))
+}
 
 class MotionProfilesTest {
     @Test
-    fun testSimpleProfile() {
-        saveChart("simpleProfile", chartProfile(
-            profile(10.0, 0.0, { 5.0 }, { Interval(-5.0, 5.0) }, 0.1)
+    fun testSimpleProfile() =
+        saveProfiles("simpleProfile", TimeProfile(
+            profile(10.0, 0.0, { 5.0 }, { Interval(-5.0, 5.0) }, 10.0)
         ))
-    }
 
     @Test
-    fun testForwardProfileComplex() {
-        val p =
+    fun testForwardProfileComplex() =
+        saveProfiles("forwardProfile", TimeProfile(
             forwardProfile(
                 10.0, 0.0,
                 { (it - 5.0).pow(4.0) + 1.0 },
                 { 5.0 },
                 0.1
             )
-
-        assert(isSorted(p.disps))
-
-        saveChart("forwardProfile", chartProfile(p))
-    }
+        ))
 
     @Test
-    fun testBackwardProfileComplex() {
-        val p =
+    fun testBackwardProfileComplex() =
+        saveProfiles("backwardProfile", TimeProfile(
             backwardProfile(
                 10.0,
                 { (it - 5.0).pow(4.0) + 1.0 },
@@ -65,15 +96,11 @@ class MotionProfilesTest {
                 { -5.0 },
                 0.1
             )
-
-//        assert(isSorted(p.disps))
-
-        saveChart("backwardProfile", chartProfile(p))
-    }
+        ))
 
     @Test
-    fun testProfileComplex() {
-        val p =
+    fun testProfileComplex() =
+        saveProfiles("profile", TimeProfile(
             profile(
                 10.0,
                 0.0,
@@ -81,34 +108,23 @@ class MotionProfilesTest {
                 { Interval(-5.0, 5.0) },
                 0.01,
             )
-
-//        assert(isSorted(p.disps))
-
-        saveChart("profile", chartProfile(p))
-    }
+        ))
 
     @Test
-    fun testProfileComplexNonZeroMin() {
-        val p =
+    fun testProfileComplexNonZeroMin() =
+        saveProfiles("profileNonZero", TimeProfile(
             profile(
                 10.0,
-                0.5,
+                3.0,
                 { (it - 5.0).pow(4.0) + 1.0 },
                 { Interval(-5.0, 5.0) },
                 0.01,
             )
-
-//        assert(isSorted(p.disps))
-
-        saveChart("profileNonZero", chartProfile(p))
-    }
+        ))
 
     @Test
-    fun testSimpleAsymmetricProfile() {
-        saveChart(
-            "asymmetricProfile", chartProfile(
+    fun testSimpleAsymmetricProfile() =
+        saveProfiles("asymmetricProfile", TimeProfile(
                 profile(10.0, 0.0, { 5.0 }, { Interval(-2.0, 5.0) }, 10.0)
-            )
-        )
-    }
+        ))
 }
