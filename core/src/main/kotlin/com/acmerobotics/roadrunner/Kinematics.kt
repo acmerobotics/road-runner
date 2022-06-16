@@ -23,7 +23,8 @@ class MecanumKinematics @JvmOverloads constructor(
     val lateralMultiplier: Double = 1.0
 ) {
     constructor(
-        trackWidth: Double, wheelBase: Double,
+        trackWidth: Double,
+        wheelBase: Double,
         lateralMultiplier: Double = 1.0
     ) : this((trackWidth + wheelBase) / 2, lateralMultiplier)
 

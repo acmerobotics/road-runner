@@ -35,4 +35,3 @@ class TimeTrajectory(
 
     fun project(query: Position2Dual<Time>, init: Double) = dispTrajectory.project(query, init)
 }
-

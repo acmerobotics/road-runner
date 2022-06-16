@@ -14,5 +14,3 @@ fun saveChart(name: String, chart: XYChart) {
 
     BitmapEncoder.saveBitmapWithDPI(chart, file.absolutePath, BitmapEncoder.BitmapFormat.PNG, CHART_DPI)
 }
-
-

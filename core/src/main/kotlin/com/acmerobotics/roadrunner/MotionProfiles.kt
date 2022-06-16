@@ -124,11 +124,11 @@ fun timeScan(p: DisplacementProfile): List<Double> {
     for (i in p.accels.indices) {
         times.add(
             times.last() +
-                    if (p.accels[i] == 0.0) {
-                        (p.disps[i + 1] - p.disps[i]) / p.vels[i]
-                    } else {
-                        (p.vels[i + 1] - p.vels[i]) / p.accels[i]
-                    }
+                if (p.accels[i] == 0.0) {
+                    (p.disps[i + 1] - p.disps[i]) / p.vels[i]
+                } else {
+                    (p.vels[i + 1] - p.vels[i]) / p.accels[i]
+                }
         )
     }
     return times
@@ -197,7 +197,7 @@ fun merge(p1: DisplacementProfile, p2: DisplacementProfile): DisplacementProfile
 
     var lastMin1 = p1.vels[0] < p2.vels[0]
 
-    var i = 1;
+    var i = 1
     var j = 1
     while (i < p1.disps.size && j < p2.disps.size) {
         val endDisp = min(p1.disps[i], p2.disps[j])
@@ -218,7 +218,7 @@ fun merge(p1: DisplacementProfile, p2: DisplacementProfile): DisplacementProfile
                     p1.vels[i - 1],
                     sqrt(
                         p2.vels[j] * p2.vels[j] +
-                                2 * accel2 * (p1.disps[i - 1] - endDisp)
+                            2 * accel2 * (p1.disps[i - 1] - endDisp)
                     )
                 )
             } else {
@@ -226,7 +226,7 @@ fun merge(p1: DisplacementProfile, p2: DisplacementProfile): DisplacementProfile
                 Pair(
                     sqrt(
                         p1.vels[i] * p1.vels[i] +
-                                2 * accel1 * (p2.disps[j - 1] - endDisp)
+                            2 * accel1 * (p2.disps[j - 1] - endDisp)
                     ),
                     p2.vels[j - 1]
                 )
@@ -326,4 +326,3 @@ private fun backwardProfile(
         it.accels.reversed().map { a -> -a },
     )
 }
-

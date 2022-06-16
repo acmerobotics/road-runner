@@ -14,8 +14,8 @@ fun isSorted(xs: List<Double>) =
 
 fun double(xs: List<Double>) = List(2 * xs.size) { xs[it / 2] }
 fun doubleInner(xs: List<Double>) = listOf(xs.first()) +
-        double(xs.slice(1 until xs.lastIndex)) +
-        listOf(xs.last())
+    double(xs.slice(1 until xs.lastIndex)) +
+    listOf(xs.last())
 
 fun chartDispProfile(p: DisplacementProfile): XYChart {
     val xs = range(-0.1 * p.length, 1.1 * p.length, 1000)
@@ -77,7 +77,8 @@ class MotionProfilesTest {
     @Test
     fun testSimpleProfile() =
         saveProfiles(
-            "simpleProfile", TimeProfile(
+            "simpleProfile",
+            TimeProfile(
                 profile(10.0, 0.0, { 5.0 }, { Interval(-5.0, 5.0) }, 10.0)
             )
         )
@@ -85,7 +86,8 @@ class MotionProfilesTest {
     @Test
     fun testForwardProfileComplex() =
         saveProfiles(
-            "forwardProfile", TimeProfile(
+            "forwardProfile",
+            TimeProfile(
                 forwardProfile(
                     10.0, 0.0,
                     { (it - 5.0).pow(4.0) + 1.0 },
@@ -98,7 +100,8 @@ class MotionProfilesTest {
     @Test
     fun testBackwardProfileComplex() =
         saveProfiles(
-            "backwardProfile", TimeProfile(
+            "backwardProfile",
+            TimeProfile(
                 backwardProfile(
                     10.0,
                     { (it - 5.0).pow(4.0) + 1.0 },
@@ -112,7 +115,8 @@ class MotionProfilesTest {
     @Test
     fun testProfileComplex() =
         saveProfiles(
-            "profile", TimeProfile(
+            "profile",
+            TimeProfile(
                 profile(
                     10.0,
                     0.0,
@@ -126,7 +130,8 @@ class MotionProfilesTest {
     @Test
     fun testProfileComplexNonZeroMin() =
         saveProfiles(
-            "profileNonZero", TimeProfile(
+            "profileNonZero",
+            TimeProfile(
                 profile(
                     10.0,
                     3.0,
@@ -140,7 +145,8 @@ class MotionProfilesTest {
     @Test
     fun testSimpleAsymmetricProfile() =
         saveProfiles(
-            "asymmetricProfile", TimeProfile(
+            "asymmetricProfile",
+            TimeProfile(
                 profile(10.0, 0.0, { 5.0 }, { Interval(-2.0, 5.0) }, 10.0)
             )
         )

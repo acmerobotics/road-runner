@@ -5,20 +5,24 @@ import kotlin.math.min
 
 data class DualNum<Param>(val values: DoubleArray) {
     companion object {
-        fun <Param> constant(x: Double, n: Int) = DualNum<Param>(DoubleArray(n) {
-            when (it) {
-                0 -> x
-                else -> 0.0
+        fun <Param> constant(x: Double, n: Int) = DualNum<Param>(
+            DoubleArray(n) {
+                when (it) {
+                    0 -> x
+                    else -> 0.0
+                }
             }
-        })
+        )
 
-        fun <Param> variable(x: Double, n: Int) = DualNum<Param>(DoubleArray(n) {
-            when (it) {
-                0 -> x
-                1 -> 1.0
-                else -> 0.0
+        fun <Param> variable(x: Double, n: Int) = DualNum<Param>(
+            DoubleArray(n) {
+                when (it) {
+                    0 -> x
+                    1 -> 1.0
+                    else -> 0.0
+                }
             }
-        })
+        )
     }
 
     val size get() = values.size
@@ -30,13 +34,15 @@ data class DualNum<Param>(val values: DoubleArray) {
     fun value() = values.first()
     operator fun get(i: Int) = values[i]
 
-    fun addFirst(x: Double) = DualNum<Param>(DoubleArray(size + 1) {
-        if (it == 0) {
-            x
-        } else {
-            values[it - 1]
+    fun addFirst(x: Double) = DualNum<Param>(
+        DoubleArray(size + 1) {
+            if (it == 0) {
+                x
+            } else {
+                values[it - 1]
+            }
         }
-    })
+    )
 
     fun drop(n: Int) = DualNum<Param>(DoubleArray(size - n) { values[it + n] })
 
@@ -69,11 +75,11 @@ data class DualNum<Param>(val values: DoubleArray) {
         if (out.size == 2) return out
 
         out.values[2] = values[0] * other.values[2] + values[2] * other.values[0] +
-                2 * values[1] * other.values[1]
+            2 * values[1] * other.values[1]
         if (out.size == 3) return out
 
         out.values[3] = values[0] * other.values[3] + values[3] * other.values[0] +
-                3 * (values[2] * other.values[1] + values[1] * other.values[2])
+            3 * (values[2] * other.values[1] + values[1] * other.values[2])
         return out
     }
 
@@ -108,7 +114,7 @@ data class DualNum<Param>(val values: DoubleArray) {
         val int2 = int1 * values[2]
         out.values[3] =
             int2 + negRecip2 * values[3] +
-                    int2 - 2 * (deriv * deriv + recip * deriv2) * values[1]
+            int2 - 2 * (deriv * deriv + recip * deriv2) * values[1]
         return out
     }
 
@@ -136,7 +142,7 @@ data class DualNum<Param>(val values: DoubleArray) {
 
         val int2 = 2 * int1
         out.values[3] = recip * values[3] + int2 * values[2] +
-                (deriv * negRecip * int2 + negRecip2 * secondDeriv) * values[1]
+            (deriv * negRecip * int2 + negRecip2 * secondDeriv) * values[1]
 
         return out
     }
@@ -159,8 +165,8 @@ data class DualNum<Param>(val values: DoubleArray) {
         if (out.size == 3) return out
 
         out.values[3] = cos * values[3] -
-                3 * sin * values[1] * values[2] -
-                deriv * inDeriv2
+            3 * sin * values[1] * values[2] -
+            deriv * inDeriv2
 
         return out
     }
@@ -184,8 +190,8 @@ data class DualNum<Param>(val values: DoubleArray) {
         if (out.size == 3) return out
 
         out.values[3] = deriv * negInDeriv * values[1] +
-                3 * int * values[2] -
-                sin * values[3]
+            3 * int * values[2] -
+            sin * values[3]
 
         return out
     }
@@ -205,17 +211,19 @@ data class DualNum<Param>(val values: DoubleArray) {
         if (out.size == 3) return out
 
         out.values[3] = values[1] * oldParam.values[3] +
-                (3 * values[2] * oldParam.values[2] + values[3] * oldDeriv2) * oldParam.values[1]
+            (3 * values[2] * oldParam.values[2] + values[3] * oldDeriv2) * oldParam.values[1]
 
         return out
     }
 
-    operator fun plus(other: Double) = DualNum<Param>(DoubleArray(size) {
-        when (it) {
-            0 -> values[0] + other
-            else -> values[it]
+    operator fun plus(other: Double) = DualNum<Param>(
+        DoubleArray(size) {
+            when (it) {
+                0 -> values[0] + other
+                else -> values[it]
+            }
         }
-    })
+    )
 
     operator fun times(other: Double): DualNum<Param> {
         val out = DualNum<Param>(DoubleArray(size))

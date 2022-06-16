@@ -4,7 +4,11 @@ import org.junit.jupiter.api.Test
 import org.knowm.xchart.QuickChart
 import org.knowm.xchart.XYChart
 import org.knowm.xchart.style.theme.MatlabTheme
-import kotlin.math.*
+import kotlin.math.PI
+import kotlin.math.abs
+import kotlin.math.asin
+import kotlin.math.min
+import kotlin.math.sqrt
 import kotlin.random.Random
 import kotlin.test.assertEquals
 
@@ -13,7 +17,9 @@ infix fun Vector2.det(other: Vector2) = x * other.y - y * other.x
 fun Position2.free() = Vector2(x, y)
 
 private fun approxLength(
-    p1: Position2, p2: Position2, p3: Position2
+    p1: Position2,
+    p2: Position2,
+    p3: Position2
 ): Double {
     val chord = (p3 - p1).norm()
 
@@ -92,7 +98,8 @@ class ArcApproxArcCurve2(
                 loSamples + hiSamples
             } else {
                 Samples(
-                    length, listOf(
+                    length,
+                    listOf(
                         Pair(sLo, tLo),
                         Pair(sLo + length, tHi)
                     )
@@ -229,8 +236,16 @@ class CurvesTest {
             val t = DualNum.variable<Internal>(r.nextDouble(1.0), 4)
             spline[t.value(), 4].values
                 .zip(
-                    (t * (t * (t * (t * (t * spline.a + spline.b)
-                            + spline.c) + spline.d) + spline.e) + spline.f).values
+                    (
+                        t * (
+                            t * (
+                                t * (
+                                    t * (t * spline.a + spline.b) +
+                                        spline.c
+                                    ) + spline.d
+                                ) + spline.e
+                            ) + spline.f
+                        ).values
                 )
                 .forEach {
                     assertEquals(it.first, it.second, 1e-6)

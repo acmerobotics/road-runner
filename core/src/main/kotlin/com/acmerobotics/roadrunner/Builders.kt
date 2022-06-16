@@ -60,7 +60,7 @@ class PosePathBuilder private constructor(
     val state: State,
 ) {
     constructor(path: PositionPath<ArcLength>, beginHeading: Rotation2) :
-            this(path, 0.0, Lazy({ emptyList() }, beginHeading))
+        this(path, 0.0, Lazy({ emptyList() }, beginHeading))
 
     sealed interface State {
         val endHeading: Rotation2
@@ -81,7 +81,8 @@ class PosePathBuilder private constructor(
         val beginHeadingDual = posePath.begin(3).rotation
 
         return PosePathBuilder(
-            posPath, disp, Eager(
+            posPath, disp,
+            Eager(
                 when (state) {
                     is Eager -> {
                         // TODO: Rotation2.epsilonEquals?
@@ -128,7 +129,8 @@ class PosePathBuilder private constructor(
         require(disp > beginDisp)
 
         return PosePathBuilder(
-            posPath, disp, Lazy(
+            posPath, disp,
+            Lazy(
                 when (state) {
                     is Eager -> {
                         {
@@ -156,7 +158,8 @@ class PosePathBuilder private constructor(
                             )
                         }
                     }
-                }, heading
+                },
+                heading
             )
         )
     }
@@ -189,7 +192,7 @@ class PosePathBuilder private constructor(
 
 class SafePosePathBuilder(val posePathBuilder: PosePathBuilder) {
     constructor(path: PositionPath<ArcLength>, beginHeading: Rotation2) :
-            this(PosePathBuilder(path, beginHeading))
+        this(PosePathBuilder(path, beginHeading))
 
     fun tangentUntil(disp: Double) =
         RestrictedPosePathBuilder(posePathBuilder.tangentUntil(disp))

@@ -12,26 +12,28 @@ class QuinticSpline1(
     }
 
     val a = -6.0 * begin[0] - 3.0 * begin[1] - 0.5 * begin[2] +
-            6.0 * end[0] - 3.0 * end[1] + 0.5 * end[2]
+        6.0 * end[0] - 3.0 * end[1] + 0.5 * end[2]
     val b = 15.0 * begin[0] + 8.0 * begin[1] + 1.5 * begin[2] -
-            15.0 * end[0] + 7.0 * end[1] - end[2]
+        15.0 * end[0] + 7.0 * end[1] - end[2]
     val c = -10.0 * begin[0] - 6.0 * begin[1] - 1.5 * begin[2] +
-            10.0 * end[0] - 4.0 * end[1] + 0.5 * end[2]
+        10.0 * end[0] - 4.0 * end[1] + 0.5 * end[2]
     val d = 0.5 * begin[2]
     val e = begin[1]
     val f = begin[0]
 
-    operator fun get(t: Double, n: Int) = DualNum<Internal>(DoubleArray(n) {
-        when (it) {
-            0 -> ((((a * t + b) * t + c) * t + d) * t + e) * t + f
-            1 -> (((5.0 * a * t + 4.0 * b) * t + 3.0 * c) * t + 2.0 * d) * t + e
-            2 -> ((20.0 * a * t + 12.0 * b) * t + 6.0 * c) * t + 2.0 * d
-            3 -> (60.0 * a * t + 24.0 * b) * t + 6.0 * c
-            4 -> 120.0 * a * t + 24.0 * b
-            5 -> 120.0 * a
-            else -> 0.0
+    operator fun get(t: Double, n: Int) = DualNum<Internal>(
+        DoubleArray(n) {
+            when (it) {
+                0 -> ((((a * t + b) * t + c) * t + d) * t + e) * t + f
+                1 -> (((5.0 * a * t + 4.0 * b) * t + 3.0 * c) * t + 2.0 * d) * t + e
+                2 -> ((20.0 * a * t + 12.0 * b) * t + 6.0 * c) * t + 2.0 * d
+                3 -> (60.0 * a * t + 24.0 * b) * t + 6.0 * c
+                4 -> 120.0 * a * t + 24.0 * b
+                5 -> 120.0 * a
+                else -> 0.0
+            }
         }
-    })
+    )
 }
 
 interface PositionPath<Param> {
@@ -154,7 +156,8 @@ interface HeadingPath {
 }
 
 class ConstantHeadingPath(
-    val heading: Rotation2, override val length: Double,
+    val heading: Rotation2,
+    override val length: Double,
 ) : HeadingPath {
     override fun get(s: Double, n: Int) = Rotation2Dual.constant<ArcLength>(heading, n)
 }

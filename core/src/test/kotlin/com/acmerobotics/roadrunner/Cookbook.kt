@@ -2,28 +2,28 @@ package com.acmerobotics.roadrunner
 
 import kotlin.math.PI
 
-//import com.acmerobotics.roadrunner.control.PIDCoefficients
-//import com.acmerobotics.roadrunner.control.PIDFController
-//import com.acmerobotics.roadrunner.drive.Drive
-//import com.acmerobotics.roadrunner.drive.DriveSignal
-//import com.acmerobotics.roadrunner.followers.HolonomicPIDVAFollower
-//import com.acmerobotics.roadrunner.geometry.Pose2d
-//import com.acmerobotics.roadrunner.geometry.Vector2d
-//import com.acmerobotics.roadrunner.kinematics.Kinematics
-//import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
-//import com.acmerobotics.roadrunner.trajectory.constraints.MinVelocityConstraint
-//import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint
-//import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint
-//import com.acmerobotics.roadrunner.trajectory.constraints.TranslationalVelocityConstraint
-//import com.acmerobotics.roadrunner.util.NanoClock
-//import kotlin.math.PI
+// import com.acmerobotics.roadrunner.control.PIDCoefficients
+// import com.acmerobotics.roadrunner.control.PIDFController
+// import com.acmerobotics.roadrunner.drive.Drive
+// import com.acmerobotics.roadrunner.drive.DriveSignal
+// import com.acmerobotics.roadrunner.followers.HolonomicPIDVAFollower
+// import com.acmerobotics.roadrunner.geometry.Pose2d
+// import com.acmerobotics.roadrunner.geometry.Vector2d
+// import com.acmerobotics.roadrunner.kinematics.Kinematics
+// import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
+// import com.acmerobotics.roadrunner.trajectory.constraints.MinVelocityConstraint
+// import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint
+// import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint
+// import com.acmerobotics.roadrunner.trajectory.constraints.TranslationalVelocityConstraint
+// import com.acmerobotics.roadrunner.util.NanoClock
+// import kotlin.math.PI
 //
-//// TODO: label implicit arguments?
+// // TODO: label implicit arguments?
 //
-//// TODO: include all the builtin paths
-//// TODO: include all the markers
+// // TODO: include all the builtin paths
+// // TODO: include all the markers
 
-//fun displacementMarkers() {
+// fun displacementMarkers() {
 
 fun getDisp(): Double {
     return 0.0
@@ -62,26 +62,26 @@ fun main() {
     }
 }
 
-//// TODO: should I replace trajectory sequences with basic fsms?
-//// I guess you would lose duration, position for dashboard display
-//// maybe there should be two layers
+// // TODO: should I replace trajectory sequences with basic fsms?
+// // I guess you would lose duration, position for dashboard display
+// // maybe there should be two layers
 
-//fun complementaryLocalizer() {
+// fun complementaryLocalizer() {
 //
-//}
+// }
 //
-//// probably a bit extra
-//fun monteCarloLocalizer() {
+// // probably a bit extra
+// fun monteCarloLocalizer() {
 //
-//}
+// }
 //
-//fun builtinTrajGui() {
+// fun builtinTrajGui() {
 //
-//}
+// }
 //
 // TODO: should constraints have a time builder?
 // I suppose overrides can be built in a layer on top of that
-//fun slowTrajectory() {
+// fun slowTrajectory() {
 //    val traj = TrajectoryBuilder(Pose2d(0.0, 0.0, 0.0), false,
 //        TranslationalVelocityConstraint(20.0),
 //        ProfileAccelerationConstraint(15.0))
@@ -89,15 +89,15 @@ fun main() {
 //        .lineTo(Vector2d(20.0, 0.0),
 //            TranslationalVelocityConstraint(10.0), null)
 //        .build()
-//}
+// }
 //
-//fun driveFollowing() {
+// fun driveFollowing() {
 //
-//}
+// }
 //
-//fun pathContinuitySafety() {
+// fun pathContinuitySafety() {
 //
-//}
+// }
 //
 
 // current TS impl is only magically exception safe
@@ -128,20 +128,20 @@ fun persistentBuilders() {
 
 // TODO: mirroring can be done to the inputs or the outputs
 // output might just win for being easiest
-//fun mirrorPaths() {
+// fun mirrorPaths() {
 //
-//}
+// }
 
-//fun goingBackwards() {
+// fun goingBackwards() {
 //
-//}
+// }
 
 // TODO: important?
-//fun customWaypointDerivMag() {
+// fun customWaypointDerivMag() {
 //
-//}
+// }
 
-//fun admissibleTrajFollowing() {
+// fun admissibleTrajFollowing() {
 //    val follower = HolonomicPIDVAFollower(
 //        PIDCoefficients(0.0, 0.0, 0.0),
 //        PIDCoefficients(0.0, 0.0, 0.0),
@@ -149,14 +149,13 @@ fun persistentBuilders() {
 //        admissibleError = Pose2d(5.0, 5.0, PI / 8),
 //        timeout = 0.25
 //    )
-//}
+// }
 
-//fun orbitMode() {
+// fun orbitMode() {
 //
-//}
+// }
 
 fun setWheelPowers(powers: WheelVelocities<Time>) {
-
 }
 
 fun fieldCentric(kinematics: MecanumKinematics, poseEstimate: Transform2, leftStick: Vector2, rightStick: Vector2) {
@@ -172,12 +171,11 @@ fun fieldCentric(kinematics: MecanumKinematics, poseEstimate: Transform2, leftSt
 
 fun getWheelIncrements(): WheelIncrements {
     return WheelIncrements(
-        0.0, 0.0, 0.0, 0.0  // TODO: real measurements
+        0.0, 0.0, 0.0, 0.0 // TODO: real measurements
     )
 }
 
 fun setWheelVelocities(vels: WheelVelocities<Time>) {
-
 }
 
 val TRANS_GAIN = 10.0
@@ -198,7 +196,8 @@ fun goToPoint(kinematics: MecanumKinematics, initialPoseEstimate: Transform2, ta
             Twist2(
                 error.transError * TRANS_GAIN,
                 error.rotError * ROT_GAIN,
-            ), 1
+            ),
+            1
         )
         // TODO: this leaves out feedforward
         setWheelVelocities(kinematics.inverse(command))
@@ -210,14 +209,18 @@ fun clock(): Double {
 }
 
 fun turnWithProfile(
-    kinematics: MecanumKinematics, initialPoseEstimate: Transform2,
-    maxAngVel: Double, maxAbsAngAccel: Double, angle: Double
+    kinematics: MecanumKinematics,
+    initialPoseEstimate: Transform2,
+    maxAngVel: Double,
+    maxAbsAngAccel: Double,
+    angle: Double
 ) {
     // TODO: constant constraint overload would be nice with the resolution
-    val profile = TimeProfile(profile(
-        angle, 0.0,
-        { maxAngVel }, { Interval(-maxAbsAngAccel, maxAbsAngAccel) }, angle
-    )
+    val profile = TimeProfile(
+        profile(
+            angle, 0.0,
+            { maxAngVel }, { Interval(-maxAbsAngAccel, maxAbsAngAccel) }, angle
+        )
     )
     // TODO: termination criterion
 
@@ -240,11 +243,11 @@ fun turnWithProfile(
     }
 }
 
-//fun spliceTraj() {
+// fun spliceTraj() {
 //
-//}
+// }
 
-//fun slowRegion() {
+// fun slowRegion() {
 //    class RectangleMaskConstraint(
 //        val minX: Double, val minY: Double,
 //        val maxX: Double, val maxY: Double,
@@ -268,4 +271,4 @@ fun turnWithProfile(
 //    )
 //        .splineTo(Vector2d(40.0, 60.0), PI / 2)
 //        .build()
-//}
+// }

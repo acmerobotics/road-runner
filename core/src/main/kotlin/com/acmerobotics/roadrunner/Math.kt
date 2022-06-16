@@ -1,6 +1,5 @@
 package com.acmerobotics.roadrunner
 
-
 val EPS = 2.2e-15
 
 fun epsCopySign(x: Double) =
@@ -11,10 +10,10 @@ fun epsCopySign(x: Double) =
     }
 
 // TODO: putting this here because Ramsete needs it (maybe premature)
-//fun sinc(x: Double): Double {
+// fun sinc(x: Double): Double {
 //    val u = x + epsCopySign(x)
 //    return sin(u) / u
-//}
+// }
 
 fun clamp(x: Double, lo: Double, hi: Double): Double {
     if (x < lo) {
@@ -52,18 +51,18 @@ data class ScanResult(
 
 fun integralScan(a: Double, b: Double, eps: Double, f: (Double) -> Double): ScanResult {
     val m = (a + b) / 2
-    val fa = f(a);
-    val fm = f(m);
+    val fa = f(a)
+    val fm = f(m)
     val fb = f(b)
 
     var i = (b - a) / 8 * (
-            fa + fm + fb +
-                    f(a + 0.9501 * (b - a)) +
-                    f(a + 0.2311 * (b - a)) +
-                    f(a + 0.6068 * (b - a)) +
-                    f(a + 0.4860 * (b - a)) +
-                    f(a + 0.8913 * (b - a))
-            )
+        fa + fm + fb +
+            f(a + 0.9501 * (b - a)) +
+            f(a + 0.2311 * (b - a)) +
+            f(a + 0.6068 * (b - a)) +
+            f(a + 0.4860 * (b - a)) +
+            f(a + 0.8913 * (b - a))
+        )
     if (i == 0.0) {
         i = b - a
     }
@@ -74,9 +73,9 @@ fun integralScan(a: Double, b: Double, eps: Double, f: (Double) -> Double): Scan
 
     fun helper(a: Double, m: Double, b: Double, fa: Double, fm: Double, fb: Double) {
         val h = (b - a) / 4
-        val ml = a + h;
+        val ml = a + h
         val mr = b - h
-        val fml = f(ml);
+        val fml = f(ml)
         val fmr = f(mr)
         var i1 = h / 1.5 * (fa + 4 * fm + fb)
         val i2 = h / 3 * (fa + 4 * (fml + fmr) + 2 * fm + fb)

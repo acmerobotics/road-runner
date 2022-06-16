@@ -75,7 +75,6 @@ data class Vector2Dual<Param>(val x: DualNum<Param>, val y: DualNum<Param>) {
     fun bind() = Position2Dual(x, y)
 }
 
-
 data class Rotation2(val real: Double, val imag: Double) {
     companion object {
         fun exp(theta: Double) = Rotation2(cos(theta), sin(theta))
@@ -149,15 +148,17 @@ data class Rotation2Dual<Param>(val real: DualNum<Param>, val imag: DualNum<Para
     operator fun minus(other: Rotation2Dual<Param>) = (other.inverse() * this).log()
 
     // TODO: I'd like to somehow merge this with velocity()
-    fun log() = DualNum<Param>(DoubleArray(size) {
-        when (it) {
-            0 -> atan2(imag[0], real[0])
-            1 -> real[0] * imag[1] - imag[0] * real[1]
-            2 -> real[0] * imag[2] - imag[0] * real[2]
-            // ensured by init{} check
-            else -> throw AssertionError()
+    fun log() = DualNum<Param>(
+        DoubleArray(size) {
+            when (it) {
+                0 -> atan2(imag[0], real[0])
+                1 -> real[0] * imag[1] - imag[0] * real[1]
+                2 -> real[0] * imag[2] - imag[0] * real[2]
+                // ensured by init{} check
+                else -> throw AssertionError()
+            }
         }
-    })
+    )
 
     // derivative of atan2 under unit norm assumption
     fun velocity() = real * imag.drop(1) - imag * real.drop(1)

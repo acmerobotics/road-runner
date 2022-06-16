@@ -4,7 +4,6 @@ import org.knowm.xchart.XYChartBuilder
 import org.knowm.xchart.style.markers.Circle
 import org.knowm.xchart.style.theme.MatlabTheme
 
-
 fun main() {
     val path = TangentPath(
         ArcCurve2(
@@ -18,7 +17,8 @@ fun main() {
                     DualNum(doubleArrayOf(20.0, 0.0, 0.0)),
                 ),
             )
-        ), 0.0
+        ),
+        0.0
     )
 
     val profile = DisplacementProfile(
