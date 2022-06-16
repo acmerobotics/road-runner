@@ -186,3 +186,35 @@ class PosePathBuilder private constructor(
         )
     }
 }
+
+class SafePosePathBuilder(val posePathBuilder: PosePathBuilder) {
+    constructor(path: PositionPath<ArcLength>, beginHeading: Rotation2) :
+            this(PosePathBuilder(path, beginHeading))
+
+    fun tangentTo(disp: Double) =
+        RestrictedPosePathBuilder(posePathBuilder.tangentTo(disp))
+    fun constantTo(disp: Double) =
+        RestrictedPosePathBuilder(posePathBuilder.constantTo(disp))
+    // TODO: linearTo?
+    fun lineTo(disp: Double, heading: Rotation2) =
+        RestrictedPosePathBuilder(posePathBuilder.lineTo(disp, heading))
+
+    fun splineTo(disp: Double, heading: Rotation2) =
+        SafePosePathBuilder(posePathBuilder.splineTo(disp, heading))
+
+    fun tangentToEnd() = posePathBuilder.tangentToEnd()
+    fun constantToEnd() = posePathBuilder.constantToEnd()
+    fun lineToEnd(heading: Rotation2) = posePathBuilder.lineToEnd(heading)
+    fun splineToEnd(heading: Rotation2) = posePathBuilder.splineToEnd(heading)
+
+    fun build() = posePathBuilder.build()
+}
+
+class RestrictedPosePathBuilder(val posePathBuilder: PosePathBuilder) {
+    fun splineTo(disp: Double, heading: Rotation2) =
+        SafePosePathBuilder(posePathBuilder.splineTo(disp, heading))
+
+    fun splineToEnd(heading: Rotation2) = posePathBuilder.splineToEnd(heading)
+
+    fun build() = posePathBuilder.build()
+}

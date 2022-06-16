@@ -7,6 +7,7 @@ import org.knowm.xchart.style.theme.MatlabTheme
 import kotlin.math.PI
 import kotlin.random.Random
 import kotlin.test.assertEquals
+import kotlin.test.assertFails
 
 fun chartSpline(q: QuinticSpline1): XYChart {
     val ts = range(0.0, 1.0, 1000)
@@ -306,11 +307,79 @@ class BuildersTest {
             .tangentTo((posPath.offsets[0] + posPath.offsets[1]) / 2)
             .splineToEnd(Rotation2.exp(-PI / 3))
 
-//        println(posePath.offsets)
-//        posePath.paths.forEach { println(it.length) }
-//        println(posePath)
-
         saveChart("posPathBuilder", chartPosPath(posPath))
         saveChart("posePathBuilder", chartPosePath(posePath))
+    }
+
+    @Test
+    fun testConstantLinear() {
+        val posPath = PositionPathBuilder(
+            Position2(0.0, 0.0),
+            Rotation2.exp(0.0)
+        )
+            .splineTo(
+                Position2(15.0, 15.0),
+                Rotation2.exp(PI),
+            )
+            .build()
+
+        assertFails {
+            PosePathBuilder(posPath, Rotation2.exp(0.0))
+                .constantTo(posPath.length / 2)
+                .lineToEnd(Rotation2.exp(PI / 2))
+        }
+    }
+
+    fun nextRot() = Rotation2.exp(2 * PI * Random.Default.nextDouble())
+
+    fun appendSafe(disp: Double, b: SafePosePathBuilder): PosePath {
+        val r = Random.Default
+        val x = r.nextDouble()
+        return if (r.nextDouble() < 0.1 || disp >= 25.0) {
+            when {
+                x < 0.25 -> b.tangentToEnd()
+                x < 0.5 -> b.constantToEnd()
+                x < 0.75 -> b.lineToEnd(nextRot())
+                else -> b.splineToEnd(nextRot())
+            }
+        } else {
+            if (x < 0.25) {
+                appendSafe(disp + 1.0, b.splineTo(disp, nextRot()))
+            } else {
+                appendRestricted(
+                    disp + 1.0, when {
+                        x < 0.5 -> b.tangentTo(disp)
+                        x < 0.75 -> b.constantTo(disp)
+                        else -> b.lineTo(disp, nextRot())
+                    }
+                )
+            }
+        }
+    }
+
+    fun appendRestricted(disp: Double, b: RestrictedPosePathBuilder) =
+        if (Random.Default.nextDouble() < 0.1 || disp >= 25.0) {
+            b.splineToEnd(nextRot())
+        } else {
+            appendSafe(disp + 1.0, b.splineTo(disp, nextRot()))
+        }
+
+    @Test
+    fun testSafePathBuilder() {
+        repeat(100) {
+            val posPath = PositionPathBuilder(
+                Position2(0.0, 0.0),
+                Rotation2.exp(0.0),
+            )
+                .lineTo(Position2(25.0, 0.0))
+                .build()
+
+            appendSafe(
+                1.0, SafePosePathBuilder(
+                    posPath,
+                    Rotation2.exp(0.0)
+                )
+            )
+        }
     }
 }
