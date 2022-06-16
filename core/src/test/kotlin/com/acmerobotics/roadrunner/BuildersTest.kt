@@ -180,7 +180,7 @@ class BuildersTest {
             .build()
 
         val posePath = PosePathBuilder(posPath, Rotation2.exp(PI))
-            .tangentToEnd()
+            .tangentUntilEnd()
 
         saveChart("poseBuilder/tangent", chartPosePathHeading(posePath))
     }
@@ -211,7 +211,7 @@ class BuildersTest {
             .build()
 
         val posePath = PosePathBuilder(posPath, Rotation2.exp(PI))
-            .splineToEnd(Rotation2.exp(-PI / 3))
+            .splineUntilEnd(Rotation2.exp(-PI / 3))
 
         saveChart("poseBuilder/spline", chartPosePathHeading(posePath))
         saveChart(
@@ -243,8 +243,8 @@ class BuildersTest {
             .build()
 
         val posePath = PosePathBuilder(posPath, Rotation2.exp(PI))
-            .lineTo(posPath.length / 2, Rotation2.exp(PI / 2))
-            .splineToEnd(Rotation2.exp(-PI / 3))
+            .linearUntil(posPath.length / 2, Rotation2.exp(PI / 2))
+            .splineUntilEnd(Rotation2.exp(-PI / 3))
 
         saveChart("poseBuilder/linearSpline", chartPosePathHeading(posePath))
     }
@@ -262,8 +262,8 @@ class BuildersTest {
             .build()
 
         val posePath = PosePathBuilder(posPath, Rotation2.exp(PI))
-            .splineTo(posPath.length / 2, Rotation2.exp(-PI / 3))
-            .lineToEnd(Rotation2.exp(PI / 2))
+            .splineUntil(posPath.length / 2, Rotation2.exp(-PI / 3))
+            .linearUntilEnd(Rotation2.exp(PI / 2))
 
         saveChart("poseBuilder/splineLinear", chartPosePathHeading(posePath))
     }
@@ -281,8 +281,8 @@ class BuildersTest {
             .build()
 
         val posePath = PosePathBuilder(posPath, Rotation2.exp(PI))
-            .splineTo(posPath.length / 2, Rotation2.exp(-PI / 3))
-            .splineToEnd(Rotation2.exp(PI / 2))
+            .splineUntil(posPath.length / 2, Rotation2.exp(-PI / 3))
+            .splineUntilEnd(Rotation2.exp(PI / 2))
 
         saveChart("poseBuilder/splineSpline", chartPosePathHeading(posePath))
     }
@@ -304,8 +304,8 @@ class BuildersTest {
             .build()
 
         val posePath = PosePathBuilder(posPath, Rotation2.exp(0.0))
-            .tangentTo((posPath.offsets[0] + posPath.offsets[1]) / 2)
-            .splineToEnd(Rotation2.exp(-PI / 3))
+            .tangentUntil((posPath.offsets[0] + posPath.offsets[1]) / 2)
+            .splineUntilEnd(Rotation2.exp(-PI / 3))
 
         saveChart("posPathBuilder", chartPosPath(posPath))
         saveChart("posePathBuilder", chartPosePath(posePath))
@@ -325,8 +325,8 @@ class BuildersTest {
 
         assertFails {
             PosePathBuilder(posPath, Rotation2.exp(0.0))
-                .constantTo(posPath.length / 2)
-                .lineToEnd(Rotation2.exp(PI / 2))
+                .constantUntil(posPath.length / 2)
+                .linearUntilEnd(Rotation2.exp(PI / 2))
         }
     }
 
@@ -337,20 +337,20 @@ class BuildersTest {
         val x = r.nextDouble()
         return if (r.nextDouble() < 0.1 || disp >= 25.0) {
             when {
-                x < 0.25 -> b.tangentToEnd()
-                x < 0.5 -> b.constantToEnd()
-                x < 0.75 -> b.lineToEnd(nextRot())
-                else -> b.splineToEnd(nextRot())
+                x < 0.25 -> b.tangentUntilEnd()
+                x < 0.5 -> b.constantUntilEnd()
+                x < 0.75 -> b.linearUntilEnd(nextRot())
+                else -> b.splineUntilEnd(nextRot())
             }
         } else {
             if (x < 0.25) {
-                appendSafe(disp + 1.0, b.splineTo(disp, nextRot()))
+                appendSafe(disp + 1.0, b.splineUntil(disp, nextRot()))
             } else {
                 appendRestricted(
                     disp + 1.0, when {
-                        x < 0.5 -> b.tangentTo(disp)
-                        x < 0.75 -> b.constantTo(disp)
-                        else -> b.lineTo(disp, nextRot())
+                        x < 0.5 -> b.tangentUntil(disp)
+                        x < 0.75 -> b.constantUntil(disp)
+                        else -> b.linearUntil(disp, nextRot())
                     }
                 )
             }
@@ -359,9 +359,9 @@ class BuildersTest {
 
     fun appendRestricted(disp: Double, b: RestrictedPosePathBuilder) =
         if (Random.Default.nextDouble() < 0.1 || disp >= 25.0) {
-            b.splineToEnd(nextRot())
+            b.splineUntilEnd(nextRot())
         } else {
-            appendSafe(disp + 1.0, b.splineTo(disp, nextRot()))
+            appendSafe(disp + 1.0, b.splineUntil(disp, nextRot()))
         }
 
     @Test

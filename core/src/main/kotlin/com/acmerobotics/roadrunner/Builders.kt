@@ -97,34 +97,34 @@ class PosePathBuilder private constructor(
         )
     }
 
-    private fun viewTo(disp: Double) =
+    private fun viewUntil(disp: Double) =
         PositionPathView(posPath, beginDisp, disp - beginDisp)
 
-    fun tangentTo(disp: Double) = addEagerPosePath(
+    fun tangentUntil(disp: Double) = addEagerPosePath(
         disp,
         TangentPath(
-            viewTo(disp),
+            viewUntil(disp),
             state.endHeading - posPath[disp, 2].tangent().value()
         )
     )
 
-    fun constantTo(disp: Double) = addEagerPosePath(
+    fun constantUntil(disp: Double) = addEagerPosePath(
         disp,
         HeadingPosePath(
-            viewTo(disp),
+            viewUntil(disp),
             ConstantHeadingPath(state.endHeading, disp - beginDisp),
         )
     )
 
-    fun lineTo(disp: Double, heading: Rotation2) = addEagerPosePath(
+    fun linearUntil(disp: Double, heading: Rotation2) = addEagerPosePath(
         disp,
         HeadingPosePath(
-            viewTo(disp),
+            viewUntil(disp),
             LinearHeadingPath(state.endHeading, heading - state.endHeading, disp - beginDisp)
         )
     )
 
-    fun splineTo(disp: Double, heading: Rotation2): PosePathBuilder {
+    fun splineUntil(disp: Double, heading: Rotation2): PosePathBuilder {
         require(disp > beginDisp)
 
         return PosePathBuilder(
@@ -134,7 +134,7 @@ class PosePathBuilder private constructor(
                         {
                             state.paths + listOf(
                                 HeadingPosePath(
-                                    viewTo(disp),
+                                    viewUntil(disp),
                                     SplineHeadingPath(state.endHeadingDual, it, disp - beginDisp),
                                 )
                             )
@@ -150,7 +150,7 @@ class PosePathBuilder private constructor(
 
                             state.makePaths(beginHeading) + listOf(
                                 HeadingPosePath(
-                                    viewTo(disp),
+                                    viewUntil(disp),
                                     SplineHeadingPath(beginHeading, it, disp - beginDisp)
                                 )
                             )
@@ -161,10 +161,10 @@ class PosePathBuilder private constructor(
         )
     }
 
-    fun tangentToEnd() = tangentTo(posPath.length).build()
-    fun constantToEnd() = constantTo(posPath.length).build()
-    fun lineToEnd(heading: Rotation2) = lineTo(posPath.length, heading).build()
-    fun splineToEnd(heading: Rotation2) = splineTo(posPath.length, heading).build()
+    fun tangentUntilEnd() = tangentUntil(posPath.length).build()
+    fun constantUntilEnd() = constantUntil(posPath.length).build()
+    fun linearUntilEnd(heading: Rotation2) = linearUntil(posPath.length, heading).build()
+    fun splineUntilEnd(heading: Rotation2) = splineUntil(posPath.length, heading).build()
 
     // NOTE: must be at the end of the pose path
     fun build(): PosePath {
@@ -191,30 +191,30 @@ class SafePosePathBuilder(val posePathBuilder: PosePathBuilder) {
     constructor(path: PositionPath<ArcLength>, beginHeading: Rotation2) :
             this(PosePathBuilder(path, beginHeading))
 
-    fun tangentTo(disp: Double) =
-        RestrictedPosePathBuilder(posePathBuilder.tangentTo(disp))
-    fun constantTo(disp: Double) =
-        RestrictedPosePathBuilder(posePathBuilder.constantTo(disp))
+    fun tangentUntil(disp: Double) =
+        RestrictedPosePathBuilder(posePathBuilder.tangentUntil(disp))
+    fun constantUntil(disp: Double) =
+        RestrictedPosePathBuilder(posePathBuilder.constantUntil(disp))
     // TODO: linearTo?
-    fun lineTo(disp: Double, heading: Rotation2) =
-        RestrictedPosePathBuilder(posePathBuilder.lineTo(disp, heading))
+    fun linearUntil(disp: Double, heading: Rotation2) =
+        RestrictedPosePathBuilder(posePathBuilder.linearUntil(disp, heading))
 
-    fun splineTo(disp: Double, heading: Rotation2) =
-        SafePosePathBuilder(posePathBuilder.splineTo(disp, heading))
+    fun splineUntil(disp: Double, heading: Rotation2) =
+        SafePosePathBuilder(posePathBuilder.splineUntil(disp, heading))
 
-    fun tangentToEnd() = posePathBuilder.tangentToEnd()
-    fun constantToEnd() = posePathBuilder.constantToEnd()
-    fun lineToEnd(heading: Rotation2) = posePathBuilder.lineToEnd(heading)
-    fun splineToEnd(heading: Rotation2) = posePathBuilder.splineToEnd(heading)
+    fun tangentUntilEnd() = posePathBuilder.tangentUntilEnd()
+    fun constantUntilEnd() = posePathBuilder.constantUntilEnd()
+    fun linearUntilEnd(heading: Rotation2) = posePathBuilder.linearUntilEnd(heading)
+    fun splineUntilEnd(heading: Rotation2) = posePathBuilder.splineUntilEnd(heading)
 
     fun build() = posePathBuilder.build()
 }
 
 class RestrictedPosePathBuilder(val posePathBuilder: PosePathBuilder) {
-    fun splineTo(disp: Double, heading: Rotation2) =
-        SafePosePathBuilder(posePathBuilder.splineTo(disp, heading))
+    fun splineUntil(disp: Double, heading: Rotation2) =
+        SafePosePathBuilder(posePathBuilder.splineUntil(disp, heading))
 
-    fun splineToEnd(heading: Rotation2) = posePathBuilder.splineToEnd(heading)
+    fun splineUntilEnd(heading: Rotation2) = posePathBuilder.splineUntilEnd(heading)
 
     fun build() = posePathBuilder.build()
 }
