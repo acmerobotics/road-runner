@@ -1,6 +1,6 @@
 package com.acmerobotics.roadrunner
 
-import org.junit.jupiter.api.Test
+import kotlin.test.Test
 import org.knowm.xchart.QuickChart
 import org.knowm.xchart.XYChart
 import org.knowm.xchart.style.theme.MatlabTheme
