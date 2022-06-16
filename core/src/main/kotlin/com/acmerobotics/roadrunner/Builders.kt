@@ -195,7 +195,6 @@ class SafePosePathBuilder(val posePathBuilder: PosePathBuilder) {
         RestrictedPosePathBuilder(posePathBuilder.tangentUntil(disp))
     fun constantUntil(disp: Double) =
         RestrictedPosePathBuilder(posePathBuilder.constantUntil(disp))
-    // TODO: linearTo?
     fun linearUntil(disp: Double, heading: Rotation2) =
         RestrictedPosePathBuilder(posePathBuilder.linearUntil(disp, heading))
 

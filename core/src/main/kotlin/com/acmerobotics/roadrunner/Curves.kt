@@ -145,27 +145,6 @@ data class PositionPathView<Param>(
     override fun get(param: Double, n: Int) = path[param + offset, n]
 }
 
-// TODO: is this actually necessary with the builders?
-fun <Param> splitPositionPath(path: PositionPath<Param>, cuts: List<Double>): List<PositionPath<Param>> {
-    if (cuts.isEmpty()) {
-        return listOf(path)
-    }
-
-    require(cuts.zip(cuts.drop(1)).all { (a, b) -> a < b })
-    require(cuts.first() > 0.0)
-    require(cuts.last() < path.length)
-
-    val views = mutableListOf<PositionPath<Param>>()
-    val finalBegin = cuts.fold(0.0) { begin, end ->
-        views.add(PositionPathView(path, begin, end - begin))
-        end
-    }
-
-    views.add(PositionPathView(path, finalBegin, path.length - finalBegin))
-
-    return views
-}
-
 interface HeadingPath {
     val length: Double
     operator fun get(s: Double, n: Int): Rotation2Dual<ArcLength>
