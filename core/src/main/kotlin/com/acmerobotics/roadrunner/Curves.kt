@@ -199,17 +199,22 @@ class SplineHeadingPath(
         require(end.size >= 3)
     }
 
-    val spline = QuinticSpline1(
-        DualNum.constant(0.0, 3),
-        (end - begin).reparam(
-            // s(t) = t * len
-            DualNum.variable<Internal>(1.0, 3) * length)
-    )
+    // TODO: cleanup reparam
+    val spline =
+        // s(t) = t * len
+        (DualNum.variable<Internal>(1.0, 3) * length).let { s ->
+            QuinticSpline1(
+                begin.log().drop(1).addFirst(0.0).reparam(s),
+                end.log().drop(1).addFirst(end.value() - begin.value()).reparam(s),
+            )
+        }
 
     override fun get(s: Double, n: Int) =
-            Rotation2Dual.exp(spline[s / length, n].reparam(
+        // TODO: Lie plus sugar?
+        Rotation2Dual.exp(spline[s / length, n]
+                .reparam(
                     // t(s) = s / len
-                    DualNum.variable<ArcLength>(s, n) / length)) * begin
+                    DualNum.variable<ArcLength>(s, n) / length)) * begin.value()
 }
 
 interface PosePath {

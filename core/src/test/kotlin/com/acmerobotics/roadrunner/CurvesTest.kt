@@ -140,23 +140,30 @@ fun numericalDerivative(x: List<Double>, ds: Double): List<Double> {
 }
 
 fun chartSplineHeadingPath(p: SplineHeadingPath): XYChart {
-    val ts = range(0.0, p.length, 1000)
-    val rs = ts.map { p[it, 3] }
+    val ss = range(0.0, p.length, 1000)
+    val rs = ss.map { p[it, 3] }
 
     return QuickChart.getChart(
-        "Spline Heading Path", "t", "",
-        arrayOf("r", "dr", "d2r", "dr num", "d2r num"),
+        "Spline Heading Path", "s", "",
+        arrayOf("r", "dr", "d2r"),
+//        , "dr num", "d2r num"),
 //        , "i", "di", "d2i"),
-        ts.toDoubleArray(),
+        ss.toDoubleArray(),
         arrayOf(
-            rs.map { it.real[0] }.toDoubleArray(),
-            rs.map { it.real[1] }.toDoubleArray(),
-            rs.map { it.real[2] }.toDoubleArray(),
-            numericalDerivative(rs.map { it.real[0] }, p.length / 1000).toDoubleArray(),
-            numericalDerivative(rs.map { it.real[1] }, p.length / 1000).toDoubleArray(),
+//            rs.map { it.real[0] }.toDoubleArray(),
+//            rs.map { it.real[1] }.toDoubleArray(),
+//            rs.map { it.real[2] }.toDoubleArray(),
+//            numericalDerivative(rs.map { it.real[0] }, p.length / 999).toDoubleArray(),
+//            numericalDerivative(rs.map { it.real[1] }, p.length / 999).toDoubleArray(),
 //            rs.map { it.imag[0] }.toDoubleArray(),
 //            rs.map { it.imag[1] }.toDoubleArray(),
 //            rs.map { it.imag[2] }.toDoubleArray(),
+
+            rs.map { it.log()[0] }.toDoubleArray(),
+            rs.map { it.log()[1] }.toDoubleArray(),
+            rs.map { it.log()[2] }.toDoubleArray(),
+//            numericalDerivative(rs.map { it.log()[0] }, p.length / 999).toDoubleArray(),
+//            numericalDerivative(rs.map { it.log()[1] }, p.length / 999).toDoubleArray(),
         )
     ).also {
         it.styler.theme = MatlabTheme()
@@ -278,7 +285,7 @@ class CurvesTest {
         val p = SplineHeadingPath(
             Rotation2Dual.exp(DualNum(doubleArrayOf(PI / 2, 1.0, -1.0))),
             Rotation2Dual.exp(DualNum(doubleArrayOf(-PI / 6, -0.5, 1.5))),
-            1.0,
+            15.0,
         )
 
         saveChart("splineHeadingPathSpline", chartSpline(p.spline))

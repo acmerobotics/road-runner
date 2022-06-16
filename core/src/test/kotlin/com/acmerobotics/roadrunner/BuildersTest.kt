@@ -16,12 +16,14 @@ fun chartSpline(q: QuinticSpline1): XYChart {
 
     return QuickChart.getChart(
         "Spline", "t", "",
-        arrayOf("x", "dx", "d2x"),
+        arrayOf("x", "dx", "d2x", "dx num", "d2x num"),
         ts.toDoubleArray(),
         arrayOf(
             xs.map { it[0] }.toDoubleArray(),
             xs.map { it[1] }.toDoubleArray(),
             xs.map { it[2] }.toDoubleArray(),
+            numericalDerivative(xs.map { it[0] }, 1.0 / 999).toDoubleArray(),
+            numericalDerivative(xs.map { it[1] }, 1.0 / 999).toDoubleArray(),
         )
     ).also {
         it.styler.theme = MatlabTheme()
