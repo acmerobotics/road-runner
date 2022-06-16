@@ -14,8 +14,10 @@ class NoJavaMath(
         const val IGNORE = "ignore"
     }
 
-    override val issue = Issue(javaClass.simpleName,
-        Severity.Maintainability, "Prefer Kotlin to Java math.", Debt.FIVE_MINS)
+    override val issue = Issue(
+        javaClass.simpleName,
+        Severity.Maintainability, "Prefer Kotlin to Java math.", Debt.FIVE_MINS
+    )
 
     private val ignore: List<String> =
         valueOrDefault(IGNORE, "")
@@ -30,7 +32,8 @@ class NoJavaMath(
 
     override fun visitDotQualifiedExpression(expression: KtDotQualifiedExpression) {
         if (expression.text.startsWith("Math.") &&
-            expression.text.removeSurrounding(".").split("(").first() !in ignore) {
+            expression.text.removeSurrounding(".").split("(").first() !in ignore
+        ) {
             report(CodeSmell(issue, Entity.from(expression), "java.lang.Math qualified expression"))
         }
     }

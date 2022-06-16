@@ -1,6 +1,7 @@
 # Road Runner
 
-A simple Kotlin library for planning 2D mobile robot paths and trajectories designed for FTC. **Note:** this project is in alpha and many of the APIs are incubating.
+A simple Kotlin library for planning 2D mobile robot paths and trajectories designed for FTC. **Note:** this project is
+in alpha and many of the APIs are incubating.
 
 <p align="center">
     <img src="doc/image/8393.gif" />

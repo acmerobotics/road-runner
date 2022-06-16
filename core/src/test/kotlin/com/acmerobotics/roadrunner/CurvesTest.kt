@@ -13,7 +13,8 @@ infix fun Vector2.det(other: Vector2) = x * other.y - y * other.x
 fun Position2.free() = Vector2(x, y)
 
 private fun approxLength(
-    p1: Position2, p2: Position2, p3: Position2): Double {
+    p1: Position2, p2: Position2, p3: Position2
+): Double {
     val chord = (p3 - p1).norm()
 
     val v1 = p2 - p1
@@ -31,7 +32,8 @@ private fun approxLength(
         val y2 = x2 - x3
 
         val center = Position2(
-            (y1 * v2.y - y2 * v1.y) / det, (y2 * v1.x - y1 * v2.x) / det)
+            (y1 * v2.y - y2 * v1.y) / det, (y2 * v1.x - y1 * v2.x) / det
+        )
         val radius = (p1 - center).norm()
         2.0 * radius * asin(chord / (2.0 * radius))
     }
@@ -228,7 +230,8 @@ class CurvesTest {
             spline[t.value(), 4].values
                 .zip(
                     (t * (t * (t * (t * (t * spline.a + spline.b)
-                            + spline.c) + spline.d) + spline.e) + spline.f).values)
+                            + spline.c) + spline.d) + spline.e) + spline.f).values
+                )
                 .forEach {
                     assertEquals(it.first, it.second, 1e-6)
                 }

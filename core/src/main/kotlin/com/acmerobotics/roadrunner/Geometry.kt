@@ -14,7 +14,7 @@ class Position2(val x: Double, val y: Double) {
 data class Position2Dual<Param>(val x: DualNum<Param>, val y: DualNum<Param>) {
     companion object {
         fun <Param> constant(p: Position2, n: Int) = Position2Dual<Param>(
-                DualNum.constant(p.x, n), DualNum.constant(p.y, n)
+            DualNum.constant(p.x, n), DualNum.constant(p.y, n)
         )
     }
 
@@ -27,7 +27,7 @@ data class Position2Dual<Param>(val x: DualNum<Param>, val y: DualNum<Param>) {
     fun tangentVec() = Vector2Dual(x.drop(1), y.drop(1))
 
     fun <NewParam> reparam(oldParam: DualNum<NewParam>) =
-            Position2Dual(x.reparam(oldParam), y.reparam(oldParam))
+        Position2Dual(x.reparam(oldParam), y.reparam(oldParam))
 
     fun value() = Position2(x.value(), y.value())
 }
@@ -70,7 +70,7 @@ data class Vector2Dual<Param>(val x: DualNum<Param>, val y: DualNum<Param>) {
     fun value() = Vector2(x.value(), y.value())
 
     fun <NewParam> reparam(oldParam: DualNum<NewParam>) =
-            Vector2Dual(x.reparam(oldParam), y.reparam(oldParam))
+        Vector2Dual(x.reparam(oldParam), y.reparam(oldParam))
 
     fun bind() = Position2Dual(x, y)
 }
@@ -120,23 +120,23 @@ data class Rotation2Dual<Param>(val real: DualNum<Param>, val imag: DualNum<Para
     operator fun plus(n: DualNum<Param>) = this * exp(n)
 
     operator fun times(vector: Vector2Dual<Param>) = Vector2Dual(
-            real * vector.x - imag * vector.y,
-            imag * vector.x + real * vector.y
+        real * vector.x - imag * vector.y,
+        imag * vector.x + real * vector.y
     )
 
     operator fun times(vector: Vector2) = Vector2Dual(
-            real * vector.x - imag * vector.y,
-            imag * vector.x + real * vector.y
+        real * vector.x - imag * vector.y,
+        imag * vector.x + real * vector.y
     )
 
     operator fun times(other: Rotation2Dual<Param>) = Rotation2Dual(
-            real * other.real - imag * other.imag,
-            real * other.imag + imag * other.real
+        real * other.real - imag * other.imag,
+        real * other.imag + imag * other.real
     )
 
     operator fun times(other: Rotation2) = Rotation2Dual(
-            real * other.real - imag * other.imag,
-            real * other.imag + imag * other.real
+        real * other.real - imag * other.imag,
+        real * other.imag + imag * other.real
     )
 
     fun inverse() = Rotation2Dual(real, -imag)
@@ -144,7 +144,7 @@ data class Rotation2Dual<Param>(val real: DualNum<Param>, val imag: DualNum<Para
     fun value() = Rotation2(real.value(), imag.value())
 
     fun <NewParam> reparam(oldParam: DualNum<NewParam>) =
-            Rotation2Dual(real.reparam(oldParam), imag.reparam(oldParam))
+        Rotation2Dual(real.reparam(oldParam), imag.reparam(oldParam))
 
     operator fun minus(other: Rotation2Dual<Param>) = (other.inverse() * this).log()
 
@@ -166,12 +166,12 @@ data class Rotation2Dual<Param>(val real: DualNum<Param>, val imag: DualNum<Para
 }
 
 data class Transform2(
-        val translation: Vector2,
-        val rotation: Rotation2,
+    val translation: Vector2,
+    val rotation: Rotation2,
 ) {
     companion object {
         // see (133), (134) in https://ethaneade.com/lie.pdf
-        private fun entries(theta: Double) : Pair<Double, Double> {
+        private fun entries(theta: Double): Pair<Double, Double> {
             val u = theta + epsCopySign(theta)
             return Pair(
                 sin(u) / u,
@@ -184,8 +184,8 @@ data class Transform2(
 
             val (A, B) = entries(incr.rotIncr)
             val translation = Vector2(
-                    A * incr.transIncr.x - B * incr.transIncr.y,
-                    B * incr.transIncr.x + A * incr.transIncr.y
+                A * incr.transIncr.x - B * incr.transIncr.y,
+                B * incr.transIncr.x + A * incr.transIncr.y
             )
 
             return Transform2(translation, rotation)
@@ -211,11 +211,11 @@ data class Transform2(
 
         val (x, y) = translation
         return Twist2Incr(
-                Vector2(
-                    (A * x + B * y) / denom,
-                    (-B * x + A * y) / denom,
-                ),
-                theta,
+            Vector2(
+                (A * x + B * y) / denom,
+                (-B * x + A * y) / denom,
+            ),
+            theta,
         )
     }
 
@@ -233,8 +233,8 @@ fun localError(targetPose: Transform2, actualPose: Transform2): Transform2Error 
 }
 
 data class Transform2Dual<Param>(
-        val translation: Vector2Dual<Param>,
-        val rotation: Rotation2Dual<Param>,
+    val translation: Vector2Dual<Param>,
+    val rotation: Rotation2Dual<Param>,
 ) {
     companion object {
         fun <Param> constant(t: Transform2, n: Int) =
@@ -242,10 +242,10 @@ data class Transform2Dual<Param>(
     }
 
     operator fun times(other: Transform2Dual<Param>) =
-            Transform2Dual(rotation * other.translation + translation, rotation * other.rotation)
+        Transform2Dual(rotation * other.translation + translation, rotation * other.rotation)
 
     operator fun times(other: Transform2) =
-            Transform2Dual(rotation * other.translation + translation, rotation * other.rotation)
+        Transform2Dual(rotation * other.translation + translation, rotation * other.rotation)
 
     operator fun plus(other: Twist2Incr) = this * Transform2.exp(other)
 
@@ -258,7 +258,7 @@ data class Transform2Dual<Param>(
     fun velocity() = Twist2Dual(translation.drop(1), rotation.velocity())
 
     fun <NewParam> reparam(oldParam: DualNum<NewParam>) =
-            Transform2Dual(translation.reparam(oldParam), rotation.reparam(oldParam))
+        Transform2Dual(translation.reparam(oldParam), rotation.reparam(oldParam))
 }
 
 data class Twist2(val transVel: Vector2, val rotVel: Double)

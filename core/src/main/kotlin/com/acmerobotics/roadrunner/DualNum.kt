@@ -69,11 +69,11 @@ data class DualNum<Param>(val values: DoubleArray) {
         if (out.size == 2) return out
 
         out.values[2] = values[0] * other.values[2] + values[2] * other.values[0] +
-            2 * values[1] * other.values[1]
+                2 * values[1] * other.values[1]
         if (out.size == 3) return out
 
         out.values[3] = values[0] * other.values[3] + values[3] * other.values[0] +
-            3 * (values[2] * other.values[1] + values[1] * other.values[2])
+                3 * (values[2] * other.values[1] + values[1] * other.values[2])
         return out
     }
 
@@ -108,7 +108,7 @@ data class DualNum<Param>(val values: DoubleArray) {
         val int2 = int1 * values[2]
         out.values[3] =
             int2 + negRecip2 * values[3] +
-                int2 - 2 * (deriv * deriv + recip * deriv2) * values[1]
+                    int2 - 2 * (deriv * deriv + recip * deriv2) * values[1]
         return out
     }
 
@@ -236,7 +236,7 @@ data class DualNum<Param>(val values: DoubleArray) {
     }
 
     operator fun times(other: Vector2) =
-            Vector2Dual(this * other.x, this * other.y)
+        Vector2Dual(this * other.x, this * other.y)
 
     // TODO: I don't like this function here - maybe inline
     fun epsilonEquals(n: DualNum<Param>) =

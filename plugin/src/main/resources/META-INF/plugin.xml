@@ -13,6 +13,7 @@
     <depends>com.intellij.modules.java</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow id="Road Runner" anchor="right" factoryClass="com.acmerobotics.roadrunner.plugin.PluginToolWindowFactory"/>
+        <toolWindow id="Road Runner" anchor="right"
+                    factoryClass="com.acmerobotics.roadrunner.plugin.PluginToolWindowFactory"/>
     </extensions>
 </idea-plugin>

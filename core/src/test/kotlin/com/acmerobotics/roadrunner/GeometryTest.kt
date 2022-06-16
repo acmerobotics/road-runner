@@ -2,14 +2,13 @@ package com.acmerobotics.roadrunner
 
 import org.junit.jupiter.api.Test
 import kotlin.math.PI
-import kotlin.math.sqrt
 import kotlin.random.Random
 import kotlin.test.assertEquals
 
 class GeometryTest {
     @Test
     fun testRotationExp() {
-        repeat (100) {
+        repeat(100) {
             val x = Random.Default.nextDouble(-PI, PI)
             assertEquals(x, Rotation2.exp(x).log(), 1e-6)
         }
@@ -17,7 +16,7 @@ class GeometryTest {
 
     @Test
     fun testTransformExp() {
-        repeat (100) {
+        repeat(100) {
             val incrExp = Twist2Incr(
                 Vector2(
                     Random.Default.nextDouble(),

@@ -160,12 +160,14 @@ fun setWheelPowers(powers: WheelVelocities<Time>) {
 }
 
 fun fieldCentric(kinematics: MecanumKinematics, poseEstimate: Transform2, leftStick: Vector2, rightStick: Vector2) {
-    setWheelPowers(kinematics.inverse(
-        Twist2Dual.constant(
-            poseEstimate.inverse() * Twist2(leftStick, rightStick.x),
-            1
+    setWheelPowers(
+        kinematics.inverse(
+            Twist2Dual.constant(
+                poseEstimate.inverse() * Twist2(leftStick, rightStick.x),
+                1
+            )
         )
-    ))
+    )
 }
 
 fun getWheelIncrements(): WheelIncrements {
@@ -192,10 +194,12 @@ fun goToPoint(kinematics: MecanumKinematics, initialPoseEstimate: Transform2, ta
         val error = localError(targetPose, poseEstimate)
         // TODO: one could write some sugar
         // inverse() could take a Twist2
-        val command = Twist2Dual.constant<Time>(Twist2(
-            error.transError * TRANS_GAIN,
-            error.rotError * ROT_GAIN,
-        ), 1)
+        val command = Twist2Dual.constant<Time>(
+            Twist2(
+                error.transError * TRANS_GAIN,
+                error.rotError * ROT_GAIN,
+            ), 1
+        )
         // TODO: this leaves out feedforward
         setWheelVelocities(kinematics.inverse(command))
     }
@@ -205,12 +209,16 @@ fun clock(): Double {
     return 0.0
 }
 
-fun turnWithProfile(kinematics: MecanumKinematics, initialPoseEstimate: Transform2,
-                    maxAngVel: Double, maxAbsAngAccel: Double, angle: Double) {
+fun turnWithProfile(
+    kinematics: MecanumKinematics, initialPoseEstimate: Transform2,
+    maxAngVel: Double, maxAbsAngAccel: Double, angle: Double
+) {
     // TODO: constant constraint overload would be nice with the resolution
     val profile = TimeProfile(profile(
         angle, 0.0,
-        { maxAngVel }, { Interval(-maxAbsAngAccel, maxAbsAngAccel) }, angle))
+        { maxAngVel }, { Interval(-maxAbsAngAccel, maxAbsAngAccel) }, angle
+    )
+    )
     // TODO: termination criterion
 
     var poseEstimate = initialPoseEstimate
@@ -221,10 +229,14 @@ fun turnWithProfile(kinematics: MecanumKinematics, initialPoseEstimate: Transfor
         val targetRot = initialPoseEstimate.rotation + targetTurn[0]
         val angError = targetRot - poseEstimate.rotation
 
-        setWheelVelocities(kinematics.inverse(Twist2Dual(
-            Vector2Dual.constant(Vector2(0.0, 0.0), 2),
-            Rotation2Dual.exp(targetTurn).velocity() + angError * ROT_GAIN
-        )))
+        setWheelVelocities(
+            kinematics.inverse(
+                Twist2Dual(
+                    Vector2Dual.constant(Vector2(0.0, 0.0), 2),
+                    Rotation2Dual.exp(targetTurn).velocity() + angError * ROT_GAIN
+                )
+            )
+        )
     }
 }
 

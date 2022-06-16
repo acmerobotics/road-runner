@@ -80,7 +80,7 @@ class WaypointPanel : JPanel() {
                 interpComboBox.selectedItem = value.interpolationType
             }
             headingTextField.isVisible = value.interpolationType == TrajectoryConfig.HeadingInterpolationType.LINEAR ||
-                value.interpolationType == TrajectoryConfig.HeadingInterpolationType.SPLINE
+                    value.interpolationType == TrajectoryConfig.HeadingInterpolationType.SPLINE
 
             field = value
 
@@ -269,10 +269,10 @@ class PathEditorPanel : JPanel() {
                     _config = _config.copy(
                         waypoints = _config.waypoints.mapIndexed { j, waypoint ->
                             if (i + startSize == j) {
-         newWaypoint
-     } else {
-         waypoint
-     }
+                                newWaypoint
+                            } else {
+                                waypoint
+                            }
                         }
                     )
                 }
@@ -341,12 +341,12 @@ class PathEditorPanel : JPanel() {
             _config = _config.copy(
                 waypoints = _config.waypoints + listOf(
                     _config.waypoints.lastOrNull()?.copy()
-?: TrajectoryConfig.Waypoint(
-    _config.startPose.vec(),
-    _config.startPose.heading,
-    _config.startTangent,
-    TrajectoryConfig.HeadingInterpolationType.TANGENT
-)
+                        ?: TrajectoryConfig.Waypoint(
+                            _config.startPose.vec(),
+                            _config.startPose.heading,
+                            _config.startTangent,
+                            TrajectoryConfig.HeadingInterpolationType.TANGENT
+                        )
                 )
             )
         }

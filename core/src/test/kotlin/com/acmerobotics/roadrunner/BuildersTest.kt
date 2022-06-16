@@ -1,12 +1,10 @@
 package com.acmerobotics.roadrunner
 
-import com.sun.xml.internal.bind.v2.model.annotation.Quick
 import org.junit.jupiter.api.Test
 import org.knowm.xchart.QuickChart
 import org.knowm.xchart.XYChart
 import org.knowm.xchart.style.theme.MatlabTheme
 import kotlin.math.PI
-import kotlin.math.sqrt
 import kotlin.random.Random
 import kotlin.test.assertEquals
 
@@ -48,32 +46,32 @@ fun chartSplineExpLog(q: QuinticSpline1): XYChart {
     }
 }
 
-fun <Param> chartPosPath(posPath: PositionPath<Param>) : XYChart {
+fun <Param> chartPosPath(posPath: PositionPath<Param>): XYChart {
     val params = range(-1.0, posPath.length + 1.0, 1000)
     val positions = params.map { posPath[it, 4] }
 
     return QuickChart.getChart(
-            "Path", "param", "",
-            arrayOf(
+        "Path", "param", "",
+        arrayOf(
 //                "x", "y",
-                "x'", "y'", "x''", "y''",
-                "x'''", "y'''",
-                ),
-            params.toDoubleArray(),
-            arrayOf(
+            "x'", "y'", "x''", "y''",
+            "x'''", "y'''",
+        ),
+        params.toDoubleArray(),
+        arrayOf(
 //                positions.map { it.x[0] }.toDoubleArray(),
 //                positions.map { it.y[0] }.toDoubleArray(),
-                positions.map { it.x[1] }.toDoubleArray(),
-                positions.map { it.y[1] }.toDoubleArray(),
-                positions.map { it.x[2] }.toDoubleArray(),
-                positions.map { it.y[2] }.toDoubleArray(),
-                positions.map { it.x[3] }.toDoubleArray(),
-                positions.map { it.y[3] }.toDoubleArray(),
-            )
+            positions.map { it.x[1] }.toDoubleArray(),
+            positions.map { it.y[1] }.toDoubleArray(),
+            positions.map { it.x[2] }.toDoubleArray(),
+            positions.map { it.y[2] }.toDoubleArray(),
+            positions.map { it.x[3] }.toDoubleArray(),
+            positions.map { it.y[3] }.toDoubleArray(),
         )
-    }
+    )
+}
 
-fun chartPosePath(posePath: PosePath) : XYChart {
+fun chartPosePath(posePath: PosePath): XYChart {
     val params = range(-1.0, posePath.length + 1.0, 1000)
     val poses = params.map { posePath[it, 3] }
 
@@ -99,7 +97,7 @@ fun chartPosePath(posePath: PosePath) : XYChart {
     )
 }
 
-fun chartPosePathHeading(posePath: PosePath) : XYChart {
+fun chartPosePathHeading(posePath: PosePath): XYChart {
     val params = range(-1.0, posePath.length + 1.0, 1000)
     val poses = params.map { posePath[it, 3] }
 
@@ -107,7 +105,7 @@ fun chartPosePathHeading(posePath: PosePath) : XYChart {
         "Path", "param", "",
         arrayOf(
 //                "x", "y",
-                "theta",
+            "theta",
             "theta'",
             "theta''",
         ),
@@ -215,14 +213,19 @@ class BuildersTest {
             .splineToEnd(Rotation2.exp(-PI / 3))
 
         saveChart("poseBuilder/spline", chartPosePathHeading(posePath))
-        saveChart("poseBuilder/spline2", chartSpline(
-            (((posePath as CompositePosePath).paths[0]
-                    as HeadingPosePath).headingPath
-                    as SplineHeadingPath).spline))
-        saveChart("poseBuilder/spline3", chartSplineExpLog(
-            (((posePath as CompositePosePath).paths[0]
-                    as HeadingPosePath).headingPath
-                    as SplineHeadingPath).spline)
+        saveChart(
+            "poseBuilder/spline2", chartSpline(
+                (((posePath as CompositePosePath).paths[0]
+                        as HeadingPosePath).headingPath
+                        as SplineHeadingPath).spline
+            )
+        )
+        saveChart(
+            "poseBuilder/spline3", chartSplineExpLog(
+                (((posePath as CompositePosePath).paths[0]
+                        as HeadingPosePath).headingPath
+                        as SplineHeadingPath).spline
+            )
         )
     }
 

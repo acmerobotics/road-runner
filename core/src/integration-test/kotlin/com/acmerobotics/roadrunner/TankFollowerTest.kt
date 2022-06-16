@@ -53,10 +53,10 @@ class TankFollowerTest {
 
         override fun setMotorPowers(left: Double, right: Double) {
             powers = listOf(left, right)
-                    .map { it * VOLTAGE_NOISE_DIST.sample() }
-                    .map { max(-1.0, min(it, 1.0)) }
+                .map { it * VOLTAGE_NOISE_DIST.sample() }
+                .map { max(-1.0, min(it, 1.0)) }
             positions = positions.zip(powers)
-                    .map { it.first + it.second / kV * dt }
+                .map { it.first + it.second / kV * dt }
         }
 
         override fun getWheelPositions() = positions
@@ -186,25 +186,29 @@ class TankFollowerTest {
 
     @Test
     fun simulateRamseteComplex() {
-        simulateRamseteFollower("complex", TrajectoryBuilder(
-            Pose2d(0.0, 0.0, 0.0),
-            baseVelConstraint = VEL_CONSTRAINT,
-            baseAccelConstraint = ACCEL_CONSTRAINT
+        simulateRamseteFollower(
+            "complex", TrajectoryBuilder(
+                Pose2d(0.0, 0.0, 0.0),
+                baseVelConstraint = VEL_CONSTRAINT,
+                baseAccelConstraint = ACCEL_CONSTRAINT
+            )
+                .splineTo(Vector2d(15.0, 15.0), PI)
+                .splineTo(Vector2d(5.0, 35.0), PI / 3)
+                .build()
         )
-            .splineTo(Vector2d(15.0, 15.0), PI)
-            .splineTo(Vector2d(5.0, 35.0), PI / 3)
-            .build())
     }
 
     @Test
     fun simulateRamseteBackwards() {
-        simulateRamseteFollower("backwards", TrajectoryBuilder(
-            Pose2d(0.0, 0.0, PI / 2),
-            baseVelConstraint = VEL_CONSTRAINT,
-            baseAccelConstraint = ACCEL_CONSTRAINT
+        simulateRamseteFollower(
+            "backwards", TrajectoryBuilder(
+                Pose2d(0.0, 0.0, PI / 2),
+                baseVelConstraint = VEL_CONSTRAINT,
+                baseAccelConstraint = ACCEL_CONSTRAINT
+            )
+                .back(100.0)
+                .build()
         )
-            .back(100.0)
-            .build())
     }
 
     @Test
@@ -212,9 +216,9 @@ class TankFollowerTest {
         val dt = 1.0 / SIMULATION_HZ
 
         val path = PathBuilder(Pose2d(0.0, 0.0, 0.0))
-                .splineTo(Vector2d(15.0, 15.0), 0.0)
-                .lineTo(Vector2d(30.0, 15.0))
-                .build()
+            .splineTo(Vector2d(15.0, 15.0), 0.0)
+            .lineTo(Vector2d(30.0, 15.0))
+            .build()
 
         val clock = SimulatedClock()
         val drive = SimulatedTankDrive(dt, kV, TRACK_WIDTH)
@@ -244,7 +248,7 @@ class TankFollowerTest {
         }
 
         val pathPoints = DoubleProgression.fromClosedInterval(0.0, path.length(), 10_000)
-                .map { path[it] }
+            .map { path[it] }
         val graph = XYChart(600, 400)
         graph.title = "Tank GVF Follower Sim"
         graph.addSeries(

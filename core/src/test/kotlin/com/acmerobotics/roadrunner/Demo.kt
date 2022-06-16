@@ -6,18 +6,20 @@ import org.knowm.xchart.style.theme.MatlabTheme
 
 
 fun main() {
-    val path = TangentPath(ArcCurve2(
-        QuinticSpline2(
-            QuinticSpline1(
-                DualNum(doubleArrayOf(0.0, 40.0, 0.0)),
-                DualNum(doubleArrayOf(80.0, 40.0, 0.0)),
-            ),
-            QuinticSpline1(
-                DualNum(doubleArrayOf(0.0, 0.0, 0.0)),
-                DualNum(doubleArrayOf(20.0, 0.0, 0.0)),
-            ),
-        )
-    ), 0.0)
+    val path = TangentPath(
+        ArcCurve2(
+            QuinticSpline2(
+                QuinticSpline1(
+                    DualNum(doubleArrayOf(0.0, 40.0, 0.0)),
+                    DualNum(doubleArrayOf(80.0, 40.0, 0.0)),
+                ),
+                QuinticSpline1(
+                    DualNum(doubleArrayOf(0.0, 0.0, 0.0)),
+                    DualNum(doubleArrayOf(20.0, 0.0, 0.0)),
+                ),
+            )
+        ), 0.0
+    )
 
     val profile = DisplacementProfile(
         listOf(0.0, path.length),
@@ -53,16 +55,16 @@ fun main() {
 
         val error = localError(targetPose.value(), pose.value())
         val correction = Twist2(
-                error.transError * 0.5,
-                error.rotError * 0.01,
+            error.transError * 0.5,
+            error.rotError * 0.01,
         )
 
         val velocity = (targetPose.velocity() + correction).constant()
 
         val dt = 0.01
         pose += Twist2Incr(
-                velocity.transVel * dt,
-                velocity.rotVel * dt,
+            velocity.transVel * dt,
+            velocity.rotVel * dt,
         )
     }
 
@@ -72,17 +74,19 @@ fun main() {
         .build()
     chart.styler.theme = MatlabTheme()
 
-    chart.addSeries("Target",
-            targets.map { it.translation.x }.toDoubleArray(),
-            targets.map { it.translation.y }.toDoubleArray(),
+    chart.addSeries(
+        "Target",
+        targets.map { it.translation.x }.toDoubleArray(),
+        targets.map { it.translation.y }.toDoubleArray(),
     ).let {
         it.marker = Circle()
         it.lineWidth = 0.0f
     }
 
-    chart.addSeries("Actual",
-            measured.map { it.translation.x }.toDoubleArray(),
-            measured.map { it.translation.y }.toDoubleArray(),
+    chart.addSeries(
+        "Actual",
+        measured.map { it.translation.x }.toDoubleArray(),
+        measured.map { it.translation.y }.toDoubleArray(),
     ).let {
         it.marker = Circle()
         it.lineWidth = 0.0f

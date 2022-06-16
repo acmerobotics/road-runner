@@ -18,10 +18,10 @@ import javax.swing.text.NumberFormatter
 fun JTextField.addChangeListener(listener: () -> Unit) {
     document.addDocumentListener(
         object : DocumentListener {
-override fun changedUpdate(e: DocumentEvent?) = listener()
-override fun insertUpdate(e: DocumentEvent?) = listener()
-override fun removeUpdate(e: DocumentEvent?) = listener()
-}
+            override fun changedUpdate(e: DocumentEvent?) = listener()
+            override fun insertUpdate(e: DocumentEvent?) = listener()
+            override fun removeUpdate(e: DocumentEvent?) = listener()
+        }
     )
 }
 

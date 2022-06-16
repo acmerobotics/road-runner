@@ -1,12 +1,12 @@
 package com.acmerobotics.roadrunner
 
 import com.acmerobotics.roadrunner.util.DoubleProgression
-import java.io.File
-import java.nio.file.Paths
 import org.knowm.xchart.BitmapEncoder
 import org.knowm.xchart.QuickChart
 import org.knowm.xchart.XYChart
 import org.knowm.xchart.style.MatlabTheme
+import java.io.File
+import java.nio.file.Paths
 
 const val GRAPH_DIR = "./graphs/"
 const val GRAPH_DPI = 300

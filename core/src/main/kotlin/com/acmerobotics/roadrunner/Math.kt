@@ -1,7 +1,5 @@
 package com.acmerobotics.roadrunner
 
-import kotlin.math.sin
-
 
 val EPS = 2.2e-15
 
@@ -54,7 +52,9 @@ data class ScanResult(
 
 fun integralScan(a: Double, b: Double, eps: Double, f: (Double) -> Double): ScanResult {
     val m = (a + b) / 2
-    val fa = f(a); val fm = f(m); val fb = f(b)
+    val fa = f(a);
+    val fm = f(m);
+    val fb = f(b)
 
     var i = (b - a) / 8 * (
             fa + fm + fb +
@@ -74,8 +74,10 @@ fun integralScan(a: Double, b: Double, eps: Double, f: (Double) -> Double): Scan
 
     fun helper(a: Double, m: Double, b: Double, fa: Double, fm: Double, fb: Double) {
         val h = (b - a) / 4
-        val ml = a + h; val mr = b - h
-        val fml = f(ml); val fmr = f(mr)
+        val ml = a + h;
+        val mr = b - h
+        val fml = f(ml);
+        val fmr = f(mr)
         var i1 = h / 1.5 * (fa + 4 * fm + fb)
         val i2 = h / 3 * (fa + 4 * (fml + fmr) + 2 * fm + fb)
         i1 = (16 * i2 - i1) / 15

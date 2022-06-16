@@ -27,11 +27,11 @@ class PluginPanel(private val project: Project) : JPanel() {
         layout = groupLayout
 
         val modules = moduleManager.modules
-                .filter { it.moduleFilePath.startsWith(project.basePath!!) }
-                .filter { it.name != project.name }
-                .map { it.name }
-                .sorted()
-                .toMutableList()
+            .filter { it.moduleFilePath.startsWith(project.basePath!!) }
+            .filter { it.name != project.name }
+            .map { it.name }
+            .sorted()
+            .toMutableList()
 
         val moduleLabel = JLabel("Module", SwingConstants.RIGHT)
         val prefSize = moduleComboBox.preferredSize
@@ -50,24 +50,24 @@ class PluginPanel(private val project: Project) : JPanel() {
 
         groupLayout.setVerticalGroup(
             groupLayout.createSequentialGroup()
-.addGroup(
-    groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
-.addComponent(moduleLabel)
-.addComponent(moduleComboBox)
-.addComponent(phantomLabel)
-)
-.addComponent(mainPanel)
+                .addGroup(
+                    groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
+                        .addComponent(moduleLabel)
+                        .addComponent(moduleComboBox)
+                        .addComponent(phantomLabel)
+                )
+                .addComponent(mainPanel)
         )
 
         groupLayout.setHorizontalGroup(
             groupLayout.createParallelGroup(GroupLayout.Alignment.CENTER)
-.addGroup(
-    groupLayout.createSequentialGroup()
-.addComponent(moduleLabel)
-.addComponent(moduleComboBox)
-.addComponent(phantomLabel)
-)
-.addComponent(mainPanel)
+                .addGroup(
+                    groupLayout.createSequentialGroup()
+                        .addComponent(moduleLabel)
+                        .addComponent(moduleComboBox)
+                        .addComponent(phantomLabel)
+                )
+                .addComponent(mainPanel)
         )
     }
 

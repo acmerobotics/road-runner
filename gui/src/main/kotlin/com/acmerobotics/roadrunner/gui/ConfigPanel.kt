@@ -6,6 +6,7 @@ import com.acmerobotics.roadrunner.trajectory.config.TrajectoryGroupConfig
 import java.awt.Dimension
 import java.awt.GridLayout
 import javax.swing.*
+
 /**
  * Panel for specifying the robot kinematic constraints.
  */

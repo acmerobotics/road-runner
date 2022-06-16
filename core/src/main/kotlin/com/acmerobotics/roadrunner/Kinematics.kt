@@ -12,10 +12,10 @@ class WheelVelocities<Param>(
 }
 
 class WheelIncrements(
-        val frontLeft: Double,
-        val frontRight: Double,
-        val backLeft: Double,
-        val backRight: Double,
+    val frontLeft: Double,
+    val frontRight: Double,
+    val backLeft: Double,
+    val backRight: Double,
 )
 
 class MecanumKinematics @JvmOverloads constructor(

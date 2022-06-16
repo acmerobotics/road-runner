@@ -136,23 +136,23 @@ class FieldPanel : JPanel() {
 
         addMouseListener(
             object : MouseListener {
-override fun mouseReleased(e: MouseEvent?) {
-}
+                override fun mouseReleased(e: MouseEvent?) {
+                }
 
-override fun mouseEntered(e: MouseEvent?) {
-startAnimation()
-}
+                override fun mouseEntered(e: MouseEvent?) {
+                    startAnimation()
+                }
 
-override fun mouseClicked(e: MouseEvent?) {
-}
+                override fun mouseClicked(e: MouseEvent?) {
+                }
 
-override fun mouseExited(e: MouseEvent?) {
-stopAnimation()
-}
+                override fun mouseExited(e: MouseEvent?) {
+                    stopAnimation()
+                }
 
-override fun mousePressed(e: MouseEvent?) {
-}
-}
+                override fun mousePressed(e: MouseEvent?) {
+                }
+            }
         )
     }
 

@@ -144,7 +144,8 @@ class MainPanel : JPanel() {
     @Suppress("ComplexCondition", "TooGenericExceptionCaught")
     private fun updateTrajectoryInBackground(trajectoryConfig: TrajectoryConfig, groupConfig: TrajectoryGroupConfig) {
         if (groupConfig.maxVel epsilonEquals 0.0 || groupConfig.maxAccel epsilonEquals 0.0 ||
-            groupConfig.maxAngVel epsilonEquals 0.0 || groupConfig.maxAngAccel epsilonEquals 0.0) {
+            groupConfig.maxAngVel epsilonEquals 0.0 || groupConfig.maxAngAccel epsilonEquals 0.0
+        ) {
             status = "bad constraints"
 
             return
@@ -176,7 +177,7 @@ class MainPanel : JPanel() {
                 if (newTrajectory != null) {
                     fieldPanel.apply {
                         waypoints = listOf(trajectoryConfig.startPose.vec()) +
-                            trajectoryConfig.waypoints.map { it.position }
+                                trajectoryConfig.waypoints.map { it.position }
                         robotDimensions = RobotDimensions(groupConfig.robotLength, groupConfig.robotWidth)
                         trajectory = newTrajectory
                     }

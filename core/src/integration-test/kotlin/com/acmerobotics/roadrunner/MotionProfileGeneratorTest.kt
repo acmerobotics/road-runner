@@ -71,11 +71,11 @@ class MotionProfileGeneratorTest {
     @Test
     fun testSimpleTriangleBounds() {
         val profile = MotionProfileGenerator.generateSimpleMotionProfile(
-                MotionState(10.0, 0.0, 0.0),
-                MotionState(20.0, 0.0, 0.0),
-                1000.0,
-                5.0
-            )
+            MotionState(10.0, 0.0, 0.0),
+            MotionState(20.0, 0.0, 0.0),
+            1000.0,
+            5.0
+        )
 
         val earlyState = profile[-1.0]
         assertEquals(0.0, earlyState.j)

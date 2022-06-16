@@ -49,10 +49,10 @@ class MecanumFollowerTest {
 
         override fun setMotorPowers(frontLeft: Double, rearLeft: Double, rearRight: Double, frontRight: Double) {
             powers = listOf(frontLeft, rearLeft, rearRight, frontRight)
-                    .map { it * VOLTAGE_NOISE_DIST.sample() }
-                    .map { max(-1.0, min(it, 1.0)) }
+                .map { it * VOLTAGE_NOISE_DIST.sample() }
+                .map { max(-1.0, min(it, 1.0)) }
             positions = positions.zip(powers)
-                    .map { it.first + it.second / kV * dt }
+                .map { it.first + it.second / kV * dt }
         }
 
         override fun getWheelPositions() = positions
@@ -67,9 +67,9 @@ class MecanumFollowerTest {
             baseVelConstraint = VEL_CONSTRAINT,
             baseAccelConstraint = ACCEL_CONSTRAINT
         )
-                .splineTo(Vector2d(15.0, 15.0), PI)
-                .splineTo(Vector2d(5.0, 35.0), PI / 3)
-                .build()
+            .splineTo(Vector2d(15.0, 15.0), PI)
+            .splineTo(Vector2d(5.0, 35.0), PI / 3)
+            .build()
 
         val clock = SimulatedClock()
         val drive = SimulatedMecanumDrive(dt, kV, TRACK_WIDTH)

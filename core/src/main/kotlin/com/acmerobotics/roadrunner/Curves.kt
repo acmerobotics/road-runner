@@ -3,8 +3,8 @@ package com.acmerobotics.roadrunner
 object Internal
 
 class QuinticSpline1(
-        begin: DualNum<Internal>,
-        end: DualNum<Internal>,
+    begin: DualNum<Internal>,
+    end: DualNum<Internal>,
 ) {
     init {
         require(begin.size >= 3)
@@ -12,11 +12,11 @@ class QuinticSpline1(
     }
 
     val a = -6.0 * begin[0] - 3.0 * begin[1] - 0.5 * begin[2] +
-        6.0 * end[0] - 3.0 * end[1] + 0.5 * end[2]
+            6.0 * end[0] - 3.0 * end[1] + 0.5 * end[2]
     val b = 15.0 * begin[0] + 8.0 * begin[1] + 1.5 * begin[2] -
-        15.0 * end[0] + 7.0 * end[1] - end[2]
+            15.0 * end[0] + 7.0 * end[1] - end[2]
     val c = -10.0 * begin[0] - 6.0 * begin[1] - 1.5 * begin[2] +
-        10.0 * end[0] - 4.0 * end[1] + 0.5 * end[2]
+            10.0 * end[0] - 4.0 * end[1] + 0.5 * end[2]
     val d = 0.5 * begin[2]
     val e = begin[1]
     val f = begin[0]
@@ -51,15 +51,15 @@ class QuinticSpline2(
 }
 
 class Line(
-        val begin: Position2,
-        val end: Position2,
+    val begin: Position2,
+    val end: Position2,
 ) : PositionPath<ArcLength> {
     val diff = end - begin
     override val length = diff.norm()
     val dir = diff / length
 
     override fun get(param: Double, n: Int) =
-            DualNum.variable<ArcLength>(param, n) * dir + begin
+        DualNum.variable<ArcLength>(param, n) * dir + begin
 }
 
 object ArcLength
@@ -138,9 +138,9 @@ data class CompositePositionPath<Param>(
 }
 
 data class PositionPathView<Param>(
-        val path: PositionPath<Param>,
-        val offset: Double,
-        override val length: Double,
+    val path: PositionPath<Param>,
+    val offset: Double,
+    override val length: Double,
 ) : PositionPath<Param> {
     override fun get(param: Double, n: Int) = path[param + offset, n]
 }
@@ -181,18 +181,18 @@ class ConstantHeadingPath(
 }
 
 class LinearHeadingPath(
-        val begin: Rotation2,
-        val angle: Double,
-        override val length: Double,
+    val begin: Rotation2,
+    val angle: Double,
+    override val length: Double,
 ) : HeadingPath {
     override fun get(s: Double, n: Int) =
-            Rotation2Dual.exp(DualNum.variable<ArcLength>(s, n) / length * angle) * begin
+        Rotation2Dual.exp(DualNum.variable<ArcLength>(s, n) / length * angle) * begin
 }
 
 class SplineHeadingPath(
-        val begin: Rotation2Dual<ArcLength>,
-        val end: Rotation2Dual<ArcLength>,
-        override val length: Double,
+    val begin: Rotation2Dual<ArcLength>,
+    val end: Rotation2Dual<ArcLength>,
+    override val length: Double,
 ) : HeadingPath {
     init {
         require(begin.size >= 3)
@@ -211,10 +211,13 @@ class SplineHeadingPath(
 
     override fun get(s: Double, n: Int) =
         // TODO: Lie plus sugar?
-        Rotation2Dual.exp(spline[s / length, n]
+        Rotation2Dual.exp(
+            spline[s / length, n]
                 .reparam(
                     // t(s) = s / len
-                    DualNum.variable<ArcLength>(s, n) / length)) * begin.value()
+                    DualNum.variable<ArcLength>(s, n) / length
+                )
+        ) * begin.value()
 }
 
 interface PosePath {
@@ -226,8 +229,8 @@ interface PosePath {
 }
 
 data class TangentPath(
-        val path: PositionPath<ArcLength>,
-        val offset: Double
+    val path: PositionPath<ArcLength>,
+    val offset: Double
 ) : PosePath {
     override val length get() = path.length
 
@@ -238,8 +241,8 @@ data class TangentPath(
 }
 
 data class HeadingPosePath(
-        val posPath: PositionPath<ArcLength>,
-        val headingPath: HeadingPath,
+    val posPath: PositionPath<ArcLength>,
+    val headingPath: HeadingPath,
 ) : PosePath {
     override val length get() = posPath.length
 
@@ -248,7 +251,7 @@ data class HeadingPosePath(
     }
 
     override fun get(s: Double, n: Int) =
-            Transform2Dual(posPath[s, n].free(), headingPath[s, n])
+        Transform2Dual(posPath[s, n].free(), headingPath[s, n])
 }
 
 data class CompositePosePath(

@@ -76,60 +76,72 @@ class MotionProfilesTest {
 
     @Test
     fun testSimpleProfile() =
-        saveProfiles("simpleProfile", TimeProfile(
-            profile(10.0, 0.0, { 5.0 }, { Interval(-5.0, 5.0) }, 10.0)
-        ))
+        saveProfiles(
+            "simpleProfile", TimeProfile(
+                profile(10.0, 0.0, { 5.0 }, { Interval(-5.0, 5.0) }, 10.0)
+            )
+        )
 
     @Test
     fun testForwardProfileComplex() =
-        saveProfiles("forwardProfile", TimeProfile(
-            forwardProfile(
-                10.0, 0.0,
-                { (it - 5.0).pow(4.0) + 1.0 },
-                { 5.0 },
-                0.1
+        saveProfiles(
+            "forwardProfile", TimeProfile(
+                forwardProfile(
+                    10.0, 0.0,
+                    { (it - 5.0).pow(4.0) + 1.0 },
+                    { 5.0 },
+                    0.1
+                )
             )
-        ))
+        )
 
     @Test
     fun testBackwardProfileComplex() =
-        saveProfiles("backwardProfile", TimeProfile(
-            backwardProfile(
-                10.0,
-                { (it - 5.0).pow(4.0) + 1.0 },
-                0.0,
-                { -5.0 },
-                0.1
+        saveProfiles(
+            "backwardProfile", TimeProfile(
+                backwardProfile(
+                    10.0,
+                    { (it - 5.0).pow(4.0) + 1.0 },
+                    0.0,
+                    { -5.0 },
+                    0.1
+                )
             )
-        ))
+        )
 
     @Test
     fun testProfileComplex() =
-        saveProfiles("profile", TimeProfile(
-            profile(
-                10.0,
-                0.0,
-                { (it - 5.0).pow(4.0) + 1.0 },
-                { Interval(-5.0, 5.0) },
-                0.01,
+        saveProfiles(
+            "profile", TimeProfile(
+                profile(
+                    10.0,
+                    0.0,
+                    { (it - 5.0).pow(4.0) + 1.0 },
+                    { Interval(-5.0, 5.0) },
+                    0.01,
+                )
             )
-        ))
+        )
 
     @Test
     fun testProfileComplexNonZeroMin() =
-        saveProfiles("profileNonZero", TimeProfile(
-            profile(
-                10.0,
-                3.0,
-                { (it - 5.0).pow(4.0) + 1.0 },
-                { Interval(-5.0, 5.0) },
-                0.01,
+        saveProfiles(
+            "profileNonZero", TimeProfile(
+                profile(
+                    10.0,
+                    3.0,
+                    { (it - 5.0).pow(4.0) + 1.0 },
+                    { Interval(-5.0, 5.0) },
+                    0.01,
+                )
             )
-        ))
+        )
 
     @Test
     fun testSimpleAsymmetricProfile() =
-        saveProfiles("asymmetricProfile", TimeProfile(
+        saveProfiles(
+            "asymmetricProfile", TimeProfile(
                 profile(10.0, 0.0, { 5.0 }, { Interval(-2.0, 5.0) }, 10.0)
-        ))
+            )
+        )
 }
