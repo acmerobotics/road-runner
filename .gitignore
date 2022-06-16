@@ -10,5 +10,7 @@ out
 *.ipr
 *.iws
 .DS_STORE
+.ipynb_checkpoints
 graphs
+charts
 csv

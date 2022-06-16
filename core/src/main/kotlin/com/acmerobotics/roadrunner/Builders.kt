@@ -142,15 +142,11 @@ class PosePathBuilder private constructor(
                     }
                     is Lazy -> {
                         {
-//                    val beginTangent = posPath[beginDisp, 4].tangent()
-//                    val beginHeading = Rotation2Dual.exp(
-////                        beginTangent.log().drop(1)
-//                        DualNum<ArcLength>(doubleArrayOf(0.0, 0.0))
-//                            .addFirst(state.endHeading.log()))
-
-//                    state.makePaths(beginHeading)
-
-                            val beginHeading = posPath[beginDisp, 4].tangent()
+                            val beginTangent = posPath[beginDisp, 4].tangent()
+                            val beginHeading = Rotation2Dual.exp(
+                                beginTangent.log().drop(1)
+                                    .addFirst(state.endHeading.log())
+                            )
 
                             state.makePaths(beginHeading) + listOf(
                                 HeadingPosePath(
@@ -178,17 +174,13 @@ class PosePathBuilder private constructor(
             when (state) {
                 is Eager -> state.paths
                 is Lazy -> {
-//                val endTangent = posPath[beginDisp, 4].tangent()
-                    // TODO: semantically, is there anything different with exp/log
-//                val endHeading = Rotation2Dual.exp(
-////                    endTangent.log().drop(1)
-//                    DualNum<ArcLength>(doubleArrayOf(0.0, 0.0))
-//                        .addFirst(state.endHeading.log()))
+                    val endTangent = posPath[beginDisp, 4].tangent()
+                    val endHeading = Rotation2Dual.exp(
+                        endTangent.log().drop(1)
+                            .addFirst(state.endHeading.log())
+                    )
 
-//                println(endHeading.log())
-
-//                state.makePaths(endHeading)
-                    state.makePaths(posPath[beginDisp, 4].tangent())
+                    state.makePaths(endHeading)
                 }
             }
         )
