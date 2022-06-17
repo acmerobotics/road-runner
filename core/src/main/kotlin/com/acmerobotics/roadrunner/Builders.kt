@@ -1,21 +1,27 @@
 package com.acmerobotics.roadrunner
 
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
+
 class PositionPathBuilder private constructor(
     // invariant: beginPose and beginTangent match the end pose and tangent of paths.last()
-    val paths: List<PositionPath<ArcLength>>,
-    val beginPos: Position2,
-    val beginTangent: Rotation2,
+    @JvmField
+    val paths: PersistentList<PositionPath<ArcLength>>,
+    @JvmField
+    val nextBeginPos: Position2,
+    @JvmField
+    val nextBeginTangent: Rotation2,
 ) {
     constructor(
         beginPos: Position2,
         beginTangent: Rotation2,
-    ) : this(listOf(), beginPos, beginTangent)
+    ) : this(persistentListOf(), beginPos, beginTangent)
 
     fun lineTo(pos: Position2): PositionPathBuilder {
-        val line = Line(beginPos, pos)
+        val line = Line(nextBeginPos, pos)
         val lineEnd = line.end(2)
         return PositionPathBuilder(
-            paths + listOf(line),
+            paths.add(line),
             lineEnd.value(),
             lineEnd.tangent().value(),
         )
@@ -24,18 +30,18 @@ class PositionPathBuilder private constructor(
     fun splineTo(pos: Position2, tangent: Rotation2): PositionPathBuilder {
         // NOTE: First derivatives will be normalized by arc length reparam, so the
         // magnitudes need not match at knots.
-        val dist = (pos - beginPos).norm()
-        val beginDeriv = beginTangent.vec() * dist
+        val dist = (pos - nextBeginPos).norm()
+        val beginDeriv = nextBeginTangent.vec() * dist
         val endDeriv = tangent.vec() * dist
 
         val spline = ArcCurve2(
             QuinticSpline2(
                 QuinticSpline1(
-                    DualNum(doubleArrayOf(beginPos.x, beginDeriv.x, 0.0)),
+                    DualNum(doubleArrayOf(nextBeginPos.x, beginDeriv.x, 0.0)),
                     DualNum(doubleArrayOf(pos.x, endDeriv.x, 0.0))
                 ),
                 QuinticSpline1(
-                    DualNum(doubleArrayOf(beginPos.y, beginDeriv.y, 0.0)),
+                    DualNum(doubleArrayOf(nextBeginPos.y, beginDeriv.y, 0.0)),
                     DualNum(doubleArrayOf(pos.y, endDeriv.y, 0.0)),
                 )
             )
@@ -43,7 +49,7 @@ class PositionPathBuilder private constructor(
 
         val splineEnd = spline.end(2)
         return PositionPathBuilder(
-            paths + listOf(spline),
+            paths.add(spline),
             splineEnd.value(),
             splineEnd.tangent().value(),
         )
@@ -55,22 +61,27 @@ class PositionPathBuilder private constructor(
 // TODO: document a guarantee about continuity
 class PosePathBuilder private constructor(
     // invariant: state encodes heading for [0.0, beginDisp)
+    @JvmField
     val posPath: PositionPath<ArcLength>,
+    @JvmField
     val beginDisp: Double,
+    @JvmField
     val state: State,
 ) {
     constructor(path: PositionPath<ArcLength>, beginHeading: Rotation2) :
-        this(path, 0.0, Lazy({ emptyList() }, beginHeading))
+        this(path, 0.0, Lazy({ persistentListOf() }, beginHeading))
 
     sealed interface State {
         val endHeading: Rotation2
     }
 
-    class Eager(val paths: List<PosePath>, val endHeadingDual: Rotation2Dual<ArcLength>) : State {
+    class Eager(
+        @JvmField
+        val paths: PersistentList<PosePath>, @JvmField val endHeadingDual: Rotation2Dual<ArcLength>) : State {
         override val endHeading = endHeadingDual.value()
     }
 
-    class Lazy(val makePaths: (Rotation2Dual<ArcLength>) -> List<PosePath>, override val endHeading: Rotation2) : State
+    class Lazy(@JvmField val makePaths: (Rotation2Dual<ArcLength>) -> PersistentList<PosePath>, override val endHeading: Rotation2) : State
 
     // TODO: keep this private?
     // pro: easier to make breaking changes in the future
@@ -92,7 +103,7 @@ class PosePathBuilder private constructor(
                         state.paths
                     }
                     is Lazy -> state.makePaths(beginHeadingDual)
-                } + listOf(posePath),
+                }.add(posePath),
                 posePath.end(3).rotation
             )
         )
@@ -134,7 +145,7 @@ class PosePathBuilder private constructor(
                 when (state) {
                     is Eager -> {
                         {
-                            state.paths + listOf(
+                            state.paths.add(
                                 HeadingPosePath(
                                     viewUntil(disp),
                                     SplineHeadingPath(state.endHeadingDual, it, disp - beginDisp),
@@ -150,7 +161,7 @@ class PosePathBuilder private constructor(
                                     .addFirst(state.endHeading.log())
                             )
 
-                            state.makePaths(beginHeading) + listOf(
+                            state.makePaths(beginHeading).add(
                                 HeadingPosePath(
                                     viewUntil(disp),
                                     SplineHeadingPath(beginHeading, it, disp - beginDisp)
@@ -190,7 +201,7 @@ class PosePathBuilder private constructor(
     }
 }
 
-class SafePosePathBuilder(val posePathBuilder: PosePathBuilder) {
+class SafePosePathBuilder internal constructor(@JvmField val posePathBuilder: PosePathBuilder) {
     constructor(path: PositionPath<ArcLength>, beginHeading: Rotation2) :
         this(PosePathBuilder(path, beginHeading))
 
@@ -212,7 +223,7 @@ class SafePosePathBuilder(val posePathBuilder: PosePathBuilder) {
     fun build() = posePathBuilder.build()
 }
 
-class RestrictedPosePathBuilder(val posePathBuilder: PosePathBuilder) {
+class RestrictedPosePathBuilder internal constructor(@JvmField val posePathBuilder: PosePathBuilder) {
     fun splineUntil(disp: Double, heading: Rotation2) =
         SafePosePathBuilder(posePathBuilder.splineUntil(disp, heading))
 

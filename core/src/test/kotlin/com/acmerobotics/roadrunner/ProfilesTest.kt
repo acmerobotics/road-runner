@@ -66,7 +66,7 @@ fun saveProfiles(s: String, p: TimeProfile) {
     saveChart(s + "Time", chartTimeProfile(p))
 }
 
-class MotionProfilesTest {
+class ProfilesTest {
     @Test
     fun testBeginAccel() {
         val p = TimeProfile(constantProfile(10.0, 0.0, 5.0, Interval(-5.0, 5.0)))

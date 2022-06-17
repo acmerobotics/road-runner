@@ -1,7 +1,9 @@
 package com.acmerobotics.roadrunner
 
 class DisplacementTrajectory(
+    @JvmField
     val path: PosePath,
+    @JvmField
     val dispProfile: DisplacementProfile,
 ) {
     operator fun get(s: Double, n: Int) = path[s, n].reparam(dispProfile[s])
@@ -22,11 +24,12 @@ class DisplacementTrajectory(
         }
 }
 
-class TimeTrajectory(
+class TimeTrajectory @JvmOverloads constructor(
+    @JvmField
     val dispTrajectory: DisplacementTrajectory,
+    @JvmField
+    val timeProfile: TimeProfile = TimeProfile(dispTrajectory.dispProfile),
 ) {
-    val timeProfile = TimeProfile(dispTrajectory.dispProfile)
-
     operator fun get(t: Double, n: Int) = timeProfile[t].let { s ->
         dispTrajectory.path[s.value(), n].reparam(s)
     }

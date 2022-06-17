@@ -1,3 +1,5 @@
+@file:JvmName("Geometry")
+
 package com.acmerobotics.roadrunner
 
 import kotlin.math.atan2
@@ -5,14 +7,20 @@ import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-class Position2(val x: Double, val y: Double) {
+class Position2(
+    @JvmField
+    val x: Double,
+    @JvmField
+    val y: Double
+    ) {
     operator fun plus(v: Vector2) = Position2(x + v.x, y + v.y)
 
     operator fun minus(other: Position2) = Vector2(x - other.x, y - other.y)
 }
 
-data class Position2Dual<Param>(val x: DualNum<Param>, val y: DualNum<Param>) {
+data class Position2Dual<Param>(@JvmField val x: DualNum<Param>, @JvmField val y: DualNum<Param>) {
     companion object {
+        @JvmStatic
         fun <Param> constant(p: Position2, n: Int) = Position2Dual<Param>(
             DualNum.constant(p.x, n), DualNum.constant(p.y, n)
         )
@@ -32,7 +40,7 @@ data class Position2Dual<Param>(val x: DualNum<Param>, val y: DualNum<Param>) {
     fun value() = Position2(x.value(), y.value())
 }
 
-data class Vector2(val x: Double, val y: Double) {
+data class Vector2(@JvmField val x: Double, @JvmField val y: Double) {
     operator fun plus(other: Vector2) = Vector2(x + other.x, y + other.y)
     operator fun minus(other: Vector2) = Vector2(x - other.x, y - other.y)
     operator fun unaryMinus() = Vector2(-x, -y)
@@ -47,8 +55,9 @@ data class Vector2(val x: Double, val y: Double) {
     fun bind() = Position2(x, y)
 }
 
-data class Vector2Dual<Param>(val x: DualNum<Param>, val y: DualNum<Param>) {
+data class Vector2Dual<Param>(@JvmField val x: DualNum<Param>, @JvmField val y: DualNum<Param>) {
     companion object {
+        @JvmStatic
         fun <Param> constant(v: Vector2, n: Int) =
             Vector2Dual<Param>(DualNum.constant(v.x, n), DualNum.constant(v.y, n))
     }
@@ -75,8 +84,9 @@ data class Vector2Dual<Param>(val x: DualNum<Param>, val y: DualNum<Param>) {
     fun bind() = Position2Dual(x, y)
 }
 
-data class Rotation2(val real: Double, val imag: Double) {
+data class Rotation2(@JvmField val real: Double, @JvmField val imag: Double) {
     companion object {
+        @JvmStatic
         fun exp(theta: Double) = Rotation2(cos(theta), sin(theta))
     }
 
@@ -101,7 +111,7 @@ data class Rotation2(val real: Double, val imag: Double) {
     fun log() = atan2(imag, real)
 }
 
-data class Rotation2Dual<Param>(val real: DualNum<Param>, val imag: DualNum<Param>) {
+data class Rotation2Dual<Param>(@JvmField val real: DualNum<Param>, @JvmField val imag: DualNum<Param>) {
     init {
         require(real.size == imag.size)
         require(real.size <= 3)
@@ -167,11 +177,14 @@ data class Rotation2Dual<Param>(val real: DualNum<Param>, val imag: DualNum<Para
 }
 
 data class Transform2(
+    @JvmField
     val translation: Vector2,
+    @JvmField
     val rotation: Rotation2,
 ) {
     companion object {
         // see (133), (134) in https://ethaneade.com/lie.pdf
+        // TODO: is this necessary?
         private fun entries(theta: Double): Pair<Double, Double> {
             val u = theta + epsCopySign(theta)
             return Pair(
@@ -180,6 +193,7 @@ data class Transform2(
             )
         }
 
+        @JvmStatic
         fun exp(incr: Twist2Incr): Transform2 {
             val rotation = Rotation2.exp(incr.rotIncr)
 
@@ -223,7 +237,7 @@ data class Transform2(
     operator fun minus(other: Transform2) = (other.inverse() * this).log()
 }
 
-data class Transform2Error(val transError: Vector2, val rotError: Double)
+data class Transform2Error(@JvmField val transError: Vector2, @JvmField val rotError: Double)
 
 // NOTE: SE(2) minus mixes the frame orientations, and we need it purely in the actual frame
 // TODO: does this need its own type?
@@ -234,10 +248,13 @@ fun localError(targetPose: Transform2, actualPose: Transform2): Transform2Error 
 }
 
 data class Transform2Dual<Param>(
+    @JvmField
     val translation: Vector2Dual<Param>,
+    @JvmField
     val rotation: Rotation2Dual<Param>,
 ) {
     companion object {
+        @JvmStatic
         fun <Param> constant(t: Transform2, n: Int) =
             Transform2Dual<Param>(Vector2Dual.constant(t.translation, n), Rotation2Dual.constant(t.rotation, n))
     }
@@ -262,10 +279,11 @@ data class Transform2Dual<Param>(
         Transform2Dual(translation.reparam(oldParam), rotation.reparam(oldParam))
 }
 
-data class Twist2(val transVel: Vector2, val rotVel: Double)
+data class Twist2(@JvmField val transVel: Vector2, @JvmField val rotVel: Double)
 
-data class Twist2Dual<Param>(val transVel: Vector2Dual<Param>, val rotVel: DualNum<Param>) {
+data class Twist2Dual<Param>(@JvmField val transVel: Vector2Dual<Param>, @JvmField val rotVel: DualNum<Param>) {
     companion object {
+        @JvmStatic
         fun <Param> constant(t: Twist2, n: Int) =
             Twist2Dual<Param>(Vector2Dual.constant(t.transVel, n), DualNum.constant(t.rotVel, n))
     }
@@ -275,4 +293,4 @@ data class Twist2Dual<Param>(val transVel: Vector2Dual<Param>, val rotVel: DualN
     fun constant() = Twist2(transVel.value(), rotVel.value())
 }
 
-data class Twist2Incr(val transIncr: Vector2, val rotIncr: Double)
+data class Twist2Incr(@JvmField val transIncr: Vector2, @JvmField val rotIncr: Double)

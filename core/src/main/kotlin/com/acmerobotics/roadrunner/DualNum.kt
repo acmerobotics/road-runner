@@ -3,8 +3,10 @@ package com.acmerobotics.roadrunner
 import kotlin.math.abs
 import kotlin.math.min
 
+// TODO: figure out how to represent this
 data class DualNum<Param>(val values: DoubleArray) {
     companion object {
+        @JvmStatic
         fun <Param> constant(x: Double, n: Int) = DualNum<Param>(
             DoubleArray(n) {
                 when (it) {
@@ -14,6 +16,7 @@ data class DualNum<Param>(val values: DoubleArray) {
             }
         )
 
+        @JvmStatic
         fun <Param> variable(x: Double, n: Int) = DualNum<Param>(
             DoubleArray(n) {
                 when (it) {

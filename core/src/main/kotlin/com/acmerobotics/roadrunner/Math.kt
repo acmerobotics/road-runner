@@ -1,4 +1,9 @@
+@file:JvmName("Math")
+
 package com.acmerobotics.roadrunner
+
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.toPersistentList
 
 val EPS = 2.2e-15
 
@@ -44,12 +49,14 @@ fun rangeMiddle(begin: Double, end: Double, samples: Int): List<Double> {
 fun lerp(x: Double, fromLo: Double, fromHi: Double, toLo: Double, toHi: Double) =
     toLo + (x - fromLo) * (toHi - toLo) / (fromHi - fromLo)
 
-data class ScanResult(
-    val values: List<Double>,
-    val sums: List<Double>,
+data class IntegralScanResult(
+    @JvmField
+    val values: PersistentList<Double>,
+    @JvmField
+    val sums: PersistentList<Double>,
 )
 
-fun integralScan(a: Double, b: Double, eps: Double, f: (Double) -> Double): ScanResult {
+fun integralScan(a: Double, b: Double, eps: Double, f: (Double) -> Double): IntegralScanResult {
     val m = (a + b) / 2
     val fa = f(a)
     val fm = f(m)
@@ -91,5 +98,5 @@ fun integralScan(a: Double, b: Double, eps: Double, f: (Double) -> Double): Scan
 
     helper(a, m, b, fa, fm, fb)
 
-    return ScanResult(values, sums)
+    return IntegralScanResult(values.toPersistentList(), sums.toPersistentList())
 }

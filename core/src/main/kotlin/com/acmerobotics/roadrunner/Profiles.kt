@@ -1,3 +1,5 @@
+@file:JvmName("Profiles")
+
 package com.acmerobotics.roadrunner
 
 import kotlin.math.ceil
@@ -5,7 +7,7 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sqrt
 
-object Time
+class Time
 
 fun constantProfile(
     length: Double,

@@ -3,23 +3,33 @@ package com.acmerobotics.roadrunner
 import kotlin.math.abs
 
 class WheelVelocities<Param>(
+    @JvmField
     val frontLeft: DualNum<Param>,
+    @JvmField
     val frontRight: DualNum<Param>,
+    @JvmField
     val backLeft: DualNum<Param>,
+    @JvmField
     val backRight: DualNum<Param>,
 ) {
     fun all() = listOf(frontLeft, frontRight, backLeft, backRight)
 }
 
 class WheelIncrements(
+    @JvmField
     val frontLeft: Double,
+    @JvmField
     val frontRight: Double,
+    @JvmField
     val backLeft: Double,
+    @JvmField
     val backRight: Double,
 )
 
 class MecanumKinematics @JvmOverloads constructor(
+    @JvmField
     val trackWidth: Double,
+    @JvmField
     val lateralMultiplier: Double = 1.0
 ) {
     constructor(

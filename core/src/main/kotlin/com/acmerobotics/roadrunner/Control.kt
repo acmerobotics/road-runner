@@ -3,8 +3,11 @@ package com.acmerobotics.roadrunner
 import kotlin.math.withSign
 
 class Feedforward(
+    @JvmField
     val kS: Double,
+    @JvmField
     val kV: Double,
+    @JvmField
     val kA: Double,
 ) {
     fun compute(vel: Double, accel: Double): Double {
