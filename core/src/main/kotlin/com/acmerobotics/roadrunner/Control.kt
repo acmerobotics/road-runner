@@ -2,7 +2,7 @@ package com.acmerobotics.roadrunner
 
 import kotlin.math.withSign
 
-class Feedforward(
+data class Feedforward(
     @JvmField
     val kS: Double,
     @JvmField

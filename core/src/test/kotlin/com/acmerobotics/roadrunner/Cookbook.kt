@@ -2,26 +2,10 @@ package com.acmerobotics.roadrunner
 
 import kotlin.math.PI
 
-// import com.acmerobotics.roadrunner.control.PIDCoefficients
-// import com.acmerobotics.roadrunner.control.PIDFController
-// import com.acmerobotics.roadrunner.drive.Drive
-// import com.acmerobotics.roadrunner.drive.DriveSignal
-// import com.acmerobotics.roadrunner.followers.HolonomicPIDVAFollower
-// import com.acmerobotics.roadrunner.geometry.Pose2d
-// import com.acmerobotics.roadrunner.geometry.Vector2d
-// import com.acmerobotics.roadrunner.kinematics.Kinematics
-// import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder
-// import com.acmerobotics.roadrunner.trajectory.constraints.MinVelocityConstraint
-// import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint
-// import com.acmerobotics.roadrunner.trajectory.constraints.TrajectoryVelocityConstraint
-// import com.acmerobotics.roadrunner.trajectory.constraints.TranslationalVelocityConstraint
-// import com.acmerobotics.roadrunner.util.NanoClock
-// import kotlin.math.PI
-//
-// // TODO: label implicit arguments?
-//
-// // TODO: include all the builtin paths
-// // TODO: include all the markers
+// TODO: label implicit arguments?
+
+// TODO: include all the builtin paths
+// TODO: include all the markers
 
 // fun displacementMarkers() {
 
@@ -169,9 +153,12 @@ fun fieldCentric(kinematics: MecanumKinematics, poseEstimate: Transform2, leftSt
     )
 }
 
-fun getWheelIncrements(): WheelIncrements {
+fun getWheelIncrements(): WheelIncrements<Time> {
     return WheelIncrements(
-        0.0, 0.0, 0.0, 0.0 // TODO: real measurements
+        DualNum(doubleArrayOf(0.0)),
+        DualNum(doubleArrayOf(0.0)),
+        DualNum(doubleArrayOf(0.0)),
+        DualNum(doubleArrayOf(0.0)),
     )
 }
 
@@ -188,7 +175,7 @@ fun goToPoint(kinematics: MecanumKinematics, initialPoseEstimate: Transform2, ta
         // TODO: forward() may need some calculus to handle velocity measurements
         //  (eeeeeek then we need a dualized WheelIncr)
         // here it would be nice as a termination criterion
-        poseEstimate += kinematics.forward(getWheelIncrements())
+        poseEstimate += kinematics.forward(getWheelIncrements()).value()
         val error = localError(targetPose, poseEstimate)
         // TODO: one could write some sugar
         // inverse() could take a Twist2
@@ -226,7 +213,7 @@ fun turnWithProfile(
 
     var poseEstimate = initialPoseEstimate
     while (true) {
-        poseEstimate += kinematics.forward(getWheelIncrements())
+        poseEstimate += kinematics.forward(getWheelIncrements()).value()
 
         val targetTurn = profile[clock()]
         val targetRot = initialPoseEstimate.rotation + targetTurn[0]

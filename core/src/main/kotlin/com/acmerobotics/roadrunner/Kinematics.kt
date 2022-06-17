@@ -2,7 +2,7 @@ package com.acmerobotics.roadrunner
 
 import kotlin.math.abs
 
-class WheelVelocities<Param>(
+data class WheelVelocities<Param>(
     @JvmField
     val frontLeft: DualNum<Param>,
     @JvmField
@@ -15,18 +15,18 @@ class WheelVelocities<Param>(
     fun all() = listOf(frontLeft, frontRight, backLeft, backRight)
 }
 
-class WheelIncrements(
+data class WheelIncrements<Param>(
     @JvmField
-    val frontLeft: Double,
+    val frontLeft: DualNum<Param>,
     @JvmField
-    val frontRight: Double,
+    val frontRight: DualNum<Param>,
     @JvmField
-    val backLeft: Double,
+    val backLeft: DualNum<Param>,
     @JvmField
-    val backRight: Double,
+    val backRight: DualNum<Param>,
 )
 
-class MecanumKinematics @JvmOverloads constructor(
+data class MecanumKinematics @JvmOverloads constructor(
     @JvmField
     val trackWidth: Double,
     @JvmField
@@ -38,8 +38,8 @@ class MecanumKinematics @JvmOverloads constructor(
         lateralMultiplier: Double = 1.0
     ) : this((trackWidth + wheelBase) / 2, lateralMultiplier)
 
-    fun forward(w: WheelIncrements) = Twist2Incr(
-        Vector2(
+    fun <Param> forward(w: WheelIncrements<Param>) = Twist2IncrementDual(
+        Vector2Dual(
             (w.backLeft + w.frontRight + w.backRight + w.frontLeft) * 0.25,
             (w.backLeft + w.frontRight - w.frontLeft - w.backRight) * (0.25 / lateralMultiplier),
         ),
@@ -53,7 +53,7 @@ class MecanumKinematics @JvmOverloads constructor(
         t.transVel.x + t.transVel.y * lateralMultiplier + t.rotVel * trackWidth,
     )
 
-    // TODO: this should inherit from something?
+    // TODO: this should inherit from something
     inner class MaxWheelVelocityConstraint(val maxWheelVel: Double) {
         fun maxRobotVel(robotPose: Transform2Dual<ArcLength>) =
             inverse(robotPose.inverse() * robotPose.velocity())

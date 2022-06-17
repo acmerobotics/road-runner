@@ -1,6 +1,6 @@
 package com.acmerobotics.roadrunner
 
-class DisplacementTrajectory(
+data class DisplacementTrajectory(
     @JvmField
     val path: PosePath,
     @JvmField
@@ -24,7 +24,7 @@ class DisplacementTrajectory(
         }
 }
 
-class TimeTrajectory @JvmOverloads constructor(
+data class TimeTrajectory @JvmOverloads constructor(
     @JvmField
     val dispTrajectory: DisplacementTrajectory,
     @JvmField

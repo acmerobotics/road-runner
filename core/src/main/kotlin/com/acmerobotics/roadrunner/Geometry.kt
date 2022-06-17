@@ -194,7 +194,7 @@ data class Transform2(
         }
 
         @JvmStatic
-        fun exp(incr: Twist2Incr): Transform2 {
+        fun exp(incr: Twist2Increment): Transform2 {
             val rotation = Rotation2.exp(incr.rotIncr)
 
             val (A, B) = entries(incr.rotIncr)
@@ -207,7 +207,7 @@ data class Transform2(
         }
     }
 
-    operator fun plus(t: Twist2Incr) = this * exp(t)
+    operator fun plus(t: Twist2Increment) = this * exp(t)
 
     operator fun times(other: Transform2) =
         Transform2(rotation * other.translation + translation, rotation * other.rotation)
@@ -218,14 +218,14 @@ data class Transform2(
 
     fun inverse() = Transform2(rotation.inverse() * -translation, rotation.inverse())
 
-    fun log(): Twist2Incr {
+    fun log(): Twist2Increment {
         val theta = rotation.log()
 
         val (A, B) = entries(theta)
         val denom = Vector2(A, B).sqrNorm()
 
         val (x, y) = translation
-        return Twist2Incr(
+        return Twist2Increment(
             Vector2(
                 (A * x + B * y) / denom,
                 (-B * x + A * y) / denom,
@@ -265,7 +265,7 @@ data class Transform2Dual<Param>(
     operator fun times(other: Transform2) =
         Transform2Dual(rotation * other.translation + translation, rotation * other.rotation)
 
-    operator fun plus(other: Twist2Incr) = this * Transform2.exp(other)
+    operator fun plus(other: Twist2Increment) = this * Transform2.exp(other)
 
     fun value() = Transform2(translation.value(), rotation.value())
 
@@ -293,4 +293,8 @@ data class Twist2Dual<Param>(@JvmField val transVel: Vector2Dual<Param>, @JvmFie
     fun constant() = Twist2(transVel.value(), rotVel.value())
 }
 
-data class Twist2Incr(@JvmField val transIncr: Vector2, @JvmField val rotIncr: Double)
+data class Twist2Increment(@JvmField val transIncr: Vector2, @JvmField val rotIncr: Double)
+
+data class Twist2IncrementDual<Param>(@JvmField val transIncr: Vector2Dual<Param>, @JvmField val rotIncr: DualNum<Param>) {
+    fun value() = Twist2Increment(transIncr.value(), rotIncr.value())
+}

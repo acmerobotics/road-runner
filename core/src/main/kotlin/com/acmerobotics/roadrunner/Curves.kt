@@ -7,7 +7,7 @@ import kotlinx.collections.immutable.toPersistentList
 
 class Internal
 
-class QuinticSpline1(
+data class QuinticSpline1(
     @JvmField
     val a: Double,
     @JvmField
@@ -66,7 +66,7 @@ interface PositionPath<Param> {
     fun end(n: Int) = get(length, n)
 }
 
-class QuinticSpline2(
+data class QuinticSpline2(
     @JvmField
     val x: QuinticSpline1,
     @JvmField
@@ -77,7 +77,7 @@ class QuinticSpline2(
 }
 
 // TODO: what a nightmare
-class Line(
+data class Line(
     @JvmField
     val begin: Position2,
     @JvmField
@@ -102,7 +102,7 @@ class Line(
 class ArcLength
 
 // TODO: this is a poor name
-class ArcCurve2 @JvmOverloads constructor(
+data class ArcCurve2 @JvmOverloads constructor(
     @JvmField
     val curve: PositionPath<Internal>,
     @JvmField
@@ -193,7 +193,7 @@ interface HeadingPath {
     fun end(n: Int) = get(length, n)
 }
 
-class ConstantHeadingPath(
+data class ConstantHeadingPath(
     @JvmField
     val heading: Rotation2,
     override val length: Double,
@@ -201,7 +201,7 @@ class ConstantHeadingPath(
     override fun get(s: Double, n: Int) = Rotation2Dual.constant<ArcLength>(heading, n)
 }
 
-class LinearHeadingPath(
+data class LinearHeadingPath(
     @JvmField
     val begin: Rotation2,
     @JvmField
@@ -212,7 +212,7 @@ class LinearHeadingPath(
         Rotation2Dual.exp(DualNum.variable<ArcLength>(s, n) / length * angle) * begin
 }
 
-class SplineHeadingPath(
+data class SplineHeadingPath(
     // TODO: should these b fields? probably not
     val begin: Rotation2Dual<ArcLength>,
     val end: Rotation2Dual<ArcLength>,

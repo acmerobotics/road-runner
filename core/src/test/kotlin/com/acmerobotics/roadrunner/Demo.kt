@@ -62,7 +62,7 @@ fun main() {
         val velocity = (targetPose.velocity() + correction).constant()
 
         val dt = 0.01
-        pose += Twist2Incr(
+        pose += Twist2Increment(
             velocity.transVel * dt,
             velocity.rotVel * dt,
         )
