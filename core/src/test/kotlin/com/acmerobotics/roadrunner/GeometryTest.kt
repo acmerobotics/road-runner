@@ -35,7 +35,7 @@ class GeometryTest {
     fun testLocalError() {
         val target = Transform2(Vector2(1.0, 2.0), Rotation2.exp(0.0))
         val actual = Transform2(Vector2(1.0, 1.0), Rotation2.exp(PI / 2))
-        val e = localError(target, actual)
+        val e = poseError(target, actual)
         assertEquals(1.0, e.transError.x, 1e-6)
         assertEquals(0.0, e.transError.y, 1e-6)
         assertEquals(-PI / 2, e.rotError, 1e-6)

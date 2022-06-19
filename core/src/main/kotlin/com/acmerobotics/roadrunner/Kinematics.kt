@@ -38,6 +38,7 @@ data class MecanumKinematics @JvmOverloads constructor(
         lateralMultiplier: Double = 1.0
     ) : this((trackWidth + wheelBase) / 2, lateralMultiplier)
 
+    // TODO: test forward, inverse composition
     fun <Param> forward(w: WheelIncrements<Param>) = Twist2IncrementDual(
         Vector2Dual(
             (w.backLeft + w.frontRight + w.backRight + w.frontLeft) * 0.25,
@@ -48,14 +49,13 @@ data class MecanumKinematics @JvmOverloads constructor(
 
     fun <Param> inverse(t: Twist2Dual<Param>) = WheelVelocities(
         t.transVel.x - t.transVel.y * lateralMultiplier - t.rotVel * trackWidth,
+        t.transVel.x + t.transVel.y * lateralMultiplier + t.rotVel * trackWidth,
         t.transVel.x + t.transVel.y * lateralMultiplier - t.rotVel * trackWidth,
         t.transVel.x - t.transVel.y * lateralMultiplier + t.rotVel * trackWidth,
-        t.transVel.x + t.transVel.y * lateralMultiplier + t.rotVel * trackWidth,
     )
 
-    // TODO: this should inherit from something
-    inner class MaxWheelVelocityConstraint(val maxWheelVel: Double) {
-        fun maxRobotVel(robotPose: Transform2Dual<ArcLength>) =
+    inner class MaxWheelVelocityConstraint(@JvmField val maxWheelVel: Double) : VelocityConstraint {
+        override fun maxRobotVel(robotPose: Transform2Dual<ArcLength>) =
             inverse(robotPose.inverse() * robotPose.velocity())
                 .all()
                 .minOf { abs(maxWheelVel / it[0]) }

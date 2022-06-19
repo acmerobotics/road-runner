@@ -30,7 +30,8 @@ fun clamp(x: Double, lo: Double, hi: Double): Double {
     return x
 }
 
-data class Interval(val min: Double, val max: Double) {
+// TODO: is this the best name? I might prefer MinMax (the field order is obvious then)
+data class Interval(@JvmField val min: Double, @JvmField val max: Double) {
     fun pair() = Pair(min, max)
 }
 

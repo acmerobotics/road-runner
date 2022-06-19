@@ -4,7 +4,7 @@ import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.test.Test
 
-object KinematicsTest {
+class KinematicsTest {
     @Test
     fun testMecWheelVelocityLimiting() {
         val kinematics = MecanumKinematics(10.0)

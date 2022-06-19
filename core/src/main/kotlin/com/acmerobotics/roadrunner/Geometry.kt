@@ -128,6 +128,10 @@ data class Rotation2Dual<Param>(@JvmField val real: DualNum<Param>, @JvmField va
 
     operator fun plus(n: DualNum<Param>) = this * exp(n)
 
+    operator fun times(t: Twist2Dual<Param>) = Twist2Dual(
+        this * t.transVel, t.rotVel
+    )
+
     operator fun times(vector: Vector2Dual<Param>) = Vector2Dual(
         real * vector.x - imag * vector.y,
         imag * vector.x + real * vector.y
@@ -237,16 +241,6 @@ data class Transform2(
     operator fun minus(other: Transform2) = (other.inverse() * this).log()
 }
 
-data class Transform2Error(@JvmField val transError: Vector2, @JvmField val rotError: Double)
-
-// NOTE: SE(2) minus mixes the frame orientations, and we need it purely in the actual frame
-// TODO: does this need its own type?
-fun localError(targetPose: Transform2, actualPose: Transform2): Transform2Error {
-    val transErrorWorld = targetPose.translation - actualPose.translation
-    val rotError = targetPose.rotation - actualPose.rotation
-    return Transform2Error(actualPose.rotation.inverse() * transErrorWorld, rotError)
-}
-
 data class Transform2Dual<Param>(
     @JvmField
     val translation: Vector2Dual<Param>,
@@ -269,9 +263,13 @@ data class Transform2Dual<Param>(
 
     fun value() = Transform2(translation.value(), rotation.value())
 
-    fun inverse() = Transform2Dual(rotation.inverse() * -translation, rotation.inverse())
+    fun inverse() = rotation.inverse().let {
+        Transform2Dual(it * -translation, it)
+    }
 
     operator fun times(other: Twist2Dual<Param>) = Twist2Dual(rotation * other.transVel, other.rotVel)
+
+    fun inverseThenTimes(t: Twist2Dual<Param>) = Twist2Dual(rotation.inverse() * t.transVel, t.rotVel)
 
     fun velocity() = Twist2Dual(translation.drop(1), rotation.velocity())
 
@@ -279,7 +277,9 @@ data class Transform2Dual<Param>(
         Transform2Dual(translation.reparam(oldParam), rotation.reparam(oldParam))
 }
 
-data class Twist2(@JvmField val transVel: Vector2, @JvmField val rotVel: Double)
+data class Twist2(@JvmField val transVel: Vector2, @JvmField val rotVel: Double) {
+    operator fun minus(t: Twist2) = Twist2(transVel - t.transVel, rotVel - t.rotVel)
+}
 
 data class Twist2Dual<Param>(@JvmField val transVel: Vector2Dual<Param>, @JvmField val rotVel: DualNum<Param>) {
     companion object {
@@ -290,11 +290,13 @@ data class Twist2Dual<Param>(@JvmField val transVel: Vector2Dual<Param>, @JvmFie
 
     operator fun plus(other: Twist2) = Twist2Dual(transVel + other.transVel, rotVel + other.rotVel)
 
-    fun constant() = Twist2(transVel.value(), rotVel.value())
+    fun value() = Twist2(transVel.value(), rotVel.value())
 }
 
 data class Twist2Increment(@JvmField val transIncr: Vector2, @JvmField val rotIncr: Double)
 
 data class Twist2IncrementDual<Param>(@JvmField val transIncr: Vector2Dual<Param>, @JvmField val rotIncr: DualNum<Param>) {
     fun value() = Twist2Increment(transIncr.value(), rotIncr.value())
+
+    fun velocity() = Twist2Dual(transIncr.drop(1), rotIncr.drop(1))
 }

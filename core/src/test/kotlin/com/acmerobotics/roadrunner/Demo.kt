@@ -53,13 +53,13 @@ fun main() {
         measured.add(pose.value())
         targets.add(targetPose.value())
 
-        val error = localError(targetPose.value(), pose.value())
+        val error = poseError(targetPose.value(), pose.value())
         val correction = Twist2(
             error.transError * 0.5,
             error.rotError * 0.01,
         )
 
-        val velocity = (targetPose.velocity() + correction).constant()
+        val velocity = (targetPose.velocity() + correction).value()
 
         val dt = 0.01
         pose += Twist2Increment(

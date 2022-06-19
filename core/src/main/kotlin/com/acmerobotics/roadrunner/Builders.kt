@@ -81,6 +81,12 @@ class PosePathBuilder private constructor(
         override val endHeading = endHeadingDual.value()
     }
 
+    // TODO: I can suppress these classes, though it might be better to hide the whole internal
+    // state of builders; I think they are reasonably "more abstract" than the others
+    /**
+     * @suppress
+     */
+    // TODO: is it possible to make this appear as a static inner class from the Java side?
     class Lazy(@JvmField val makePaths: (Rotation2Dual<ArcLength>) -> PersistentList<PosePath>, override val endHeading: Rotation2) : State
 
     // TODO: keep this private?

@@ -101,12 +101,12 @@ data class Line(
 
 class ArcLength
 
-// TODO: this is a poor name
 /**
  * @usesMathJax
  *
  * \(a^2 + b^2 = c^2\)
  */
+// TODO: this is a poor name
 data class ArcCurve2 @JvmOverloads constructor(
     @JvmField
     val curve: PositionPath<Internal>,
@@ -308,6 +308,14 @@ data class CompositePosePath(
         }
 
         return Transform2Dual.constant(paths.first()[0.0, 1].value(), n)
+    }
+}
+
+fun project(path: PositionPath<ArcLength>, query: Position2, init: Double): Double {
+    return (1..10).fold(init) { s, _ ->
+        val guess = path[s, 3]
+        val ds = (query - guess.value()) dot guess.tangent().value().vec()
+        clamp(s + ds, 0.0, path.length)
     }
 }
 
