@@ -3,7 +3,7 @@ plugins {
 
     `java-library`
 
-    id("org.jetbrains.dokka") version "1.6.20"
+    id("org.jetbrains.dokka") version "1.6.21"
 }
 
 repositories {
@@ -20,6 +20,8 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test")
 
     testImplementation("org.knowm.xchart:xchart:3.8.1")
+
+    dokkaHtmlPlugin("org.jetbrains.dokka:mathjax-plugin:1.6.21")
 }
 
 java {

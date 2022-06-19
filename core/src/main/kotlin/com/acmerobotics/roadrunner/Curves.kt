@@ -102,6 +102,11 @@ data class Line(
 class ArcLength
 
 // TODO: this is a poor name
+/**
+ * @usesMathJax
+ *
+ * \(a^2 + b^2 = c^2\)
+ */
 data class ArcCurve2 @JvmOverloads constructor(
     @JvmField
     val curve: PositionPath<Internal>,
