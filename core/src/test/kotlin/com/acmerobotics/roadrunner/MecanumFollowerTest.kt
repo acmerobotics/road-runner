@@ -16,30 +16,34 @@ class MecanumFollowerTest {
 
         val traj = TangentPath(
             PositionPathBuilder(
-            Position2(0.0, 0.0),
-            Rotation2.exp(0.0),
-        )
-            .splineTo(
-                Position2(15.0, 15.0),
-                Rotation2.exp(PI),
+                Position2(0.0, 0.0),
+                Rotation2.exp(0.0),
             )
-            .splineTo(
-                Position2(5.0, 35.0),
-                Rotation2.exp(PI / 3),
-            )
-            .build(), 0.0,
+                .splineTo(
+                    Position2(15.0, 15.0),
+                    Rotation2.exp(PI),
+                )
+                .splineTo(
+                    Position2(5.0, 35.0),
+                    Rotation2.exp(PI / 3),
+                )
+                .build(),
+            0.0,
         ).let { path ->
             TimeTrajectory(
-                DisplacementTrajectory(path,
-                        profile(
-                path,
-                0.0,
-                // TODO: angular velocity constraint
-                kinematics.MaxWheelVelocityConstraint(50.0),
-                AccelerationConstraint { Interval(-25.0, 25.0) },
-                // TODO: resolution
-                0.25,
-                        )))
+                DisplacementTrajectory(
+                    path,
+                    profile(
+                        path,
+                        0.0,
+                        // TODO: angular velocity constraint
+                        kinematics.MaxWheelVelocityConstraint(50.0),
+                        AccelerationConstraint { Interval(-25.0, 25.0) },
+                        // TODO: resolution
+                        0.25,
+                    )
+                )
+            )
         }
 
         val follower = HolonomicController(10.0, 0.0, 0.1, 0.0)

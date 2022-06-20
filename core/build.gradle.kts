@@ -4,6 +4,9 @@ plugins {
     `java-library`
 
     id("org.jetbrains.dokka") version "1.6.21"
+
+    id("org.jlleitschuh.gradle.ktlint") version "10.2.1"
+    id("org.jlleitschuh.gradle.ktlint-idea") version "10.2.1"
 }
 
 repositories {

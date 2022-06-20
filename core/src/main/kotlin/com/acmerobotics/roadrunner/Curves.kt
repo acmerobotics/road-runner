@@ -29,13 +29,13 @@ data class QuinticSpline1(
         require(begin.size >= 3).let {
             require(end.size >= 3).let {
                 -6.0 * begin[0] - 3.0 * begin[1] - 0.5 * begin[2] +
-                        6.0 * end[0] - 3.0 * end[1] + 0.5 * end[2]
+                    6.0 * end[0] - 3.0 * end[1] + 0.5 * end[2]
             }
         },
         15.0 * begin[0] + 8.0 * begin[1] + 1.5 * begin[2] -
-                15.0 * end[0] + 7.0 * end[1] - end[2],
+            15.0 * end[0] + 7.0 * end[1] - end[2],
         -10.0 * begin[0] - 6.0 * begin[1] - 1.5 * begin[2] +
-                10.0 * end[0] - 4.0 * end[1] + 0.5 * end[2],
+            10.0 * end[0] - 4.0 * end[1] + 0.5 * end[2],
         0.5 * begin[2],
         begin[1],
         begin[0],
@@ -81,7 +81,7 @@ data class Line(
     @JvmField
     val begin: Position2,
     @JvmField
-    val dir: Vector2,  // unit norm!
+    val dir: Vector2, // unit norm!
     // TODO: not sure how to render this as a JVM field
     override val length: Double,
 ) : PositionPath<ArcLength> {

@@ -12,7 +12,7 @@ data class Position2(
     val x: Double,
     @JvmField
     val y: Double
-    ) {
+) {
     operator fun plus(v: Vector2) = Position2(x + v.x, y + v.y)
 
     operator fun minus(other: Position2) = Vector2(x - other.x, y - other.y)
@@ -295,7 +295,10 @@ data class Twist2Dual<Param>(@JvmField val transVel: Vector2Dual<Param>, @JvmFie
 
 data class Twist2Increment(@JvmField val transIncr: Vector2, @JvmField val rotIncr: Double)
 
-data class Twist2IncrementDual<Param>(@JvmField val transIncr: Vector2Dual<Param>, @JvmField val rotIncr: DualNum<Param>) {
+data class Twist2IncrementDual<Param>(
+    @JvmField val transIncr: Vector2Dual<Param>,
+    @JvmField val rotIncr: DualNum<Param>
+) {
     fun value() = Twist2Increment(transIncr.value(), rotIncr.value())
 
     fun velocity() = Twist2Dual(transIncr.drop(1), rotIncr.drop(1))

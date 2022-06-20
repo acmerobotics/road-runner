@@ -48,9 +48,15 @@ class PositionPathBuilder private constructor(
      * Adds a line segment that goes forward to \(x\)-coordinate [posX].
      */
     fun lineToX(posX: Double) =
-        addLine(Line(nextBeginPos, Position2(posX,
-                (posX - nextBeginPos.x) / nextBeginTangent.real * nextBeginTangent.imag + nextBeginPos.y
-            )))
+        addLine(
+            Line(
+                nextBeginPos,
+                Position2(
+                    posX,
+                    (posX - nextBeginPos.x) / nextBeginTangent.real * nextBeginTangent.imag + nextBeginPos.y
+                )
+            )
+        )
 
     /**
      * @usesMathJax
@@ -58,11 +64,13 @@ class PositionPathBuilder private constructor(
      * Adds a line segment that goes forward to \(y\)-coordinate [posY].
      */
     fun lineToY(posY: Double) = addLine(
-        Line(nextBeginPos,
+        Line(
+            nextBeginPos,
             Position2(
                 (posY - nextBeginPos.y) / nextBeginTangent.imag * nextBeginTangent.real + nextBeginPos.x, posY,
-            ))
+            )
         )
+    )
 
     /**
      * Adds a spline segment to position [pos] with tangent [tangent].
@@ -126,18 +134,23 @@ class PosePathBuilder private constructor(
         this(path, 0.0, Lazy({ persistentListOf() }, beginHeading))
 
     constructor(path: PositionPath<ArcLength>, beginHeading: Double) :
-            this(path, 0.0, Lazy({ persistentListOf() }, Rotation2.exp(beginHeading)))
+        this(path, 0.0, Lazy({ persistentListOf() }, Rotation2.exp(beginHeading)))
 
     private sealed interface State {
         val endHeading: Rotation2
     }
 
     private class Eager(
-        val segments: PersistentList<PosePath>, val endHeadingDual: Rotation2Dual<ArcLength>) : State {
+        val segments: PersistentList<PosePath>,
+        val endHeadingDual: Rotation2Dual<ArcLength>
+    ) : State {
         override val endHeading = endHeadingDual.value()
     }
 
-    private class Lazy(val makePaths: (Rotation2Dual<ArcLength>) -> PersistentList<PosePath>, override val endHeading: Rotation2) : State
+    private class Lazy(
+        val makePaths: (Rotation2Dual<ArcLength>) -> PersistentList<PosePath>,
+        override val endHeading: Rotation2
+    ) : State
 
     /**
      * @usesMathJax

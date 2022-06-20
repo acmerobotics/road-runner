@@ -1,7 +1,5 @@
 package com.acmerobotics.roadrunner
 
-import kotlin.math.abs
-
 // TODO: projection should not be compositional
 // either we destroy CompositePosePath and change the interface
 // or we duplicate the projection code for PosePath and PositionPath<ArcLength>
@@ -63,7 +61,6 @@ fun interface VelocityConstraint {
 fun interface AccelerationConstraint {
     fun minMaxProfileAccel(robotPose: Transform2Dual<ArcLength>): Interval
 }
-
 
 fun profile(
     path: PosePath,
