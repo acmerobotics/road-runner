@@ -3,29 +3,52 @@ package com.acmerobotics.roadrunner
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 
+/**
+ * @usesMathJax
+ *
+ * Persistent builder for a [CompositePositionPath] that guarantees \(C^2\) continuity.
+ */
 class PositionPathBuilder private constructor(
-    // invariant: beginPose and beginTangent match the end pose and tangent of paths.last()
-    @JvmField
-    val paths: PersistentList<PositionPath<ArcLength>>,
-    @JvmField
-    val nextBeginPos: Position2,
-    @JvmField
-    val nextBeginTangent: Rotation2,
+    // invariants:
+    // - segments satisfy continuity guarantees
+    // - last segment ends with nextBeginPos, nextBeginTangent if it exists
+    private val segments: PersistentList<PositionPath<ArcLength>>,
+    private val nextBeginPos: Position2,
+    private val nextBeginTangent: Rotation2,
 ) {
     constructor(
         beginPos: Position2,
         beginTangent: Rotation2,
     ) : this(persistentListOf(), beginPos, beginTangent)
 
-    fun lineTo(pos: Position2): PositionPathBuilder {
-        val line = Line(nextBeginPos, pos)
+    constructor(
+        beginPos: Position2,
+        beginTangent: Double
+    ) : this(persistentListOf(), beginPos, Rotation2.exp(beginTangent))
+
+    private fun addLine(line: Line): PositionPathBuilder {
         val lineEnd = line.end(2)
         return PositionPathBuilder(
-            paths.add(line),
+            segments.add(line),
             lineEnd.value(),
             lineEnd.tangent().value(),
         )
     }
+
+    fun forward(dist: Double) =
+        addLine(Line(nextBeginPos, nextBeginPos + nextBeginTangent.vec() * dist))
+
+    fun lineToX(posX: Double) =
+        addLine(Line(nextBeginPos, Position2(posX,
+                (posX - nextBeginPos.x) / nextBeginTangent.real * nextBeginTangent.imag + nextBeginPos.y
+            )))
+
+    fun lineToY(posY: Double) = addLine(
+        Line(nextBeginPos,
+            Position2(
+                (posY - nextBeginPos.y) / nextBeginTangent.imag * nextBeginTangent.real + nextBeginPos.x, posY,
+            ))
+        )
 
     fun splineTo(pos: Position2, tangent: Rotation2): PositionPathBuilder {
         // NOTE: First derivatives will be normalized by arc length reparam, so the
@@ -49,13 +72,15 @@ class PositionPathBuilder private constructor(
 
         val splineEnd = spline.end(2)
         return PositionPathBuilder(
-            paths.add(spline),
+            segments.add(spline),
             splineEnd.value(),
             splineEnd.tangent().value(),
         )
     }
 
-    fun build() = CompositePositionPath(paths)
+    fun splineTo(pos: Position2, tangent: Double) = splineTo(pos, Rotation2.exp(tangent))
+
+    fun build() = CompositePositionPath(segments)
 }
 
 // TODO: document a guarantee about continuity
