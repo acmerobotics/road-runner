@@ -160,7 +160,7 @@ class PosePathBuilder private constructor(
                             values.zip(n.values).all { (x, y) -> abs(x - y) < 1e-6 }
 
                         fun <Param> Rotation2Dual<Param>.epsilonEquals(r: Rotation2Dual<Param>) =
-                            real.epsilonEquals(real) && imag.epsilonEquals(imag)
+                            real.epsilonEquals(r.real) && imag.epsilonEquals(r.imag)
 
                         if (!state.endHeadingDual.epsilonEquals(beginHeadingDual)) {
                             throw RotationContinuityException()

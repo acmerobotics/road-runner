@@ -123,15 +123,17 @@ fun chartSpline(q: QuinticSpline1): XYChart {
 
         class BuildersTest {
             @Test
-            fun testLineTo() {
+            fun testForward() {
                 val r = Random.Default
                 repeat(100) {
                     val beginPos = Position2(r.nextDouble(), r.nextDouble())
                     val beginTangent = Rotation2.exp(r.nextDouble())
-                    val endPos = beginPos + beginTangent.vec() * r.nextDouble()
+
+                    val mag = r.nextDouble()
+                    val endPos = beginPos + beginTangent.vec() * mag
 
                     val posPath = PositionPathBuilder(beginPos, beginTangent)
-                        .lineTo(endPos)
+                        .forward(mag)
                         .build()
 
                     assertEquals(beginPos.x, posPath.begin(1).value().x, 1e-6)
@@ -231,7 +233,7 @@ fun chartSpline(q: QuinticSpline1): XYChart {
                     chartSplineExpLog(
                         (
                             (
-                                (posePath as CompositePosePath).paths[0]
+                                posePath.paths[0]
                                     as HeadingPosePath
                                 ).headingPath
                                 as SplineHeadingPath
@@ -382,7 +384,7 @@ fun chartSpline(q: QuinticSpline1): XYChart {
                         Position2(0.0, 0.0),
                         Rotation2.exp(0.0),
                     )
-                        .lineTo(Position2(25.0, 0.0))
+                        .forward(25.0)
                         .build()
 
                     appendSafe(

@@ -90,8 +90,7 @@ data class Line(
         end: Position2,
     ) : this(
         begin,
-        (end - begin),
-        // TODO: duplication
+        (end - begin) / (end - begin).norm(),
         (end - begin).norm(),
     )
 

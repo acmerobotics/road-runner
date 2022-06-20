@@ -7,7 +7,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-class Position2(
+data class Position2(
     @JvmField
     val x: Double,
     @JvmField
