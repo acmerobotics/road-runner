@@ -2,11 +2,12 @@ package com.acmerobotics.roadrunner
 
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
+import kotlin.math.abs
 
 /**
  * @usesMathJax
  *
- * Persistent builder for a [CompositePositionPath] that guarantees \(C^2\) continuity.
+ * Persistent builder for a [CompositePositionPath] with an [ArcLength] parameter that guarantees \(C^2\) continuity.
  */
 class PositionPathBuilder private constructor(
     // invariants:
@@ -35,14 +36,27 @@ class PositionPathBuilder private constructor(
         )
     }
 
+    /**
+     * Adds a line segment that goes forward distance [dist].
+     */
     fun forward(dist: Double) =
         addLine(Line(nextBeginPos, nextBeginPos + nextBeginTangent.vec() * dist))
 
+    /**
+     * @usesMathJax
+     *
+     * Adds a line segment that goes forward to \(x\)-coordinate [posX].
+     */
     fun lineToX(posX: Double) =
         addLine(Line(nextBeginPos, Position2(posX,
                 (posX - nextBeginPos.x) / nextBeginTangent.real * nextBeginTangent.imag + nextBeginPos.y
             )))
 
+    /**
+     * @usesMathJax
+     *
+     * Adds a line segment that goes forward to \(y\)-coordinate [posY].
+     */
     fun lineToY(posY: Double) = addLine(
         Line(nextBeginPos,
             Position2(
@@ -50,9 +64,11 @@ class PositionPathBuilder private constructor(
             ))
         )
 
+    /**
+     * Adds a spline segment to position [pos] with tangent [tangent].
+     */
     fun splineTo(pos: Position2, tangent: Rotation2): PositionPathBuilder {
-        // NOTE: First derivatives will be normalized by arc length reparam, so the
-        // magnitudes need not match at knots.
+        // note: First derivatives will be normalized by arc length reparam, so the magnitudes need not match at knots.
         val dist = (pos - nextBeginPos).norm()
         val beginDeriv = nextBeginTangent.vec() * dist
         val endDeriv = tangent.vec() * dist
@@ -78,64 +94,83 @@ class PositionPathBuilder private constructor(
         )
     }
 
+    /**
+     * Adds a spline segment to position [pos] with tangent [tangent].
+     */
     fun splineTo(pos: Position2, tangent: Double) = splineTo(pos, Rotation2.exp(tangent))
 
     fun build() = CompositePositionPath(segments)
 }
 
-// TODO: document a guarantee about continuity
+/**
+ * @usesMathJax
+ *
+ * Persistent builder for a [CompositePosePath] that guarantees \(C^1\) heading continuity given an
+ * [ArcLength]-parameterized [PositionPath] with \(C^2\) continuity.
+ *
+ * Throws a [RotationContinuityException] exception when a rotation segment is added that doesn't maintain \(C^1\)
+ * heading continuity. To avoid this, keep one or more [splineUntil] calls between every call to [tangentUntil],
+ * [constantUntil], or [linearUntil]. This discipline is enforced by the interface of [SafePosePathBuilder], and that
+ * builder is recommended over this one.
+ */
 class PosePathBuilder private constructor(
-    // invariant: state encodes heading for [0.0, beginDisp)
-    @JvmField
-    val posPath: PositionPath<ArcLength>,
-    @JvmField
-    val beginDisp: Double,
-    @JvmField
-    val state: State,
+    // invariants:
+    // - posPath is C2-continuous
+    // - state segments satisfy continuity guarantees
+    // - state encodes heading for [0.0, beginDisp)
+    private val posPath: PositionPath<ArcLength>,
+    private val beginDisp: Double,
+    private val state: State,
 ) {
     constructor(path: PositionPath<ArcLength>, beginHeading: Rotation2) :
         this(path, 0.0, Lazy({ persistentListOf() }, beginHeading))
 
-    sealed interface State {
+    constructor(path: PositionPath<ArcLength>, beginHeading: Double) :
+            this(path, 0.0, Lazy({ persistentListOf() }, Rotation2.exp(beginHeading)))
+
+    private sealed interface State {
         val endHeading: Rotation2
     }
 
-    class Eager(
-        @JvmField
-        val paths: PersistentList<PosePath>, @JvmField val endHeadingDual: Rotation2Dual<ArcLength>) : State {
+    private class Eager(
+        val segments: PersistentList<PosePath>, val endHeadingDual: Rotation2Dual<ArcLength>) : State {
         override val endHeading = endHeadingDual.value()
     }
 
-    // TODO: I can suppress these classes, though it might be better to hide the whole internal
-    // state of builders; I think they are reasonably "more abstract" than the others
-    /**
-     * @suppress
-     */
-    // TODO: is it possible to make this appear as a static inner class from the Java side?
-    class Lazy(@JvmField val makePaths: (Rotation2Dual<ArcLength>) -> PersistentList<PosePath>, override val endHeading: Rotation2) : State
+    private class Lazy(val makePaths: (Rotation2Dual<ArcLength>) -> PersistentList<PosePath>, override val endHeading: Rotation2) : State
 
-    // TODO: keep this private?
-    // pro: easier to make breaking changes in the future
-    // con: more difficult to extend the builder
-    private fun addEagerPosePath(disp: Double, posePath: PosePath): PosePathBuilder {
+    /**
+     * @usesMathJax
+     *
+     * Exception thrown when a rotation segment is added that doesn't maintain \(C^1\) heading continuity.
+     */
+    class RotationContinuityException : RuntimeException()
+
+    private fun addEagerPosePath(disp: Double, segment: PosePath): PosePathBuilder {
         require(disp > beginDisp)
 
-        val beginHeadingDual = posePath.begin(3).rotation
+        val beginHeadingDual = segment.begin(3).rotation
 
         return PosePathBuilder(
             posPath, disp,
             Eager(
                 when (state) {
                     is Eager -> {
-                        // TODO: Rotation2.epsilonEquals?
-                        require(state.endHeadingDual.real.epsilonEquals(beginHeadingDual.real))
-                        require(state.endHeadingDual.imag.epsilonEquals(beginHeadingDual.imag))
+                        fun <Param> DualNum<Param>.epsilonEquals(n: DualNum<Param>) =
+                            values.zip(n.values).all { (x, y) -> abs(x - y) < 1e-6 }
 
-                        state.paths
+                        fun <Param> Rotation2Dual<Param>.epsilonEquals(r: Rotation2Dual<Param>) =
+                            real.epsilonEquals(real) && imag.epsilonEquals(imag)
+
+                        if (!state.endHeadingDual.epsilonEquals(beginHeadingDual)) {
+                            throw RotationContinuityException()
+                        }
+
+                        state.segments
                     }
                     is Lazy -> state.makePaths(beginHeadingDual)
-                }.add(posePath),
-                posePath.end(3).rotation
+                }.add(segment),
+                segment.end(3).rotation
             )
         )
     }
@@ -143,6 +178,9 @@ class PosePathBuilder private constructor(
     private fun viewUntil(disp: Double) =
         PositionPathView(posPath, beginDisp, disp - beginDisp)
 
+    /**
+     * Fills in tangent headings until displacement [disp].
+     */
     fun tangentUntil(disp: Double) = addEagerPosePath(
         disp,
         TangentPath(
@@ -151,6 +189,9 @@ class PosePathBuilder private constructor(
         )
     )
 
+    /**
+     * Fills in constant headings until displacement [disp].
+     */
     fun constantUntil(disp: Double) = addEagerPosePath(
         disp,
         HeadingPosePath(
@@ -159,6 +200,9 @@ class PosePathBuilder private constructor(
         )
     )
 
+    /**
+     * Fills in headings interpolated linearly to heading [heading] at displacement [disp].
+     */
     fun linearUntil(disp: Double, heading: Rotation2) = addEagerPosePath(
         disp,
         HeadingPosePath(
@@ -167,6 +211,19 @@ class PosePathBuilder private constructor(
         )
     )
 
+    /**
+     * Fills in headings interpolated linearly to heading [heading] at displacement [disp].
+     */
+    fun linearUntil(disp: Double, heading: Double) = linearUntil(disp, Rotation2.exp(heading))
+
+    /**
+     * @usesMathJax
+     *
+     * Fills in headings interpolated with a spline to heading [heading] at displacement [disp].
+     *
+     * Flexibility in the choice of spline endpoint derivatives allows [splineUntil] to both precede and succeed any
+     * other heading segment. And in fact the heading at both knots will be \(C^2\)-continuous.
+     */
     fun splineUntil(disp: Double, heading: Rotation2): PosePathBuilder {
         require(disp > beginDisp)
 
@@ -176,7 +233,7 @@ class PosePathBuilder private constructor(
                 when (state) {
                     is Eager -> {
                         {
-                            state.paths.add(
+                            state.segments.add(
                                 HeadingPosePath(
                                     viewUntil(disp),
                                     SplineHeadingPath(state.endHeadingDual, it, disp - beginDisp),
@@ -206,18 +263,29 @@ class PosePathBuilder private constructor(
         )
     }
 
+    /**
+     * @usesMathJax
+     *
+     * Fills in headings interpolated with a spline to heading [heading] at displacement [disp].
+     *
+     * Flexibility in the choice of spline endpoint derivatives allows [splineUntil] to both precede and succeed any
+     * other heading segment. In fact, heading at both knots is \(C^2\)-continuous.
+     */
+    fun splineUntil(disp: Double, heading: Double) = splineUntil(disp, Rotation2.exp(heading))
+
     fun tangentUntilEnd() = tangentUntil(posPath.length).build()
     fun constantUntilEnd() = constantUntil(posPath.length).build()
     fun linearUntilEnd(heading: Rotation2) = linearUntil(posPath.length, heading).build()
+    fun linearUntilEnd(heading: Double) = linearUntil(posPath.length, Rotation2.exp(heading))
     fun splineUntilEnd(heading: Rotation2) = splineUntil(posPath.length, heading).build()
+    fun splineUntilEnd(heading: Double) = splineUntil(posPath.length, Rotation2.exp(heading))
 
-    // NOTE: must be at the end of the pose path
-    fun build(): PosePath {
+    private fun build(): PosePath {
         require(beginDisp == posPath.length)
 
         return CompositePosePath(
             when (state) {
-                is Eager -> state.paths
+                is Eager -> state.segments
                 is Lazy -> {
                     val endTangent = posPath[beginDisp, 4].tangent()
                     val endHeading = Rotation2Dual.exp(
@@ -232,7 +300,13 @@ class PosePathBuilder private constructor(
     }
 }
 
-class SafePosePathBuilder internal constructor(@JvmField val posePathBuilder: PosePathBuilder) {
+/**
+ * Wrapper for [PosePathBuilder] that provides the same guarantees without throwing
+ * [PosePathBuilder.RotationContinuityException].
+ *
+ * For method-by-method documentation, see the identical methods on [PosePathBuilder].
+ */
+class SafePosePathBuilder internal constructor(private val posePathBuilder: PosePathBuilder) {
     constructor(path: PositionPath<ArcLength>, beginHeading: Rotation2) :
         this(PosePathBuilder(path, beginHeading))
 
@@ -242,23 +316,32 @@ class SafePosePathBuilder internal constructor(@JvmField val posePathBuilder: Po
         RestrictedPosePathBuilder(posePathBuilder.constantUntil(disp))
     fun linearUntil(disp: Double, heading: Rotation2) =
         RestrictedPosePathBuilder(posePathBuilder.linearUntil(disp, heading))
+    fun linearUntil(disp: Double, heading: Double) =
+        RestrictedPosePathBuilder(posePathBuilder.linearUntil(disp, heading))
 
     fun splineUntil(disp: Double, heading: Rotation2) =
+        SafePosePathBuilder(posePathBuilder.splineUntil(disp, heading))
+    fun splineUntil(disp: Double, heading: Double) =
         SafePosePathBuilder(posePathBuilder.splineUntil(disp, heading))
 
     fun tangentUntilEnd() = posePathBuilder.tangentUntilEnd()
     fun constantUntilEnd() = posePathBuilder.constantUntilEnd()
     fun linearUntilEnd(heading: Rotation2) = posePathBuilder.linearUntilEnd(heading)
+    fun linearUntilEnd(heading: Double) = posePathBuilder.linearUntilEnd(heading)
     fun splineUntilEnd(heading: Rotation2) = posePathBuilder.splineUntilEnd(heading)
-
-    fun build() = posePathBuilder.build()
+    fun splineUntilEnd(heading: Double) = posePathBuilder.splineUntilEnd(heading)
 }
 
-class RestrictedPosePathBuilder internal constructor(@JvmField val posePathBuilder: PosePathBuilder) {
+// TODO: is suppressing this misleading?
+/**
+ * @suppress
+ */
+class RestrictedPosePathBuilder internal constructor(private val posePathBuilder: PosePathBuilder) {
     fun splineUntil(disp: Double, heading: Rotation2) =
+        SafePosePathBuilder(posePathBuilder.splineUntil(disp, heading))
+    fun splineUntil(disp: Double, heading: Double) =
         SafePosePathBuilder(posePathBuilder.splineUntil(disp, heading))
 
     fun splineUntilEnd(heading: Rotation2) = posePathBuilder.splineUntilEnd(heading)
-
-    fun build() = posePathBuilder.build()
+    fun splineUntilEnd(heading: Double) = posePathBuilder.splineUntilEnd(heading)
 }
