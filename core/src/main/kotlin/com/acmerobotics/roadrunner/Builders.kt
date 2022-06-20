@@ -282,19 +282,19 @@ class PosePathBuilder private constructor(
      * Fills in headings interpolated with a spline to heading [heading] at displacement [disp].
      *
      * Flexibility in the choice of spline endpoint derivatives allows [splineUntil] to both precede and succeed any
-     * other heading segment. In fact, heading at both knots is \(C^2\)-continuous.
+     * other heading segment. And in fact the heading at both knots will be \(C^2\)-continuous.
      */
     fun splineUntil(disp: Double, heading: Double) = splineUntil(disp, Rotation2.exp(heading))
 
-    fun tangentUntilEnd() = tangentUntil(posPath.length).build()
-    fun constantUntilEnd() = constantUntil(posPath.length).build()
-    fun linearUntilEnd(heading: Rotation2) = linearUntil(posPath.length, heading).build()
-    fun linearUntilEnd(heading: Double) = linearUntil(posPath.length, Rotation2.exp(heading))
-    fun splineUntilEnd(heading: Rotation2) = splineUntil(posPath.length, heading).build()
-    fun splineUntilEnd(heading: Double) = splineUntil(posPath.length, Rotation2.exp(heading))
+    fun tangentUntilEnd() = tangentUntil(posPath.length()).build()
+    fun constantUntilEnd() = constantUntil(posPath.length()).build()
+    fun linearUntilEnd(heading: Rotation2) = linearUntil(posPath.length(), heading).build()
+    fun linearUntilEnd(heading: Double) = linearUntil(posPath.length(), Rotation2.exp(heading))
+    fun splineUntilEnd(heading: Rotation2) = splineUntil(posPath.length(), heading).build()
+    fun splineUntilEnd(heading: Double) = splineUntil(posPath.length(), Rotation2.exp(heading))
 
     private fun build(): PosePath {
-        require(beginDisp == posPath.length)
+        require(beginDisp == posPath.length())
 
         return CompositePosePath(
             when (state) {

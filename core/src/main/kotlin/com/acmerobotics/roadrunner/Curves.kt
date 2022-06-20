@@ -57,13 +57,12 @@ data class QuinticSpline1(
 }
 
 interface PositionPath<Param> {
-    // TODO: consider making this an accessor like length()
-    // then length can be a proper JVM field in the implementing classes
-    val length: Double
     operator fun get(param: Double, n: Int): Position2Dual<Param>
 
+    fun length(): Double
+
     fun begin(n: Int) = get(0.0, n)
-    fun end(n: Int) = get(length, n)
+    fun end(n: Int) = get(length(), n)
 }
 
 data class QuinticSpline2(
@@ -72,8 +71,9 @@ data class QuinticSpline2(
     @JvmField
     val y: QuinticSpline1,
 ) : PositionPath<Internal> {
-    override val length = 1.0
     override fun get(param: Double, n: Int) = Position2Dual(x[param, n], y[param, n])
+
+    override fun length() = 1.0
 }
 
 // TODO: what a nightmare
@@ -82,8 +82,8 @@ data class Line(
     val begin: Position2,
     @JvmField
     val dir: Vector2, // unit norm!
-    // TODO: not sure how to render this as a JVM field
-    override val length: Double,
+    @JvmField
+    val length: Double,
 ) : PositionPath<ArcLength> {
     constructor(
         begin: Position2,
@@ -96,6 +96,8 @@ data class Line(
 
     override fun get(param: Double, n: Int) =
         DualNum.variable<ArcLength>(param, n) * dir + begin
+
+    override fun length() = length
 }
 
 class ArcLength
@@ -110,11 +112,12 @@ data class ArcCurve2 @JvmOverloads constructor(
     @JvmField
     val curve: PositionPath<Internal>,
     @JvmField
-    val samples: IntegralScanResult = integralScan(0.0, curve.length, 1e-6) {
+    val samples: IntegralScanResult = integralScan(0.0, curve.length(), 1e-6) {
         curve[it, 2].free().drop(1).norm().value()
     },
 ) : PositionPath<ArcLength> {
-    override val length = samples.sums.last()
+    @JvmField
+    val length = samples.sums.last()
 
     fun reparam(s: Double): Double {
         val index = samples.sums.binarySearch(s)
@@ -154,15 +157,18 @@ data class ArcCurve2 @JvmOverloads constructor(
         tValues[3] = tDerivs.reparam(DualNum<ArcLength>(tValues))[2]
         return point.reparam(DualNum(tValues))
     }
+
+    override fun length() = length
 }
 
 data class CompositePositionPath<Param> @JvmOverloads constructor(
     @JvmField
     val paths: PersistentList<PositionPath<Param>>,
     @JvmField
-    val offsets: PersistentList<Double> = paths.scan(0.0) { acc, path -> acc + path.length }.toPersistentList(),
+    val offsets: PersistentList<Double> = paths.scan(0.0) { acc, path -> acc + path.length() }.toPersistentList(),
 ) : PositionPath<Param> {
-    override val length = offsets.last()
+    @JvmField
+    val length = offsets.last()
 
     override fun get(param: Double, n: Int): Position2Dual<Param> {
         if (param > length) {
@@ -177,6 +183,8 @@ data class CompositePositionPath<Param> @JvmOverloads constructor(
 
         return Position2Dual.constant(paths.first()[0.0, 1].value(), n)
     }
+
+    override fun length() = length
 }
 
 data class PositionPathView<Param>(
@@ -184,25 +192,32 @@ data class PositionPathView<Param>(
     val path: PositionPath<Param>,
     @JvmField
     val offset: Double,
-    override val length: Double,
+    @JvmField
+    val length: Double,
 ) : PositionPath<Param> {
     override fun get(param: Double, n: Int) = path[param + offset, n]
+
+    override fun length() = length
 }
 
 interface HeadingPath {
-    val length: Double
     operator fun get(s: Double, n: Int): Rotation2Dual<ArcLength>
 
+    fun length(): Double
+
     fun begin(n: Int) = get(0.0, n)
-    fun end(n: Int) = get(length, n)
+    fun end(n: Int) = get(length(), n)
 }
 
 data class ConstantHeadingPath(
     @JvmField
     val heading: Rotation2,
-    override val length: Double,
+    @JvmField
+    val length: Double,
 ) : HeadingPath {
     override fun get(s: Double, n: Int) = Rotation2Dual.constant<ArcLength>(heading, n)
+
+    override fun length() = length
 }
 
 data class LinearHeadingPath(
@@ -210,17 +225,23 @@ data class LinearHeadingPath(
     val begin: Rotation2,
     @JvmField
     val angle: Double,
-    override val length: Double,
+    @JvmField
+    val length: Double,
 ) : HeadingPath {
     override fun get(s: Double, n: Int) =
         Rotation2Dual.exp(DualNum.variable<ArcLength>(s, n) / length * angle) * begin
+
+    override fun length() = length
 }
 
 data class SplineHeadingPath(
     // TODO: should these b fields? probably not
+    @JvmField
     val begin: Rotation2Dual<ArcLength>,
+    @JvmField
     val end: Rotation2Dual<ArcLength>,
-    override val length: Double,
+    @JvmField
+    val length: Double,
 ) : HeadingPath {
     init {
         require(begin.size >= 3)
@@ -247,14 +268,17 @@ data class SplineHeadingPath(
                     DualNum.variable<ArcLength>(s, n) / length
                 )
         ) * begin.value()
+
+    override fun length() = length
 }
 
 interface PosePath {
-    val length: Double
     operator fun get(s: Double, n: Int): Transform2Dual<ArcLength>
 
+    fun length(): Double
+
     fun begin(n: Int) = get(0.0, n)
-    fun end(n: Int) = get(length, n)
+    fun end(n: Int) = get(length(), n)
 }
 
 data class TangentPath(
@@ -263,12 +287,12 @@ data class TangentPath(
     @JvmField
     val offset: Double
 ) : PosePath {
-    override val length get() = path.length
-
     // NOTE: n+1 guarantees enough derivatives for tangent
     override operator fun get(s: Double, n: Int) = path[s, n + 1].let {
         Transform2Dual(it.free(), it.tangent() + offset)
     }
+
+    override fun length() = path.length()
 }
 
 data class HeadingPosePath(
@@ -277,23 +301,24 @@ data class HeadingPosePath(
     @JvmField
     val headingPath: HeadingPath,
 ) : PosePath {
-    override val length get() = posPath.length
-
     init {
-        require(posPath.length == headingPath.length)
+        require(posPath.length() == headingPath.length())
     }
 
     override fun get(s: Double, n: Int) =
         Transform2Dual(posPath[s, n].free(), headingPath[s, n])
+
+    override fun length() = posPath.length()
 }
 
 data class CompositePosePath(
     @JvmField
     val paths: PersistentList<PosePath>,
     @JvmField
-    val offsets: PersistentList<Double> = paths.scan(0.0) { acc, path -> acc + path.length }.toPersistentList(),
+    val offsets: PersistentList<Double> = paths.scan(0.0) { acc, path -> acc + path.length() }.toPersistentList(),
 ) : PosePath {
-    override val length = offsets.last()
+    @JvmField
+    val length = offsets.last()
 
     override fun get(s: Double, n: Int): Transform2Dual<ArcLength> {
         if (s > length) {
@@ -308,13 +333,15 @@ data class CompositePosePath(
 
         return Transform2Dual.constant(paths.first()[0.0, 1].value(), n)
     }
+
+    override fun length() = length
 }
 
 fun project(path: PositionPath<ArcLength>, query: Position2, init: Double): Double {
     return (1..10).fold(init) { s, _ ->
         val guess = path[s, 3]
         val ds = (query - guess.value()) dot guess.tangent().value().vec()
-        clamp(s + ds, 0.0, path.length)
+        clamp(s + ds, 0.0, path.length())
     }
 }
 
@@ -322,6 +349,6 @@ fun project(path: PosePath, query: Position2, init: Double): Double {
     return (1..10).fold(init) { s, _ ->
         val guess = path[s, 3].translation.bind()
         val ds = (query - guess.value()) dot guess.tangent().value().vec()
-        clamp(s + ds, 0.0, path.length)
+        clamp(s + ds, 0.0, path.length())
     }
 }

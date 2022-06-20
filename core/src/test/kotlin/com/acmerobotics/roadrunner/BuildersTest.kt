@@ -48,7 +48,7 @@ fun chartSpline(q: QuinticSpline1): XYChart {
         }
 
         fun <Param> chartPosPath(posPath: PositionPath<Param>): XYChart {
-            val params = range(-1.0, posPath.length + 1.0, 1000)
+            val params = range(-1.0, posPath.length() + 1.0, 1000)
             val positions = params.map { posPath[it, 4] }
 
             return QuickChart.getChart(
@@ -73,7 +73,7 @@ fun chartSpline(q: QuinticSpline1): XYChart {
         }
 
         fun chartPosePath(posePath: PosePath): XYChart {
-            val params = range(-1.0, posePath.length + 1.0, 1000)
+            val params = range(-1.0, posePath.length() + 1.0, 1000)
             val poses = params.map { posePath[it, 3] }
 
             return QuickChart.getChart(
@@ -99,7 +99,7 @@ fun chartSpline(q: QuinticSpline1): XYChart {
         }
 
         fun chartPosePathHeading(posePath: PosePath): XYChart {
-            val params = range(-1.0, posePath.length + 1.0, 1000)
+            val params = range(-1.0, posePath.length() + 1.0, 1000)
             val poses = params.map { posePath[it, 3] }
 
             return QuickChart.getChart(

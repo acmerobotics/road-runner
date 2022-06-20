@@ -26,7 +26,7 @@ class KinematicsTest {
         val path = TangentPath(posPath, 0.0)
         val constraint = kinematics.MaxWheelVelocityConstraint(10.0)
         val profile = profile(
-            path.length, 0.0,
+            path.length(), 0.0,
             { constraint.maxRobotVel(path[it, 2]) }, { Interval(-5.0, 5.0) }, 0.01
         )
 

@@ -7,6 +7,7 @@ package com.acmerobotics.roadrunner
 // keeping PosePath abstract makes reflected/transformed paths easier
 
 // TODO: do we even need this class?
+// I'm less and less happy with its existence
 data class DisplacementTrajectory(
     @JvmField
     val path: PosePath,
@@ -69,7 +70,7 @@ fun profile(
     minMaxAccel: AccelerationConstraint,
     resolution: Double,
 ) = profile(
-    path.length,
+    path.length(),
     beginEndVel,
     { maxVel.maxRobotVel(path[it, 2]) },
     { minMaxAccel.minMaxProfileAccel(path[it, 2]) },
@@ -83,7 +84,7 @@ fun forwardProfile(
     minMaxAccel: AccelerationConstraint,
     resolution: Double,
 ) = forwardProfile(
-    path.length,
+    path.length(),
     beginVel,
     { maxVel.maxRobotVel(path[it, 2]) },
     { minMaxAccel.minMaxProfileAccel(path[it, 2]).max },
@@ -97,7 +98,7 @@ fun backwardProfile(
     minMaxAccel: AccelerationConstraint,
     resolution: Double,
 ) = backwardProfile(
-    path.length,
+    path.length(),
     { maxVel.maxRobotVel(path[it, 2]) },
     endVel,
     { minMaxAccel.minMaxProfileAccel(path[it, 2]).min },
