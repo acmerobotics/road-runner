@@ -2,9 +2,36 @@ package com.acmerobotics.roadrunner
 
 import kotlin.math.PI
 import kotlin.math.abs
+import kotlin.random.Random
 import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class KinematicsTest {
+    @Test
+    fun testMecKinematicsComposition() {
+        val kinematics = MecanumKinematics(10.0)
+
+        val r = Random.Default
+        repeat(100) {
+            val t = Twist2(
+                Vector2(r.nextDouble(), r.nextDouble()),
+                r.nextDouble()
+            )
+
+            val vs = kinematics.inverse(Twist2Dual.constant<Time>(t, 1)).all()
+
+            val t2 = kinematics.forward(
+                MecanumKinematics.WheelIncrements(
+                    vs[0], vs[1], vs[2], vs[3],
+                )
+            ).value()
+
+            assertEquals(t.transVel.x, t2.transIncr.x, 1e-6)
+            assertEquals(t.transVel.y, t2.transIncr.y, 1e-6)
+            assertEquals(t.rotVel, t2.rotIncr, 1e-6)
+        }
+    }
+
     @Test
     fun testMecWheelVelocityLimiting() {
         val kinematics = MecanumKinematics(10.0)
