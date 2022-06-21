@@ -31,8 +31,6 @@ class Demo {
             listOf(0.0)
         )
 
-        val trajectory = DisplacementTrajectory(path, profile)
-
         var s = 0.0
         var pose = Transform2Dual<Time>(
             Vector2Dual(
@@ -46,13 +44,13 @@ class Demo {
         val targets = mutableListOf<Transform2>()
 
         while (true) {
-            s = trajectory.project(pose.translation.bind(), s).value()
+            s = project(path, pose.translation.value().bind(), s)
 
             if (s >= path.length() - 0.25) {
                 break
             }
 
-            val targetPose = trajectory[s, 3]
+            val targetPose = path[s, 3].reparam(profile[s])
 
             measured.add(pose.value())
             targets.add(targetPose.value())

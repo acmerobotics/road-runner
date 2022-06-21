@@ -59,11 +59,10 @@ class KinematicsTest {
             0.01,
         )
 
-        val trajectory = TimeTrajectory(DisplacementTrajectory(path, profile))
-
-        val t = range(0.0, profile.disps.last(), 100)
-        val maxWheelVelMag = t.maxOf { time ->
-            val pose = trajectory[time, 2]
+        val ts = range(0.0, profile.disps.last(), 100)
+        val maxWheelVelMag = ts.maxOf { time ->
+            val s = profile[time]
+            val pose = path[s.value(), 2].reparam(s)
             kinematics.inverse(pose.inverse() * pose.velocity())
                 .all()
                 .map { it.value() }

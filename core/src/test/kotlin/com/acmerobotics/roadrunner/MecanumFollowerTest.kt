@@ -15,7 +15,7 @@ class MecanumFollowerTest {
 
         val kinematics = MecanumKinematics(3.0)
 
-        val traj = TangentPath(
+        val path = TangentPath(
             PositionPathBuilder(
                 Position2(0.0, 0.0),
                 Rotation2.exp(0.0),
@@ -31,21 +31,18 @@ class MecanumFollowerTest {
                 )
                 .build(),
             0.0,
-        ).let { path ->
-            TimeTrajectory(
-                DisplacementTrajectory(
-                    path,
-                    profile(
-                        path,
-                        0.0,
-                        // TODO: angular velocity constraint
-                        kinematics.MaxWheelVelConstraintFun(50.0),
-                        ProfileAccelConstraintFun(-25.0, 25.0),
-                        0.25,
-                    )
-                )
+        )
+
+        val profile = TimeProfile(
+            profile(
+                path,
+                0.0,
+                // TODO: angular velocity constraint
+                kinematics.MaxWheelVelConstraintFun(50.0),
+                ProfileAccelConstraintFun(-25.0, 25.0),
+                0.25,
             )
-        }
+        )
 
         val follower = HolonomicController(10.0, 10.0, 0.1)
 
@@ -60,10 +57,11 @@ class MecanumFollowerTest {
         val actualPositions = mutableListOf<Vector2>()
 
         var t = 0.0
-        while (t <= traj.timeProfile.duration) {
+        while (t <= profile.duration) {
             t += dt
 
-            val targetPose = traj[t, 3]
+            val s = profile[t]
+            val targetPose = path[s.value(), 3].reparam(s)
 
             targetPositions.add(targetPose.translation.value())
             actualPositions.add(poseEstimate.translation)
