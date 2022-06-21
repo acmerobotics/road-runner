@@ -141,7 +141,7 @@ fun persistentBuilders() {
 //
 // }
 
-fun setWheelPowers(powers: WheelVelocities<Time>) {
+fun setWheelPowers(powers: MecanumKinematics.WheelVelocities<Time>) {
 }
 
 fun fieldCentric(kinematics: MecanumKinematics, poseEstimate: Transform2, leftStick: Vector2, rightStick: Vector2) {
@@ -155,8 +155,8 @@ fun fieldCentric(kinematics: MecanumKinematics, poseEstimate: Transform2, leftSt
     )
 }
 
-fun getWheelIncrements(): WheelIncrements<Time> {
-    return WheelIncrements(
+fun getWheelIncrements(): MecanumKinematics.WheelIncrements<Time> {
+    return MecanumKinematics.WheelIncrements(
         DualNum(doubleArrayOf(0.0)),
         DualNum(doubleArrayOf(0.0)),
         DualNum(doubleArrayOf(0.0)),
@@ -164,7 +164,7 @@ fun getWheelIncrements(): WheelIncrements<Time> {
     )
 }
 
-fun setWheelVelocities(vels: WheelVelocities<Time>) {
+fun setWheelVelocities(vels: MecanumKinematics.WheelVelocities<Time>) {
 }
 
 val TRANS_GAIN = 10.0

@@ -265,6 +265,15 @@ data class DualNum<Param>(val values: DoubleArray) {
         }
     )
 
+    operator fun minus(c: Double) = DualNum<Param>(
+        DoubleArray(size) {
+            when (it) {
+                0 -> values[0] - c
+                else -> values[it]
+            }
+        }
+    )
+
     operator fun times(c: Double): DualNum<Param> {
         val out = DualNum<Param>(DoubleArray(size))
         for (i in out.values.indices) {

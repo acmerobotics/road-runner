@@ -35,11 +35,12 @@ data class Position2Dual<Param>(@JvmField val x: DualNum<Param>, @JvmField val y
     fun <NewParam> reparam(oldParam: DualNum<NewParam>) =
         Position2Dual(x.reparam(oldParam), y.reparam(oldParam))
 
-    fun drop(n: Int): Vector2Dual<Param> {
-        require(n >= 1)
-
-        return Vector2Dual(x.drop(1), y.drop(1))
-    }
+    // TODO: either this or tangentVec() should go... probably this one goes
+    // fun drop(n: Int): Vector2Dual<Param> {
+    //     require(n >= 1)
+    //
+    //     return Vector2Dual(x.drop(1), y.drop(1))
+    // }
 
     fun value() = Position2(x.value(), y.value())
 }
@@ -70,6 +71,7 @@ data class Vector2Dual<Param>(@JvmField val x: DualNum<Param>, @JvmField val y: 
     }
 
     operator fun plus(other: Vector2Dual<Param>) = Vector2Dual(x + other.x, y + other.y)
+    operator fun minus(v: Vector2Dual<Param>) = Vector2Dual(x - v.x, y - v.y)
     operator fun unaryMinus() = Vector2Dual(-x, -y)
 
     operator fun div(other: Double) = Vector2Dual(x / other, y / other)
@@ -196,7 +198,7 @@ data class Transform2(
     companion object {
         // see (133), (134) in https://ethaneade.com/lie.pdf
         // TODO: is this necessary?
-        private fun entries(theta: Double): Pair<Double, Double> {
+        internal fun entries(theta: Double): Pair<Double, Double> {
             val u = theta + epsCopySign(theta)
             return Pair(
                 sin(u) / u,
@@ -258,6 +260,19 @@ data class Transform2Dual<Param>(
         @JvmStatic
         fun <Param> constant(t: Transform2, n: Int) =
             Transform2Dual<Param>(Vector2Dual.constant(t.translation, n), Rotation2Dual.constant(t.rotation, n))
+
+        @JvmStatic
+        fun <Param> exp(incr: Twist2IncrementDual<Param>): Transform2Dual<Param> {
+            val rotation = Rotation2Dual.exp(incr.rotIncr)
+
+            val (A, B) = Transform2.entries(incr.rotIncr.value())
+            val translation = Vector2Dual(
+                incr.transIncr.x * A - incr.transIncr.y * B,
+                incr.transIncr.x * B + incr.transIncr.y * A
+            )
+
+            return Transform2Dual(translation, rotation)
+        }
     }
 
     operator fun times(other: Transform2Dual<Param>) =
@@ -267,6 +282,8 @@ data class Transform2Dual<Param>(
         Transform2Dual(rotation * other.translation + translation, rotation * other.rotation)
 
     operator fun plus(other: Twist2Increment) = this * Transform2.exp(other)
+
+    operator fun plus(other: Twist2IncrementDual<Param>) = this * Transform2Dual.exp(other)
 
     fun value() = Transform2(translation.value(), rotation.value())
 

@@ -169,7 +169,7 @@ data class ArclengthReparamCurve2(
     ) : this(
         curve,
         integralScan(0.0, curve.length(), eps) {
-            curve[it, 2].drop(1).value().norm()
+            curve[it, 2].tangentVec().value().norm()
         },
     )
 

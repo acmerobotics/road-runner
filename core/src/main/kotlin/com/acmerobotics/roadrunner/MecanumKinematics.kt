@@ -15,7 +15,7 @@ data class MecanumKinematics @JvmOverloads constructor(
     val lateralMultiplier: Double = 1.0
 ) {
     /**
-     * @param[wheelBase] distance between wheels on the same side; see the diagram in [MecanumKinematics]
+     * @param[wheelbase] distance between wheels on the same side; see the diagram in [MecanumKinematics]
      */
     constructor(
         trackWidth: Double,

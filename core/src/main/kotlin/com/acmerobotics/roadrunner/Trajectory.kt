@@ -28,7 +28,7 @@ data class DisplacementTrajectory(
             val drds = r.tangentVec()
             val d2rds2 = drds.drop(1)
 
-            val dsdt = (query.tangentVec() dot drds) * ((d dot d2rds2) + (-1.0)).recip()
+            val dsdt = (query.tangentVec() dot drds) / ((d dot d2rds2) - 1.0)
 
             dsdt.addFirst(s)
         }
