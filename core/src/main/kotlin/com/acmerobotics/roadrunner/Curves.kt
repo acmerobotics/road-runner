@@ -10,10 +10,11 @@ import kotlinx.collections.immutable.toPersistentList
  */
 class Internal
 
+// TODO: fix interval in docs
 /**
  * @usesMathJax
  *
- * Quintic spline with equation \(a t^5 + b t^4 + c t^3 + d t^2 + e t + f\) where \(0 \leq t \leq 1\).
+ * Quintic spline with equation \(a t^5 + b t^4 + c t^3 + d t^2 + e t + f\) where \(t \in )0, 1(\).
  *
  * @property[a] \(a\)
  * @property[b] \(b\)
@@ -159,6 +160,9 @@ data class ArclengthReparamCurve2(
     @JvmField
     val samples: IntegralScanResult,
 ) : PositionPath<Arclength> {
+    /**
+     * @param[eps] desired error in the approximate length [length]
+     */
     constructor(
         curve: PositionPath<Internal>,
         eps: Double,

@@ -1,3 +1,5 @@
+@file:JvmName("Trajectory")
+
 package com.acmerobotics.roadrunner
 
 // TODO: projection should not be compositional
