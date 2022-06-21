@@ -7,96 +7,23 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sqrt
 
+/**
+ * Time parameter for [DualNum].
+ */
 class Time
 
-fun constantProfile(
-    length: Double,
-    beginEndVel: Double,
-    maxVel: Double,
-    minAccel: Double,
-    maxAccel: Double,
-) = profile(length, beginEndVel, { maxVel }, { minAccel }, { maxAccel }, length)
-
-fun profile(
-    length: Double,
-    beginEndVel: Double,
-    maxVel: (Double) -> Double,
-    minAccel: (Double) -> Double,
-    maxAccel: (Double) -> Double,
-    resolution: Double,
-): DisplacementProfile {
-    require(length > 0.0)
-    require(resolution > 0.0)
-    require(beginEndVel >= 0.0)
-
-    val samples = max(1, ceil(length / resolution).toInt())
-
-    val disps = rangeMiddle(0.0, length, samples)
-    val maxVels = disps.map(maxVel)
-    val minAccels = disps.map(minAccel)
-    val maxAccels = disps.map(maxAccel)
-
-    return profile(length, beginEndVel, maxVels, minAccels, maxAccels)
-}
-
-fun profile(
-    length: Double,
-    beginEndVel: Double,
-    maxVels: List<Double>,
-    minAccels: List<Double>,
-    maxAccels: List<Double>,
-): DisplacementProfile {
-    require(maxVels.size == minAccels.size)
-    require(maxVels.size == maxAccels.size)
-
-    val disps = range(0.0, length, maxVels.size + 1)
-    return merge(
-        forwardProfile(disps, beginEndVel, maxVels, maxAccels),
-        backwardProfile(disps, maxVels, beginEndVel, minAccels),
-    )
-}
-
-fun forwardProfile(
-    length: Double,
-    beginVel: Double,
-    maxVel: (Double) -> Double,
-    maxAccel: (Double) -> Double,
-    resolution: Double,
-): DisplacementProfile {
-    val samples = max(1, ceil(length / resolution).toInt())
-
-    val disps = rangeMiddle(0.0, length, samples)
-    val maxVels = disps.map(maxVel)
-    val maxAccels = disps.map(maxAccel)
-    return forwardProfile(
-        range(0.0, length, samples + 1),
-        beginVel, maxVels, maxAccels
-    )
-}
-
-fun backwardProfile(
-    length: Double,
-    maxVel: (Double) -> Double,
-    endVel: Double,
-    minAccel: (Double) -> Double,
-    resolution: Double,
-): DisplacementProfile {
-    val samples = max(1, ceil(length / resolution).toInt())
-
-    val disps = rangeMiddle(0.0, length, samples)
-    val maxVels = disps.map(maxVel)
-    val minAccels = disps.map(minAccel)
-    return backwardProfile(
-        range(0.0, length, samples + 1),
-        maxVels, endVel, minAccels
-    )
-}
-
+/**
+ * Motion profile parameterized by displacement.
+ */
 data class DisplacementProfile(
+    @JvmField
     val disps: List<Double>,
+    @JvmField
     val vels: List<Double>,
+    @JvmField
     val accels: List<Double>,
 ) {
+    @JvmField
     val length = disps.last()
 
     init {
@@ -137,7 +64,7 @@ data class DisplacementProfile(
     }
 }
 
-fun timeScan(p: DisplacementProfile): List<Double> {
+private fun timeScan(p: DisplacementProfile): List<Double> {
     val times = mutableListOf(0.0)
     for (i in p.accels.indices) {
         times.add(
@@ -152,13 +79,17 @@ fun timeScan(p: DisplacementProfile): List<Double> {
     return times
 }
 
-data class TimeProfile(
+/**
+ * Motion profile parameterized by time.
+ */
+data class TimeProfile @JvmOverloads constructor(
+    @JvmField
     val dispProfile: DisplacementProfile,
-    val times: List<Double>,
+    @JvmField
+    val times: List<Double> = timeScan(dispProfile),
 ) {
+    @JvmField
     val duration = times.last()
-
-    constructor(dispProfile: DisplacementProfile) : this(dispProfile, timeScan(dispProfile))
 
     init {
         require(times.size == dispProfile.disps.size)
@@ -204,8 +135,212 @@ data class TimeProfile(
             }
         }
     }
+}
 
-    fun getByPos(x: Double) = dispProfile[x]
+/**
+ * Computes an exact, time-optimal profile.
+ *
+ * @param[beginEndVel] beginning and ending velocity (must be the same to guarantee feasibility)
+ * @param[maxVel] positive
+ * @param[minAccel] negative
+ * @param[maxAccel] positive
+ */
+fun constantProfile(
+    length: Double,
+    beginEndVel: Double,
+    maxVel: Double,
+    minAccel: Double,
+    maxAccel: Double,
+) = profile(length, beginEndVel, { maxVel }, { minAccel }, { maxAccel }, length)
+
+/**
+ * Computes an approximately time-optimal profile by sampling the constraints according to the resolution [resolution].
+ *
+ * @param[beginEndVel] beginning and ending velocity, non-negative (must be the same to guarantee feasibility)
+ * @param[maxVel] always returns positive
+ * @param[minAccel] always returns negative
+ * @param[maxAccel] always returns positive
+ */
+fun profile(
+    length: Double,
+    beginEndVel: Double,
+    maxVel: (Double) -> Double,
+    minAccel: (Double) -> Double,
+    maxAccel: (Double) -> Double,
+    resolution: Double,
+): DisplacementProfile {
+    require(length > 0.0)
+    require(resolution > 0.0)
+    require(beginEndVel >= 0.0)
+
+    val samples = max(1, ceil(length / resolution).toInt())
+
+    val disps = rangeMiddle(0.0, length, samples)
+    val maxVels = disps.map(maxVel)
+    val minAccels = disps.map(minAccel)
+    val maxAccels = disps.map(maxAccel)
+
+    return profile(length, beginEndVel, maxVels, minAccels, maxAccels)
+}
+
+/**
+ * Computes an approximately time-optimal profile from center-sampled constraints.
+ *
+ * @param[beginEndVel] beginning and ending velocity (must be the same to guarantee feasibility)
+ * @param[maxVels] all positive
+ * @param[minAccels] all negative
+ * @param[maxAccels] all positive
+ */
+fun profile(
+    length: Double,
+    beginEndVel: Double,
+    maxVels: List<Double>,
+    minAccels: List<Double>,
+    maxAccels: List<Double>,
+): DisplacementProfile {
+    require(maxVels.size == minAccels.size)
+    require(maxVels.size == maxAccels.size)
+
+    val disps = range(0.0, length, maxVels.size + 1)
+    return merge(
+        forwardProfile(disps, beginEndVel, maxVels, maxAccels),
+        backwardProfile(disps, maxVels, beginEndVel, minAccels),
+    )
+}
+
+/**
+ * Computes an approximately time-optimal forward profile by sampling the constraints according to the resolution
+ * [resolution]. No restriction is imposed on the minimum acceleration.
+ *
+ * @param[beginVel] beginning velocity, non-negative
+ * @param[maxVel] always returns positive
+ * @param[maxAccel] always returns positive
+ */
+fun forwardProfile(
+    length: Double,
+    beginVel: Double,
+    maxVel: (Double) -> Double,
+    maxAccel: (Double) -> Double,
+    resolution: Double,
+): DisplacementProfile {
+    val samples = max(1, ceil(length / resolution).toInt())
+
+    val disps = rangeMiddle(0.0, length, samples)
+    val maxVels = disps.map(maxVel)
+    val maxAccels = disps.map(maxAccel)
+    return forwardProfile(
+        range(0.0, length, samples + 1),
+        beginVel, maxVels, maxAccels
+    )
+}
+
+/**
+ * Computes an approximately time-optimal forward profile from the center-sampled constraints. No restriction is imposed
+ * on the minimum acceleration.
+ *
+ * @param[disps] displacement interval endpoints
+ * @param[beginVel] beginning velocity, non-negative
+ * @param[maxVels] all positive
+ * @param[maxAccels] all positive
+ */
+@Suppress("NAME_SHADOWING")
+fun forwardProfile(
+    disps: List<Double>,
+    beginVel: Double,
+    maxVels: List<Double>,
+    maxAccels: List<Double>,
+): DisplacementProfile {
+    val newDisps = mutableListOf(0.0)
+    val vels = mutableListOf(beginVel)
+    val accels = mutableListOf<Double>()
+
+    maxVels
+        .zip(maxAccels)
+        .zip(disps.drop(1))
+        .fold(disps[0]) { beginDisp, (c, endDisp) ->
+            val (maxVel, maxAccel) = c
+
+            val beginVel = vels.last()
+            if (beginVel >= maxVel) {
+                newDisps.add(endDisp)
+                vels.add(maxVel)
+                accels.add(0.0)
+            } else {
+                val endVel = sqrt(beginVel * beginVel + 2 * maxAccel * (endDisp - beginDisp))
+                if (endVel <= maxVel) {
+                    newDisps.add(endDisp)
+                    vels.add(endVel)
+                    accels.add(maxAccel)
+                } else {
+                    val accelDx = (maxVel * maxVel - beginVel * beginVel) / (2 * maxAccel)
+
+                    newDisps.add(beginDisp + accelDx)
+                    vels.add(maxVel)
+                    accels.add(maxAccel)
+
+                    newDisps.add(endDisp)
+                    vels.add(maxVel)
+                    accels.add(0.0)
+                }
+            }
+
+            endDisp
+        }
+
+    return DisplacementProfile(newDisps, vels, accels)
+}
+
+/**
+ * Computes an approximately time-optimal backward profile by sampling the constraints according to the resolution
+ * [resolution]. No restriction is imposed on the minimum acceleration.
+ *
+ * @param[maxVel] always returns positive
+ * @param[endVel] ending velocity, non-negative
+ * @param[minAccel] always returns negative
+ */
+fun backwardProfile(
+    length: Double,
+    maxVel: (Double) -> Double,
+    endVel: Double,
+    minAccel: (Double) -> Double,
+    resolution: Double,
+): DisplacementProfile {
+    require(endVel >= 0.0)
+
+    val samples = max(1, ceil(length / resolution).toInt())
+
+    val disps = rangeMiddle(0.0, length, samples)
+    // TODO: verify signs?
+    val maxVels = disps.map(maxVel)
+    val minAccels = disps.map(minAccel)
+    return backwardProfile(
+        range(0.0, length, samples + 1),
+        maxVels, endVel, minAccels
+    )
+}
+
+/**
+ * Computes an approximately time-optimal backward profile from the center-sampled constraints. No restriction is imposed
+ * on the maximum acceleration.
+ *
+ * @param[disps] displacement interval endpoints
+ * @param[maxVels] all positive
+ * @param[endVel] ending velocity, non-negative
+ * @param[minAccels] all negative
+ */
+fun backwardProfile(
+    disps: List<Double>,
+    maxVels: List<Double>,
+    endVel: Double,
+    minAccels: List<Double>,
+) = forwardProfile(
+    disps, endVel, maxVels.reversed(), minAccels.reversed().map { -it }
+).let {
+    DisplacementProfile(
+        it.disps.map { x -> it.length - x }.reversed(),
+        it.vels.reversed(),
+        it.accels.reversed().map { a -> -a },
+    )
 }
 
 fun merge(p1: DisplacementProfile, p2: DisplacementProfile): DisplacementProfile {
@@ -279,70 +414,6 @@ fun merge(p1: DisplacementProfile, p2: DisplacementProfile): DisplacementProfile
     }
 
     return DisplacementProfile(disps, vels, accels)
-}
-
-// maxVels, maxAccels are sampled in the *middle*
-@Suppress("NAME_SHADOWING")
-fun forwardProfile(
-    disps: List<Double>,
-    beginVel: Double,
-    maxVels: List<Double>,
-    maxAccels: List<Double>,
-): DisplacementProfile {
-    val newDisps = mutableListOf(0.0)
-    val vels = mutableListOf(beginVel)
-    val accels = mutableListOf<Double>()
-
-    maxVels
-        .zip(maxAccels)
-        .zip(disps.drop(1))
-        .fold(disps[0]) { beginDisp, (c, endDisp) ->
-            val (maxVel, maxAccel) = c
-
-            val beginVel = vels.last()
-            if (beginVel >= maxVel) {
-                newDisps.add(endDisp)
-                vels.add(maxVel)
-                accels.add(0.0)
-            } else {
-                val endVel = sqrt(beginVel * beginVel + 2 * maxAccel * (endDisp - beginDisp))
-                if (endVel <= maxVel) {
-                    newDisps.add(endDisp)
-                    vels.add(endVel)
-                    accels.add(maxAccel)
-                } else {
-                    val accelDx = (maxVel * maxVel - beginVel * beginVel) / (2 * maxAccel)
-
-                    newDisps.add(beginDisp + accelDx)
-                    vels.add(maxVel)
-                    accels.add(maxAccel)
-
-                    newDisps.add(endDisp)
-                    vels.add(maxVel)
-                    accels.add(0.0)
-                }
-            }
-
-            endDisp
-        }
-
-    return DisplacementProfile(newDisps, vels, accels)
-}
-
-// maxVels, minAccels are sampled in the *middle*
-fun backwardProfile(
-    disps: List<Double>,
-    maxVels: List<Double>,
-    endVel: Double,
-    minAccels: List<Double>,
-) = forwardProfile(
-    disps, endVel, maxVels.reversed(), minAccels.reversed().map { -it }
-).let {
-    DisplacementProfile(
-        it.disps.map { x -> it.length - x }.reversed(),
-        it.vels.reversed(),
-        it.accels.reversed().map { a -> -a },
-    )
 }
 
 fun interface VelConstraintFun {

@@ -292,7 +292,6 @@ data class DualNum<Param>(val values: DoubleArray) {
         return out
     }
 
-    // TODO: is this another extension function candidate?
     operator fun times(c: Vector2) =
         Vector2Dual(this * c.x, this * c.y)
 }
