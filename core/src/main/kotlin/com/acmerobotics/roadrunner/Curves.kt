@@ -13,7 +13,14 @@ class Internal
 /**
  * @usesMathJax
  *
- * Quintic spline with equation \(\texttt{a} \, t^5 + \texttt{b} \, t^4 + \texttt{c} \, t^3 + \texttt{d} \, t^2 + \texttt{e} \, t + \texttt{f}\) where \(0 \leq t \leq 1\).
+ * Quintic spline with equation \(a t^5 + b t^4 + c t^3 + d t^2 + e t + f\) where \(0 \leq t \leq 1\).
+ *
+ * @property[a] \(a\)
+ * @property[b] \(b\)
+ * @property[c] \(c\)
+ * @property[d] \(d\)
+ * @property[e] \(e\)
+ * @property[f] \(f\)
  */
 data class QuinticSpline1(
     @JvmField
@@ -30,7 +37,7 @@ data class QuinticSpline1(
     val f: Double,
 ) {
     /**
-     * Fits a spline from [begin] to [end].
+     * Fits a spline from [begin] at \(t = 0\) to [end] at \(t = 1\).
      */
     constructor(
         begin: DualNum<Internal>,
@@ -52,6 +59,11 @@ data class QuinticSpline1(
         begin[0],
     )
 
+    /**
+     * @usesMathJax
+     *
+     * @param[t] \(t\)
+     */
     operator fun get(t: Double, n: Int) = DualNum<Internal>(
         DoubleArray(n) {
             when (it) {
@@ -75,6 +87,11 @@ data class QuinticSpline1(
  * @param[Param] \(t\)
  */
 interface PositionPath<Param> {
+    /**
+     * @usesMathJax
+     *
+     * @param[param] \(t\)
+     */
     operator fun get(param: Double, n: Int): Position2Dual<Param>
 
     fun length(): Double

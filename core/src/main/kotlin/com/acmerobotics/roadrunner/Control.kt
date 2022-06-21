@@ -4,7 +4,13 @@ import kotlin.math.withSign
 
 // TODO: talk about units?
 /**
- * Kinematic motor feedforward with parameters [kS] (kStatic), [kV] (kVelocity), and [kA] (kAcceleration).
+ * @usesMathJax
+ *
+ * Kinematic motor feedforward
+ *
+ * @property[kS] kStatic, \(k_s\)
+ * @property[kV] kVelocity, \(k_v\)
+ * @property[kA] kStatic, \(k_a\)
  */
 data class MotorFeedforward(
     @JvmField
@@ -17,12 +23,14 @@ data class MotorFeedforward(
     /**
      * @usesMathJax
      *
-     * Computes the (normalized) voltage \(\texttt{kS} \cdot \operatorname{sign}(\texttt{kV} \cdot \texttt{vel} +
-     * \texttt{kA} \cdot \texttt{accel}) + \texttt{kV} \cdot \texttt{vel} + \texttt{kA} \cdot \texttt{accel}\).
+     * Computes the (normalized) voltage \(k_s \cdot \operatorname{sign}(k_v \cdot v + k_a \cdot a) + k_v \cdot v + k_a \cdot a\).
+     *
+     * @param[vel] \(v\)
+     * @param[accel] \(a\)
      */
     fun compute(vel: Double, accel: Double): Double {
         val basePower = vel * kV + accel * kA
-        return basePower + kS.withSign(basePower)
+        return kS.withSign(basePower) + basePower
     }
 
     fun compute(vel: DualNum<Time>) = compute(vel[0], vel[1])
