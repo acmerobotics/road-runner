@@ -353,9 +353,8 @@ class SafePosePathBuilder internal constructor(private val posePathBuilder: Pose
     fun splineUntilEnd(heading: Double) = posePathBuilder.splineUntilEnd(heading)
 }
 
-// TODO: is suppressing this misleading?
 /**
- * @suppress
+ * Do not instantiate directly. See [SafePosePathBuilder].
  */
 class RestrictedPosePathBuilder internal constructor(private val posePathBuilder: PosePathBuilder) {
     fun splineUntil(disp: Double, heading: Rotation2) =
