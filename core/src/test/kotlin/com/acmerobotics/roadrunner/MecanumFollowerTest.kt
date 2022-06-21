@@ -7,6 +7,7 @@ import org.knowm.xchart.style.theme.MatlabTheme
 import kotlin.math.PI
 import kotlin.random.Random
 
+// TODO: make a proper test by mocking out drive hardware
 class MecanumFollowerTest {
     @Test
     fun testTimeFollower() {
@@ -154,66 +155,62 @@ class MecanumFollowerTest {
 
         val ff = MotorFeedforward(0.0, 1 / 60.0, 0.0)
 
-        var poseEstimate = Transform2Dual.constant<Time>(
+        var poseEstimate =
             Transform2(
-                Vector2(5.0, 5.0),
+                Vector2(1.0, 0.0),
                 Rotation2.exp(0.0),
-            ),
-            2
-        )
+            )
+
+        var poseVelocity =
+            Twist2(
+                Vector2(10.0, 0.0),
+                0.0,
+            )
 
         val targetPositions = mutableListOf<Vector2>()
         val actualPositions = mutableListOf<Vector2>()
 
         var s = 0.0
         var i = 0
-        while (s <= profile.length) {
-            if (i++ >= 25) {
+        while (s < profile.length) {
+            if (i++ >= 1000) {
                 break
             }
 
-            s = project(path, poseEstimate.translation.value().bind(), s)
-
+            s = project(path, poseEstimate.translation.bind(), s)
             val targetPose = path[s, 3]
 
-            val rshort = targetPose.translation.reparam(profile[s])
-            val r = Vector2Dual<Time>(
-                DualNum(doubleArrayOf(rshort.x[0], rshort.x[1], rshort.x[2], 0.0)),
-                DualNum(doubleArrayOf(rshort.y[0], rshort.y[1], rshort.y[2], 0.0))
-            )
-            val d = poseEstimate.translation - r
+            println(s)
+            println(targetPose)
+
+            val r = targetPose.translation.reparam(profile[s])
+            println(r)
+            val x =
+                Vector2Dual<Time>(
+                    DualNum(doubleArrayOf(poseEstimate.translation.x, poseVelocity.transVel.x)),
+                    DualNum(doubleArrayOf(poseEstimate.translation.y, poseVelocity.transVel.y)),
+                )
+
+            val d = x - r
             val drds = r.drop(1)
             val d2rds2 = drds.drop(1)
 
-            val dsdt = (
-                Vector2Dual<Time>(
-                    DualNum(doubleArrayOf(poseEstimate.translation.x[1], 0.0)),
-                    DualNum(doubleArrayOf(poseEstimate.translation.y[1], 0.0)),
-                )
-                    dot drds
-                ) / ((d dot d2rds2) - 1.0)
+            println(x.drop(1) dot drds)
+            println((d dot d2rds2))
 
-            val sDual = dsdt.addFirst(s)
+            val dsdt = (x.drop(1) dot drds) / (-(d dot d2rds2) + 1.0)
+            println(dsdt.value())
+
             // val sDual = DualNum<Time>(doubleArrayOf(s, dsdt[0], 0.0))
-
-            // println(poseEstimate)
-
-            // TODO: sDual[2] is zero with no profile jerk and no robot acceleration
-            // it becomes nonzero with just robot accel
-            // profile jerk alone does nothing (but a zero is necessary for indexing)
-
-            println(sDual[2])
+            val sDual = DualNum<Time>(doubleArrayOf(s, profile[s][1], 0.0))
 
             targetPositions.add(targetPose.translation.value())
-            actualPositions.add(poseEstimate.translation.value())
+            actualPositions.add(poseEstimate.translation)
 
             val command = follower.compute(
                 targetPose.reparam(sDual),
-                poseEstimate.value(),
-                Twist2(
-                    Vector2(0.0, 0.0),
-                    0.0,
-                )
+                poseEstimate,
+                poseEstimate.rotation.inverse() * poseVelocity,
             )
 
             val wheelVoltages = kinematics.inverse(command)
@@ -234,7 +231,10 @@ class MecanumFollowerTest {
                 DualNum.constant(posDeltas[3], 2),
             )
 
-            poseEstimate += kinematics.forward(wheelIncrements)
+            val incrDual = kinematics.forward(wheelIncrements)
+            poseEstimate += incrDual.value()
+            // TODO: which angle do you use to transform the velocity?
+            poseVelocity = poseEstimate.rotation * incrDual.velocity().value()
         }
 
         val graph = XYChart(600, 400)

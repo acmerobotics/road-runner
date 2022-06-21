@@ -37,6 +37,7 @@ data class QuinticSpline1(
     @JvmField
     val f: Double,
 ) {
+
     /**
      * Fits a spline from [begin] at \(t = 0\) to [end] at \(t = 1\).
      */
@@ -88,6 +89,7 @@ data class QuinticSpline1(
  * @param[Param] \(t\)
  */
 interface PositionPath<Param> {
+
     /**
      * @usesMathJax
      *
@@ -128,6 +130,7 @@ data class Line(
     @JvmField
     val length: Double,
 ) : PositionPath<Arclength> {
+
     /**
      * Makes line connecting [begin] to [end].
      */
@@ -160,6 +163,7 @@ data class ArclengthReparamCurve2(
     @JvmField
     val samples: IntegralScanResult,
 ) : PositionPath<Arclength> {
+
     /**
      * @param[eps] desired error in the approximate length [length]
      */

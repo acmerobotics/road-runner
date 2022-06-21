@@ -84,6 +84,8 @@ data class Vector2Dual<Param>(@JvmField val x: DualNum<Param>, @JvmField val y: 
     fun sqrNorm() = this dot this
     fun norm() = sqrNorm().sqrt()
 
+    infix fun dot(v: Vector2) = x * v.x + y * v.y
+
     fun drop(n: Int) = Vector2Dual(x.drop(n), y.drop(n))
     fun value() = Vector2(x.value(), y.value())
 
@@ -105,6 +107,8 @@ data class Rotation2(@JvmField val real: Double, @JvmField val imag: Double) {
         real * vector.x - imag * vector.y,
         imag * vector.x + real * vector.y
     )
+
+    operator fun times(t: Twist2) = Twist2(this * t.transVel, t.rotVel)
 
     operator fun times(other: Rotation2) = Rotation2(
         real * other.real - imag * other.imag,
@@ -261,6 +265,7 @@ data class Transform2Dual<Param>(
         fun <Param> constant(t: Transform2, n: Int) =
             Transform2Dual<Param>(Vector2Dual.constant(t.translation, n), Rotation2Dual.constant(t.rotation, n))
 
+        // TODO: here's one place where the group structure would give a more efficient derivative
         @JvmStatic
         fun <Param> exp(incr: Twist2IncrementDual<Param>): Transform2Dual<Param> {
             val rotation = Rotation2Dual.exp(incr.rotIncr)
