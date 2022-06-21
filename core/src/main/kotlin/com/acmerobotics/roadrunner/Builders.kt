@@ -322,6 +322,8 @@ class PosePathBuilder private constructor(
 class SafePosePathBuilder internal constructor(private val posePathBuilder: PosePathBuilder) {
     constructor(path: PositionPath<ArcLength>, beginHeading: Rotation2) :
         this(PosePathBuilder(path, beginHeading))
+    constructor(path: PositionPath<ArcLength>, beginHeading: Double) :
+        this(PosePathBuilder(path, beginHeading))
 
     fun tangentUntil(disp: Double) =
         RestrictedPosePathBuilder(posePathBuilder.tangentUntil(disp))

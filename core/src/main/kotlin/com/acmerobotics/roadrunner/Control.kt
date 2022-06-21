@@ -2,7 +2,11 @@ package com.acmerobotics.roadrunner
 
 import kotlin.math.withSign
 
-data class Feedforward(
+// TODO: talk about units?
+/**
+ * Kinematic motor feedforward with parameters [kS] (kStatic), [kV] (kVelocity), and [kA] (kAcceleration).
+ */
+data class MotorFeedforward(
     @JvmField
     val kS: Double,
     @JvmField
@@ -10,8 +14,12 @@ data class Feedforward(
     @JvmField
     val kA: Double,
 ) {
-    // TODO: choose signature
-//    fun compute(vel: DualNum<Time>): Double {
+    /**
+     * @usesMathJax
+     *
+     * Computes the (normalized) voltage \(\texttt{kS} \cdot \operatorname{sign}(\texttt{kV} \cdot \texttt{vel} +
+     * \texttt{kA} \cdot \texttt{accel}) + \texttt{kV} \cdot \texttt{vel} + \texttt{kA} \cdot \texttt{accel}\).
+     */
     fun compute(vel: Double, accel: Double): Double {
         val basePower = vel * kV + accel * kA
         return if (basePower == 0.0) {
@@ -20,25 +28,41 @@ data class Feedforward(
             basePower + kS.withSign(basePower)
         }
     }
+
+    fun compute(vel: DualNum<Time>) = compute(vel[0], vel[1])
 }
 
-data class Transform2Error(@JvmField val transError: Vector2, @JvmField val rotError: Double)
-
-// NOTE: SE(2) minus mixes the frame orientations, and we need it purely in the actual frame
-// TODO: does this need its own type?
-// TODO: naming?
-fun poseError(targetPose: Transform2, actualPose: Transform2): Transform2Error {
-    val transErrorWorld = targetPose.translation - actualPose.translation
-    val rotError = targetPose.rotation - actualPose.rotation
-    return Transform2Error(actualPose.rotation.inverse() * transErrorWorld, rotError)
-}
-
+/**
+ * Proportional position-velocity controller for a holonomic robot.
+ */
 class HolonomicController(
-    val posGain: Double,
-    val velGain: Double,
+    @JvmField
+    val axialPosGain: Double,
+    @JvmField
+    val lateralPosGain: Double,
+    @JvmField
     val headingGain: Double,
+    @JvmField
+    val axialVelGain: Double,
+    @JvmField
+    val lateralVelGain: Double,
+    @JvmField
     val headingVelGain: Double,
 ) {
+    constructor(
+        axialPosGain: Double,
+        lateralPosGain: Double,
+        headingGain: Double,
+    ) : this(axialPosGain, lateralPosGain, headingGain, 0.0, 0.0, 0.0)
+
+    /**
+     * Computes the velocity and acceleration command.
+     *
+     * @param[targetPose] target pose with derivatives
+     * @param[actualPose] actual pose
+     * @param[actualBodyVel] actual velocity in the actual body frame
+     * @return velocity command in the actual body frame
+     */
     fun compute(
         targetPose: Transform2Dual<Time>,
         actualPose: Transform2,
@@ -52,8 +76,18 @@ class HolonomicController(
         // TODO: is inverseThenTimes() better than the alternative?
         return targetPose.rotation.inverse() * targetVel +
             Twist2(
-                poseError.transError * posGain + velError.transVel * velGain,
-                poseError.rotError * headingGain + velError.rotVel * headingVelGain,
+                Vector2(
+                    poseError.transError.x * axialPosGain,
+                    poseError.transError.y * lateralPosGain,
+                ),
+                poseError.rotError * headingGain,
+            ) +
+            Twist2(
+                Vector2(
+                    velError.transVel.x * axialVelGain,
+                    velError.transVel.y * lateralVelGain,
+                ),
+                velError.rotVel * headingVelGain,
             )
     }
 }

@@ -48,7 +48,7 @@ class MecanumFollowerTest {
 
         val follower = HolonomicController(10.0, 0.0, 0.1, 0.0)
 
-        val ff = Feedforward(0.0, 1 / 60.0, 0.0)
+        val ff = MotorFeedforward(0.0, 1 / 60.0, 0.0)
 
         var poseEstimate = Transform2(
             Vector2(0.0, 0.0),
@@ -79,7 +79,7 @@ class MecanumFollowerTest {
             val wheelVoltages = kinematics.inverse(command)
 //                fun all() = listOf(frontLeft, frontRight, backLeft, backRight)
                 .all()
-                .map { ff.compute(it[0], it[1]) }
+                .map { ff.compute(it) }
                 .map { clamp(it * (1.0 + 0.3 * (Random.Default.nextDouble() - 0.5)), -1.0, 1.0) }
 
             val posDeltas = wheelVoltages

@@ -277,6 +277,15 @@ data class Transform2Dual<Param>(
         Transform2Dual(translation.reparam(oldParam), rotation.reparam(oldParam))
 }
 
+data class Transform2Error(@JvmField val transError: Vector2, @JvmField val rotError: Double)
+
+// note: SE(2) minus mixes the frame orientations, and we need it purely in the actual frame
+fun poseError(targetPose: Transform2, actualPose: Transform2): Transform2Error {
+    val transErrorWorld = targetPose.translation - actualPose.translation
+    val rotError = targetPose.rotation - actualPose.rotation
+    return Transform2Error(actualPose.rotation.inverse() * transErrorWorld, rotError)
+}
+
 data class Twist2(@JvmField val transVel: Vector2, @JvmField val rotVel: Double) {
     operator fun minus(t: Twist2) = Twist2(transVel - t.transVel, rotVel - t.rotVel)
 }
