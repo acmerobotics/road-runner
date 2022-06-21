@@ -33,7 +33,7 @@ fun clamp(x: Double, lo: Double, hi: Double): Double {
 /**
  * @usesMathJax
  *
- * Partitions \([a, b]\) into \((n - 1)\) intervals and returns the endpoints.
+ * Partitions \([a, b]\) into \((n - 1)\) equal intervals and returns the endpoints.
  *
  * @param[begin] \(a\)
  * @param[end] \(b\)
@@ -48,7 +48,7 @@ fun range(begin: Double, end: Double, samples: Int): List<Double> {
 /**
  * @usesMathJax
  *
- * Partitions \([a, b]\) into \(n\) intervals and returns the center values.
+ * Partitions \([a, b]\) into \(n\) equal intervals and returns the center values.
  *
  * @param[begin] \(a\)
  * @param[end] \(b\)
