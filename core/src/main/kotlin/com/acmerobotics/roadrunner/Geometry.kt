@@ -35,17 +35,9 @@ data class Position2Dual<Param>(@JvmField val x: DualNum<Param>, @JvmField val y
     fun <NewParam> reparam(oldParam: DualNum<NewParam>) =
         Position2Dual(x.reparam(oldParam), y.reparam(oldParam))
 
-    // TODO: either this or tangentVec() should go... probably this one goes
-    // fun drop(n: Int): Vector2Dual<Param> {
-    //     require(n >= 1)
-    //
-    //     return Vector2Dual(x.drop(1), y.drop(1))
-    // }
-
     fun value() = Position2(x.value(), y.value())
 }
 
-// TODO: I tried hard to resist extension functions, but this one is too useful
 fun Position2Dual<Arclength>.tangent() = Rotation2Dual(x.drop(1), y.drop(1))
 
 data class Vector2(@JvmField val x: Double, @JvmField val y: Double) {

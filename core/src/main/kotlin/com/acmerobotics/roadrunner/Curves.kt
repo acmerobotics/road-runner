@@ -44,7 +44,7 @@ data class QuinticSpline1(
         begin: DualNum<Internal>,
         end: DualNum<Internal>,
     ) : this(
-        // TODO: surely there's a better way to do this
+        // TODO: ugly
         require(begin.size >= 3).let {
             require(end.size >= 3).let {
                 -6.0 * begin[0] - 3.0 * begin[1] - 0.5 * begin[2] +

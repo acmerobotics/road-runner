@@ -2,12 +2,6 @@
 
 package com.acmerobotics.roadrunner
 
-// TODO: projection should not be compositional
-// either we destroy CompositePosePath and change the interface
-// or we duplicate the projection code for PosePath and PositionPath<ArcLength>
-
-// keeping PosePath abstract makes reflected/transformed paths easier
-
 // TODO: do we even need this class?
 // I'm less and less happy with its existence
 data class DisplacementTrajectory(
@@ -18,6 +12,7 @@ data class DisplacementTrajectory(
 ) {
     operator fun get(s: Double, n: Int) = path[s, n].reparam(dispProfile[s])
 
+    // TODO: why do we even need projection derivatives anyway? just wire the profile kinematics straight through
     fun project(query: Position2Dual<Time>, init: Double) =
         project(path, query.value(), init).let { s ->
             val r = path[s, 3].translation
@@ -50,12 +45,7 @@ data class TimeTrajectory @JvmOverloads constructor(
     fun project(query: Position2Dual<Time>, init: Double) = dispTrajectory.project(query, init)
 }
 
-// TODO: separate max vel/accel functions?
-// pro: more efficient, more ergonomic
-//   vel, accel often independent conditional on the robotPose
-//   more advanced constraints are already out of algorithmic reach
-// con: more allocations, unboxing (although maybe not considering Interval)
-//   though then the composition constraint has to box again
+// TODO: merge max vel/accel functions
 
 fun interface VelocityConstraint {
     fun maxRobotVel(robotPose: Transform2Dual<Arclength>): Double

@@ -7,7 +7,8 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sqrt
 
-// TODO: is this the best name? I might prefer MinMax (the field order is obvious then)
+// TODO: is this the best name? I might prefer MinMax (the field order is obvious then
+// maybe it would be better to have a three-member evaluated constraint class
 data class Interval(@JvmField val min: Double, @JvmField val max: Double) {
     fun pair() = Pair(min, max)
 }

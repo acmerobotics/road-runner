@@ -75,7 +75,7 @@ class HolonomicController(
         val targetVel = targetPose.velocity()
         val velError = targetVel.value() - actualBodyVel
 
-        // TODO: is inverseThenTimes() better than the alternative?
+        // TODO: is inverseThenTimes() better than this?
         return targetPose.rotation.inverse() * targetVel +
             Twist2(
                 Vector2(

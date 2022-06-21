@@ -40,8 +40,7 @@ class MecanumFollowerTest {
                         0.0,
                         // TODO: angular velocity constraint
                         kinematics.MaxWheelVelocityConstraint(50.0),
-                        AccelerationConstraint { Interval(-25.0, 25.0) },
-                        // TODO: resolution
+                        { Interval(-25.0, 25.0) },
                         0.25,
                     )
                 )
