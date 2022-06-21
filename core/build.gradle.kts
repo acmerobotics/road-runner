@@ -3,7 +3,7 @@ plugins {
 
     `java-library`
 
-    id("org.jetbrains.dokka") version "1.6.21"
+    id("org.jetbrains.dokka") version "1.7.0"
 
     id("org.jlleitschuh.gradle.ktlint") version "10.2.1"
     id("org.jlleitschuh.gradle.ktlint-idea") version "10.2.1"
@@ -24,7 +24,7 @@ dependencies {
 
     testImplementation("org.knowm.xchart:xchart:3.8.1")
 
-    dokkaHtmlPlugin("org.jetbrains.dokka:mathjax-plugin:1.6.21")
+    dokkaHtmlPlugin("org.jetbrains.dokka:mathjax-plugin:1.7.0")
 }
 
 java {

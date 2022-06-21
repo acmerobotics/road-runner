@@ -2,42 +2,39 @@ package com.acmerobotics.roadrunner
 
 import kotlin.math.abs
 
-data class WheelVelocities<Param>(
-    @JvmField
-    val frontLeft: DualNum<Param>,
-    @JvmField
-    val frontRight: DualNum<Param>,
-    @JvmField
-    val backLeft: DualNum<Param>,
-    @JvmField
-    val backRight: DualNum<Param>,
-) {
-    fun all() = listOf(frontLeft, frontRight, backLeft, backRight)
-}
-
-data class WheelIncrements<Param>(
-    @JvmField
-    val frontLeft: DualNum<Param>,
-    @JvmField
-    val frontRight: DualNum<Param>,
-    @JvmField
-    val backLeft: DualNum<Param>,
-    @JvmField
-    val backRight: DualNum<Param>,
-)
-
+/**
+ * @param[trackWidth] distance between wheels on opposite sides; see the diagram below
+ * ![Wheelbase and track width diagram](https://upload.wikimedia.org/wikipedia/commons/5/52/Wheelbase_and_Track.png)
+ * @param[lateralMultiplier] factor that multiplies strafe velocity to compensate for slip; increase it to boost the
+ * distance traveled in the strafe direction
+ */
 data class MecanumKinematics @JvmOverloads constructor(
     @JvmField
     val trackWidth: Double,
     @JvmField
     val lateralMultiplier: Double = 1.0
 ) {
+    /**
+     * @param[wheelBase] distance between wheels on the same side; see the diagram in [MecanumKinematics]
+     */
     constructor(
         trackWidth: Double,
-        wheelBase: Double,
+        wheelbase: Double,
         lateralMultiplier: Double = 1.0
-    ) : this((trackWidth + wheelBase) / 2, lateralMultiplier)
+    ) : this((trackWidth + wheelbase) / 2, lateralMultiplier)
 
+    data class WheelIncrements<Param>(
+        @JvmField
+        val frontLeft: DualNum<Param>,
+        @JvmField
+        val frontRight: DualNum<Param>,
+        @JvmField
+        val backLeft: DualNum<Param>,
+        @JvmField
+        val backRight: DualNum<Param>,
+    )
+
+    // TODO: is forward the best name?
     // TODO: test forward, inverse composition
     fun <Param> forward(w: WheelIncrements<Param>) = Twist2IncrementDual(
         Vector2Dual(
@@ -46,6 +43,21 @@ data class MecanumKinematics @JvmOverloads constructor(
         ),
         (w.backRight + w.frontRight - w.frontLeft - w.backLeft) * (0.25 / trackWidth),
     )
+
+    data class WheelVelocities<Param>(
+        @JvmField
+        val frontLeft: DualNum<Param>,
+        @JvmField
+        val frontRight: DualNum<Param>,
+        @JvmField
+        val backLeft: DualNum<Param>,
+        @JvmField
+        val backRight: DualNum<Param>,
+    ) {
+        constructor(vels: List<DualNum<Param>>) : this(vels[0], vels[1], vels[2], vels[3])
+
+        fun all() = listOf(frontLeft, frontRight, backLeft, backRight)
+    }
 
     fun <Param> inverse(t: Twist2Dual<Param>) = WheelVelocities(
         t.transVel.x - t.transVel.y * lateralMultiplier - t.rotVel * trackWidth,
