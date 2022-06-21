@@ -18,6 +18,7 @@ class MecanumFollowerTest {
             PositionPathBuilder(
                 Position2(0.0, 0.0),
                 Rotation2.exp(0.0),
+                1e-6,
             )
                 .splineTo(
                     Position2(15.0, 15.0),
@@ -46,7 +47,7 @@ class MecanumFollowerTest {
             )
         }
 
-        val follower = HolonomicController(10.0, 0.0, 0.1, 0.0)
+        val follower = HolonomicController(10.0, 10.0, 0.1)
 
         val ff = MotorFeedforward(0.0, 1 / 60.0, 0.0)
 

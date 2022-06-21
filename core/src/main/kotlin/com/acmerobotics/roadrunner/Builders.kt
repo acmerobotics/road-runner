@@ -7,25 +7,28 @@ import kotlin.math.abs
 /**
  * @usesMathJax
  *
- * Persistent builder for a [CompositePositionPath] with an [ArcLength] parameter that guarantees \(C^2\) continuity.
+ * Persistent builder for a [CompositePositionPath] with an [Arclength] parameter that guarantees \(C^2\) continuity.
  */
 class PositionPathBuilder private constructor(
     // invariants:
     // - segments satisfy continuity guarantees
     // - last segment ends with nextBeginPos, nextBeginTangent if it exists
-    private val segments: PersistentList<PositionPath<ArcLength>>,
+    private val segments: PersistentList<PositionPath<Arclength>>,
     private val nextBeginPos: Position2,
     private val nextBeginTangent: Rotation2,
+    private val eps: Double,
 ) {
     constructor(
         beginPos: Position2,
         beginTangent: Rotation2,
-    ) : this(persistentListOf(), beginPos, beginTangent)
+        eps: Double,
+    ) : this(persistentListOf(), beginPos, beginTangent, eps)
 
     constructor(
         beginPos: Position2,
-        beginTangent: Double
-    ) : this(persistentListOf(), beginPos, Rotation2.exp(beginTangent))
+        beginTangent: Double,
+        eps: Double,
+    ) : this(persistentListOf(), beginPos, Rotation2.exp(beginTangent), eps)
 
     private fun addLine(line: Line): PositionPathBuilder {
         val lineEnd = line.end(2)
@@ -33,6 +36,7 @@ class PositionPathBuilder private constructor(
             segments.add(line),
             lineEnd.value(),
             lineEnd.tangent().value(),
+            eps
         )
     }
 
@@ -81,7 +85,7 @@ class PositionPathBuilder private constructor(
         val beginDeriv = nextBeginTangent.vec() * dist
         val endDeriv = tangent.vec() * dist
 
-        val spline = ArcCurve2(
+        val spline = ArclengthReparamCurve2(
             QuinticSpline2(
                 QuinticSpline1(
                     DualNum(doubleArrayOf(nextBeginPos.x, beginDeriv.x, 0.0)),
@@ -91,7 +95,8 @@ class PositionPathBuilder private constructor(
                     DualNum(doubleArrayOf(nextBeginPos.y, beginDeriv.y, 0.0)),
                     DualNum(doubleArrayOf(pos.y, endDeriv.y, 0.0)),
                 )
-            )
+            ),
+            eps
         )
 
         val splineEnd = spline.end(2)
@@ -99,6 +104,7 @@ class PositionPathBuilder private constructor(
             segments.add(spline),
             splineEnd.value(),
             splineEnd.tangent().value(),
+            eps,
         )
     }
 
@@ -114,7 +120,7 @@ class PositionPathBuilder private constructor(
  * @usesMathJax
  *
  * Persistent builder for a [CompositePosePath] that guarantees \(C^1\) heading continuity given an
- * [ArcLength]-parameterized [PositionPath] with \(C^2\) continuity.
+ * [Arclength]-parameterized [PositionPath] with \(C^2\) continuity.
  *
  * Throws a [RotationContinuityException] exception when a rotation segment is added that doesn't maintain \(C^1\)
  * heading continuity. To avoid this, keep one or more [splineUntil] calls between every call to [tangentUntil],
@@ -126,14 +132,14 @@ class PosePathBuilder private constructor(
     // - posPath is C2-continuous
     // - state segments satisfy continuity guarantees
     // - state encodes heading for [0.0, beginDisp)
-    private val posPath: PositionPath<ArcLength>,
+    private val posPath: PositionPath<Arclength>,
     private val beginDisp: Double,
     private val state: State,
 ) {
-    constructor(path: PositionPath<ArcLength>, beginHeading: Rotation2) :
+    constructor(path: PositionPath<Arclength>, beginHeading: Rotation2) :
         this(path, 0.0, Lazy({ persistentListOf() }, beginHeading))
 
-    constructor(path: PositionPath<ArcLength>, beginHeading: Double) :
+    constructor(path: PositionPath<Arclength>, beginHeading: Double) :
         this(path, 0.0, Lazy({ persistentListOf() }, Rotation2.exp(beginHeading)))
 
     private sealed interface State {
@@ -142,13 +148,13 @@ class PosePathBuilder private constructor(
 
     private class Eager(
         val segments: PersistentList<PosePath>,
-        val endHeadingDual: Rotation2Dual<ArcLength>
+        val endHeadingDual: Rotation2Dual<Arclength>
     ) : State {
         override val endHeading = endHeadingDual.value()
     }
 
     private class Lazy(
-        val makePaths: (Rotation2Dual<ArcLength>) -> PersistentList<PosePath>,
+        val makePaths: (Rotation2Dual<Arclength>) -> PersistentList<PosePath>,
         override val endHeading: Rotation2
     ) : State
 
@@ -320,9 +326,9 @@ class PosePathBuilder private constructor(
  * For method-by-method documentation, see the identical methods on [PosePathBuilder].
  */
 class SafePosePathBuilder internal constructor(private val posePathBuilder: PosePathBuilder) {
-    constructor(path: PositionPath<ArcLength>, beginHeading: Rotation2) :
+    constructor(path: PositionPath<Arclength>, beginHeading: Rotation2) :
         this(PosePathBuilder(path, beginHeading))
-    constructor(path: PositionPath<ArcLength>, beginHeading: Double) :
+    constructor(path: PositionPath<Arclength>, beginHeading: Double) :
         this(PosePathBuilder(path, beginHeading))
 
     fun tangentUntil(disp: Double) =

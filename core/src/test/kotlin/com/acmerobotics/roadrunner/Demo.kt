@@ -9,7 +9,7 @@ class Demo {
     @Test
     fun test() {
         val path = TangentPath(
-            ArcCurve2(
+            ArclengthReparamCurve2(
                 QuinticSpline2(
                     QuinticSpline1(
                         DualNum(doubleArrayOf(0.0, 40.0, 0.0)),
@@ -19,7 +19,8 @@ class Demo {
                         DualNum(doubleArrayOf(0.0, 0.0, 0.0)),
                         DualNum(doubleArrayOf(20.0, 0.0, 0.0)),
                     ),
-                )
+                ),
+                1e-6,
             ),
             0.0
         )

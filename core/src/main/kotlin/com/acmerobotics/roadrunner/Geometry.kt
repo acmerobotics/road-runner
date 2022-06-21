@@ -30,15 +30,22 @@ data class Position2Dual<Param>(@JvmField val x: DualNum<Param>, @JvmField val y
 
     fun free() = Vector2Dual(x, y)
 
-    // TODO: this won't be a valid rotation without arc length param
-    fun tangent() = Rotation2Dual(x.drop(1), y.drop(1))
     fun tangentVec() = Vector2Dual(x.drop(1), y.drop(1))
 
     fun <NewParam> reparam(oldParam: DualNum<NewParam>) =
         Position2Dual(x.reparam(oldParam), y.reparam(oldParam))
 
+    fun drop(n: Int): Vector2Dual<Param> {
+        require(n >= 1)
+
+        return Vector2Dual(x.drop(1), y.drop(1))
+    }
+
     fun value() = Position2(x.value(), y.value())
 }
+
+// TODO: I tried hard to resist extension functions, but this one is too useful
+fun Position2Dual<Arclength>.tangent() = Rotation2Dual(x.drop(1), y.drop(1))
 
 data class Vector2(@JvmField val x: Double, @JvmField val y: Double) {
     operator fun plus(other: Vector2) = Vector2(x + other.x, y + other.y)

@@ -56,11 +56,11 @@ data class TimeTrajectory @JvmOverloads constructor(
 //   though then the composition constraint has to box again
 
 fun interface VelocityConstraint {
-    fun maxRobotVel(robotPose: Transform2Dual<ArcLength>): Double
+    fun maxRobotVel(robotPose: Transform2Dual<Arclength>): Double
 }
 
 fun interface AccelerationConstraint {
-    fun minMaxProfileAccel(robotPose: Transform2Dual<ArcLength>): Interval
+    fun minMaxProfileAccel(robotPose: Transform2Dual<Arclength>): Interval
 }
 
 fun profile(

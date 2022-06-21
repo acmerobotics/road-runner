@@ -22,11 +22,7 @@ data class MotorFeedforward(
      */
     fun compute(vel: Double, accel: Double): Double {
         val basePower = vel * kV + accel * kA
-        return if (basePower == 0.0) {
-            0.0
-        } else {
-            basePower + kS.withSign(basePower)
-        }
+        return basePower + kS.withSign(basePower)
     }
 
     fun compute(vel: DualNum<Time>) = compute(vel[0], vel[1])
@@ -58,8 +54,6 @@ class HolonomicController(
     /**
      * Computes the velocity and acceleration command.
      *
-     * @param[targetPose] target pose with derivatives
-     * @param[actualPose] actual pose
      * @param[actualBodyVel] actual velocity in the actual body frame
      * @return velocity command in the actual body frame
      */

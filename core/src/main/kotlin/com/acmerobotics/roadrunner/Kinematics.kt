@@ -55,7 +55,7 @@ data class MecanumKinematics @JvmOverloads constructor(
     )
 
     inner class MaxWheelVelocityConstraint(@JvmField val maxWheelVel: Double) : VelocityConstraint {
-        override fun maxRobotVel(robotPose: Transform2Dual<ArcLength>) =
+        override fun maxRobotVel(robotPose: Transform2Dual<Arclength>) =
             inverse(robotPose.inverse() * robotPose.velocity())
                 .all()
                 .minOf { abs(maxWheelVel / it[0]) }

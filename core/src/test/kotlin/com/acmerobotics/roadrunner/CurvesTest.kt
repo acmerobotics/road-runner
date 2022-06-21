@@ -195,7 +195,7 @@ class CurvesTest {
             )
 
         val curveExp = ArcApproxArcCurve2(spline)
-        val curveActual = ArcCurve2(spline)
+        val curveActual = ArclengthReparamCurve2(spline, 1e-6)
 
         range(0.0, min(curveExp.length, curveActual.length), 100)
             .forEach {
@@ -258,10 +258,10 @@ class CurvesTest {
         val r = Random.Default
         repeat(100) {
             val begin = Rotation2Dual.exp(
-                DualNum<ArcLength>(doubleArrayOf(r.nextDouble(), r.nextDouble(), r.nextDouble()))
+                DualNum<Arclength>(doubleArrayOf(r.nextDouble(), r.nextDouble(), r.nextDouble()))
             )
             val end = Rotation2Dual.exp(
-                DualNum<ArcLength>(doubleArrayOf(r.nextDouble(), r.nextDouble(), r.nextDouble()))
+                DualNum<Arclength>(doubleArrayOf(r.nextDouble(), r.nextDouble(), r.nextDouble()))
             )
 
             val spline = SplineHeadingPath(begin, end, abs(r.nextDouble()))

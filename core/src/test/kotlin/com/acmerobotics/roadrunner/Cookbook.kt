@@ -20,7 +20,8 @@ fun isFollowing(): Boolean {
 fun main() {
     val posPath = PositionPathBuilder(
         Position2(0.0, 0.0),
-        Rotation2.exp(0.0)
+        Rotation2.exp(0.0),
+        1e-6,
     )
         .splineTo(
             Position2(15.0, 15.0),
@@ -88,7 +89,8 @@ fun main() {
 fun persistentBuilders() {
     val builder = PositionPathBuilder(
         Position2(0.0, 0.0),
-        Rotation2.exp(0.0)
+        Rotation2.exp(0.0),
+        1e-6,
     )
         .splineTo(
             Position2(15.0, 15.0),
