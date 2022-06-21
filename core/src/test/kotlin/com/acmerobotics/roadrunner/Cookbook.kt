@@ -206,10 +206,7 @@ fun turnWithProfile(
 ) {
     // TODO: constant constraint overload would be nice with the resolution
     val profile = TimeProfile(
-        profile(
-            angle, 0.0,
-            { maxAngVel }, { Interval(-maxAbsAngAccel, maxAbsAngAccel) }, angle
-        )
+        constantProfile(angle, 0.0, maxAngVel, -maxAbsAngAccel, maxAbsAngAccel)
     )
     // TODO: termination criterion
 

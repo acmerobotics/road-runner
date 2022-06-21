@@ -69,7 +69,7 @@ fun saveProfiles(s: String, p: TimeProfile) {
 class ProfilesTest {
     @Test
     fun testBeginAccel() {
-        val p = TimeProfile(constantProfile(10.0, 0.0, 5.0, Interval(-5.0, 5.0)))
+        val p = TimeProfile(constantProfile(10.0, 0.0, 5.0, -5.0, 5.0))
         assertEquals(5.0, p.dispProfile[0.0][2], 1e-6)
         assertEquals(5.0, p[0.0][2], 1e-6)
     }
@@ -79,7 +79,7 @@ class ProfilesTest {
         saveProfiles(
             "simpleProfile",
             TimeProfile(
-                profile(10.0, 0.0, { 5.0 }, { Interval(-5.0, 5.0) }, 10.0)
+                constantProfile(10.0, 0.0, 5.0, -5.0, 5.0)
             )
         )
 
@@ -121,7 +121,8 @@ class ProfilesTest {
                     10.0,
                     0.0,
                     { (it - 5.0).pow(4.0) + 1.0 },
-                    { Interval(-5.0, 5.0) },
+                    { -5.0 },
+                    { 5.0 },
                     0.01,
                 )
             )
@@ -136,7 +137,8 @@ class ProfilesTest {
                     10.0,
                     3.0,
                     { (it - 5.0).pow(4.0) + 1.0 },
-                    { Interval(-5.0, 5.0) },
+                    { -5.0 },
+                    { 5.0 },
                     0.01,
                 )
             )
@@ -147,7 +149,7 @@ class ProfilesTest {
         saveProfiles(
             "asymmetricProfile",
             TimeProfile(
-                profile(10.0, 0.0, { 5.0 }, { Interval(-2.0, 5.0) }, 10.0)
+                constantProfile(10.0, 0.0, 5.0, -2.0, 5.0)
             )
         )
 }

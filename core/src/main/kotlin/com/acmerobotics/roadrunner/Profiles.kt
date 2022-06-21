@@ -7,26 +7,22 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sqrt
 
-// TODO: is this the best name? I might prefer MinMax (the field order is obvious then
-// maybe it would be better to have a three-member evaluated constraint class
-data class Interval(@JvmField val min: Double, @JvmField val max: Double) {
-    fun pair() = Pair(min, max)
-}
-
 class Time
 
 fun constantProfile(
     length: Double,
     beginEndVel: Double,
     maxVel: Double,
-    minMaxAccel: Interval,
-) = profile(length, beginEndVel, { maxVel }, { minMaxAccel }, length)
+    minAccel: Double,
+    maxAccel: Double,
+) = profile(length, beginEndVel, { maxVel }, { minAccel }, { maxAccel }, length)
 
 fun profile(
     length: Double,
     beginEndVel: Double,
     maxVel: (Double) -> Double,
-    minMaxAccel: (Double) -> Interval,
+    minAccel: (Double) -> Double,
+    maxAccel: (Double) -> Double,
     resolution: Double,
 ): DisplacementProfile {
     require(length > 0.0)
@@ -35,11 +31,25 @@ fun profile(
 
     val samples = max(1, ceil(length / resolution).toInt())
 
-    val velDisps = rangeMiddle(0.0, length, samples)
-    val maxVels = velDisps.map(maxVel)
-    val (minAccels, maxAccels) = velDisps.map { minMaxAccel(it).pair() }.unzip()
+    val disps = rangeMiddle(0.0, length, samples)
+    val maxVels = disps.map(maxVel)
+    val minAccels = disps.map(minAccel)
+    val maxAccels = disps.map(maxAccel)
 
-    val disps = range(0.0, length, samples + 1)
+    return profile(length, beginEndVel, maxVels, minAccels, maxAccels)
+}
+
+fun profile(
+    length: Double,
+    beginEndVel: Double,
+    maxVels: List<Double>,
+    minAccels: List<Double>,
+    maxAccels: List<Double>,
+): DisplacementProfile {
+    require(maxVels.size == minAccels.size)
+    require(maxVels.size == maxAccels.size)
+
+    val disps = range(0.0, length, maxVels.size + 1)
     return merge(
         forwardProfile(disps, beginEndVel, maxVels, maxAccels),
         backwardProfile(disps, maxVels, beginEndVel, minAccels),
@@ -273,7 +283,7 @@ fun merge(p1: DisplacementProfile, p2: DisplacementProfile): DisplacementProfile
 
 // maxVels, maxAccels are sampled in the *middle*
 @Suppress("NAME_SHADOWING")
-private fun forwardProfile(
+fun forwardProfile(
     disps: List<Double>,
     beginVel: Double,
     maxVels: List<Double>,
@@ -320,7 +330,7 @@ private fun forwardProfile(
 }
 
 // maxVels, minAccels are sampled in the *middle*
-private fun backwardProfile(
+fun backwardProfile(
     disps: List<Double>,
     maxVels: List<Double>,
     endVel: Double,
@@ -332,5 +342,106 @@ private fun backwardProfile(
         it.disps.map { x -> it.length - x }.reversed(),
         it.vels.reversed(),
         it.accels.reversed().map { a -> -a },
+    )
+}
+
+fun interface VelConstraintFun {
+    fun maxRobotVel(robotPose: Transform2Dual<Arclength>): Double
+}
+
+fun interface AccelConstraintFun {
+    data class MinMax(@JvmField val min: Double, @JvmField val max: Double)
+
+    fun minMaxProfileAccel(robotPose: Transform2Dual<Arclength>): MinMax
+}
+
+class ProfileAccelConstraintFun(
+    @JvmField
+    val minAccel: Double,
+    @JvmField
+    val maxAccel: Double,
+) : AccelConstraintFun {
+    private val minMax = AccelConstraintFun.MinMax(minAccel, maxAccel)
+
+    override fun minMaxProfileAccel(robotPose: Transform2Dual<Arclength>) = minMax
+}
+
+fun profile(
+    path: PosePath,
+    beginEndVel: Double,
+    velConstraintFun: VelConstraintFun,
+    accelConstraintFun: AccelConstraintFun,
+    resolution: Double,
+): DisplacementProfile {
+    val samples = max(1, ceil(path.length() / resolution).toInt())
+
+    val maxVels = mutableListOf<Double>()
+    val minAccels = mutableListOf<Double>()
+    val maxAccels = mutableListOf<Double>()
+
+    for (disp in rangeMiddle(0.0, path.length(), samples)) {
+        val pose = path[disp, 2]
+
+        maxVels.add(velConstraintFun.maxRobotVel(pose))
+
+        val (minAccel, maxAccel) = accelConstraintFun.minMaxProfileAccel(pose)
+        minAccels.add(minAccel)
+        maxAccels.add(maxAccel)
+    }
+
+    return profile(path.length(), beginEndVel, maxVels.toList(), minAccels.toList(), maxAccels.toList())
+}
+
+fun forwardProfile(
+    path: PosePath,
+    beginVel: Double,
+    velConstraintFun: VelConstraintFun,
+    accelConstraintFun: AccelConstraintFun,
+    resolution: Double,
+): DisplacementProfile {
+    val samples = max(1, ceil(path.length() / resolution).toInt())
+
+    val maxVels = mutableListOf<Double>()
+    val maxAccels = mutableListOf<Double>()
+
+    for (disp in rangeMiddle(0.0, path.length(), samples)) {
+        val pose = path[disp, 2]
+
+        maxVels.add(velConstraintFun.maxRobotVel(pose))
+
+        val (_, maxAccel) = accelConstraintFun.minMaxProfileAccel(pose)
+        maxAccels.add(maxAccel)
+    }
+
+    return forwardProfile(
+        range(0.0, path.length(), samples + 1),
+        beginVel, maxVels.toList(), maxAccels.toList()
+    )
+}
+
+fun backwardProfile(
+    path: PosePath,
+    velConstraintFun: VelConstraintFun,
+    endVel: Double,
+    accelConstraintFun: AccelConstraintFun,
+    resolution: Double,
+): DisplacementProfile {
+    val samples = max(1, ceil(path.length() / resolution).toInt())
+
+    val maxVels = mutableListOf<Double>()
+    val minAccels = mutableListOf<Double>()
+
+    for (disp in rangeMiddle(0.0, path.length(), samples)) {
+        val pose = path[disp, 2]
+
+        maxVels.add(velConstraintFun.maxRobotVel(pose))
+
+        val (minAccel, _) = accelConstraintFun.minMaxProfileAccel(pose)
+        minAccels.add(minAccel)
+    }
+
+    return backwardProfile(
+        range(0.0, path.length(), samples + 1),
+        maxVels.toList(), endVel, minAccels.toList()
     )
 }
