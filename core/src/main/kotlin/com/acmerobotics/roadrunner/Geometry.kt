@@ -264,20 +264,6 @@ data class Transform2Dual<Param>(
         @JvmStatic
         fun <Param> constant(t: Transform2, n: Int) =
             Transform2Dual<Param>(Vector2Dual.constant(t.translation, n), Rotation2Dual.constant(t.rotation, n))
-
-        // TODO: here's one place where the group structure would give a more efficient derivative
-        @JvmStatic
-        fun <Param> exp(incr: Twist2IncrementDual<Param>): Transform2Dual<Param> {
-            val rotation = Rotation2Dual.exp(incr.rotIncr)
-
-            val (A, B) = Transform2.entries(incr.rotIncr.value())
-            val translation = Vector2Dual(
-                incr.transIncr.x * A - incr.transIncr.y * B,
-                incr.transIncr.x * B + incr.transIncr.y * A
-            )
-
-            return Transform2Dual(translation, rotation)
-        }
     }
 
     operator fun times(other: Transform2Dual<Param>) =
@@ -287,8 +273,6 @@ data class Transform2Dual<Param>(
         Transform2Dual(rotation * other.translation + translation, rotation * other.rotation)
 
     operator fun plus(other: Twist2Increment) = this * Transform2.exp(other)
-
-    operator fun plus(other: Twist2IncrementDual<Param>) = this * Transform2Dual.exp(other)
 
     fun value() = Transform2(translation.value(), rotation.value())
 
