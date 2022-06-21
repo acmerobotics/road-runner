@@ -3,23 +3,47 @@ package com.acmerobotics.roadrunner
 import kotlin.math.min
 
 // TODO: figure out how to represent this
+/**
+ * @usesMathJax
+ *
+ * [Dual number](https://en.wikipedia.org/wiki/Dual_number) to implement forward autodifferentiation.
+ *
+ * @param[Param] \(x\)
+ * @property[values] \(\left(u, \frac{du}{dx}, \frac{d^2u}{dx^2}, \ldots, \frac{d^{n - 1} u}{dx^{n - 1}} \right)\)
+ */
 data class DualNum<Param>(val values: DoubleArray) {
     companion object {
+        /**
+         * @usesMathJax
+         *
+         * Makes dual number \((c, 0, \ldots, 0)\) with size [n] representing a constant function \(c\).
+         *
+         * @param[Param] \(x\)
+         * @param[c] \(c\)
+         */
         @JvmStatic
-        fun <Param> constant(x: Double, n: Int) = DualNum<Param>(
+        fun <Param> constant(c: Double, n: Int) = DualNum<Param>(
             DoubleArray(n) {
                 when (it) {
-                    0 -> x
+                    0 -> c
                     else -> 0.0
                 }
             }
         )
 
+        /**
+         * @usesMathJax
+         *
+         * Makes dual number \((x_0, 1, 0, \ldots, 0)\) with size [n] representing a variable function \(x\) at \(x = x_0\).
+         *
+         * @param[Param] \(x\)
+         * @param[x0] \(x_0\)
+         */
         @JvmStatic
-        fun <Param> variable(x: Double, n: Int) = DualNum<Param>(
+        fun <Param> variable(x0: Double, n: Int) = DualNum<Param>(
             DoubleArray(n) {
                 when (it) {
-                    0 -> x
+                    0 -> x0
                     1 -> 1.0
                     else -> 0.0
                 }
@@ -27,6 +51,11 @@ data class DualNum<Param>(val values: DoubleArray) {
         )
     }
 
+    /**
+     * @usesMathJax
+     *
+     * \(n\)
+     */
     val size get() = values.size
 
     init {
@@ -48,40 +77,40 @@ data class DualNum<Param>(val values: DoubleArray) {
 
     fun drop(n: Int) = DualNum<Param>(DoubleArray(size - n) { values[it + n] })
 
-    operator fun plus(other: DualNum<Param>): DualNum<Param> {
-        val out = DualNum<Param>(DoubleArray(min(size, other.size)))
+    operator fun plus(d: DualNum<Param>): DualNum<Param> {
+        val out = DualNum<Param>(DoubleArray(min(size, d.size)))
         for (i in out.values.indices) {
-            out.values[i] = values[i] + other.values[i]
+            out.values[i] = values[i] + d.values[i]
         }
 
         return out
     }
 
-    operator fun minus(other: DualNum<Param>): DualNum<Param> {
-        val out = DualNum<Param>(DoubleArray(min(size, other.size)))
+    operator fun minus(d: DualNum<Param>): DualNum<Param> {
+        val out = DualNum<Param>(DoubleArray(min(size, d.size)))
         for (i in out.values.indices) {
-            out.values[i] = values[i] - other.values[i]
+            out.values[i] = values[i] - d.values[i]
         }
 
         return out
     }
 
-    operator fun times(other: DualNum<Param>): DualNum<Param> {
-        val out = DualNum<Param>(DoubleArray(min(size, other.size)))
+    operator fun times(d: DualNum<Param>): DualNum<Param> {
+        val out = DualNum<Param>(DoubleArray(min(size, d.size)))
         if (out.values.isEmpty()) return out
 
-        out.values[0] = values[0] * other.values[0]
+        out.values[0] = values[0] * d.values[0]
         if (out.size == 1) return out
 
-        out.values[1] = values[0] * other.values[1] + values[1] * other.values[0]
+        out.values[1] = values[0] * d.values[1] + values[1] * d.values[0]
         if (out.size == 2) return out
 
-        out.values[2] = values[0] * other.values[2] + values[2] * other.values[0] +
-            2 * values[1] * other.values[1]
+        out.values[2] = values[0] * d.values[2] + values[2] * d.values[0] +
+            2 * values[1] * d.values[1]
         if (out.size == 3) return out
 
-        out.values[3] = values[0] * other.values[3] + values[3] * other.values[0] +
-            3 * (values[2] * other.values[1] + values[1] * other.values[2])
+        out.values[3] = values[0] * d.values[3] + values[3] * d.values[0] +
+            3 * (values[2] * d.values[1] + values[1] * d.values[2])
         return out
     }
 
@@ -120,7 +149,7 @@ data class DualNum<Param>(val values: DoubleArray) {
         return out
     }
 
-    operator fun div(other: DualNum<Param>) = this * other.recip()
+    operator fun div(d: DualNum<Param>) = this * d.recip()
 
     fun sqrt(): DualNum<Param> {
         val out = DualNum<Param>(DoubleArray(size))
@@ -198,6 +227,15 @@ data class DualNum<Param>(val values: DoubleArray) {
         return out
     }
 
+    /**
+     * @usesMathJax
+     *
+     * Reparameterizes \(\left(x, \frac{dx}{du}, \frac{d^2x}{du^2}, \ldots, \frac{d^{n - 1} x}{du^{n - 1}}\right)\) into
+     * \(\left(x, \frac{dx}{dt}, \frac{d^2x}{dt^2}, \ldots, \frac{d^{n - 1} x}{dt^{n - 1}}\right)\) using [oldParam] and
+     * the chain rule.
+     *
+     * @param[oldParam] \(\left(u, \frac{du}{dt}, \frac{d^2u}{dt^2}, \ldots, \frac{d^{n - 1} u}{dt^{n - 1}}\right)\)
+     */
     fun <NewParam> reparam(oldParam: DualNum<NewParam>): DualNum<NewParam> {
         val out = DualNum<NewParam>(DoubleArray(min(size, oldParam.size)))
         if (out.values.isEmpty()) return out
@@ -218,33 +256,34 @@ data class DualNum<Param>(val values: DoubleArray) {
         return out
     }
 
-    operator fun plus(other: Double) = DualNum<Param>(
+    operator fun plus(c: Double) = DualNum<Param>(
         DoubleArray(size) {
             when (it) {
-                0 -> values[0] + other
+                0 -> values[0] + c
                 else -> values[it]
             }
         }
     )
 
-    operator fun times(other: Double): DualNum<Param> {
+    operator fun times(c: Double): DualNum<Param> {
         val out = DualNum<Param>(DoubleArray(size))
         for (i in out.values.indices) {
-            out.values[i] = values[i] * other
+            out.values[i] = values[i] * c
         }
 
         return out
     }
 
-    operator fun div(other: Double): DualNum<Param> {
+    operator fun div(c: Double): DualNum<Param> {
         val out = DualNum<Param>(DoubleArray(size))
         for (i in out.values.indices) {
-            out.values[i] = values[i] / other
+            out.values[i] = values[i] / c
         }
 
         return out
     }
 
-    operator fun times(other: Vector2) =
-        Vector2Dual(this * other.x, this * other.y)
+    // TODO: is this another extension function candidate?
+    operator fun times(c: Vector2) =
+        Vector2Dual(this * c.x, this * c.y)
 }

@@ -72,7 +72,7 @@ data class QuinticSpline1(
  *
  * Path \((x(t), y(t))\)
  *
- * @param[Param] t
+ * @param[Param] \(t\)
  */
 interface PositionPath<Param> {
     operator fun get(param: Double, n: Int): Position2Dual<Param>
