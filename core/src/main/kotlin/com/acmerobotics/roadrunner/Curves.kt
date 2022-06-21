@@ -409,6 +409,9 @@ data class CompositePosePath(
     override fun length() = length
 }
 
+/**
+ * Project position [query] onto position path [path] starting with initial guess [init].
+ */
 fun project(path: PositionPath<Arclength>, query: Position2, init: Double): Double {
     // TODO: is ten iterations enough?
     return (1..10).fold(init) { s, _ ->
@@ -418,7 +421,11 @@ fun project(path: PositionPath<Arclength>, query: Position2, init: Double): Doub
     }
 }
 
+/**
+ * Project position [query] onto position path [path] starting with initial guess [init].
+ */
 fun project(path: PosePath, query: Position2, init: Double): Double {
+    // TODO: is ten iterations enough?
     return (1..10).fold(init) { s, _ ->
         val guess = path[s, 3].translation.bind()
         val ds = (query - guess.value()) dot guess.tangent().value().vec()
