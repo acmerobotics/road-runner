@@ -10,11 +10,10 @@ import kotlinx.collections.immutable.toPersistentList
  */
 class Internal
 
-// TODO: fix interval in docs
 /**
  * @usesMathJax
  *
- * Quintic spline with equation \(a t^5 + b t^4 + c t^3 + d t^2 + e t + f\) where \(t \in )0, 1(\).
+ * Quintic spline with equation \(a t^5 + b t^4 + c t^3 + d t^2 + e t + f\) where \(0 \leq t \leq 1\)
  *
  * @property[a] \(a\)
  * @property[b] \(b\)

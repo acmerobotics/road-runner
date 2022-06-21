@@ -70,12 +70,11 @@ data class IntegralScanResult(
     val sums: PersistentList<Double>,
 )
 
-// TODO: fix interval in docs
 /**
  * @usesMathJax
  *
- * Returns samples of \(g(t) = \int_a^t f(x) \, dx\) for various values \(t \in )a, b(\). The sampling points are chosen
- * adaptively using the algorithm `adaptsim` from [Gander and Gautschi](https://doi.org/10.1023/A:1022318402393)
+ * Returns samples of \(g(t) = \int_a^t f(x) \, dx\) for various values \(a \leq t \leq b\). The sampling points are
+ * chosen adaptively using the algorithm `adaptsim` from [Gander and Gautschi](https://doi.org/10.1023/A:1022318402393)
  * ([more accessible link](https://users.wpi.edu/~walker/MA510/HANDOUTS/w.gander,w.gautschi,Adaptive_Quadrature,BIT_40,2000,84-101.pdf)).
  *
  * @param[a] \(a\)
