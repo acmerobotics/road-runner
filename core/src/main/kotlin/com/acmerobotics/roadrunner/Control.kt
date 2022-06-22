@@ -70,19 +70,19 @@ class HolonomicController(
         actualPose: Transform2,
         actualBodyVel: Twist2,
     ): Twist2Dual<Time> {
-        val poseError = poseError(targetPose.value(), actualPose)
+        val poseError = targetPose.value().minusExp(actualPose)
 
         val targetVel = targetPose.velocity()
         val velError = targetVel.value() - actualBodyVel
 
         // TODO: is inverseThenTimes() better than this?
-        return targetPose.rotation.inverse() * targetVel +
+        return targetPose.rot.inverse() * targetVel +
             Twist2(
                 Vector2(
-                    poseError.transError.x * axialPosGain,
-                    poseError.transError.y * lateralPosGain,
+                    poseError.trans.x * axialPosGain,
+                    poseError.trans.y * lateralPosGain,
                 ),
-                poseError.rotError * headingGain,
+                poseError.rot.log() * headingGain,
             ) +
             Twist2(
                 Vector2(

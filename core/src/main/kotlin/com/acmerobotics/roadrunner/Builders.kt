@@ -168,7 +168,7 @@ class PosePathBuilder private constructor(
     private fun addEagerPosePath(disp: Double, segment: PosePath): PosePathBuilder {
         require(disp > beginDisp)
 
-        val beginHeadingDual = segment.begin(3).rotation
+        val beginHeadingDual = segment.begin(3).rot
 
         return PosePathBuilder(
             posPath, disp,
@@ -189,7 +189,7 @@ class PosePathBuilder private constructor(
                     }
                     is Lazy -> state.makePaths(beginHeadingDual)
                 }.add(segment),
-                segment.end(3).rotation
+                segment.end(3).rot
             )
         )
     }

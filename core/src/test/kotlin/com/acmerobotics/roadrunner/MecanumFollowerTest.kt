@@ -63,8 +63,8 @@ class MecanumFollowerTest {
             val s = profile[t]
             val targetPose = path[s.value(), 3].reparam(s)
 
-            targetPositions.add(targetPose.translation.value())
-            actualPositions.add(poseEstimate.translation)
+            targetPositions.add(targetPose.trans.value())
+            actualPositions.add(poseEstimate.trans)
 
             val command = follower.compute(
                 targetPose,
@@ -173,18 +173,18 @@ class MecanumFollowerTest {
                 break
             }
 
-            s = project(path, poseEstimate.translation.bind(), s)
+            s = project(path, poseEstimate.trans.bind(), s)
             val targetPose = path[s, 3]
 
             println(s)
             println(targetPose)
 
-            val r = targetPose.translation.reparam(profile[s])
+            val r = targetPose.trans.reparam(profile[s])
             println(r)
             val x =
                 Vector2Dual<Time>(
-                    DualNum(doubleArrayOf(poseEstimate.translation.x, poseVelocity.transVel.x)),
-                    DualNum(doubleArrayOf(poseEstimate.translation.y, poseVelocity.transVel.y)),
+                    DualNum(doubleArrayOf(poseEstimate.trans.x, poseVelocity.transVel.x)),
+                    DualNum(doubleArrayOf(poseEstimate.trans.y, poseVelocity.transVel.y)),
                 )
 
             val d = x - r
@@ -200,13 +200,13 @@ class MecanumFollowerTest {
             // val sDual = DualNum<Time>(doubleArrayOf(s, dsdt[0], 0.0))
             val sDual = DualNum<Time>(doubleArrayOf(s, profile[s][1], 0.0))
 
-            targetPositions.add(targetPose.translation.value())
-            actualPositions.add(poseEstimate.translation)
+            targetPositions.add(targetPose.trans.value())
+            actualPositions.add(poseEstimate.trans)
 
             val command = follower.compute(
                 targetPose.reparam(sDual),
                 poseEstimate,
-                poseEstimate.rotation.inverse() * poseVelocity,
+                poseEstimate.rot.inverse() * poseVelocity,
             )
 
             val wheelVoltages = kinematics.inverse(command)
@@ -230,7 +230,7 @@ class MecanumFollowerTest {
             val incrDual = kinematics.forward(wheelIncrements)
             poseEstimate += incrDual.value()
             // TODO: which angle do you use to transform the velocity?
-            poseVelocity = poseEstimate.rotation * incrDual.velocity().value()
+            poseVelocity = poseEstimate.rot * incrDual.velocity().value()
         }
 
         val graph = XYChart(600, 400)

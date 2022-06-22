@@ -427,7 +427,7 @@ fun project(path: PositionPath<Arclength>, query: Position2, init: Double): Doub
 fun project(path: PosePath, query: Position2, init: Double): Double {
     // TODO: is ten iterations enough?
     return (1..10).fold(init) { s, _ ->
-        val guess = path[s, 3].translation.bind()
+        val guess = path[s, 3].trans.bind()
         val ds = (query - guess.value()) dot guess.tangent().value().vec()
         clamp(s + ds, 0.0, path.length())
     }

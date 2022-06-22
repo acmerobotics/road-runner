@@ -178,13 +178,13 @@ fun goToPoint(kinematics: MecanumKinematics, initialPoseEstimate: Transform2, ta
         //  (eeeeeek then we need a dualized WheelIncr)
         // here it would be nice as a termination criterion
         poseEstimate += kinematics.forward(getWheelIncrements()).value()
-        val error = poseError(targetPose, poseEstimate)
+        val error = targetPose.minusExp(poseEstimate)
         // TODO: one could write some sugar
         // inverse() could take a Twist2
         val command = Twist2Dual.constant<Time>(
             Twist2(
-                error.transError * TRANS_GAIN,
-                error.rotError * ROT_GAIN,
+                error.trans * TRANS_GAIN,
+                error.rot.log() * ROT_GAIN,
             ),
             1
         )
@@ -215,8 +215,8 @@ fun turnWithProfile(
         poseEstimate += kinematics.forward(getWheelIncrements()).value()
 
         val targetTurn = profile[clock()]
-        val targetRot = initialPoseEstimate.rotation + targetTurn[0]
-        val angError = targetRot - poseEstimate.rotation
+        val targetRot = initialPoseEstimate.rot + targetTurn[0]
+        val angError = targetRot - poseEstimate.rot
 
         setWheelVelocities(
             kinematics.inverse(

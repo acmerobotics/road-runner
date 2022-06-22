@@ -238,6 +238,9 @@ fun forwardProfile(
  * Computes an approximately time-optimal forward profile from the center-sampled constraints. No restriction is imposed
  * on the minimum acceleration.
  *
+ * The procedure uses a variant of the approach described in [section 14.6.3.5](http://lavalle.pl/planning/node794.html)
+ * of LaValle's excellent book on planning.
+ *
  * @param[disps] displacement interval endpoints
  * @param[beginVel] beginning velocity, non-negative
  * @param[maxVels] all positive
@@ -343,6 +346,9 @@ fun backwardProfile(
     )
 }
 
+/**
+ * Merges [p1] and [p2] into another profile with the minimum velocity of the two at every point.
+ */
 fun merge(p1: DisplacementProfile, p2: DisplacementProfile): DisplacementProfile {
     val disps = mutableListOf(0.0)
     val vels = mutableListOf(min(p1.vels[0], p2.vels[0]))

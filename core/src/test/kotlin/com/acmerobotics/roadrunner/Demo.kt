@@ -44,7 +44,7 @@ class Demo {
         val targets = mutableListOf<Transform2>()
 
         while (true) {
-            s = project(path, pose.translation.value().bind(), s)
+            s = project(path, pose.trans.value().bind(), s)
 
             if (s >= path.length() - 0.25) {
                 break
@@ -55,10 +55,10 @@ class Demo {
             measured.add(pose.value())
             targets.add(targetPose.value())
 
-            val error = poseError(targetPose.value(), pose.value())
+            val error = targetPose.value().minusExp(pose.value())
             val correction = Twist2(
-                error.transError * 0.5,
-                error.rotError * 0.01,
+                error.trans * 0.5,
+                error.rot.log() * 0.01,
             )
 
             val velocity = (targetPose.velocity() + correction).value()
@@ -78,8 +78,8 @@ class Demo {
 
         chart.addSeries(
             "Target",
-            targets.map { it.translation.x }.toDoubleArray(),
-            targets.map { it.translation.y }.toDoubleArray(),
+            targets.map { it.trans.x }.toDoubleArray(),
+            targets.map { it.trans.y }.toDoubleArray(),
         ).let {
             it.marker = Circle()
             it.lineWidth = 0.0f
@@ -87,8 +87,8 @@ class Demo {
 
         chart.addSeries(
             "Actual",
-            measured.map { it.translation.x }.toDoubleArray(),
-            measured.map { it.translation.y }.toDoubleArray(),
+            measured.map { it.trans.x }.toDoubleArray(),
+            measured.map { it.trans.y }.toDoubleArray(),
         ).let {
             it.marker = Circle()
             it.lineWidth = 0.0f

@@ -88,12 +88,12 @@ fun chartSpline(q: QuinticSpline1): XYChart {
 //            poses.map { it.translation.x[0] }.toDoubleArray(),
 //            poses.map { it.translation.y[0] }.toDoubleArray(),
 //            poses.map { it.rotation.log()[0] }.toDoubleArray(),
-                    poses.map { it.translation.x[1] }.toDoubleArray(),
-                    poses.map { it.translation.y[1] }.toDoubleArray(),
-                    poses.map { it.rotation.velocity()[0] }.toDoubleArray(),
-                    poses.map { it.translation.x[2] }.toDoubleArray(),
-                    poses.map { it.translation.y[2] }.toDoubleArray(),
-                    poses.map { it.rotation.velocity()[1] }.toDoubleArray(),
+                    poses.map { it.trans.x[1] }.toDoubleArray(),
+                    poses.map { it.trans.y[1] }.toDoubleArray(),
+                    poses.map { it.rot.velocity()[0] }.toDoubleArray(),
+                    poses.map { it.trans.x[2] }.toDoubleArray(),
+                    poses.map { it.trans.y[2] }.toDoubleArray(),
+                    poses.map { it.rot.velocity()[1] }.toDoubleArray(),
                 )
             )
         }
@@ -114,9 +114,9 @@ fun chartSpline(q: QuinticSpline1): XYChart {
                 arrayOf(
 //            poses.map { it.translation.x[0] }.toDoubleArray(),
 //            poses.map { it.translation.y[0] }.toDoubleArray(),
-                    poses.map { it.rotation.log()[0] }.toDoubleArray(),
-                    poses.map { it.rotation.velocity()[0] }.toDoubleArray(),
-                    poses.map { it.rotation.velocity()[1] }.toDoubleArray(),
+                    poses.map { it.rot.log()[0] }.toDoubleArray(),
+                    poses.map { it.rot.velocity()[0] }.toDoubleArray(),
+                    poses.map { it.rot.velocity()[1] }.toDoubleArray(),
                 )
             )
         }
