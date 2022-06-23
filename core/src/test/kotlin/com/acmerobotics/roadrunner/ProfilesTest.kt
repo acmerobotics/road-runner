@@ -135,6 +135,41 @@ class ProfilesTest {
         )
 
     @Test
+    fun testProfileComplexNonZeroMinCancel() =
+        saveProfiles(
+            "profileNonZeroCancel",
+            TimeProfile(
+                cancelableProfile(
+                    10.0,
+                    3.0,
+                    { (it - 5.0).pow(4.0) + 1.0 },
+                    { -5.0 },
+                    { 5.0 },
+                    0.01,
+                ).cancel(2.0)
+            )
+        )
+
+    @Test
+    fun testProfileComplexNonZeroMinCancel2() {
+        val profile = cancelableProfile(
+            10.0,
+            3.0,
+            { (it - 5.0).pow(4.0) + 1.0 },
+            { -5.0 },
+            { 5.0 },
+            0.01,
+        ).cancel(-2.0)
+
+        saveProfiles(
+            "profileNonZeroCancel2",
+            TimeProfile(profile)
+        )
+
+        assertEquals(profile.length, 2.0, 1e-6)
+    }
+
+    @Test
     fun testSimpleAsymmetricProfile() =
         saveProfiles(
             "asymmetricProfile",

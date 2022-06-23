@@ -60,29 +60,55 @@ data class DisplacementProfile(
     }
 }
 
-// // TODO: cancelable should almost be a module functor
-// // TODO: should all profiles be cancelable? minAccels is allocated anyway; we're just hanging onto it longer
-// // TODO: why is min accel computation eager again?
-// // TODO: you can't cancel a forward profile? then again, you don't have any minAccels in that instance
-// // TODO: we can't reuse baseProfile.disps because they don't match the sampling of minAccels
-// class CancelableProfile(
-//     @JvmField val baseProfile: DisplacementProfile,
-//     @JvmField val disps,
-//     @JvmField val minAccels: List<Double>
-// ) {
-//     fun cancel(x: Double): DisplacementProfile {
-//         val disps = mutableListOf(0.0)
-//         val vels = mutableListOf(beginVel)
-//         val accels = mutableListOf<Double>()
-//
-//         val index = disps.binarySearch(x)
-//         return when {
-//             index >= disps.lastIndex -> DualNum(doubleArrayOf(x, vels[index], 0.0))
-//             index >= 0 -> DualNum(doubleArrayOf(x, vels[index], accels[index]))
-//             else -> {
-//                 val insIndex = -(index + 1)
-//     }
-// }
+class CancelableProfile(
+    @JvmField val baseProfile: DisplacementProfile,
+    @JvmField val disps: List<Double>,
+    @JvmField val minAccels: List<Double>
+) {
+    fun cancel(x: Double): DisplacementProfile {
+        val newDisps = mutableListOf(0.0)
+        val vels = mutableListOf(baseProfile[x][1])
+        val accels = mutableListOf<Double>()
+
+        // TODO: add a DisplacementProfile get method that returns indices?
+        val rawIndex = disps.binarySearch(x)
+        val beginIndex = if (rawIndex >= 0) {
+            rawIndex + 1
+        } else {
+            val insIndex = -(rawIndex + 1)
+            if (insIndex == 0) {
+                newDisps.add(-x)
+                vels.add(vels.last())
+                accels.add(0.0)
+
+                1
+            } else {
+                insIndex
+            }
+        }
+
+        val targetVel = baseProfile.vels.last()
+        for (index in beginIndex..disps.lastIndex) {
+            val v = vels.last()
+            val a = minAccels[index - 1]
+
+            val targetDisp = newDisps.last() + (targetVel * targetVel - v * v) / (2 * a)
+            if (x + targetDisp > disps[index]) {
+                newDisps.add(disps[index] - x)
+                vels.add(sqrt(v * v + 2 * a * (disps[index] - disps[index - 1])))
+                accels.add(a)
+            } else {
+                newDisps.add(targetDisp)
+                vels.add(targetVel)
+                accels.add(a)
+
+                break
+            }
+        }
+
+        return DisplacementProfile(newDisps, vels, accels)
+    }
+}
 
 private fun timeScan(p: DisplacementProfile): List<Double> {
     val times = mutableListOf(0.0)
@@ -204,7 +230,35 @@ fun profile(
     val minAccels = disps.map(minAccel)
     val maxAccels = disps.map(maxAccel)
 
-    return profile(length, beginEndVel, maxVels, minAccels, maxAccels)
+    return profile(
+        range(0.0, length, samples + 1),
+        beginEndVel, maxVels, minAccels, maxAccels
+    )
+}
+
+fun cancelableProfile(
+    length: Double,
+    beginEndVel: Double,
+    maxVel: (Double) -> Double,
+    minAccel: (Double) -> Double,
+    maxAccel: (Double) -> Double,
+    resolution: Double,
+): CancelableProfile {
+    require(length > 0.0)
+    require(resolution > 0.0)
+    require(beginEndVel >= 0.0)
+
+    val samples = max(1, ceil(length / resolution).toInt())
+
+    val disps = rangeMiddle(0.0, length, samples)
+    val maxVels = disps.map(maxVel)
+    val minAccels = disps.map(minAccel)
+    val maxAccels = disps.map(maxAccel)
+
+    return cancelableProfile(
+        range(0.0, length, samples + 1),
+        beginEndVel, maxVels, minAccels, maxAccels
+    )
 }
 
 /**
@@ -216,7 +270,7 @@ fun profile(
  * @param[maxAccels] all positive
  */
 fun profile(
-    length: Double,
+    disps: List<Double>,
     beginEndVel: Double,
     maxVels: List<Double>,
     minAccels: List<Double>,
@@ -225,10 +279,28 @@ fun profile(
     require(maxVels.size == minAccels.size)
     require(maxVels.size == maxAccels.size)
 
-    val disps = range(0.0, length, maxVels.size + 1)
     return merge(
         forwardProfile(disps, beginEndVel, maxVels, maxAccels),
         backwardProfile(disps, maxVels, beginEndVel, minAccels),
+    )
+}
+
+fun cancelableProfile(
+    disps: List<Double>,
+    beginEndVel: Double,
+    maxVels: List<Double>,
+    minAccels: List<Double>,
+    maxAccels: List<Double>,
+): CancelableProfile {
+    require(maxVels.size == minAccels.size)
+    require(maxVels.size == maxAccels.size)
+
+    return CancelableProfile(
+        merge(
+            forwardProfile(disps, beginEndVel, maxVels, maxAccels),
+            backwardProfile(disps, maxVels, beginEndVel, minAccels),
+        ),
+        disps, minAccels
     )
 }
 
@@ -490,7 +562,10 @@ fun profile(
         maxAccels.add(maxAccel)
     }
 
-    return profile(path.length(), beginEndVel, maxVels.toList(), minAccels.toList(), maxAccels.toList())
+    return profile(
+        range(0.0, path.length(), samples + 1),
+        beginEndVel, maxVels, minAccels, maxAccels
+    )
 }
 
 fun forwardProfile(
@@ -516,7 +591,7 @@ fun forwardProfile(
 
     return forwardProfile(
         range(0.0, path.length(), samples + 1),
-        beginVel, maxVels.toList(), maxAccels.toList()
+        beginVel, maxVels, maxAccels,
     )
 }
 
@@ -543,6 +618,6 @@ fun backwardProfile(
 
     return backwardProfile(
         range(0.0, path.length(), samples + 1),
-        maxVels.toList(), endVel, minAccels.toList()
+        maxVels, endVel, minAccels,
     )
 }
