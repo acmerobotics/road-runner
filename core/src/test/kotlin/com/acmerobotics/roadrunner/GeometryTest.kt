@@ -45,6 +45,8 @@ class GeometryTest {
 
     @Test
     fun testPoseErrorReplacement() {
+        data class Transform2Error(@JvmField val transError: Vector2, @JvmField val rotError: Double)
+
         fun poseError(targetPose: Transform2, actualPose: Transform2): Transform2Error {
             val transErrorWorld = targetPose.trans - actualPose.trans
             val rotError = targetPose.rot - actualPose.rot

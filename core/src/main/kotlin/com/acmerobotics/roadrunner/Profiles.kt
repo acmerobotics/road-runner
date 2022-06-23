@@ -34,17 +34,13 @@ data class DisplacementProfile(
     operator fun get(x: Double): DualNum<Time> {
         val index = disps.binarySearch(x)
         return when {
-            index >= disps.lastIndex ->
-                DualNum(doubleArrayOf(x, vels[index], 0.0))
-            index >= 0 ->
-                DualNum(doubleArrayOf(x, vels[index], accels[index]))
+            index >= disps.lastIndex -> DualNum(doubleArrayOf(x, vels[index], 0.0))
+            index >= 0 -> DualNum(doubleArrayOf(x, vels[index], accels[index]))
             else -> {
                 val insIndex = -(index + 1)
                 when {
-                    insIndex <= 0 ->
-                        DualNum(doubleArrayOf(0.0, 0.0, 0.0))
-                    insIndex >= disps.size ->
-                        DualNum(doubleArrayOf(length, 0.0, 0.0))
+                    insIndex <= 0 -> DualNum(doubleArrayOf(x, vels.first(), 0.0))
+                    insIndex >= disps.size -> DualNum(doubleArrayOf(x, vels.last(), 0.0))
                     else -> {
                         val dx = x - disps[insIndex - 1]
                         val v0 = vels[insIndex - 1]
@@ -63,6 +59,30 @@ data class DisplacementProfile(
         }
     }
 }
+
+// // TODO: cancelable should almost be a module functor
+// // TODO: should all profiles be cancelable? minAccels is allocated anyway; we're just hanging onto it longer
+// // TODO: why is min accel computation eager again?
+// // TODO: you can't cancel a forward profile? then again, you don't have any minAccels in that instance
+// // TODO: we can't reuse baseProfile.disps because they don't match the sampling of minAccels
+// class CancelableProfile(
+//     @JvmField val baseProfile: DisplacementProfile,
+//     @JvmField val disps,
+//     @JvmField val minAccels: List<Double>
+// ) {
+//     fun cancel(x: Double): DisplacementProfile {
+//         val disps = mutableListOf(0.0)
+//         val vels = mutableListOf(beginVel)
+//         val accels = mutableListOf<Double>()
+//
+//         val index = disps.binarySearch(x)
+//         return when {
+//             index >= disps.lastIndex -> DualNum(doubleArrayOf(x, vels[index], 0.0))
+//             index >= 0 -> DualNum(doubleArrayOf(x, vels[index], accels[index]))
+//             else -> {
+//                 val insIndex = -(index + 1)
+//     }
+// }
 
 private fun timeScan(p: DisplacementProfile): List<Double> {
     val times = mutableListOf(0.0)
@@ -113,10 +133,14 @@ data class TimeProfile @JvmOverloads constructor(
             else -> {
                 val insIndex = -(index + 1)
                 when {
-                    insIndex <= 0 ->
-                        DualNum(doubleArrayOf(0.0, 0.0, 0.0))
-                    insIndex >= times.size ->
-                        DualNum(doubleArrayOf(dispProfile.length, 0.0, 0.0))
+                    insIndex <= 0 -> {
+                        val v = dispProfile.vels.first()
+                        DualNum(doubleArrayOf(v * t, v, 0.0))
+                    }
+                    insIndex >= times.size -> {
+                        val v = dispProfile.vels.last()
+                        DualNum(doubleArrayOf(dispProfile.length + v * (t - duration), v, 0.0))
+                    }
                     else -> {
                         val dt = t - times[insIndex - 1]
                         val x0 = dispProfile.disps[insIndex - 1]
