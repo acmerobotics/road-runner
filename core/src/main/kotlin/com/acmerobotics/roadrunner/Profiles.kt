@@ -519,13 +519,13 @@ fun merge(p1: DisplacementProfile, p2: DisplacementProfile): DisplacementProfile
 }
 
 fun interface VelConstraintFun {
-    fun maxRobotVel(robotPose: Transform2Dual<Arclength>): Double
+    fun maxRobotVel(txWorldRobot: Transform2Dual<Arclength>): Double
 }
 
 fun interface AccelConstraintFun {
     data class MinMax(@JvmField val min: Double, @JvmField val max: Double)
 
-    fun minMaxProfileAccel(robotPose: Transform2Dual<Arclength>): MinMax
+    fun minMaxProfileAccel(txWorldRobot: Transform2Dual<Arclength>): MinMax
 }
 
 class ProfileAccelConstraintFun(
@@ -536,7 +536,7 @@ class ProfileAccelConstraintFun(
 ) : AccelConstraintFun {
     private val minMax = AccelConstraintFun.MinMax(minAccel, maxAccel)
 
-    override fun minMaxProfileAccel(robotPose: Transform2Dual<Arclength>) = minMax
+    override fun minMaxProfileAccel(txWorldRobot: Transform2Dual<Arclength>) = minMax
 }
 
 fun profile(
@@ -553,11 +553,11 @@ fun profile(
     val maxAccels = mutableListOf<Double>()
 
     for (disp in rangeMiddle(0.0, path.length(), samples)) {
-        val pose = path[disp, 2]
+        val txWorldRobot = path[disp, 2]
 
-        maxVels.add(velConstraintFun.maxRobotVel(pose))
+        maxVels.add(velConstraintFun.maxRobotVel(txWorldRobot))
 
-        val (minAccel, maxAccel) = accelConstraintFun.minMaxProfileAccel(pose)
+        val (minAccel, maxAccel) = accelConstraintFun.minMaxProfileAccel(txWorldRobot)
         minAccels.add(minAccel)
         maxAccels.add(maxAccel)
     }
@@ -581,11 +581,11 @@ fun forwardProfile(
     val maxAccels = mutableListOf<Double>()
 
     for (disp in rangeMiddle(0.0, path.length(), samples)) {
-        val pose = path[disp, 2]
+        val txWorldRobot = path[disp, 2]
 
-        maxVels.add(velConstraintFun.maxRobotVel(pose))
+        maxVels.add(velConstraintFun.maxRobotVel(txWorldRobot))
 
-        val (_, maxAccel) = accelConstraintFun.minMaxProfileAccel(pose)
+        val (_, maxAccel) = accelConstraintFun.minMaxProfileAccel(txWorldRobot)
         maxAccels.add(maxAccel)
     }
 
@@ -608,11 +608,11 @@ fun backwardProfile(
     val minAccels = mutableListOf<Double>()
 
     for (disp in rangeMiddle(0.0, path.length(), samples)) {
-        val pose = path[disp, 2]
+        val txWorldRobot = path[disp, 2]
 
-        maxVels.add(velConstraintFun.maxRobotVel(pose))
+        maxVels.add(velConstraintFun.maxRobotVel(txWorldRobot))
 
-        val (minAccel, _) = accelConstraintFun.minMaxProfileAccel(pose)
+        val (minAccel, _) = accelConstraintFun.minMaxProfileAccel(txWorldRobot)
         minAccels.add(minAccel)
     }
 

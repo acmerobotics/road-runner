@@ -60,36 +60,39 @@ class HolonomicController(
     ) : this(axialPosGain, lateralPosGain, headingGain, 0.0, 0.0, 0.0)
 
     /**
-     * Computes the velocity and acceleration command.
+     * Computes the velocity and acceleration command. The frame `Target` is the reference robot, and the frame `Actual`
+     * is the measured, physical robot.
      *
-     * @param[actualBodyVel] actual velocity in the actual body frame
-     * @return velocity command in the actual body frame
+     * @return velocity command in the actual frame
      */
     fun compute(
-        targetPose: Transform2Dual<Time>,
-        actualPose: Transform2,
-        actualBodyVel: Twist2,
+        txWorldTarget: Transform2Dual<Time>,
+        txWorldActual: Transform2,
+        actualVelActual: Twist2,
     ): Twist2Dual<Time> {
-        val poseError = targetPose.value().minusExp(actualPose)
+        // pose error by a better name
+        val txTargetActual = txWorldTarget.value().inverse() * txWorldActual
 
-        val targetVel = targetPose.velocity()
-        val velError = targetVel.value() - actualBodyVel
+        val targetVelWorld = txWorldTarget.velocity()
+        val txActualWorld = Transform2Dual.constant<Time>(txWorldActual.inverse(), 1)
+        val targetVelActual = txActualWorld * targetVelWorld
 
-        // TODO: is inverseThenTimes() better than this?
-        return targetPose.rot.inverse() * targetVel +
+        val velErrorActual = targetVelActual.value() - actualVelActual
+
+        return targetVelActual +
             Twist2(
                 Vector2(
-                    poseError.trans.x * axialPosGain,
-                    poseError.trans.y * lateralPosGain,
+                    txTargetActual.trans.x * axialPosGain,
+                    txTargetActual.trans.y * lateralPosGain,
                 ),
-                poseError.rot.log() * headingGain,
+                txTargetActual.rot.log() * headingGain,
             ) +
             Twist2(
                 Vector2(
-                    velError.transVel.x * axialVelGain,
-                    velError.transVel.y * lateralVelGain,
+                    velErrorActual.transVel.x * axialVelGain,
+                    velErrorActual.transVel.y * lateralVelGain,
                 ),
-                velError.rotVel * headingVelGain,
+                velErrorActual.rotVel * headingVelGain,
             )
     }
 }

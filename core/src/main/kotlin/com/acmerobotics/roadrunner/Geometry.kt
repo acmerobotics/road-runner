@@ -187,6 +187,13 @@ data class Rotation2Dual<Param>(@JvmField val real: DualNum<Param>, @JvmField va
  *
  * 2D rigid transform comprised of [rot] followed by [trans].
  *
+ * Transform names should take the form `txDestSource` to denote that the transform turns positions, vectors, twists,
+ * etc. expressed in frame `Source` into frame `Dest`. This convention should extend to transformation (overloads of
+ * [times]) inputs and outputs with the last word in a variable name indicating the frame the quantity is expressed in.
+ * For example, the property `xDest = txDestSource * xSource` for all quantities `x` of any supported type.
+ *
+ * Transforms named `txWorldSource` for any frame `Source` are referred to as poses.
+ *
  * Advanced: Transforms in two dimensions comprise a Lie group referred to as SE(2). The terminology [exp] and [log]
  * comes from the Lie theory, and [this paper](https://arxiv.org/abs/1812.01537) gives a targeted exposition of the key
  * fundamentals.
@@ -197,6 +204,8 @@ data class Transform2(
     @JvmField
     val rot: Rotation2,
 ) {
+    constructor(trans: Vector2, rot: Double) : this(trans, Rotation2.exp(rot))
+
     companion object {
         // see (133), (134) in https://ethaneade.com/lie.pdf
         // TODO: is this necessary?
@@ -269,8 +278,6 @@ data class Transform2Dual<Param>(
     operator fun times(t: Transform2) = Transform2Dual(rot * t.trans + trans, rot * t.rot)
     operator fun times(t: Transform2Dual<Param>) = Transform2Dual(rot * t.trans + trans, rot * t.rot)
     operator fun times(t: Twist2Dual<Param>) = Twist2Dual(rot * t.transVel, t.rotVel)
-
-    fun inverseThenTimes(t: Twist2Dual<Param>) = Twist2Dual(rot.inverse() * t.transVel, t.rotVel)
 
     fun inverse() = rot.inverse().let {
         Transform2Dual(it * -trans, it)
