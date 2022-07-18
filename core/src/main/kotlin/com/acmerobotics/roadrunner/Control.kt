@@ -30,6 +30,8 @@ data class MotorFeedforward(
      */
     fun compute(vel: Double, accel: Double): Double {
         val basePower = vel * kV + accel * kA
+        // TODO: should the sign be determined by the applied voltage or the velocity?
+        // see https://docs.wpilib.org/en/stable/docs/software/pathplanning/system-identification/introduction.html
         return kS.withSign(basePower) + basePower
     }
 

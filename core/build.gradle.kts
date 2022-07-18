@@ -7,6 +7,8 @@ plugins {
 
     id("org.jlleitschuh.gradle.ktlint") version "10.2.1"
     id("org.jlleitschuh.gradle.ktlint-idea") version "10.2.1"
+
+    `maven-publish`
 }
 
 repositories {
@@ -33,4 +35,16 @@ java {
 
 tasks.named<Test>("test") {
     useJUnitPlatform()
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = "com.acmerobotics.roadrunner"
+            artifactId = "core"
+            version = "0.6.0-SNAPSHOT"
+
+            from(components["java"])
+        }
+    }
 }

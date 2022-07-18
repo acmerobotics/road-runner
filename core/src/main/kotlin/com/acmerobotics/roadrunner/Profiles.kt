@@ -49,6 +49,9 @@ data class DisplacementProfile(
                         DualNum(
                             doubleArrayOf(
                                 x,
+                                // TODO: should I replace this with a safe sqrt just in case?
+                                // safeSqrt(x) = sqrt(x) if x >= 0 else 0
+                                // TODO: is there other lurking partial arithmetic?
                                 sqrt(v0 * v0 + 2 * a * dx),
                                 a
                             )

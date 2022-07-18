@@ -52,6 +52,7 @@ data class MecanumKinematics @JvmOverloads constructor(
         @JvmField
         val rightFront: DualNum<Param>,
     ) {
+        // TODO: remove?
         constructor(vels: List<DualNum<Param>>) : this(vels[0], vels[1], vels[2], vels[3])
 
         fun all() = listOf(leftFront, leftBack, rightBack, rightFront)
@@ -64,6 +65,60 @@ data class MecanumKinematics @JvmOverloads constructor(
         t.transVel.x + t.transVel.y * lateralMultiplier + t.rotVel * trackWidth,
     )
 
+    inner class MaxWheelVelConstraintFun(@JvmField val maxWheelVel: Double) : VelConstraintFun {
+        override fun maxRobotVel(txWorldRobot: Transform2Dual<Arclength>): Double {
+            val txRobotWorld = txWorldRobot.value().inverse()
+            val robotVelWorld = txWorldRobot.velocity().value()
+            val robotVelRobot = txRobotWorld * robotVelWorld
+            return inverse(Twist2Dual.constant<Arclength>(robotVelRobot, 1))
+                .all()
+                .minOf { abs(maxWheelVel / it.value()) }
+        }
+    }
+}
+
+/**
+ * @param[trackWidth] distance between wheels on opposite sides; see the diagram below
+ * ![Wheelbase and track width diagram](https://upload.wikimedia.org/wikipedia/commons/5/52/Wheelbase_and_Track.png)
+ */
+data class TankKinematics(@JvmField val trackWidth: Double) {
+    data class WheelIncrements<Param>(
+        @JvmField
+        val left: DualNum<Param>,
+        @JvmField
+        val right: DualNum<Param>,
+    )
+
+    fun <Param> forward(w: WheelIncrements<Param>) = Twist2IncrementDual(
+        Vector2Dual(
+            (w.left + w.right) * 0.5,
+            DualNum.constant(0.0, w.left.size),
+        ),
+        (-w.left + w.right) / trackWidth,
+    )
+
+    data class WheelVelocities<Param>(
+        @JvmField
+        val left: DualNum<Param>,
+        @JvmField
+        val right: DualNum<Param>,
+    ) {
+        // TODO: is this necessary?
+        constructor(vels: List<DualNum<Param>>) : this(vels[0], vels[1])
+
+        fun all() = listOf(left, right)
+    }
+
+    fun <Param> inverse(t: Twist2Dual<Param>): WheelVelocities<Param> {
+        require(t.transVel.y.values.all { it == 0.0 })
+
+        return WheelVelocities(
+            t.transVel.x - t.rotVel * 0.5 * trackWidth,
+            t.transVel.x + t.rotVel * 0.5 * trackWidth,
+        )
+    }
+
+    // TODO: can probably be made generic, though lack of associated types may pose a difficulty
     inner class MaxWheelVelConstraintFun(@JvmField val maxWheelVel: Double) : VelConstraintFun {
         override fun maxRobotVel(txWorldRobot: Transform2Dual<Arclength>): Double {
             val txRobotWorld = txWorldRobot.value().inverse()
