@@ -46,8 +46,8 @@ private fun approxLength(
 }
 
 fun Position2Dual<Internal>.curvature(): Double {
-    val (_, dx, d2x) = x.values
-    val (_, dy, d2y) = y.values
+    val (_, dx, d2x) = x.values()
+    val (_, dy, d2y) = y.values()
     val derivNorm = sqrt(dx * dx + dy * dy)
     return abs(d2x * dy - dx * d2y) / (derivNorm * derivNorm * derivNorm)
 }
@@ -234,7 +234,7 @@ class CurvesTest {
             )
 
             val t = DualNum.variable<Internal>(r.nextDouble(1.0), 4)
-            spline[t.value(), 4].values
+            spline[t.value(), 4].values()
                 .zip(
                     (
                         t * (
@@ -245,7 +245,7 @@ class CurvesTest {
                                     ) + spline.d
                                 ) + spline.e
                             ) + spline.f
-                        ).values
+                        ).values()
                 )
                 .forEach {
                     assertEquals(it.first, it.second, 1e-6)

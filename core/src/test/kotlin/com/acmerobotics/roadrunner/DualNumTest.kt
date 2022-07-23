@@ -87,7 +87,7 @@ fun assertDualEquals(expected: RefDualNum<TestParam>, actual: DualNum<TestParam>
     assertEquals(expected.values.size, actual.size)
 
     expected.values
-        .zip(actual.values.toList())
+        .zip(actual.values().toList())
         .forEach { (expected, actual) ->
             assertEquals(expected, actual, 1e-6)
         }

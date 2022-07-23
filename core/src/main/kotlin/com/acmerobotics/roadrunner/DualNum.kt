@@ -11,7 +11,7 @@ import kotlin.math.min
  * @param[Param] \(x\)
  * @property[values] \(\left(u, \frac{du}{dx}, \frac{d^2u}{dx^2}, \ldots, \frac{d^{n - 1} u}{dx^{n - 1}} \right)\)
  */
-data class DualNum<Param>(val values: DoubleArray) {
+data class DualNum<Param>(private val values: DoubleArray) {
     companion object {
         /**
          * @usesMathJax
@@ -64,6 +64,7 @@ data class DualNum<Param>(val values: DoubleArray) {
 
     fun value() = values.first()
     operator fun get(i: Int) = values[i]
+    fun values() = values.clone()
 
     fun addFirst(x: Double) = DualNum<Param>(
         DoubleArray(size + 1) {

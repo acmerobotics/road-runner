@@ -331,6 +331,23 @@ fun chartSpline(q: QuinticSpline1): XYChart {
             }
 
             @Test
+            fun testPathBuilderForward() {
+                val posePath = PathBuilder(
+                    Transform2(
+                        Vector2(0.0, 0.0),
+                        Rotation2.exp(0.0),
+                    ),
+                    Rotation2.exp(0.0),
+                    1e-6,
+                )
+                    .forwardLinearHeading(10.0, PI / 2)
+                    .forwardSplineHeading(10.0, -PI / 2)
+                    .build()
+
+                saveChart("pathBuilder/forward", chartPosePath(posePath))
+            }
+
+            @Test
             fun testConstantLinear() {
                 val posPath = PositionPathBuilder(
                     Position2(0.0, 0.0),
@@ -403,6 +420,19 @@ fun chartSpline(q: QuinticSpline1): XYChart {
                             Rotation2.exp(0.0)
                         )
                     )
+                }
+            }
+
+            @Test
+            fun testBackwardLine() {
+                assertFails {
+                    PositionPathBuilder(
+                        Position2(0.0, 0.0),
+                        Rotation2.exp(0.0),
+                        1e-6,
+                    )
+                        .lineToX(-10.0)
+                        .build()
                 }
             }
         }
