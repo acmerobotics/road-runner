@@ -221,7 +221,7 @@ fun profile(
     minAccel: (Double) -> Double,
     maxAccel: (Double) -> Double,
     resolution: Double,
-): DisplacementProfile {
+): CancelableProfile {
     require(length > 0.0)
     require(resolution > 0.0)
     require(beginEndVel >= 0.0)
@@ -239,31 +239,6 @@ fun profile(
     )
 }
 
-fun cancelableProfile(
-    length: Double,
-    beginEndVel: Double,
-    maxVel: (Double) -> Double,
-    minAccel: (Double) -> Double,
-    maxAccel: (Double) -> Double,
-    resolution: Double,
-): CancelableProfile {
-    require(length > 0.0)
-    require(resolution > 0.0)
-    require(beginEndVel >= 0.0)
-
-    val samples = max(1, ceil(length / resolution).toInt())
-
-    val disps = rangeMiddle(0.0, length, samples)
-    val maxVels = disps.map(maxVel)
-    val minAccels = disps.map(minAccel)
-    val maxAccels = disps.map(maxAccel)
-
-    return cancelableProfile(
-        range(0.0, length, samples + 1),
-        beginEndVel, maxVels, minAccels, maxAccels
-    )
-}
-
 /**
  * Computes an approximately time-optimal profile from center-sampled constraints.
  *
@@ -273,22 +248,6 @@ fun cancelableProfile(
  * @param[maxAccels] all positive
  */
 fun profile(
-    disps: List<Double>,
-    beginEndVel: Double,
-    maxVels: List<Double>,
-    minAccels: List<Double>,
-    maxAccels: List<Double>,
-): DisplacementProfile {
-    require(maxVels.size == minAccels.size)
-    require(maxVels.size == maxAccels.size)
-
-    return merge(
-        forwardProfile(disps, beginEndVel, maxVels, maxAccels),
-        backwardProfile(disps, maxVels, beginEndVel, minAccels),
-    )
-}
-
-fun cancelableProfile(
     disps: List<Double>,
     beginEndVel: Double,
     maxVels: List<Double>,
@@ -548,7 +507,7 @@ fun profile(
     velConstraintFun: VelConstraintFun,
     accelConstraintFun: AccelConstraintFun,
     resolution: Double,
-): DisplacementProfile {
+): CancelableProfile {
     val samples = max(1, ceil(path.length() / resolution).toInt())
 
     val maxVels = mutableListOf<Double>()

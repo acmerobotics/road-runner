@@ -20,7 +20,7 @@ dependencies {
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.5")
+    api("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.5")
 
     testImplementation("org.jetbrains.kotlin:kotlin-test")
 

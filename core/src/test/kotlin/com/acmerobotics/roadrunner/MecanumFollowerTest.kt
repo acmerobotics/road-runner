@@ -41,7 +41,7 @@ class MecanumFollowerTest {
                 kinematics.WheelVelConstraintFun(50.0),
                 ProfileAccelConstraintFun(-25.0, 25.0),
                 0.25,
-            )
+            ).baseProfile
         )
 
         val follower = HolonomicController(10.0, 10.0, 0.1)
@@ -145,7 +145,7 @@ class MecanumFollowerTest {
                 kinematics.WheelVelConstraintFun(50.0),
                 ProfileAccelConstraintFun(-25.0, 25.0),
                 0.25,
-            )
+            ).baseProfile
 
         val follower = HolonomicController(10.0, 10.0, 0.1)
 

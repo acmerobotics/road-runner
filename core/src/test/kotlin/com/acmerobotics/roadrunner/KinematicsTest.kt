@@ -57,7 +57,7 @@ class KinematicsTest {
             kinematics.WheelVelConstraintFun(10.0),
             ProfileAccelConstraintFun(-10.0, 10.0),
             0.01,
-        )
+        ).baseProfile
 
         val ts = range(0.0, profile.disps.last(), 100)
         val maxWheelVelMag = ts.maxOf { time ->

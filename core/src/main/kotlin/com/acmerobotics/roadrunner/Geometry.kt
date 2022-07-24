@@ -205,6 +205,7 @@ data class Transform2(
     val rot: Rotation2,
 ) {
     constructor(trans: Vector2, rot: Double) : this(trans, Rotation2.exp(rot))
+    constructor(transX: Double, transY: Double, rot: Double) : this(Vector2(transX, transY), rot)
 
     companion object {
         // see (133), (134) in https://ethaneade.com/lie.pdf
