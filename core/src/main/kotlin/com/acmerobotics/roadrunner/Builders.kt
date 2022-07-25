@@ -462,8 +462,8 @@ class SafePathBuilder internal constructor(private val pathBuilder: PathBuilder)
     constructor(beginPose: Transform2, beginTangent: Double, eps: Double) :
         this(beginPose, Rotation2.exp(beginTangent), eps)
 
-    fun forward(dist: Double) = RestrictedPathBuilder(pathBuilder.forward(dist))
-    fun forwardConstantHeading(dist: Double) = RestrictedPathBuilder(pathBuilder.forwardConstantHeading(dist))
+    fun forward(dist: Double) = TangentPathBuilder(pathBuilder.forward(dist))
+    fun forwardConstantHeading(dist: Double) = ConstantPathBuilder(pathBuilder.forwardConstantHeading(dist))
     fun forwardLinearHeading(dist: Double, heading: Rotation2) =
         RestrictedPathBuilder(pathBuilder.forwardLinearHeading(dist, heading))
     fun forwardLinearHeading(dist: Double, heading: Double) = forwardLinearHeading(dist, Rotation2.exp(heading))
@@ -471,8 +471,8 @@ class SafePathBuilder internal constructor(private val pathBuilder: PathBuilder)
         SafePathBuilder(pathBuilder.forwardSplineHeading(dist, heading))
     fun forwardSplineHeading(dist: Double, heading: Double) = forwardSplineHeading(dist, Rotation2.exp(heading))
 
-    fun lineToX(posX: Double) = RestrictedPathBuilder(pathBuilder.lineToX(posX))
-    fun lineToXConstantHeading(posX: Double) = RestrictedPathBuilder(pathBuilder.lineToXConstantHeading(posX))
+    fun lineToX(posX: Double) = TangentPathBuilder(pathBuilder.lineToX(posX))
+    fun lineToXConstantHeading(posX: Double) = ConstantPathBuilder(pathBuilder.lineToXConstantHeading(posX))
     fun lineToXLinearHeading(posX: Double, heading: Rotation2) =
         RestrictedPathBuilder(pathBuilder.lineToXLinearHeading(posX, heading))
     fun linetoXLinearHeading(posX: Double, heading: Double) = lineToXLinearHeading(posX, Rotation2.exp(heading))
@@ -480,8 +480,8 @@ class SafePathBuilder internal constructor(private val pathBuilder: PathBuilder)
         SafePathBuilder(pathBuilder.lineToXSplineHeading(posX, heading))
     fun lineToXSplineHeading(posX: Double, heading: Double) = lineToXSplineHeading(posX, Rotation2.exp(heading))
 
-    fun lineToY(posY: Double) = RestrictedPathBuilder(pathBuilder.lineToY(posY))
-    fun lineToYConstantHeading(posY: Double) = RestrictedPathBuilder(pathBuilder.lineToXConstantHeading(posY))
+    fun lineToY(posY: Double) = TangentPathBuilder(pathBuilder.lineToY(posY))
+    fun lineToYConstantHeading(posY: Double) = ConstantPathBuilder(pathBuilder.lineToXConstantHeading(posY))
     fun lineToYLinearHeading(posY: Double, heading: Rotation2) =
         RestrictedPathBuilder(pathBuilder.lineToYLinearHeading(posY, heading))
     fun linetoYLinearHeading(posY: Double, heading: Double) = lineToYLinearHeading(posY, Rotation2.exp(heading))
@@ -489,14 +489,65 @@ class SafePathBuilder internal constructor(private val pathBuilder: PathBuilder)
         SafePathBuilder(pathBuilder.lineToYSplineHeading(posY, heading))
     fun lineToYSplineHeading(posY: Double, heading: Double) = lineToYSplineHeading(posY, Rotation2.exp(heading))
 
-    fun splineTo(pos: Position2, tangent: Rotation2) = RestrictedPathBuilder(pathBuilder.splineTo(pos, tangent))
+    fun splineTo(pos: Position2, tangent: Rotation2) = TangentPathBuilder(pathBuilder.splineTo(pos, tangent))
     fun splineTo(pos: Position2, tangent: Double) = splineTo(pos, Rotation2.exp(tangent))
     fun splineToConstantHeading(pos: Position2, tangent: Rotation2) =
-        RestrictedPathBuilder(pathBuilder.splineToConstantHeading(pos, tangent))
+        ConstantPathBuilder(pathBuilder.splineToConstantHeading(pos, tangent))
     fun splineToConstantHeading(pos: Position2, tangent: Double) = splineToConstantHeading(pos, Rotation2.exp(tangent))
     fun splineToLinearHeading(pose: Transform2, tangent: Rotation2) =
         RestrictedPathBuilder(pathBuilder.splineToLinearHeading(pose, tangent))
     fun splineToLinearHeading(pose: Transform2, tangent: Double) = splineToLinearHeading(pose, Rotation2.exp(tangent))
+    fun splineToSplineHeading(pose: Transform2, tangent: Rotation2) =
+        SafePathBuilder(pathBuilder.splineToSplineHeading(pose, tangent))
+    fun splineToSplineHeading(pose: Transform2, tangent: Double) = splineToSplineHeading(pose, Rotation2.exp(tangent))
+
+    fun build() = pathBuilder.build()
+}
+
+class TangentPathBuilder internal constructor(private val pathBuilder: PathBuilder) {
+    fun forward(dist: Double) = TangentPathBuilder(pathBuilder.forward(dist))
+    fun forwardSplineHeading(dist: Double, heading: Rotation2) =
+        SafePathBuilder(pathBuilder.forwardSplineHeading(dist, heading))
+    fun forwardSplineHeading(dist: Double, heading: Double) = forwardSplineHeading(dist, Rotation2.exp(heading))
+
+    fun lineToX(posX: Double) = TangentPathBuilder(pathBuilder.lineToX(posX))
+    fun lineToXSplineHeading(posX: Double, heading: Rotation2) =
+        SafePathBuilder(pathBuilder.lineToXSplineHeading(posX, heading))
+    fun lineToXSplineHeading(posX: Double, heading: Double) = lineToXSplineHeading(posX, Rotation2.exp(heading))
+
+    fun lineToY(posY: Double) = TangentPathBuilder(pathBuilder.lineToY(posY))
+    fun lineToYSplineHeading(posY: Double, heading: Rotation2) =
+        SafePathBuilder(pathBuilder.lineToYSplineHeading(posY, heading))
+    fun lineToYSplineHeading(posY: Double, heading: Double) = lineToYSplineHeading(posY, Rotation2.exp(heading))
+
+    fun splineTo(pos: Position2, tangent: Rotation2) = TangentPathBuilder(pathBuilder.splineTo(pos, tangent))
+    fun splineTo(pos: Position2, tangent: Double) = splineTo(pos, Rotation2.exp(tangent))
+    fun splineToSplineHeading(pose: Transform2, tangent: Rotation2) =
+        SafePathBuilder(pathBuilder.splineToSplineHeading(pose, tangent))
+    fun splineToSplineHeading(pose: Transform2, tangent: Double) = splineToSplineHeading(pose, Rotation2.exp(tangent))
+
+    fun build() = pathBuilder.build()
+}
+
+class ConstantPathBuilder internal constructor(private val pathBuilder: PathBuilder) {
+    fun forwardConstantHeading(dist: Double) = ConstantPathBuilder(pathBuilder.forwardConstantHeading(dist))
+    fun forwardSplineHeading(dist: Double, heading: Rotation2) =
+        SafePathBuilder(pathBuilder.forwardSplineHeading(dist, heading))
+    fun forwardSplineHeading(dist: Double, heading: Double) = forwardSplineHeading(dist, Rotation2.exp(heading))
+
+    fun lineToXConstantHeading(posX: Double) = ConstantPathBuilder(pathBuilder.lineToXConstantHeading(posX))
+    fun lineToXSplineHeading(posX: Double, heading: Rotation2) =
+        SafePathBuilder(pathBuilder.lineToXSplineHeading(posX, heading))
+    fun lineToXSplineHeading(posX: Double, heading: Double) = lineToXSplineHeading(posX, Rotation2.exp(heading))
+
+    fun lineToYConstantHeading(posY: Double) = ConstantPathBuilder(pathBuilder.lineToXConstantHeading(posY))
+    fun lineToYSplineHeading(posY: Double, heading: Rotation2) =
+        SafePathBuilder(pathBuilder.lineToYSplineHeading(posY, heading))
+    fun lineToYSplineHeading(posY: Double, heading: Double) = lineToYSplineHeading(posY, Rotation2.exp(heading))
+
+    fun splineToConstantHeading(pos: Position2, tangent: Rotation2) =
+        ConstantPathBuilder(pathBuilder.splineToConstantHeading(pos, tangent))
+    fun splineToConstantHeading(pos: Position2, tangent: Double) = splineToConstantHeading(pos, Rotation2.exp(tangent))
     fun splineToSplineHeading(pose: Transform2, tangent: Rotation2) =
         SafePathBuilder(pathBuilder.splineToSplineHeading(pose, tangent))
     fun splineToSplineHeading(pose: Transform2, tangent: Double) = splineToSplineHeading(pose, Rotation2.exp(tangent))
