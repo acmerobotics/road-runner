@@ -11,7 +11,8 @@ private const val EPS = 2.2e-15
 /**
  * @usesMathJax
  *
- * Function \(snz(x)\) from section VI.A of the [SymForce paper](https://arxiv.org/abs/2204.07889) for use in singularity handling.
+ * Function \(snz(x)\) from section VI.A of the [SymForce paper](https://arxiv.org/abs/2204.07889) for use in
+ * singularity handling.
  */
 fun epsCopySign(x: Double) =
     if (x >= 0.0) {
