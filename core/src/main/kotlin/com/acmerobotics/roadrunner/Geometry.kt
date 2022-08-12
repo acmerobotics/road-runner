@@ -138,8 +138,10 @@ data class Rotation2Dual<Param>(@JvmField val real: DualNum<Param>, @JvmField va
     }
 
     companion object {
+        @JvmStatic
         fun <Param> exp(theta: DualNum<Param>) = Rotation2Dual(theta.cos(), theta.sin())
 
+        @JvmStatic
         fun <Param> constant(r: Rotation2, n: Int) =
             Rotation2Dual<Param>(DualNum.constant(r.real, n), DualNum.constant(r.imag, n))
     }
@@ -155,6 +157,7 @@ data class Rotation2Dual<Param>(@JvmField val real: DualNum<Param>, @JvmField va
         Rotation2Dual(real * r.real - imag * r.imag, real * r.imag + imag * r.real)
     operator fun times(r: Rotation2) =
         Rotation2Dual(real * r.real - imag * r.imag, real * r.imag + imag * r.real)
+    operator fun times(t: Transform2) = Transform2Dual(this * t.trans, this * t.rot)
 
     fun inverse() = Rotation2Dual(real, -imag)
 
