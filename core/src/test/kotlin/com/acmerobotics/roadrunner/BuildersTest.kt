@@ -435,5 +435,18 @@ fun chartSpline(q: QuinticSpline1): XYChart {
                         .build()
                 }
             }
+
+            @Test
+            fun testBackwardLine2() {
+                assertFails {
+                    PositionPathBuilder(
+                        Position2(0.0, 0.0),
+                        Rotation2.exp(0.0),
+                        1e-6,
+                    )
+                        .forward(-10.0)
+                        .build()
+                }
+            }
         }
         

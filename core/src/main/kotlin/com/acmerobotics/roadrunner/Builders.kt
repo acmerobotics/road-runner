@@ -22,7 +22,7 @@ class PositionPathBuilder private constructor(
     /**
      * @usesMathJax
      *
-     * Exception thrown when a path segment is added that doesn't maintain \(C^1\) position continuity.
+     * Exception thrown when a path segment is added that doesn't maintain \(C^2\) position continuity.
      */
     class PathContinuityException : RuntimeException()
 
@@ -38,12 +38,23 @@ class PositionPathBuilder private constructor(
         eps: Double,
     ) : this(persistentListOf(), beginPos, Rotation2.exp(beginTangent), eps)
 
-    private fun addLine(line: Line): PositionPathBuilder {
-        val lineEnd = line.end(2)
+    private fun addSegment(p: PositionPath<Arclength>): PositionPathBuilder {
+        val begin = p.begin(2)
+        val beginPos = begin.value()
+        val beginTangent = begin.tangent().value()
+
+        if (abs(nextBeginPos.x - beginPos.x) > eps ||
+            abs(nextBeginPos.y - beginPos.y) > eps ||
+            abs(nextBeginTangent - beginTangent) > 1e-6
+        ) {
+            throw PathContinuityException()
+        }
+
+        val end = p.end(2)
         return PositionPathBuilder(
-            segments.add(line),
-            lineEnd.value(),
-            lineEnd.tangent().value(),
+            segments.add(p),
+            end.value(),
+            end.tangent().value(),
             eps
         )
     }
@@ -52,7 +63,7 @@ class PositionPathBuilder private constructor(
      * Adds a line segment that goes forward distance [dist].
      */
     fun forward(dist: Double) =
-        addLine(Line(nextBeginPos, nextBeginPos + nextBeginTangent.vec() * dist))
+        addSegment(Line(nextBeginPos, nextBeginPos + nextBeginTangent.vec() * dist))
 
     /**
      * @usesMathJax
@@ -60,7 +71,7 @@ class PositionPathBuilder private constructor(
      * Adds a line segment that goes forward to \(x\)-coordinate [posX].
      */
     fun lineToX(posX: Double) =
-        addLine(
+        addSegment(
             Line(
                 nextBeginPos,
                 Position2(
@@ -75,7 +86,7 @@ class PositionPathBuilder private constructor(
      *
      * Adds a line segment that goes forward to \(y\)-coordinate [posY].
      */
-    fun lineToY(posY: Double) = addLine(
+    fun lineToY(posY: Double) = addSegment(
         Line(
             nextBeginPos,
             Position2(
@@ -88,8 +99,13 @@ class PositionPathBuilder private constructor(
      * Adds a spline segment to position [pos] with tangent [tangent].
      */
     fun splineTo(pos: Position2, tangent: Rotation2): PositionPathBuilder {
-        // note: First derivatives will be normalized by arc length reparam, so the magnitudes need not match at knots.
         val dist = (pos - nextBeginPos).norm()
+
+        if (dist < eps) {
+            return this
+        }
+
+        // note: First derivatives will be normalized by arc length reparam, so the magnitudes need not match at knots.
         val beginDeriv = nextBeginTangent.vec() * dist
         val endDeriv = tangent.vec() * dist
 
@@ -107,13 +123,7 @@ class PositionPathBuilder private constructor(
             eps
         )
 
-        val splineEnd = spline.end(2)
-        return PositionPathBuilder(
-            segments.add(spline),
-            splineEnd.value(),
-            splineEnd.tangent().value(),
-            eps,
-        )
+        return addSegment(spline)
     }
 
     /**
