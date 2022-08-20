@@ -501,6 +501,13 @@ class ProfileAccelConstraintFun(
     override fun minMaxProfileAccel(txWorldRobot: Transform2Dual<Arclength>) = minMax
 }
 
+class AngularVelConstraintFun(
+    @JvmField
+    val maxAngVel: Double,
+) : VelConstraintFun {
+    override fun maxRobotVel(txWorldRobot: Transform2Dual<Arclength>) = maxAngVel / txWorldRobot.rot.velocity().value()
+}
+
 fun profile(
     path: PosePath,
     beginEndVel: Double,
