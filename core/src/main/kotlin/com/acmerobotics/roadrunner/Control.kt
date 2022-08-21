@@ -70,17 +70,17 @@ class HolonomicController(
      * @return velocity command in the actual frame
      */
     fun compute(
-        txWorldTarget: Transform2Dual<Time>,
-        txWorldActual: Transform2,
+        targetPose: Transform2Dual<Time>,
+        actualPose: Transform2,
         actualVelActual: Twist2,
     ): Twist2Dual<Time> {
-        val targetVelWorld = txWorldTarget.velocity()
-        val txActualWorld = Transform2Dual.constant<Time>(txWorldActual.inverse(), 2)
+        val targetVelWorld = targetPose.velocity()
+        val txActualWorld = Transform2Dual.constant<Time>(actualPose.inverse(), 2)
         val targetVelActual = txActualWorld * targetVelWorld
 
         val velErrorActual = targetVelActual.value() - actualVelActual
 
-        val error = txWorldActual.inverse() * txWorldTarget.value()
+        val error = actualPose.inverse() * targetPose.value()
         return targetVelActual +
             Twist2(
                 Vector2(
@@ -136,11 +136,11 @@ class RamseteController @JvmOverloads constructor(
      */
     fun compute(
         s: DualNum<Time>,
-        txWorldTarget: Transform2Dual<Arclength>,
-        txWorldActual: Transform2,
+        targetPose: Transform2Dual<Arclength>,
+        actualPose: Transform2,
     ): Twist2Dual<Time> {
         val vRef = s[1]
-        val omegaRef = txWorldTarget.reparam(s).rot.velocity()[0]
+        val omegaRef = targetPose.reparam(s).rot.velocity()[0]
 
         val k = 2.0 * zeta * sqrt(omegaRef * omegaRef + b * vRef * vRef)
 
@@ -150,7 +150,7 @@ class RamseteController @JvmOverloads constructor(
         }
 
         // TODO: add acceleration feedforward?
-        val error = txWorldActual.inverse() * txWorldTarget.value()
+        val error = actualPose.inverse() * targetPose.value()
         return Twist2Dual.constant(
             Twist2(
                 Vector2(

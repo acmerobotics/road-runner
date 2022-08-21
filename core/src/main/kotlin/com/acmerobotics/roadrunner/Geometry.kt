@@ -195,7 +195,8 @@ data class Rotation2Dual<Param>(@JvmField val real: DualNum<Param>, @JvmField va
  * [times]) inputs and outputs with the last word in a variable name indicating the frame the quantity is expressed in.
  * For example, the property `xDest = txDestSource * xSource` for all quantities `x` of any supported type.
  *
- * Transforms named `txWorldSource` for any frame `Source` are referred to as poses.
+ * Transforms named `txWorldSource` for any frame `Source` are referred to as poses and are commonly abbreviated as
+ * `sourcePose`.
  *
  * Advanced: Transforms in two dimensions comprise a Lie group referred to as SE(2). The terminology [exp] and [log]
  * comes from the Lie theory, and [this paper](https://arxiv.org/abs/1812.01537) gives a targeted exposition of the key
