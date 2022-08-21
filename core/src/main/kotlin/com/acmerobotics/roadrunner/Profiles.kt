@@ -490,6 +490,14 @@ fun interface AccelConstraintFun {
     fun minMaxProfileAccel(robotPose: Transform2Dual<Arclength>): MinMax
 }
 
+class MinVelConstraintFun(
+    @JvmField
+    val constraints: List<VelConstraintFun>,
+) : VelConstraintFun {
+    override fun maxRobotVel(robotPose: Transform2Dual<Arclength>) =
+        constraints.minOf { it.maxRobotVel(robotPose) }
+}
+
 class ProfileAccelConstraintFun(
     @JvmField
     val minAccel: Double,
