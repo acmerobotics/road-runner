@@ -84,7 +84,7 @@ class RefDualNum<Param>(
 object TestParam
 
 fun assertDualEquals(expected: RefDualNum<TestParam>, actual: DualNum<TestParam>) {
-    assertEquals(expected.values.size, actual.size)
+    assertEquals(expected.values.size, actual.size())
 
     expected.values
         .zip(actual.values().toList())

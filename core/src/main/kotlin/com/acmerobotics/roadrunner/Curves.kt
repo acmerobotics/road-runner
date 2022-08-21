@@ -41,9 +41,8 @@ data class QuinticSpline1(
         begin: DualNum<Internal>,
         end: DualNum<Internal>,
     ) : this(
-        // TODO: ugly
-        require(begin.size >= 3).let {
-            require(end.size >= 3).let {
+        require(begin.size() >= 3).let {
+            require(end.size() >= 3).let {
                 -6.0 * begin[0] - 3.0 * begin[1] - 0.5 * begin[2] +
                     6.0 * end[0] - 3.0 * end[1] + 0.5 * end[2]
             }
@@ -63,7 +62,7 @@ data class QuinticSpline1(
      * @param[t] \(t\)
      */
     operator fun get(t: Double, n: Int) = DualNum<Internal>(
-        DoubleArray(n) {
+        List(n) {
             when (it) {
                 0 -> ((((a * t + b) * t + c) * t + d) * t + e) * t + f
                 1 -> (((5.0 * a * t + 4.0 * b) * t + 3.0 * c) * t + 2.0 * d) * t + e
@@ -310,13 +309,13 @@ data class SplineHeadingPath(
         length: Double,
     ) : this(
         begin.value(),
-        require(begin.size >= 3).let {
-            require(end.size >= 3).let {
+        require(begin.size() >= 3).let {
+            require(end.size() >= 3).let {
                 // s(t) = t * len
                 (DualNum.variable<Internal>(1.0, 3) * length).let { s ->
                     QuinticSpline1(
-                        begin.log().drop(1).addFirst(0.0).reparam(s),
-                        end.log().drop(1).addFirst(end.value() - begin.value()).reparam(s),
+                        begin.velocity().addFirst(0.0).reparam(s),
+                        end.velocity().addFirst(end.value() - begin.value()).reparam(s),
                     )
                 }
             }

@@ -6,6 +6,7 @@ import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
+import kotlin.math.tan
 
 /**
  * @usesMathJax
@@ -133,8 +134,8 @@ data class Rotation2d(@JvmField val real: Double, @JvmField val imag: Double) {
  */
 data class Rotation2dDual<Param>(@JvmField val real: DualNum<Param>, @JvmField val imag: DualNum<Param>) {
     init {
-        require(real.size == imag.size)
-        require(real.size <= 3)
+        require(real.size() == imag.size())
+        require(real.size() <= 3)
     }
 
     companion object {
@@ -146,9 +147,10 @@ data class Rotation2dDual<Param>(@JvmField val real: DualNum<Param>, @JvmField v
             Rotation2dDual<Param>(DualNum.constant(r.real, n), DualNum.constant(r.imag, n))
     }
 
+    fun size() = real.size()
+
     operator fun plus(x: Double) = this * Rotation2d.exp(x)
     operator fun plus(d: DualNum<Param>) = this * exp(d)
-    operator fun minus(r: Rotation2dDual<Param>) = (r.inverse() * this).log()
 
     operator fun times(t: Twist2dDual<Param>) = Twist2dDual(this * t.transVel, t.rotVel)
     operator fun times(v: Vector2dDual<Param>) = Vector2dDual(real * v.x - imag * v.y, imag * v.x + real * v.y)
@@ -161,28 +163,12 @@ data class Rotation2dDual<Param>(@JvmField val real: DualNum<Param>, @JvmField v
 
     fun inverse() = Rotation2dDual(real, -imag)
 
-    // TODO: I'd like to somehow merge this with velocity()
-    fun log() = DualNum<Param>(
-        DoubleArray(size) {
-            when (it) {
-                0 -> atan2(imag[0], real[0])
-                1 -> real[0] * imag[1] - imag[0] * real[1]
-                2 -> real[0] * imag[2] - imag[0] * real[2]
-                // ensured by init{} check
-                else -> throw AssertionError()
-            }
-        }
-    )
-
     fun <NewParam> reparam(oldParam: DualNum<NewParam>) =
         Rotation2dDual(real.reparam(oldParam), imag.reparam(oldParam))
 
     // derivative of atan2 under unit norm assumption
     fun velocity() = real * imag.drop(1) - imag * real.drop(1)
     fun value() = Rotation2d(real.value(), imag.value())
-
-    // TODO: turn into method?
-    val size get() = real.size
 }
 
 /**
@@ -212,24 +198,16 @@ data class Transform2d(
     constructor(transX: Double, transY: Double, rot: Double) : this(Vector2d(transX, transY), rot)
 
     companion object {
-        // see (133), (134) in https://ethaneade.com/lie.pdf
-        // TODO: is this necessary?
-        internal fun entries(theta: Double): Pair<Double, Double> {
-            val u = theta + epsCopySign(theta)
-            return Pair(
-                sin(u) / u,
-                (1.0 - cos(u)) / u
-            )
-        }
-
         @JvmStatic
         fun exp(incr: Twist2dIncrement): Transform2d {
             val rotation = Rotation2d.exp(incr.rotIncr)
 
-            val (A, B) = entries(incr.rotIncr)
+            val u = incr.rotIncr + epsCopySign(incr.rotIncr)
+            val c = cos(u)
+            val s = sin(u)
             val translation = Vector2d(
-                A * incr.transIncr.x - B * incr.transIncr.y,
-                B * incr.transIncr.x + A * incr.transIncr.y
+                (s * incr.transIncr.x - c * incr.transIncr.y) / u,
+                (c * incr.transIncr.x + s * incr.transIncr.y) / u
             )
 
             return Transform2d(translation, rotation)
@@ -249,14 +227,12 @@ data class Transform2d(
     fun log(): Twist2dIncrement {
         val theta = rot.log()
 
-        val (A, B) = entries(theta)
-        val denom = Vector2d(A, B).sqrNorm()
-
-        val (x, y) = trans
+        val halfu = 0.5 * theta + epsCopySign(theta)
+        val v = halfu / tan(halfu)
         return Twist2dIncrement(
             Vector2d(
-                (A * x + B * y) / denom,
-                (-B * x + A * y) / denom,
+                v * trans.x + halfu * trans.y,
+                -halfu * trans.x + v * trans.y,
             ),
             theta,
         )

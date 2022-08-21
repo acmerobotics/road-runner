@@ -280,7 +280,7 @@ class PosePathBuilder private constructor(
                         {
                             val beginTangent = posPath[beginDisp, 4].tangent()
                             val beginHeading = Rotation2dDual.exp(
-                                beginTangent.log().drop(1)
+                                beginTangent.velocity()
                                     .addFirst(state.endHeading.log())
                             )
 
@@ -324,7 +324,7 @@ class PosePathBuilder private constructor(
                 is Lazy -> {
                     val endTangent = posPath[beginDisp, 4].tangent()
                     val endHeading = Rotation2dDual.exp(
-                        endTangent.log().drop(1)
+                        endTangent.velocity()
                             .addFirst(state.endHeading.log())
                     )
 

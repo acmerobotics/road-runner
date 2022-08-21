@@ -49,9 +49,6 @@ data class DisplacementProfile(
                         DualNum(
                             doubleArrayOf(
                                 x,
-                                // TODO: should I replace this with a safe sqrt just in case?
-                                // safeSqrt(x) = sqrt(x) if x >= 0 else 0
-                                // TODO: is there other lurking partial arithmetic?
                                 sqrt(v0 * v0 + 2 * a * dx),
                                 a
                             )
@@ -73,7 +70,6 @@ class CancelableProfile(
         val vels = mutableListOf(baseProfile[x][1])
         val accels = mutableListOf<Double>()
 
-        // TODO: add a DisplacementProfile get method that returns indices?
         val rawIndex = disps.binarySearch(x)
         val beginIndex = if (rawIndex >= 0) {
             rawIndex + 1

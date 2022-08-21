@@ -92,7 +92,7 @@ data class TankKinematics(@JvmField val trackWidth: Double) {
     fun <Param> forward(w: WheelIncrements<Param>) = Twist2dIncrementDual(
         Vector2dDual(
             (w.left + w.right) * 0.5,
-            DualNum.constant(0.0, w.left.size),
+            DualNum.constant(0.0, w.left.size()),
         ),
         (-w.left + w.right) / trackWidth,
     )

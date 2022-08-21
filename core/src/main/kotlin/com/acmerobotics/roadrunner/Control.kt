@@ -4,7 +4,6 @@ import kotlin.math.sin
 import kotlin.math.sqrt
 import kotlin.math.withSign
 
-// TODO: talk about units?
 /**
  * @usesMathJax
  *
@@ -30,12 +29,7 @@ data class MotorFeedforward(
      * @param[vel] \(v\)
      * @param[accel] \(a\)
      */
-    fun compute(vel: Double, accel: Double): Double {
-        val basePower = vel * kV + accel * kA
-        // TODO: should the sign be determined by the applied voltage or the velocity?
-        // see https://docs.wpilib.org/en/stable/docs/software/pathplanning/system-identification/introduction.html
-        return kS.withSign(basePower) + basePower
-    }
+    fun compute(vel: Double, accel: Double) = kS.withSign(vel) + kV * vel + kA * accel
 
     fun compute(vel: DualNum<Time>) = compute(vel[0], vel[1])
 }
