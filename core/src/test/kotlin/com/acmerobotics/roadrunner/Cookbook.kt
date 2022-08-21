@@ -19,17 +19,17 @@ fun isFollowing(): Boolean {
 
 fun main() {
     val posPath = PositionPathBuilder(
-        Position2(0.0, 0.0),
-        Rotation2.exp(0.0),
+        Position2d(0.0, 0.0),
+        Rotation2d.exp(0.0),
         1e-6,
     )
         .splineTo(
-            Position2(15.0, 15.0),
-            Rotation2.exp(PI),
+            Position2d(15.0, 15.0),
+            Rotation2d.exp(PI),
         )
         .splineTo(
-            Position2(5.0, 35.0),
-            Rotation2.exp(PI / 3),
+            Position2d(5.0, 35.0),
+            Rotation2d.exp(PI / 3),
         )
         .build()
 
@@ -88,26 +88,26 @@ fun main() {
 // current TS impl is only magically exception safe
 fun persistentBuilders() {
     val builder = PositionPathBuilder(
-        Position2(0.0, 0.0),
-        Rotation2.exp(0.0),
+        Position2d(0.0, 0.0),
+        Rotation2d.exp(0.0),
         1e-6,
     )
         .splineTo(
-            Position2(15.0, 15.0),
-            Rotation2.exp(PI),
+            Position2d(15.0, 15.0),
+            Rotation2d.exp(PI),
         )
 
     val posPath1 = builder
         .splineTo(
-            Position2(5.0, 35.0),
-            Rotation2.exp(PI / 3),
+            Position2d(5.0, 35.0),
+            Rotation2d.exp(PI / 3),
         )
         .build()
 
     val posPath2 = builder
         .splineTo(
-            Position2(5.0, 25.0),
-            Rotation2.exp(PI / 3),
+            Position2d(5.0, 25.0),
+            Rotation2d.exp(PI / 3),
         )
         .build()
 }
@@ -144,11 +144,11 @@ fun persistentBuilders() {
 fun setWheelPowers(powers: MecanumKinematics.WheelVelocities<Time>) {
 }
 
-fun fieldCentric(kinematics: MecanumKinematics, poseEstimate: Transform2, leftStick: Vector2, rightStick: Vector2) {
+fun fieldCentric(kinematics: MecanumKinematics, poseEstimate: Transform2d, leftStick: Vector2d, rightStick: Vector2d) {
     setWheelPowers(
         kinematics.inverse(
-            Twist2Dual.constant(
-                poseEstimate.inverse() * Twist2(leftStick, rightStick.x),
+            Twist2dDual.constant(
+                poseEstimate.inverse() * Twist2d(leftStick, rightStick.x),
                 1
             )
         )
@@ -170,7 +170,7 @@ fun setWheelVelocities(vels: MecanumKinematics.WheelVelocities<Time>) {
 val TRANS_GAIN = 10.0
 val ROT_GAIN = 0.1
 
-fun goToPoint(kinematics: MecanumKinematics, initialPoseEstimate: Transform2, targetPose: Transform2) {
+fun goToPoint(kinematics: MecanumKinematics, initialPoseEstimate: Transform2d, targetPose: Transform2d) {
     var poseEstimate = initialPoseEstimate
     // TODO: termination criterion
     while (true) {
@@ -181,8 +181,8 @@ fun goToPoint(kinematics: MecanumKinematics, initialPoseEstimate: Transform2, ta
         val error = targetPose.minusExp(poseEstimate)
         // TODO: one could write some sugar
         // inverse() could take a Twist2
-        val command = Twist2Dual.constant<Time>(
-            Twist2(
+        val command = Twist2dDual.constant<Time>(
+            Twist2d(
                 error.trans * TRANS_GAIN,
                 error.rot.log() * ROT_GAIN,
             ),
@@ -199,7 +199,7 @@ fun clock(): Double {
 
 fun turnWithProfile(
     kinematics: MecanumKinematics,
-    initialPoseEstimate: Transform2,
+    initialPoseEstimate: Transform2d,
     maxAngVel: Double,
     maxAbsAngAccel: Double,
     angle: Double
@@ -219,9 +219,9 @@ fun turnWithProfile(
 
         setWheelVelocities(
             kinematics.inverse(
-                Twist2Dual(
-                    Vector2Dual.constant(Vector2(0.0, 0.0), 2),
-                    Rotation2Dual.exp(targetTurn).velocity() + angError * ROT_GAIN
+                Twist2dDual(
+                    Vector2dDual.constant(Vector2d(0.0, 0.0), 2),
+                    Rotation2dDual.exp(targetTurn).velocity() + angError * ROT_GAIN
                 )
             )
         )

@@ -11,12 +11,12 @@ class RamseteTest {
     fun testRamsete() {
         val path = TangentPath(
             PositionPathBuilder(
-                Position2(0.0, 0.0),
+                Position2d(0.0, 0.0),
                 0.0,
                 1e-6
             )
                 .splineTo(
-                    Position2(30.0, 30.0),
+                    Position2d(30.0, 30.0),
                     PI / 4
                 )
                 .lineToY(60.0)
@@ -47,12 +47,12 @@ class RamseteTest {
         //     PI / 8
         // )
 
-        var pose = Transform2(
-            Vector2(-5.0, -10.0),
+        var pose = Transform2d(
+            Vector2d(-5.0, -10.0),
             0.0
         )
 
-        val targetPoses = mutableListOf<Transform2>()
+        val targetPoses = mutableListOf<Transform2d>()
         val poses = mutableListOf(pose)
 
         val dt = 0.01
@@ -65,7 +65,7 @@ class RamseteTest {
             val command = controller.compute(s, targetPose, pose).value()
 
             pose +=
-                Twist2Increment(
+                Twist2dIncrement(
                     command.transVel * dt,
                     command.rotVel * dt
                 )

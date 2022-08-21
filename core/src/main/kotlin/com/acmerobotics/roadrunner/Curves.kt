@@ -94,7 +94,7 @@ interface PositionPath<Param> {
      *
      * @param[param] \(t\)
      */
-    operator fun get(param: Double, n: Int): Position2Dual<Param>
+    operator fun get(param: Double, n: Int): Position2dDual<Param>
 
     fun length(): Double
 
@@ -111,7 +111,7 @@ data class QuinticSpline2(
     @JvmField
     val y: QuinticSpline1,
 ) : PositionPath<Internal> {
-    override fun get(param: Double, n: Int) = Position2Dual(x[param, n], y[param, n])
+    override fun get(param: Double, n: Int) = Position2dDual(x[param, n], y[param, n])
 
     override fun length() = 1.0
 }
@@ -123,9 +123,9 @@ data class QuinticSpline2(
  */
 data class Line(
     @JvmField
-    val begin: Position2,
+    val begin: Position2d,
     @JvmField
-    val dir: Vector2,
+    val dir: Vector2d,
     @JvmField
     val length: Double,
 ) : PositionPath<Arclength> {
@@ -134,8 +134,8 @@ data class Line(
      * Makes line connecting [begin] to [end].
      */
     constructor(
-        begin: Position2,
-        end: Position2,
+        begin: Position2d,
+        end: Position2d,
     ) : this(
         begin,
         (end - begin) / (end - begin).norm(),
@@ -199,7 +199,7 @@ data class ArclengthReparamCurve2(
         }
     }
 
-    override fun get(param: Double, n: Int): Position2Dual<Arclength> {
+    override fun get(param: Double, n: Int): Position2dDual<Arclength> {
         val t = reparam(param)
         val point = curve[t, n]
 
@@ -230,9 +230,9 @@ data class CompositePositionPath<Param> @JvmOverloads constructor(
     @JvmField
     val length = offsets.last()
 
-    override fun get(param: Double, n: Int): Position2Dual<Param> {
+    override fun get(param: Double, n: Int): Position2dDual<Param> {
         if (param > length) {
-            return Position2Dual.constant(paths.last().end(1).value(), n)
+            return Position2dDual.constant(paths.last().end(1).value(), n)
         }
 
         for ((offset, path) in offsets.zip(paths).reversed()) {
@@ -241,7 +241,7 @@ data class CompositePositionPath<Param> @JvmOverloads constructor(
             }
         }
 
-        return Position2Dual.constant(paths.first()[0.0, 1].value(), n)
+        return Position2dDual.constant(paths.first()[0.0, 1].value(), n)
     }
 
     override fun length() = length
@@ -266,7 +266,7 @@ data class PositionPathView<Param>(
  * Path heading \(\theta(s)\)
  */
 interface HeadingPath {
-    operator fun get(s: Double, n: Int): Rotation2Dual<Arclength>
+    operator fun get(s: Double, n: Int): Rotation2dDual<Arclength>
 
     fun length(): Double
 
@@ -276,40 +276,40 @@ interface HeadingPath {
 
 data class ConstantHeadingPath(
     @JvmField
-    val heading: Rotation2,
+    val heading: Rotation2d,
     @JvmField
     val length: Double,
 ) : HeadingPath {
-    override fun get(s: Double, n: Int) = Rotation2Dual.constant<Arclength>(heading, n)
+    override fun get(s: Double, n: Int) = Rotation2dDual.constant<Arclength>(heading, n)
 
     override fun length() = length
 }
 
 data class LinearHeadingPath(
     @JvmField
-    val begin: Rotation2,
+    val begin: Rotation2d,
     @JvmField
     val angle: Double,
     @JvmField
     val length: Double,
 ) : HeadingPath {
     override fun get(s: Double, n: Int) =
-        Rotation2Dual.exp(DualNum.variable<Arclength>(s, n) / length * angle) * begin
+        Rotation2dDual.exp(DualNum.variable<Arclength>(s, n) / length * angle) * begin
 
     override fun length() = length
 }
 
 data class SplineHeadingPath(
     @JvmField
-    val begin: Rotation2,
+    val begin: Rotation2d,
     @JvmField
     val spline: QuinticSpline1,
     @JvmField
     val length: Double,
 ) : HeadingPath {
     constructor(
-        begin: Rotation2Dual<Arclength>,
-        end: Rotation2Dual<Arclength>,
+        begin: Rotation2dDual<Arclength>,
+        end: Rotation2dDual<Arclength>,
         length: Double,
     ) : this(
         begin.value(),
@@ -328,7 +328,7 @@ data class SplineHeadingPath(
     )
 
     override fun get(s: Double, n: Int) =
-        Rotation2Dual.exp(
+        Rotation2dDual.exp(
             spline[s / length, n]
                 .reparam(
                     // t(s) = s / len
@@ -345,7 +345,7 @@ data class SplineHeadingPath(
  * Pose path \((x(s), y(s), \theta(s))\)
  */
 interface PosePath {
-    operator fun get(s: Double, n: Int): Transform2Dual<Arclength>
+    operator fun get(s: Double, n: Int): Transform2dDual<Arclength>
 
     fun length(): Double
 
@@ -361,7 +361,7 @@ data class TangentPath(
 ) : PosePath {
     // NOTE: n+1 guarantees enough derivatives for tangent
     override operator fun get(s: Double, n: Int) = path[s, n + 1].let {
-        Transform2Dual(it.free(), it.tangent() + offset)
+        Transform2dDual(it.free(), it.tangent() + offset)
     }
 
     override fun length() = path.length()
@@ -378,7 +378,7 @@ data class HeadingPosePath(
     }
 
     override fun get(s: Double, n: Int) =
-        Transform2Dual(posPath[s, n].free(), headingPath[s, n])
+        Transform2dDual(posPath[s, n].free(), headingPath[s, n])
 
     override fun length() = posPath.length()
 }
@@ -392,9 +392,9 @@ data class CompositePosePath(
     @JvmField
     val length = offsets.last()
 
-    override fun get(s: Double, n: Int): Transform2Dual<Arclength> {
+    override fun get(s: Double, n: Int): Transform2dDual<Arclength> {
         if (s > length) {
-            return Transform2Dual.constant(paths.last().end(1).value(), n)
+            return Transform2dDual.constant(paths.last().end(1).value(), n)
         }
 
         for ((offset, path) in offsets.zip(paths).reversed()) {
@@ -403,7 +403,7 @@ data class CompositePosePath(
             }
         }
 
-        return Transform2Dual.constant(paths.first()[0.0, 1].value(), n)
+        return Transform2dDual.constant(paths.first()[0.0, 1].value(), n)
     }
 
     override fun length() = length
@@ -412,7 +412,7 @@ data class CompositePosePath(
 /**
  * Project position [query] onto position path [path] starting with initial guess [init].
  */
-fun project(path: PositionPath<Arclength>, query: Position2, init: Double): Double {
+fun project(path: PositionPath<Arclength>, query: Position2d, init: Double): Double {
     // TODO: is ten iterations enough?
     return (1..10).fold(init) { s, _ ->
         val guess = path[s, 3]
@@ -424,7 +424,7 @@ fun project(path: PositionPath<Arclength>, query: Position2, init: Double): Doub
 /**
  * Project position [query] onto position path [path] starting with initial guess [init].
  */
-fun project(path: PosePath, query: Position2, init: Double): Double {
+fun project(path: PosePath, query: Position2d, init: Double): Double {
     // TODO: is ten iterations enough?
     return (1..10).fold(init) { s, _ ->
         val guess = path[s, 3].trans.bind()

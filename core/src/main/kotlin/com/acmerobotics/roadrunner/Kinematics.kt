@@ -34,8 +34,8 @@ data class MecanumKinematics @JvmOverloads constructor(
         val rightFront: DualNum<Param>,
     )
 
-    fun <Param> forward(w: WheelIncrements<Param>) = Twist2IncrementDual(
-        Vector2Dual(
+    fun <Param> forward(w: WheelIncrements<Param>) = Twist2dIncrementDual(
+        Vector2dDual(
             (w.leftFront + w.leftBack + w.rightBack + w.rightFront) * 0.25,
             (-w.leftFront + w.leftBack - w.rightBack + w.rightFront) * (0.25 / lateralMultiplier),
         ),
@@ -58,7 +58,7 @@ data class MecanumKinematics @JvmOverloads constructor(
         fun all() = listOf(leftFront, leftBack, rightBack, rightFront)
     }
 
-    fun <Param> inverse(t: Twist2Dual<Param>) = WheelVelocities(
+    fun <Param> inverse(t: Twist2dDual<Param>) = WheelVelocities(
         t.transVel.x - t.transVel.y * lateralMultiplier - t.rotVel * trackWidth,
         t.transVel.x + t.transVel.y * lateralMultiplier - t.rotVel * trackWidth,
         t.transVel.x - t.transVel.y * lateralMultiplier + t.rotVel * trackWidth,
@@ -66,11 +66,11 @@ data class MecanumKinematics @JvmOverloads constructor(
     )
 
     inner class WheelVelConstraintFun(@JvmField val maxWheelVel: Double) : SimpleVelConstraintFun {
-        override fun maxRobotVel(robotPose: Transform2Dual<Arclength>): Double {
+        override fun maxRobotVel(robotPose: Transform2dDual<Arclength>): Double {
             val txRobotWorld = robotPose.value().inverse()
             val robotVelWorld = robotPose.velocity().value()
             val robotVelRobot = txRobotWorld * robotVelWorld
-            return inverse(Twist2Dual.constant<Arclength>(robotVelRobot, 1))
+            return inverse(Twist2dDual.constant<Arclength>(robotVelRobot, 1))
                 .all()
                 .minOf { abs(maxWheelVel / it.value()) }
         }
@@ -89,8 +89,8 @@ data class TankKinematics(@JvmField val trackWidth: Double) {
         val right: DualNum<Param>,
     )
 
-    fun <Param> forward(w: WheelIncrements<Param>) = Twist2IncrementDual(
-        Vector2Dual(
+    fun <Param> forward(w: WheelIncrements<Param>) = Twist2dIncrementDual(
+        Vector2dDual(
             (w.left + w.right) * 0.5,
             DualNum.constant(0.0, w.left.size),
         ),
@@ -109,7 +109,7 @@ data class TankKinematics(@JvmField val trackWidth: Double) {
         fun all() = listOf(left, right)
     }
 
-    fun <Param> inverse(t: Twist2Dual<Param>): WheelVelocities<Param> {
+    fun <Param> inverse(t: Twist2dDual<Param>): WheelVelocities<Param> {
         require(t.transVel.y.values().all { it == 0.0 })
 
         return WheelVelocities(
@@ -120,11 +120,11 @@ data class TankKinematics(@JvmField val trackWidth: Double) {
 
     // TODO: can probably be made generic, though lack of associated types may pose a difficulty
     inner class WheelVelConstraintFun(@JvmField val maxWheelVel: Double) : SimpleVelConstraintFun {
-        override fun maxRobotVel(robotPose: Transform2Dual<Arclength>): Double {
+        override fun maxRobotVel(robotPose: Transform2dDual<Arclength>): Double {
             val txRobotWorld = robotPose.value().inverse()
             val robotVelWorld = robotPose.velocity().value()
             val robotVelRobot = txRobotWorld * robotVelWorld
-            return inverse(Twist2Dual.constant<Arclength>(robotVelRobot, 1))
+            return inverse(Twist2dDual.constant<Arclength>(robotVelRobot, 1))
                 .all()
                 .minOf { abs(maxWheelVel / it.value()) }
         }

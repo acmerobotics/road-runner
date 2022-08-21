@@ -481,7 +481,7 @@ fun merge(p1: DisplacementProfile, p2: DisplacementProfile): DisplacementProfile
 }
 
 fun interface SimpleVelConstraintFun {
-    fun maxRobotVel(robotPose: Transform2Dual<Arclength>): Double
+    fun maxRobotVel(robotPose: Transform2dDual<Arclength>): Double
 }
 fun interface VelConstraintFun {
     class Adapter(
@@ -498,7 +498,7 @@ fun interface VelConstraintFun {
 data class MinMax(@JvmField val min: Double, @JvmField val max: Double)
 
 fun interface SimpleAccelConstraintFun {
-    fun minMaxProfileAccel(robotPose: Transform2Dual<Arclength>): MinMax
+    fun minMaxProfileAccel(robotPose: Transform2dDual<Arclength>): MinMax
 }
 fun interface AccelConstraintFun {
     class Adapter(
@@ -516,7 +516,7 @@ class MinSimpleVelConstraintFun(
     @JvmField
     val constraints: List<SimpleVelConstraintFun>,
 ) : SimpleVelConstraintFun {
-    override fun maxRobotVel(robotPose: Transform2Dual<Arclength>) =
+    override fun maxRobotVel(robotPose: Transform2dDual<Arclength>) =
         constraints.minOf { it.maxRobotVel(robotPose) }
 }
 
@@ -528,14 +528,14 @@ class ProfileAccelConstraintFun(
 ) : SimpleAccelConstraintFun {
     private val minMax = MinMax(minAccel, maxAccel)
 
-    override fun minMaxProfileAccel(robotPose: Transform2Dual<Arclength>) = minMax
+    override fun minMaxProfileAccel(robotPose: Transform2dDual<Arclength>) = minMax
 }
 
 class AngularVelConstraintFun(
     @JvmField
     val maxAngVel: Double,
 ) : SimpleVelConstraintFun {
-    override fun maxRobotVel(robotPose: Transform2Dual<Arclength>) = maxAngVel / robotPose.rot.velocity().value()
+    override fun maxRobotVel(robotPose: Transform2dDual<Arclength>) = maxAngVel / robotPose.rot.velocity().value()
 }
 
 class CompositeVelConstraintFun(

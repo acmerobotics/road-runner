@@ -293,6 +293,6 @@ data class DualNum<Param>(private val values: DoubleArray) {
         return out
     }
 
-    operator fun times(c: Vector2) =
-        Vector2Dual(this * c.x, this * c.y)
+    operator fun times(c: Vector2d) =
+        Vector2dDual(this * c.x, this * c.y)
 }

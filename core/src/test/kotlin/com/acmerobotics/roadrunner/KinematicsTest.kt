@@ -13,12 +13,12 @@ class KinematicsTest {
 
         val r = Random.Default
         repeat(100) {
-            val t = Twist2(
-                Vector2(r.nextDouble(), r.nextDouble()),
+            val t = Twist2d(
+                Vector2d(r.nextDouble(), r.nextDouble()),
                 r.nextDouble()
             )
 
-            val vs = kinematics.inverse(Twist2Dual.constant<Time>(t, 1)).all()
+            val vs = kinematics.inverse(Twist2dDual.constant<Time>(t, 1)).all()
 
             val t2 = kinematics.forward(
                 MecanumKinematics.WheelIncrements(
@@ -37,17 +37,17 @@ class KinematicsTest {
         val kinematics = MecanumKinematics(10.0)
 
         val posPath = PositionPathBuilder(
-            Position2(0.0, 0.0),
-            Rotation2.exp(0.0),
+            Position2d(0.0, 0.0),
+            Rotation2d.exp(0.0),
             1e-6,
         )
             .splineTo(
-                Position2(15.0, 15.0),
-                Rotation2.exp(PI),
+                Position2d(15.0, 15.0),
+                Rotation2d.exp(PI),
             )
             .splineTo(
-                Position2(5.0, 35.0),
-                Rotation2.exp(PI / 3),
+                Position2d(5.0, 35.0),
+                Rotation2d.exp(PI / 3),
             )
             .build()
 

@@ -17,17 +17,17 @@ class MecanumFollowerTest {
 
         val path = TangentPath(
             PositionPathBuilder(
-                Position2(0.0, 0.0),
-                Rotation2.exp(0.0),
+                Position2d(0.0, 0.0),
+                Rotation2d.exp(0.0),
                 1e-6,
             )
                 .splineTo(
-                    Position2(15.0, 15.0),
-                    Rotation2.exp(PI),
+                    Position2d(15.0, 15.0),
+                    Rotation2d.exp(PI),
                 )
                 .splineTo(
-                    Position2(5.0, 35.0),
-                    Rotation2.exp(PI / 3),
+                    Position2d(5.0, 35.0),
+                    Rotation2d.exp(PI / 3),
                 )
                 .build(),
             0.0,
@@ -48,13 +48,13 @@ class MecanumFollowerTest {
 
         val ff = MotorFeedforward(0.0, 1 / 60.0, 0.0)
 
-        var poseEstimate = Transform2(
-            Vector2(0.0, 0.0),
-            Rotation2.exp(0.0),
+        var poseEstimate = Transform2d(
+            Vector2d(0.0, 0.0),
+            Rotation2d.exp(0.0),
         )
 
-        val targetPositions = mutableListOf<Vector2>()
-        val actualPositions = mutableListOf<Vector2>()
+        val targetPositions = mutableListOf<Vector2d>()
+        val actualPositions = mutableListOf<Vector2d>()
 
         var t = 0.0
         while (t <= profile.duration) {
@@ -69,8 +69,8 @@ class MecanumFollowerTest {
             val command = follower.compute(
                 targetPose,
                 poseEstimate,
-                Twist2(
-                    Vector2(0.0, 0.0),
+                Twist2d(
+                    Vector2d(0.0, 0.0),
                     0.0,
                 )
             )
@@ -121,17 +121,17 @@ class MecanumFollowerTest {
 
         val path = TangentPath(
             PositionPathBuilder(
-                Position2(0.0, 0.0),
-                Rotation2.exp(0.0),
+                Position2d(0.0, 0.0),
+                Rotation2d.exp(0.0),
                 1e-6,
             )
                 .splineTo(
-                    Position2(15.0, 15.0),
-                    Rotation2.exp(PI),
+                    Position2d(15.0, 15.0),
+                    Rotation2d.exp(PI),
                 )
                 .splineTo(
-                    Position2(5.0, 35.0),
-                    Rotation2.exp(PI / 3),
+                    Position2d(5.0, 35.0),
+                    Rotation2d.exp(PI / 3),
                 )
                 .build(),
             0.0,
@@ -152,19 +152,19 @@ class MecanumFollowerTest {
         val ff = MotorFeedforward(0.0, 1 / 60.0, 0.0)
 
         var poseEstimate =
-            Transform2(
-                Vector2(1.0, 0.0),
-                Rotation2.exp(0.0),
+            Transform2d(
+                Vector2d(1.0, 0.0),
+                Rotation2d.exp(0.0),
             )
 
         var poseVelocity =
-            Twist2(
-                Vector2(10.0, 0.0),
+            Twist2d(
+                Vector2d(10.0, 0.0),
                 0.0,
             )
 
-        val targetPositions = mutableListOf<Vector2>()
-        val actualPositions = mutableListOf<Vector2>()
+        val targetPositions = mutableListOf<Vector2d>()
+        val actualPositions = mutableListOf<Vector2d>()
 
         var s = 0.0
         var i = 0
@@ -182,7 +182,7 @@ class MecanumFollowerTest {
             val r = targetPose.trans.reparam(profile[s])
             println(r)
             val x =
-                Vector2Dual<Time>(
+                Vector2dDual<Time>(
                     DualNum(doubleArrayOf(poseEstimate.trans.x, poseVelocity.transVel.x)),
                     DualNum(doubleArrayOf(poseEstimate.trans.y, poseVelocity.transVel.y)),
                 )

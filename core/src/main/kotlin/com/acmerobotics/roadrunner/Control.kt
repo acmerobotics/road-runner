@@ -70,27 +70,27 @@ class HolonomicController(
      * @return velocity command in the actual frame
      */
     fun compute(
-        targetPose: Transform2Dual<Time>,
-        actualPose: Transform2,
-        actualVelActual: Twist2,
-    ): Twist2Dual<Time> {
+        targetPose: Transform2dDual<Time>,
+        actualPose: Transform2d,
+        actualVelActual: Twist2d,
+    ): Twist2dDual<Time> {
         val targetVelWorld = targetPose.velocity()
-        val txActualWorld = Transform2Dual.constant<Time>(actualPose.inverse(), 2)
+        val txActualWorld = Transform2dDual.constant<Time>(actualPose.inverse(), 2)
         val targetVelActual = txActualWorld * targetVelWorld
 
         val velErrorActual = targetVelActual.value() - actualVelActual
 
         val error = actualPose.inverse() * targetPose.value()
         return targetVelActual +
-            Twist2(
-                Vector2(
+            Twist2d(
+                Vector2d(
                     axialPosGain * error.trans.x,
                     lateralPosGain * error.trans.y,
                 ),
                 headingGain * error.rot.log(),
             ) +
-            Twist2(
-                Vector2(
+            Twist2d(
+                Vector2d(
                     axialVelGain * velErrorActual.transVel.x,
                     lateralVelGain * velErrorActual.transVel.y,
                 ),
@@ -136,9 +136,9 @@ class RamseteController @JvmOverloads constructor(
      */
     fun compute(
         s: DualNum<Time>,
-        targetPose: Transform2Dual<Arclength>,
-        actualPose: Transform2,
-    ): Twist2Dual<Time> {
+        targetPose: Transform2dDual<Arclength>,
+        actualPose: Transform2d,
+    ): Twist2dDual<Time> {
         val vRef = s[1]
         val omegaRef = targetPose.reparam(s).rot.velocity()[0]
 
@@ -151,9 +151,9 @@ class RamseteController @JvmOverloads constructor(
 
         // TODO: add acceleration feedforward?
         val error = actualPose.inverse() * targetPose.value()
-        return Twist2Dual.constant(
-            Twist2(
-                Vector2(
+        return Twist2dDual.constant(
+            Twist2d(
+                Vector2d(
                     vRef * error.rot.real + k * error.trans.x,
                     0.0
                 ),

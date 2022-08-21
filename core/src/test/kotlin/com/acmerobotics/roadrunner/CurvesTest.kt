@@ -12,14 +12,14 @@ import kotlin.math.sqrt
 import kotlin.random.Random
 import kotlin.test.assertEquals
 
-infix fun Vector2.det(other: Vector2) = x * other.y - y * other.x
+infix fun Vector2d.det(other: Vector2d) = x * other.y - y * other.x
 
-fun Position2.free() = Vector2(x, y)
+fun Position2d.free() = Vector2d(x, y)
 
 private fun approxLength(
-    p1: Position2,
-    p2: Position2,
-    p3: Position2
+    p1: Position2d,
+    p2: Position2d,
+    p3: Position2d
 ): Double {
     val chord = (p3 - p1).norm()
 
@@ -37,7 +37,7 @@ private fun approxLength(
         val y1 = x2 - x1
         val y2 = x2 - x3
 
-        val center = Position2(
+        val center = Position2d(
             (y1 * v2.y - y2 * v1.y) / det, (y2 * v1.x - y1 * v2.x) / det
         )
         val radius = (p1 - center).norm()
@@ -45,7 +45,7 @@ private fun approxLength(
     }
 }
 
-fun Position2Dual<Internal>.curvature(): Double {
+fun Position2dDual<Internal>.curvature(): Double {
     val (_, dx, d2x) = x.values()
     val (_, dy, d2y) = y.values()
     val derivNorm = sqrt(dx * dx + dy * dy)
@@ -80,8 +80,8 @@ class ArcApproxArcCurve2(
             sLo: Double,
             tLo: Double,
             tHi: Double,
-            pLo: Position2Dual<Internal>,
-            pHi: Position2Dual<Internal>,
+            pLo: Position2dDual<Internal>,
+            pHi: Position2dDual<Internal>,
             depth: Int,
         ): Samples {
             val tMid = 0.5 * (tLo + tHi)
@@ -257,10 +257,10 @@ class CurvesTest {
     fun testSplineHeadingInterpolation() {
         val r = Random.Default
         repeat(100) {
-            val begin = Rotation2Dual.exp(
+            val begin = Rotation2dDual.exp(
                 DualNum<Arclength>(doubleArrayOf(r.nextDouble(), r.nextDouble(), r.nextDouble()))
             )
-            val end = Rotation2Dual.exp(
+            val end = Rotation2dDual.exp(
                 DualNum<Arclength>(doubleArrayOf(r.nextDouble(), r.nextDouble(), r.nextDouble()))
             )
 
@@ -301,8 +301,8 @@ class CurvesTest {
     @Test
     fun testSplineHeadingPath() {
         val p = SplineHeadingPath(
-            Rotation2Dual.exp(DualNum(doubleArrayOf(PI / 2, 1.0, -1.0))),
-            Rotation2Dual.exp(DualNum(doubleArrayOf(-PI / 6, -0.5, 1.5))),
+            Rotation2dDual.exp(DualNum(doubleArrayOf(PI / 2, 1.0, -1.0))),
+            Rotation2dDual.exp(DualNum(doubleArrayOf(-PI / 6, -0.5, 1.5))),
             15.0,
         )
 

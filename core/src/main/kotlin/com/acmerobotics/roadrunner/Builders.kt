@@ -14,8 +14,8 @@ class PositionPathBuilder private constructor(
     // - segments satisfy continuity guarantees
     // - last segment ends with nextBeginPos, nextBeginTangent if it exists
     private val segments: PersistentList<PositionPath<Arclength>>,
-    private val nextBeginPos: Position2,
-    private val nextBeginTangent: Rotation2,
+    private val nextBeginPos: Position2d,
+    private val nextBeginTangent: Rotation2d,
     private val eps: Double,
 ) {
 
@@ -27,16 +27,16 @@ class PositionPathBuilder private constructor(
     class PathContinuityException : RuntimeException()
 
     constructor(
-        beginPos: Position2,
-        beginTangent: Rotation2,
+        beginPos: Position2d,
+        beginTangent: Rotation2d,
         eps: Double,
     ) : this(persistentListOf(), beginPos, beginTangent, eps)
 
     constructor(
-        beginPos: Position2,
+        beginPos: Position2d,
         beginTangent: Double,
         eps: Double,
-    ) : this(persistentListOf(), beginPos, Rotation2.exp(beginTangent), eps)
+    ) : this(persistentListOf(), beginPos, Rotation2d.exp(beginTangent), eps)
 
     private fun addSegment(p: PositionPath<Arclength>): PositionPathBuilder {
         val begin = p.begin(2)
@@ -74,7 +74,7 @@ class PositionPathBuilder private constructor(
         addSegment(
             Line(
                 nextBeginPos,
-                Position2(
+                Position2d(
                     posX,
                     (posX - nextBeginPos.x) / nextBeginTangent.real * nextBeginTangent.imag + nextBeginPos.y
                 )
@@ -89,7 +89,7 @@ class PositionPathBuilder private constructor(
     fun lineToY(posY: Double) = addSegment(
         Line(
             nextBeginPos,
-            Position2(
+            Position2d(
                 (posY - nextBeginPos.y) / nextBeginTangent.imag * nextBeginTangent.real + nextBeginPos.x, posY,
             )
         )
@@ -98,7 +98,7 @@ class PositionPathBuilder private constructor(
     /**
      * Adds a spline segment to position [pos] with tangent [tangent].
      */
-    fun splineTo(pos: Position2, tangent: Rotation2): PositionPathBuilder {
+    fun splineTo(pos: Position2d, tangent: Rotation2d): PositionPathBuilder {
         val dist = (pos - nextBeginPos).norm()
 
         if (dist < eps) {
@@ -129,7 +129,7 @@ class PositionPathBuilder private constructor(
     /**
      * Adds a spline segment to position [pos] with tangent [tangent].
      */
-    fun splineTo(pos: Position2, tangent: Double) = splineTo(pos, Rotation2.exp(tangent))
+    fun splineTo(pos: Position2d, tangent: Double) = splineTo(pos, Rotation2d.exp(tangent))
 
     fun build() = CompositePositionPath(segments)
 }
@@ -154,26 +154,26 @@ class PosePathBuilder private constructor(
     private val beginDisp: Double,
     private val state: State,
 ) {
-    constructor(path: PositionPath<Arclength>, beginHeading: Rotation2) :
+    constructor(path: PositionPath<Arclength>, beginHeading: Rotation2d) :
         this(path, 0.0, Lazy({ persistentListOf() }, beginHeading))
 
     constructor(path: PositionPath<Arclength>, beginHeading: Double) :
-        this(path, 0.0, Lazy({ persistentListOf() }, Rotation2.exp(beginHeading)))
+        this(path, 0.0, Lazy({ persistentListOf() }, Rotation2d.exp(beginHeading)))
 
     private sealed interface State {
-        val endHeading: Rotation2
+        val endHeading: Rotation2d
     }
 
     private class Eager(
         val segments: PersistentList<PosePath>,
-        val endHeadingDual: Rotation2Dual<Arclength>
+        val endHeadingDual: Rotation2dDual<Arclength>
     ) : State {
         override val endHeading = endHeadingDual.value()
     }
 
     private class Lazy(
-        val makePaths: (Rotation2Dual<Arclength>) -> PersistentList<PosePath>,
-        override val endHeading: Rotation2
+        val makePaths: (Rotation2dDual<Arclength>) -> PersistentList<PosePath>,
+        override val endHeading: Rotation2d
     ) : State
 
     /**
@@ -196,7 +196,7 @@ class PosePathBuilder private constructor(
                         fun <Param> DualNum<Param>.epsilonEquals(n: DualNum<Param>) =
                             values().zip(n.values()).all { (x, y) -> abs(x - y) < 1e-6 }
 
-                        fun <Param> Rotation2Dual<Param>.epsilonEquals(r: Rotation2Dual<Param>) =
+                        fun <Param> Rotation2dDual<Param>.epsilonEquals(r: Rotation2dDual<Param>) =
                             real.epsilonEquals(r.real) && imag.epsilonEquals(r.imag)
 
                         if (!state.endHeadingDual.epsilonEquals(beginHeadingDual)) {
@@ -240,7 +240,7 @@ class PosePathBuilder private constructor(
     /**
      * Fills in headings interpolated linearly to heading [heading] at displacement [disp].
      */
-    fun linearUntil(disp: Double, heading: Rotation2) = addEagerPosePath(
+    fun linearUntil(disp: Double, heading: Rotation2d) = addEagerPosePath(
         disp,
         HeadingPosePath(
             viewUntil(disp),
@@ -251,7 +251,7 @@ class PosePathBuilder private constructor(
     /**
      * Fills in headings interpolated linearly to heading [heading] at displacement [disp].
      */
-    fun linearUntil(disp: Double, heading: Double) = linearUntil(disp, Rotation2.exp(heading))
+    fun linearUntil(disp: Double, heading: Double) = linearUntil(disp, Rotation2d.exp(heading))
 
     /**
      * @usesMathJax
@@ -261,7 +261,7 @@ class PosePathBuilder private constructor(
      * Flexibility in the choice of spline endpoint derivatives allows [splineUntil] to both precede and succeed any
      * other heading segment. And in fact the heading at both knots will be \(C^2\)-continuous.
      */
-    fun splineUntil(disp: Double, heading: Rotation2): PosePathBuilder {
+    fun splineUntil(disp: Double, heading: Rotation2d): PosePathBuilder {
         require(disp > beginDisp)
 
         return PosePathBuilder(
@@ -281,7 +281,7 @@ class PosePathBuilder private constructor(
                     is Lazy -> {
                         {
                             val beginTangent = posPath[beginDisp, 4].tangent()
-                            val beginHeading = Rotation2Dual.exp(
+                            val beginHeading = Rotation2dDual.exp(
                                 beginTangent.log().drop(1)
                                     .addFirst(state.endHeading.log())
                             )
@@ -308,14 +308,14 @@ class PosePathBuilder private constructor(
      * Flexibility in the choice of spline endpoint derivatives allows [splineUntil] to both precede and succeed any
      * other heading segment. And in fact the heading at both knots will be \(C^2\)-continuous.
      */
-    fun splineUntil(disp: Double, heading: Double) = splineUntil(disp, Rotation2.exp(heading))
+    fun splineUntil(disp: Double, heading: Double) = splineUntil(disp, Rotation2d.exp(heading))
 
     fun tangentUntilEnd() = tangentUntil(posPath.length()).build()
     fun constantUntilEnd() = constantUntil(posPath.length()).build()
-    fun linearUntilEnd(heading: Rotation2) = linearUntil(posPath.length(), heading).build()
-    fun linearUntilEnd(heading: Double) = linearUntilEnd(Rotation2.exp(heading))
-    fun splineUntilEnd(heading: Rotation2) = splineUntil(posPath.length(), heading).build()
-    fun splineUntilEnd(heading: Double) = splineUntilEnd(Rotation2.exp(heading))
+    fun linearUntilEnd(heading: Rotation2d) = linearUntil(posPath.length(), heading).build()
+    fun linearUntilEnd(heading: Double) = linearUntilEnd(Rotation2d.exp(heading))
+    fun splineUntilEnd(heading: Rotation2d) = splineUntil(posPath.length(), heading).build()
+    fun splineUntilEnd(heading: Double) = splineUntilEnd(Rotation2d.exp(heading))
 
     internal fun build(): CompositePosePath {
         require(beginDisp == posPath.length())
@@ -325,7 +325,7 @@ class PosePathBuilder private constructor(
                 is Eager -> state.segments
                 is Lazy -> {
                     val endTangent = posPath[beginDisp, 4].tangent()
-                    val endHeading = Rotation2Dual.exp(
+                    val endHeading = Rotation2dDual.exp(
                         endTangent.log().drop(1)
                             .addFirst(state.endHeading.log())
                     )
@@ -344,7 +344,7 @@ class PosePathBuilder private constructor(
  * For method-by-method documentation, see the identical methods on [PosePathBuilder].
  */
 class SafePosePathBuilder internal constructor(private val posePathBuilder: PosePathBuilder) {
-    constructor(path: PositionPath<Arclength>, beginHeading: Rotation2) :
+    constructor(path: PositionPath<Arclength>, beginHeading: Rotation2d) :
         this(PosePathBuilder(path, beginHeading))
     constructor(path: PositionPath<Arclength>, beginHeading: Double) :
         this(PosePathBuilder(path, beginHeading))
@@ -353,21 +353,21 @@ class SafePosePathBuilder internal constructor(private val posePathBuilder: Pose
         RestrictedPosePathBuilder(posePathBuilder.tangentUntil(disp))
     fun constantUntil(disp: Double) =
         RestrictedPosePathBuilder(posePathBuilder.constantUntil(disp))
-    fun linearUntil(disp: Double, heading: Rotation2) =
+    fun linearUntil(disp: Double, heading: Rotation2d) =
         RestrictedPosePathBuilder(posePathBuilder.linearUntil(disp, heading))
     fun linearUntil(disp: Double, heading: Double) =
         RestrictedPosePathBuilder(posePathBuilder.linearUntil(disp, heading))
 
-    fun splineUntil(disp: Double, heading: Rotation2) =
+    fun splineUntil(disp: Double, heading: Rotation2d) =
         SafePosePathBuilder(posePathBuilder.splineUntil(disp, heading))
     fun splineUntil(disp: Double, heading: Double) =
         SafePosePathBuilder(posePathBuilder.splineUntil(disp, heading))
 
     fun tangentUntilEnd() = posePathBuilder.tangentUntilEnd()
     fun constantUntilEnd() = posePathBuilder.constantUntilEnd()
-    fun linearUntilEnd(heading: Rotation2) = posePathBuilder.linearUntilEnd(heading)
+    fun linearUntilEnd(heading: Rotation2d) = posePathBuilder.linearUntilEnd(heading)
     fun linearUntilEnd(heading: Double) = posePathBuilder.linearUntilEnd(heading)
-    fun splineUntilEnd(heading: Rotation2) = posePathBuilder.splineUntilEnd(heading)
+    fun splineUntilEnd(heading: Rotation2d) = posePathBuilder.splineUntilEnd(heading)
     fun splineUntilEnd(heading: Double) = posePathBuilder.splineUntilEnd(heading)
 }
 
@@ -375,12 +375,12 @@ class SafePosePathBuilder internal constructor(private val posePathBuilder: Pose
  * Do not instantiate directly. See [SafePosePathBuilder].
  */
 class RestrictedPosePathBuilder internal constructor(private val posePathBuilder: PosePathBuilder) {
-    fun splineUntil(disp: Double, heading: Rotation2) =
+    fun splineUntil(disp: Double, heading: Rotation2d) =
         SafePosePathBuilder(posePathBuilder.splineUntil(disp, heading))
     fun splineUntil(disp: Double, heading: Double) =
         SafePosePathBuilder(posePathBuilder.splineUntil(disp, heading))
 
-    fun splineUntilEnd(heading: Rotation2) = posePathBuilder.splineUntilEnd(heading)
+    fun splineUntilEnd(heading: Rotation2d) = posePathBuilder.splineUntilEnd(heading)
     fun splineUntilEnd(heading: Double) = posePathBuilder.splineUntilEnd(heading)
 }
 
@@ -388,13 +388,13 @@ class PathBuilder private constructor(
     private val posPathBuilder: PositionPathBuilder,
     private val posePathBuilder: (CompositePositionPath<Arclength>, Int) -> PosePathBuilder
 ) {
-    constructor(beginPose: Transform2, beginTangent: Rotation2, eps: Double) :
+    constructor(beginPose: Transform2d, beginTangent: Rotation2d, eps: Double) :
         this(
             PositionPathBuilder(beginPose.trans.bind(), beginTangent, eps),
             { path, _ -> PosePathBuilder(path, beginPose.rot) }
         )
-    constructor(beginPose: Transform2, beginTangent: Double, eps: Double) :
-        this(beginPose, Rotation2.exp(beginTangent), eps)
+    constructor(beginPose: Transform2d, beginTangent: Double, eps: Double) :
+        this(beginPose, Rotation2d.exp(beginTangent), eps)
 
     private fun addHeadingSegment(f: PosePathBuilder.(Double) -> PosePathBuilder): (
         CompositePositionPath<Arclength>,
@@ -408,57 +408,58 @@ class PathBuilder private constructor(
     fun forwardConstantHeading(dist: Double) =
         PathBuilder(posPathBuilder.forward(dist), addHeadingSegment { this.constantUntil(it) })
 
-    fun forwardLinearHeading(dist: Double, heading: Rotation2) =
+    fun forwardLinearHeading(dist: Double, heading: Rotation2d) =
         PathBuilder(posPathBuilder.forward(dist), addHeadingSegment { this.linearUntil(it, heading) })
-    fun forwardLinearHeading(dist: Double, heading: Double) = forwardLinearHeading(dist, Rotation2.exp(heading))
+    fun forwardLinearHeading(dist: Double, heading: Double) = forwardLinearHeading(dist, Rotation2d.exp(heading))
 
-    fun forwardSplineHeading(dist: Double, heading: Rotation2) =
+    fun forwardSplineHeading(dist: Double, heading: Rotation2d) =
         PathBuilder(posPathBuilder.forward(dist), addHeadingSegment { this.splineUntil(it, heading) })
-    fun forwardSplineHeading(dist: Double, heading: Double) = forwardSplineHeading(dist, Rotation2.exp(heading))
+    fun forwardSplineHeading(dist: Double, heading: Double) = forwardSplineHeading(dist, Rotation2d.exp(heading))
 
     fun lineToX(posX: Double) = PathBuilder(posPathBuilder.lineToX(posX), addHeadingSegment { this.tangentUntil(it) })
 
     fun lineToXConstantHeading(posX: Double) =
         PathBuilder(posPathBuilder.lineToX(posX), addHeadingSegment { this.constantUntil(it) })
 
-    fun lineToXLinearHeading(posX: Double, heading: Rotation2) =
+    fun lineToXLinearHeading(posX: Double, heading: Rotation2d) =
         PathBuilder(posPathBuilder.lineToX(posX), addHeadingSegment { this.linearUntil(it, heading) })
-    fun linetoXLinearHeading(posX: Double, heading: Double) = lineToXLinearHeading(posX, Rotation2.exp(heading))
+    fun linetoXLinearHeading(posX: Double, heading: Double) = lineToXLinearHeading(posX, Rotation2d.exp(heading))
 
-    fun lineToXSplineHeading(posX: Double, heading: Rotation2) =
+    fun lineToXSplineHeading(posX: Double, heading: Rotation2d) =
         PathBuilder(posPathBuilder.lineToX(posX), addHeadingSegment { this.splineUntil(it, heading) })
-    fun lineToXSplineHeading(posX: Double, heading: Double) = lineToXSplineHeading(posX, Rotation2.exp(heading))
+    fun lineToXSplineHeading(posX: Double, heading: Double) = lineToXSplineHeading(posX, Rotation2d.exp(heading))
 
     fun lineToY(posY: Double) = PathBuilder(posPathBuilder.lineToY(posY), addHeadingSegment { this.tangentUntil(it) })
 
     fun lineToYConstantHeading(posY: Double) =
         PathBuilder(posPathBuilder.lineToY(posY), addHeadingSegment { this.constantUntil(it) })
 
-    fun lineToYLinearHeading(posY: Double, heading: Rotation2) =
+    fun lineToYLinearHeading(posY: Double, heading: Rotation2d) =
         PathBuilder(posPathBuilder.lineToY(posY), addHeadingSegment { this.linearUntil(it, heading) })
-    fun linetoYLinearHeading(posY: Double, heading: Double) = lineToYLinearHeading(posY, Rotation2.exp(heading))
+    fun linetoYLinearHeading(posY: Double, heading: Double) = lineToYLinearHeading(posY, Rotation2d.exp(heading))
 
-    fun lineToYSplineHeading(posY: Double, heading: Rotation2) =
+    fun lineToYSplineHeading(posY: Double, heading: Rotation2d) =
         PathBuilder(posPathBuilder.lineToY(posY), addHeadingSegment { this.splineUntil(it, heading) })
-    fun lineToYSplineHeading(posY: Double, heading: Double) = lineToYSplineHeading(posY, Rotation2.exp(heading))
+    fun lineToYSplineHeading(posY: Double, heading: Double) = lineToYSplineHeading(posY, Rotation2d.exp(heading))
 
-    fun splineTo(pos: Position2, tangent: Rotation2) =
+    fun splineTo(pos: Position2d, tangent: Rotation2d) =
         PathBuilder(posPathBuilder.splineTo(pos, tangent), addHeadingSegment { this.tangentUntil(it) })
-    fun splineTo(pos: Position2, tangent: Double) = splineTo(pos, Rotation2.exp(tangent))
+    fun splineTo(pos: Position2d, tangent: Double) = splineTo(pos, Rotation2d.exp(tangent))
 
-    fun splineToConstantHeading(pos: Position2, tangent: Rotation2) =
+    fun splineToConstantHeading(pos: Position2d, tangent: Rotation2d) =
         PathBuilder(posPathBuilder.splineTo(pos, tangent), addHeadingSegment { this.constantUntil(it) })
-    fun splineToConstantHeading(pos: Position2, tangent: Double) = splineToConstantHeading(pos, Rotation2.exp(tangent))
+    fun splineToConstantHeading(pos: Position2d, tangent: Double) =
+        splineToConstantHeading(pos, Rotation2d.exp(tangent))
 
-    fun splineToLinearHeading(pose: Transform2, tangent: Rotation2) = PathBuilder(
+    fun splineToLinearHeading(pose: Transform2d, tangent: Rotation2d) = PathBuilder(
         posPathBuilder.splineTo(pose.trans.bind(), tangent), addHeadingSegment { this.linearUntil(it, pose.rot) }
     )
-    fun splineToLinearHeading(pose: Transform2, tangent: Double) = splineToLinearHeading(pose, Rotation2.exp(tangent))
+    fun splineToLinearHeading(pose: Transform2d, tangent: Double) = splineToLinearHeading(pose, Rotation2d.exp(tangent))
 
-    fun splineToSplineHeading(pose: Transform2, tangent: Rotation2) = PathBuilder(
+    fun splineToSplineHeading(pose: Transform2d, tangent: Rotation2d) = PathBuilder(
         posPathBuilder.splineTo(pose.trans.bind(), tangent), addHeadingSegment { this.splineUntil(it, pose.rot) }
     )
-    fun splineToSplineHeading(pose: Transform2, tangent: Double) = splineToSplineHeading(pose, Rotation2.exp(tangent))
+    fun splineToSplineHeading(pose: Transform2d, tangent: Double) = splineToSplineHeading(pose, Rotation2d.exp(tangent))
 
     fun build(): CompositePosePath {
         val posPath = posPathBuilder.build()
@@ -467,120 +468,122 @@ class PathBuilder private constructor(
 }
 
 class SafePathBuilder internal constructor(private val pathBuilder: PathBuilder) {
-    constructor(beginPose: Transform2, beginTangent: Rotation2, eps: Double) :
+    constructor(beginPose: Transform2d, beginTangent: Rotation2d, eps: Double) :
         this(PathBuilder(beginPose, beginTangent, eps))
-    constructor(beginPose: Transform2, beginTangent: Double, eps: Double) :
-        this(beginPose, Rotation2.exp(beginTangent), eps)
+    constructor(beginPose: Transform2d, beginTangent: Double, eps: Double) :
+        this(beginPose, Rotation2d.exp(beginTangent), eps)
 
     fun forward(dist: Double) = TangentPathBuilder(pathBuilder.forward(dist))
     fun forwardConstantHeading(dist: Double) = ConstantPathBuilder(pathBuilder.forwardConstantHeading(dist))
-    fun forwardLinearHeading(dist: Double, heading: Rotation2) =
+    fun forwardLinearHeading(dist: Double, heading: Rotation2d) =
         RestrictedPathBuilder(pathBuilder.forwardLinearHeading(dist, heading))
-    fun forwardLinearHeading(dist: Double, heading: Double) = forwardLinearHeading(dist, Rotation2.exp(heading))
-    fun forwardSplineHeading(dist: Double, heading: Rotation2) =
+    fun forwardLinearHeading(dist: Double, heading: Double) = forwardLinearHeading(dist, Rotation2d.exp(heading))
+    fun forwardSplineHeading(dist: Double, heading: Rotation2d) =
         SafePathBuilder(pathBuilder.forwardSplineHeading(dist, heading))
-    fun forwardSplineHeading(dist: Double, heading: Double) = forwardSplineHeading(dist, Rotation2.exp(heading))
+    fun forwardSplineHeading(dist: Double, heading: Double) = forwardSplineHeading(dist, Rotation2d.exp(heading))
 
     fun lineToX(posX: Double) = TangentPathBuilder(pathBuilder.lineToX(posX))
     fun lineToXConstantHeading(posX: Double) = ConstantPathBuilder(pathBuilder.lineToXConstantHeading(posX))
-    fun lineToXLinearHeading(posX: Double, heading: Rotation2) =
+    fun lineToXLinearHeading(posX: Double, heading: Rotation2d) =
         RestrictedPathBuilder(pathBuilder.lineToXLinearHeading(posX, heading))
-    fun linetoXLinearHeading(posX: Double, heading: Double) = lineToXLinearHeading(posX, Rotation2.exp(heading))
-    fun lineToXSplineHeading(posX: Double, heading: Rotation2) =
+    fun linetoXLinearHeading(posX: Double, heading: Double) = lineToXLinearHeading(posX, Rotation2d.exp(heading))
+    fun lineToXSplineHeading(posX: Double, heading: Rotation2d) =
         SafePathBuilder(pathBuilder.lineToXSplineHeading(posX, heading))
-    fun lineToXSplineHeading(posX: Double, heading: Double) = lineToXSplineHeading(posX, Rotation2.exp(heading))
+    fun lineToXSplineHeading(posX: Double, heading: Double) = lineToXSplineHeading(posX, Rotation2d.exp(heading))
 
     fun lineToY(posY: Double) = TangentPathBuilder(pathBuilder.lineToY(posY))
     fun lineToYConstantHeading(posY: Double) = ConstantPathBuilder(pathBuilder.lineToXConstantHeading(posY))
-    fun lineToYLinearHeading(posY: Double, heading: Rotation2) =
+    fun lineToYLinearHeading(posY: Double, heading: Rotation2d) =
         RestrictedPathBuilder(pathBuilder.lineToYLinearHeading(posY, heading))
-    fun linetoYLinearHeading(posY: Double, heading: Double) = lineToYLinearHeading(posY, Rotation2.exp(heading))
-    fun lineToYSplineHeading(posY: Double, heading: Rotation2) =
+    fun linetoYLinearHeading(posY: Double, heading: Double) = lineToYLinearHeading(posY, Rotation2d.exp(heading))
+    fun lineToYSplineHeading(posY: Double, heading: Rotation2d) =
         SafePathBuilder(pathBuilder.lineToYSplineHeading(posY, heading))
-    fun lineToYSplineHeading(posY: Double, heading: Double) = lineToYSplineHeading(posY, Rotation2.exp(heading))
+    fun lineToYSplineHeading(posY: Double, heading: Double) = lineToYSplineHeading(posY, Rotation2d.exp(heading))
 
-    fun splineTo(pos: Position2, tangent: Rotation2) = TangentPathBuilder(pathBuilder.splineTo(pos, tangent))
-    fun splineTo(pos: Position2, tangent: Double) = splineTo(pos, Rotation2.exp(tangent))
-    fun splineToConstantHeading(pos: Position2, tangent: Rotation2) =
+    fun splineTo(pos: Position2d, tangent: Rotation2d) = TangentPathBuilder(pathBuilder.splineTo(pos, tangent))
+    fun splineTo(pos: Position2d, tangent: Double) = splineTo(pos, Rotation2d.exp(tangent))
+    fun splineToConstantHeading(pos: Position2d, tangent: Rotation2d) =
         ConstantPathBuilder(pathBuilder.splineToConstantHeading(pos, tangent))
-    fun splineToConstantHeading(pos: Position2, tangent: Double) = splineToConstantHeading(pos, Rotation2.exp(tangent))
-    fun splineToLinearHeading(pose: Transform2, tangent: Rotation2) =
+    fun splineToConstantHeading(pos: Position2d, tangent: Double) =
+        splineToConstantHeading(pos, Rotation2d.exp(tangent))
+    fun splineToLinearHeading(pose: Transform2d, tangent: Rotation2d) =
         RestrictedPathBuilder(pathBuilder.splineToLinearHeading(pose, tangent))
-    fun splineToLinearHeading(pose: Transform2, tangent: Double) = splineToLinearHeading(pose, Rotation2.exp(tangent))
-    fun splineToSplineHeading(pose: Transform2, tangent: Rotation2) =
+    fun splineToLinearHeading(pose: Transform2d, tangent: Double) = splineToLinearHeading(pose, Rotation2d.exp(tangent))
+    fun splineToSplineHeading(pose: Transform2d, tangent: Rotation2d) =
         SafePathBuilder(pathBuilder.splineToSplineHeading(pose, tangent))
-    fun splineToSplineHeading(pose: Transform2, tangent: Double) = splineToSplineHeading(pose, Rotation2.exp(tangent))
+    fun splineToSplineHeading(pose: Transform2d, tangent: Double) = splineToSplineHeading(pose, Rotation2d.exp(tangent))
 
     fun build() = pathBuilder.build()
 }
 
 class TangentPathBuilder internal constructor(private val pathBuilder: PathBuilder) {
     fun forward(dist: Double) = TangentPathBuilder(pathBuilder.forward(dist))
-    fun forwardSplineHeading(dist: Double, heading: Rotation2) =
+    fun forwardSplineHeading(dist: Double, heading: Rotation2d) =
         SafePathBuilder(pathBuilder.forwardSplineHeading(dist, heading))
-    fun forwardSplineHeading(dist: Double, heading: Double) = forwardSplineHeading(dist, Rotation2.exp(heading))
+    fun forwardSplineHeading(dist: Double, heading: Double) = forwardSplineHeading(dist, Rotation2d.exp(heading))
 
     fun lineToX(posX: Double) = TangentPathBuilder(pathBuilder.lineToX(posX))
-    fun lineToXSplineHeading(posX: Double, heading: Rotation2) =
+    fun lineToXSplineHeading(posX: Double, heading: Rotation2d) =
         SafePathBuilder(pathBuilder.lineToXSplineHeading(posX, heading))
-    fun lineToXSplineHeading(posX: Double, heading: Double) = lineToXSplineHeading(posX, Rotation2.exp(heading))
+    fun lineToXSplineHeading(posX: Double, heading: Double) = lineToXSplineHeading(posX, Rotation2d.exp(heading))
 
     fun lineToY(posY: Double) = TangentPathBuilder(pathBuilder.lineToY(posY))
-    fun lineToYSplineHeading(posY: Double, heading: Rotation2) =
+    fun lineToYSplineHeading(posY: Double, heading: Rotation2d) =
         SafePathBuilder(pathBuilder.lineToYSplineHeading(posY, heading))
-    fun lineToYSplineHeading(posY: Double, heading: Double) = lineToYSplineHeading(posY, Rotation2.exp(heading))
+    fun lineToYSplineHeading(posY: Double, heading: Double) = lineToYSplineHeading(posY, Rotation2d.exp(heading))
 
-    fun splineTo(pos: Position2, tangent: Rotation2) = TangentPathBuilder(pathBuilder.splineTo(pos, tangent))
-    fun splineTo(pos: Position2, tangent: Double) = splineTo(pos, Rotation2.exp(tangent))
-    fun splineToSplineHeading(pose: Transform2, tangent: Rotation2) =
+    fun splineTo(pos: Position2d, tangent: Rotation2d) = TangentPathBuilder(pathBuilder.splineTo(pos, tangent))
+    fun splineTo(pos: Position2d, tangent: Double) = splineTo(pos, Rotation2d.exp(tangent))
+    fun splineToSplineHeading(pose: Transform2d, tangent: Rotation2d) =
         SafePathBuilder(pathBuilder.splineToSplineHeading(pose, tangent))
-    fun splineToSplineHeading(pose: Transform2, tangent: Double) = splineToSplineHeading(pose, Rotation2.exp(tangent))
+    fun splineToSplineHeading(pose: Transform2d, tangent: Double) = splineToSplineHeading(pose, Rotation2d.exp(tangent))
 
     fun build() = pathBuilder.build()
 }
 
 class ConstantPathBuilder internal constructor(private val pathBuilder: PathBuilder) {
     fun forwardConstantHeading(dist: Double) = ConstantPathBuilder(pathBuilder.forwardConstantHeading(dist))
-    fun forwardSplineHeading(dist: Double, heading: Rotation2) =
+    fun forwardSplineHeading(dist: Double, heading: Rotation2d) =
         SafePathBuilder(pathBuilder.forwardSplineHeading(dist, heading))
-    fun forwardSplineHeading(dist: Double, heading: Double) = forwardSplineHeading(dist, Rotation2.exp(heading))
+    fun forwardSplineHeading(dist: Double, heading: Double) = forwardSplineHeading(dist, Rotation2d.exp(heading))
 
     fun lineToXConstantHeading(posX: Double) = ConstantPathBuilder(pathBuilder.lineToXConstantHeading(posX))
-    fun lineToXSplineHeading(posX: Double, heading: Rotation2) =
+    fun lineToXSplineHeading(posX: Double, heading: Rotation2d) =
         SafePathBuilder(pathBuilder.lineToXSplineHeading(posX, heading))
-    fun lineToXSplineHeading(posX: Double, heading: Double) = lineToXSplineHeading(posX, Rotation2.exp(heading))
+    fun lineToXSplineHeading(posX: Double, heading: Double) = lineToXSplineHeading(posX, Rotation2d.exp(heading))
 
     fun lineToYConstantHeading(posY: Double) = ConstantPathBuilder(pathBuilder.lineToXConstantHeading(posY))
-    fun lineToYSplineHeading(posY: Double, heading: Rotation2) =
+    fun lineToYSplineHeading(posY: Double, heading: Rotation2d) =
         SafePathBuilder(pathBuilder.lineToYSplineHeading(posY, heading))
-    fun lineToYSplineHeading(posY: Double, heading: Double) = lineToYSplineHeading(posY, Rotation2.exp(heading))
+    fun lineToYSplineHeading(posY: Double, heading: Double) = lineToYSplineHeading(posY, Rotation2d.exp(heading))
 
-    fun splineToConstantHeading(pos: Position2, tangent: Rotation2) =
+    fun splineToConstantHeading(pos: Position2d, tangent: Rotation2d) =
         ConstantPathBuilder(pathBuilder.splineToConstantHeading(pos, tangent))
-    fun splineToConstantHeading(pos: Position2, tangent: Double) = splineToConstantHeading(pos, Rotation2.exp(tangent))
-    fun splineToSplineHeading(pose: Transform2, tangent: Rotation2) =
+    fun splineToConstantHeading(pos: Position2d, tangent: Double) =
+        splineToConstantHeading(pos, Rotation2d.exp(tangent))
+    fun splineToSplineHeading(pose: Transform2d, tangent: Rotation2d) =
         SafePathBuilder(pathBuilder.splineToSplineHeading(pose, tangent))
-    fun splineToSplineHeading(pose: Transform2, tangent: Double) = splineToSplineHeading(pose, Rotation2.exp(tangent))
+    fun splineToSplineHeading(pose: Transform2d, tangent: Double) = splineToSplineHeading(pose, Rotation2d.exp(tangent))
 
     fun build() = pathBuilder.build()
 }
 
 class RestrictedPathBuilder internal constructor(private val pathBuilder: PathBuilder) {
-    fun forwardSplineHeading(dist: Double, heading: Rotation2) =
+    fun forwardSplineHeading(dist: Double, heading: Rotation2d) =
         SafePathBuilder(pathBuilder.forwardSplineHeading(dist, heading))
-    fun forwardSplineHeading(dist: Double, heading: Double) = forwardSplineHeading(dist, Rotation2.exp(heading))
+    fun forwardSplineHeading(dist: Double, heading: Double) = forwardSplineHeading(dist, Rotation2d.exp(heading))
 
-    fun lineToXSplineHeading(posX: Double, heading: Rotation2) =
+    fun lineToXSplineHeading(posX: Double, heading: Rotation2d) =
         SafePathBuilder(pathBuilder.lineToXSplineHeading(posX, heading))
-    fun lineToXSplineHeading(posX: Double, heading: Double) = lineToXSplineHeading(posX, Rotation2.exp(heading))
+    fun lineToXSplineHeading(posX: Double, heading: Double) = lineToXSplineHeading(posX, Rotation2d.exp(heading))
 
-    fun lineToYSplineHeading(posY: Double, heading: Rotation2) =
+    fun lineToYSplineHeading(posY: Double, heading: Rotation2d) =
         SafePathBuilder(pathBuilder.lineToYSplineHeading(posY, heading))
-    fun lineToYSplineHeading(posY: Double, heading: Double) = lineToYSplineHeading(posY, Rotation2.exp(heading))
+    fun lineToYSplineHeading(posY: Double, heading: Double) = lineToYSplineHeading(posY, Rotation2d.exp(heading))
 
-    fun splineToSplineHeading(pose: Transform2, tangent: Rotation2) =
+    fun splineToSplineHeading(pose: Transform2d, tangent: Rotation2d) =
         SafePathBuilder(pathBuilder.splineToSplineHeading(pose, tangent))
-    fun splineToSplineHeading(pose: Transform2, tangent: Double) = splineToSplineHeading(pose, Rotation2.exp(tangent))
+    fun splineToSplineHeading(pose: Transform2d, tangent: Double) = splineToSplineHeading(pose, Rotation2d.exp(tangent))
 
     fun build() = pathBuilder.build()
 }

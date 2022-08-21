@@ -32,16 +32,16 @@ class Demo {
         )
 
         var s = 0.0
-        var pose = Transform2Dual<Time>(
-            Vector2Dual(
+        var pose = Transform2dDual<Time>(
+            Vector2dDual(
                 DualNum.constant(5.0, 3),
                 DualNum.constant(5.0, 3),
             ),
-            Rotation2Dual.exp(DualNum.constant(0.0, 3)),
+            Rotation2dDual.exp(DualNum.constant(0.0, 3)),
         )
 
-        val measured = mutableListOf<Transform2>()
-        val targets = mutableListOf<Transform2>()
+        val measured = mutableListOf<Transform2d>()
+        val targets = mutableListOf<Transform2d>()
 
         while (true) {
             s = project(path, pose.trans.value().bind(), s)
@@ -56,7 +56,7 @@ class Demo {
             targets.add(targetPose.value())
 
             val error = targetPose.value().minusExp(pose.value())
-            val correction = Twist2(
+            val correction = Twist2d(
                 error.trans * 0.5,
                 error.rot.log() * 0.01,
             )
@@ -64,7 +64,7 @@ class Demo {
             val velocity = (targetPose.velocity() + correction).value()
 
             val dt = 0.01
-            pose += Twist2Increment(
+            pose += Twist2dIncrement(
                 velocity.transVel * dt,
                 velocity.rotVel * dt,
             )
