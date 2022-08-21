@@ -1,7 +1,5 @@
 package com.acmerobotics.roadrunner
 
-import kotlinx.collections.immutable.PersistentList
-import kotlinx.collections.immutable.persistentListOf
 import kotlin.math.abs
 
 /**
@@ -13,7 +11,7 @@ class PositionPathBuilder private constructor(
     // invariants:
     // - segments satisfy continuity guarantees
     // - last segment ends with nextBeginPos, nextBeginTangent if it exists
-    private val segments: PersistentList<PositionPath<Arclength>>,
+    private val segments: List<PositionPath<Arclength>>,
     private val nextBeginPos: Position2d,
     private val nextBeginTangent: Rotation2d,
     private val eps: Double,
@@ -30,13 +28,13 @@ class PositionPathBuilder private constructor(
         beginPos: Position2d,
         beginTangent: Rotation2d,
         eps: Double,
-    ) : this(persistentListOf(), beginPos, beginTangent, eps)
+    ) : this(emptyList(), beginPos, beginTangent, eps)
 
     constructor(
         beginPos: Position2d,
         beginTangent: Double,
         eps: Double,
-    ) : this(persistentListOf(), beginPos, Rotation2d.exp(beginTangent), eps)
+    ) : this(emptyList(), beginPos, Rotation2d.exp(beginTangent), eps)
 
     private fun addSegment(p: PositionPath<Arclength>): PositionPathBuilder {
         val begin = p.begin(2)
@@ -52,7 +50,7 @@ class PositionPathBuilder private constructor(
 
         val end = p.end(2)
         return PositionPathBuilder(
-            segments.add(p),
+            segments + listOf(p),
             end.value(),
             end.tangent().value(),
             eps
@@ -155,24 +153,24 @@ class PosePathBuilder private constructor(
     private val state: State,
 ) {
     constructor(path: PositionPath<Arclength>, beginHeading: Rotation2d) :
-        this(path, 0.0, Lazy({ persistentListOf() }, beginHeading))
+        this(path, 0.0, Lazy({ emptyList() }, beginHeading))
 
     constructor(path: PositionPath<Arclength>, beginHeading: Double) :
-        this(path, 0.0, Lazy({ persistentListOf() }, Rotation2d.exp(beginHeading)))
+        this(path, 0.0, Lazy({ emptyList() }, Rotation2d.exp(beginHeading)))
 
     private sealed interface State {
         val endHeading: Rotation2d
     }
 
     private class Eager(
-        val segments: PersistentList<PosePath>,
+        val segments: List<PosePath>,
         val endHeadingDual: Rotation2dDual<Arclength>
     ) : State {
         override val endHeading = endHeadingDual.value()
     }
 
     private class Lazy(
-        val makePaths: (Rotation2dDual<Arclength>) -> PersistentList<PosePath>,
+        val makePaths: (Rotation2dDual<Arclength>) -> List<PosePath>,
         override val endHeading: Rotation2d
     ) : State
 
@@ -206,7 +204,7 @@ class PosePathBuilder private constructor(
                         state.segments
                     }
                     is Lazy -> state.makePaths(beginHeadingDual)
-                }.add(segment),
+                } + listOf(segment),
                 segment.end(3).rot
             )
         )
@@ -270,7 +268,7 @@ class PosePathBuilder private constructor(
                 when (state) {
                     is Eager -> {
                         {
-                            state.segments.add(
+                            state.segments + listOf(
                                 HeadingPosePath(
                                     viewUntil(disp),
                                     SplineHeadingPath(state.endHeadingDual, it, disp - beginDisp),
@@ -286,7 +284,7 @@ class PosePathBuilder private constructor(
                                     .addFirst(state.endHeading.log())
                             )
 
-                            state.makePaths(beginHeading).add(
+                            state.makePaths(beginHeading) + listOf(
                                 HeadingPosePath(
                                     viewUntil(disp),
                                     SplineHeadingPath(beginHeading, it, disp - beginDisp)

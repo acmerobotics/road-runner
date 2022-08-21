@@ -2,9 +2,6 @@
 
 package com.acmerobotics.roadrunner
 
-import kotlinx.collections.immutable.PersistentList
-import kotlinx.collections.immutable.toPersistentList
-
 /**
  * Generic, internal parameter for [DualNum].
  */
@@ -223,9 +220,9 @@ data class ArclengthReparamCurve2(
 
 data class CompositePositionPath<Param> @JvmOverloads constructor(
     @JvmField
-    val paths: PersistentList<PositionPath<Param>>,
+    val paths: List<PositionPath<Param>>,
     @JvmField
-    val offsets: PersistentList<Double> = paths.scan(0.0) { acc, path -> acc + path.length() }.toPersistentList(),
+    val offsets: List<Double> = paths.scan(0.0) { acc, path -> acc + path.length() },
 ) : PositionPath<Param> {
     @JvmField
     val length = offsets.last()
@@ -385,9 +382,9 @@ data class HeadingPosePath(
 
 data class CompositePosePath(
     @JvmField
-    val paths: PersistentList<PosePath>,
+    val paths: List<PosePath>,
     @JvmField
-    val offsets: PersistentList<Double> = paths.scan(0.0) { acc, path -> acc + path.length() }.toPersistentList(),
+    val offsets: List<Double> = paths.scan(0.0) { acc, path -> acc + path.length() },
 ) : PosePath {
     @JvmField
     val length = offsets.last()

@@ -2,9 +2,6 @@
 
 package com.acmerobotics.roadrunner
 
-import kotlinx.collections.immutable.PersistentList
-import kotlinx.collections.immutable.toPersistentList
-
 // ~10 * machine epsilon
 private const val EPS = 2.2e-15
 
@@ -66,9 +63,9 @@ fun lerp(x: Double, fromLo: Double, fromHi: Double, toLo: Double, toHi: Double) 
 
 data class IntegralScanResult(
     @JvmField
-    val values: PersistentList<Double>,
+    val values: List<Double>,
     @JvmField
-    val sums: PersistentList<Double>,
+    val sums: List<Double>,
 )
 
 /**
@@ -125,5 +122,5 @@ fun integralScan(a: Double, b: Double, eps: Double, f: (Double) -> Double): Inte
 
     helper(a, m, b, fa, fm, fb)
 
-    return IntegralScanResult(values.toPersistentList(), sums.toPersistentList())
+    return IntegralScanResult(values, sums)
 }

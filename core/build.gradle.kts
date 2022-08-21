@@ -20,8 +20,6 @@ dependencies {
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
-    api("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.5")
-
     testImplementation("org.jetbrains.kotlin:kotlin-test")
 
     testImplementation("org.knowm.xchart:xchart:3.8.1")
