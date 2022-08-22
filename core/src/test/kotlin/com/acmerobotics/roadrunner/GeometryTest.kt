@@ -7,7 +7,7 @@ import kotlin.test.assertEquals
 
 class GeometryTest {
     @Test
-    fun testRotationExp() {
+    fun testRotationExpLog() {
         repeat(100) {
             val x = Random.Default.nextDouble(-PI, PI)
             assertEquals(x, Rotation2d.exp(x).log(), 1e-6)
@@ -15,7 +15,15 @@ class GeometryTest {
     }
 
     @Test
-    fun testTransformExp() {
+    fun testRotationInverseInverse() {
+        repeat(100) {
+            val x = Random.Default.nextDouble(-PI, PI)
+            assertEquals(x, Rotation2d.exp(x).inverse().inverse().log(), 1e-6)
+        }
+    }
+
+    @Test
+    fun testTransformExpLog() {
         repeat(100) {
             val incrExp = Twist2dIncrement(
                 Vector2d(
@@ -32,7 +40,24 @@ class GeometryTest {
     }
 
     @Test
-    fun testLocalError() {
+    fun testTransformInverseInverse() {
+        repeat(100) {
+            val incrExp = Twist2dIncrement(
+                Vector2d(
+                    Random.Default.nextDouble(),
+                    Random.Default.nextDouble(),
+                ),
+                Random.Default.nextDouble(),
+            )
+            val incrActual = Transform2d.exp(incrExp).inverse().inverse().log()
+            assertEquals(incrExp.transIncr.x, incrActual.transIncr.x, 1e-6)
+            assertEquals(incrExp.transIncr.y, incrActual.transIncr.y, 1e-6)
+            assertEquals(incrExp.rotIncr, incrActual.rotIncr, 1e-6)
+        }
+    }
+
+    @Test
+    fun testLocalErrorExample() {
         val target = Transform2d(Vector2d(1.0, 2.0), Rotation2d.exp(0.0))
         val actual = Transform2d(Vector2d(1.0, 1.0), Rotation2d.exp(PI / 2))
         val e = target.minusExp(actual)

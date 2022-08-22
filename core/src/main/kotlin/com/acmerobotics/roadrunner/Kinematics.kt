@@ -110,7 +110,7 @@ data class TankKinematics(@JvmField val trackWidth: Double) {
     }
 
     fun <Param> inverse(t: Twist2dDual<Param>): WheelVelocities<Param> {
-        require(t.transVel.y.values().all { it == 0.0 })
+        require(t.transVel.y.values().all { abs(it) < 1e-6 })
 
         return WheelVelocities(
             t.transVel.x - t.rotVel * 0.5 * trackWidth,
