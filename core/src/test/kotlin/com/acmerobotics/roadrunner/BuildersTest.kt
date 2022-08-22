@@ -31,16 +31,16 @@ fun chartSpline(q: QuinticSpline1): XYChart {
 
         fun chartSplineExpLog(q: QuinticSpline1): XYChart {
             val ts = range(0.0, 1.0, 1000)
-            val xs = ts.map { (Rotation2dDual.exp(q[it, 3]) + 0.3).log() }
+            val xs = ts.map { Rotation2dDual.exp(q[it, 3]) + 0.3 }
 
             return QuickChart.getChart(
                 "Spline", "t", "",
                 arrayOf("x", "dx", "d2x"),
                 ts.toDoubleArray(),
                 arrayOf(
-                    xs.map { it[0] }.toDoubleArray(),
-                    xs.map { it[1] }.toDoubleArray(),
-                    xs.map { it[2] }.toDoubleArray(),
+                    xs.map { it.value().log() }.toDoubleArray(),
+                    xs.map { it.velocity()[0] }.toDoubleArray(),
+                    xs.map { it.velocity()[1] }.toDoubleArray(),
                 )
             ).also {
                 it.styler.theme = MatlabTheme()
@@ -114,7 +114,7 @@ fun chartSpline(q: QuinticSpline1): XYChart {
                 arrayOf(
 //            poses.map { it.translation.x[0] }.toDoubleArray(),
 //            poses.map { it.translation.y[0] }.toDoubleArray(),
-                    poses.map { it.rot.log()[0] }.toDoubleArray(),
+                    poses.map { it.rot.value().log() }.toDoubleArray(),
                     poses.map { it.rot.velocity()[0] }.toDoubleArray(),
                     poses.map { it.rot.velocity()[1] }.toDoubleArray(),
                 )

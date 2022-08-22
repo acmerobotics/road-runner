@@ -203,7 +203,7 @@ data class Transform2d(
             val rotation = Rotation2d.exp(incr.rotIncr)
 
             val u = incr.rotIncr + epsCopySign(incr.rotIncr)
-            val c = cos(u)
+            val c = 1 - cos(u)
             val s = sin(u)
             val translation = Vector2d(
                 (s * incr.transIncr.x - c * incr.transIncr.y) / u,

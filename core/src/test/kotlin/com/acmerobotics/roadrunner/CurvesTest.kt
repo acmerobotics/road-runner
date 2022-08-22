@@ -168,9 +168,9 @@ fun chartSplineHeadingPath(p: SplineHeadingPath): XYChart {
 //            rs.map { it.imag[1] }.toDoubleArray(),
 //            rs.map { it.imag[2] }.toDoubleArray(),
 
-            rs.map { it.log()[0] }.toDoubleArray(),
-            rs.map { it.log()[1] }.toDoubleArray(),
-            rs.map { it.log()[2] }.toDoubleArray(),
+            rs.map { it.value().log() }.toDoubleArray(),
+            rs.map { it.velocity()[0] }.toDoubleArray(),
+            rs.map { it.velocity()[1] }.toDoubleArray(),
 //            numericalDerivative(rs.map { it.log()[0] }, p.length / 999).toDoubleArray(),
 //            numericalDerivative(rs.map { it.log()[1] }, p.length / 999).toDoubleArray(),
         )
@@ -278,8 +278,8 @@ class CurvesTest {
             assertEquals(begin.velocity()[0], splineBegin.velocity()[0], 1e-6)
             assertEquals(begin.velocity()[1], splineBegin.velocity()[1], 1e-6)
 
-            assertEquals(begin.log()[1], splineBegin.log()[1], 1e-6)
-            assertEquals(begin.log()[2], splineBegin.log()[2], 1e-6)
+            assertEquals(begin.velocity()[0], splineBegin.velocity()[0], 1e-6)
+            assertEquals(begin.velocity()[1], splineBegin.velocity()[1], 1e-6)
 
             val splineEnd = spline.end(3)
             assertEquals(end.real[0], splineEnd.real[0], 1e-6)
@@ -293,8 +293,8 @@ class CurvesTest {
             assertEquals(end.velocity()[0], splineEnd.velocity()[0], 1e-6)
             assertEquals(end.velocity()[1], splineEnd.velocity()[1], 1e-6)
 
-            assertEquals(end.log()[1], splineEnd.log()[1], 1e-6)
-            assertEquals(end.log()[2], splineEnd.log()[2], 1e-6)
+            assertEquals(end.velocity()[0], splineEnd.velocity()[0], 1e-6)
+            assertEquals(end.velocity()[1], splineEnd.velocity()[1], 1e-6)
         }
     }
 
