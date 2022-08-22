@@ -2,7 +2,6 @@ package com.acmerobotics.roadrunner
 
 import org.junit.jupiter.api.Test
 import kotlin.math.PI
-import kotlin.math.abs
 import kotlin.random.Random
 import kotlin.test.assertEquals
 
@@ -41,28 +40,5 @@ class GeometryTest {
         assertEquals(1.0, e.trans.x, 1e-6)
         assertEquals(0.0, e.trans.y, 1e-6)
         assertEquals(-PI / 2, e.rot.log(), 1e-6)
-    }
-
-    @Test
-    fun testPoseErrorReplacement() {
-        data class Transform2Error(@JvmField val transError: Vector2d, @JvmField val rotError: Double)
-
-        fun poseError(targetPose: Transform2d, actualPose: Transform2d): Transform2Error {
-            val transErrorWorld = targetPose.trans - actualPose.trans
-            val rotError = targetPose.rot - actualPose.rot
-            return Transform2Error(actualPose.rot.inverse() * transErrorWorld, rotError)
-        }
-
-        val r = Random.Default
-        repeat(100) {
-            val target = Transform2d(Vector2d(r.nextDouble(), r.nextDouble()), Rotation2d.exp(2 * PI * r.nextDouble()))
-            val actual = Transform2d(Vector2d(r.nextDouble(), r.nextDouble()), Rotation2d.exp(2 * PI * r.nextDouble()))
-            val e1 = poseError(target, actual)
-            val e2 = target.minusExp(actual)
-
-            assertEquals(e1.transError.x, e2.trans.x, 1e-6)
-            assertEquals(e1.transError.y, e2.trans.y, 1e-6)
-            assert(abs(Rotation2d.exp(e1.rotError) - e2.rot) < 1e-6)
-        }
     }
 }
