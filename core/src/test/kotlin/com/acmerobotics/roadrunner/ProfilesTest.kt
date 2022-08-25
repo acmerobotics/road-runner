@@ -5,6 +5,7 @@ import org.knowm.xchart.QuickChart
 import org.knowm.xchart.XYChart
 import org.knowm.xchart.style.theme.MatlabTheme
 import kotlin.math.pow
+import kotlin.random.Random
 import kotlin.test.assertEquals
 
 fun chartDispProfile(p: DisplacementProfile): XYChart {
@@ -177,4 +178,23 @@ class ProfilesTest {
                 constantProfile(10.0, 0.0, 5.0, -2.0, 5.0).baseProfile
             )
         )
+
+    @Test
+    fun testTimeProfileInverse() {
+        val profile = TimeProfile(
+            profile(
+                10.0,
+                3.0,
+                { (it - 5.0).pow(4.0) + 1.0 },
+                { -5.0 },
+                { 5.0 },
+                0.01,
+            ).baseProfile
+        )
+
+        repeat(100) {
+            val t = Random.Default.nextDouble(profile.duration + 2.0) - 1.0
+            assertEquals(clamp(t, 0.0, profile.duration), profile.inverse(profile[t][0]), 1e-2)
+        }
+    }
 }

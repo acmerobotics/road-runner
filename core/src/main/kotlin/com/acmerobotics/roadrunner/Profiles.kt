@@ -6,6 +6,7 @@ import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sqrt
+import kotlin.math.withSign
 
 /**
  * Time parameter for [DualNum].
@@ -127,6 +128,7 @@ private fun timeScan(p: DisplacementProfile): List<Double> {
 /**
  * Motion profile parameterized by time.
  */
+// guaranteed monotonic
 data class TimeProfile @JvmOverloads constructor(
     @JvmField
     val dispProfile: DisplacementProfile,
@@ -179,6 +181,33 @@ data class TimeProfile @JvmOverloads constructor(
                                 a
                             )
                         )
+                    }
+                }
+            }
+        }
+    }
+
+    fun inverse(x: Double): Double {
+        val index = dispProfile.disps.binarySearch(x)
+        return when {
+            index >= dispProfile.disps.lastIndex -> times[index]
+            index >= 0 -> times[index]
+            else -> {
+                val insIndex = -(index + 1)
+                when {
+                    insIndex <= 0 -> 0.0
+                    insIndex >= times.size -> duration
+                    else -> {
+                        val dx = x - dispProfile.disps[insIndex - 1]
+                        val t0 = times[insIndex - 1]
+                        val v0 = dispProfile.vels[insIndex - 1]
+                        val a = dispProfile.accels[insIndex - 1]
+
+                        if (a == 0.0) {
+                            t0 + dx / v0
+                        } else {
+                            t0 + sqrt(((v0 * v0 / a) + 2 * dx) / a).withSign(a) - v0 / a
+                        }
                     }
                 }
             }
