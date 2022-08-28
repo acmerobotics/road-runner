@@ -279,10 +279,7 @@ class PosePathBuilder private constructor(
                     is Lazy -> {
                         {
                             val beginTangent = posPath[beginDisp, 4].tangent()
-                            val beginHeading = Rotation2dDual.exp(
-                                beginTangent.velocity()
-                                    .addFirst(state.endHeading.log())
-                            )
+                            val beginHeading = beginTangent.withRot(state.endHeading)
 
                             state.makePaths(beginHeading) + listOf(
                                 HeadingPosePath(
@@ -323,10 +320,7 @@ class PosePathBuilder private constructor(
                 is Eager -> state.segments
                 is Lazy -> {
                     val endTangent = posPath[beginDisp, 4].tangent()
-                    val endHeading = Rotation2dDual.exp(
-                        endTangent.velocity()
-                            .addFirst(state.endHeading.log())
-                    )
+                    val endHeading = endTangent.withRot(state.endHeading)
 
                     state.makePaths(endHeading)
                 }
@@ -421,7 +415,7 @@ class PathBuilder private constructor(
 
     fun lineToXLinearHeading(posX: Double, heading: Rotation2d) =
         PathBuilder(posPathBuilder.lineToX(posX), addHeadingSegment { this.linearUntil(it, heading) })
-    fun linetoXLinearHeading(posX: Double, heading: Double) = lineToXLinearHeading(posX, Rotation2d.exp(heading))
+    fun lineToXLinearHeading(posX: Double, heading: Double) = lineToXLinearHeading(posX, Rotation2d.exp(heading))
 
     fun lineToXSplineHeading(posX: Double, heading: Rotation2d) =
         PathBuilder(posPathBuilder.lineToX(posX), addHeadingSegment { this.splineUntil(it, heading) })
@@ -434,7 +428,7 @@ class PathBuilder private constructor(
 
     fun lineToYLinearHeading(posY: Double, heading: Rotation2d) =
         PathBuilder(posPathBuilder.lineToY(posY), addHeadingSegment { this.linearUntil(it, heading) })
-    fun linetoYLinearHeading(posY: Double, heading: Double) = lineToYLinearHeading(posY, Rotation2d.exp(heading))
+    fun lineToYLinearHeading(posY: Double, heading: Double) = lineToYLinearHeading(posY, Rotation2d.exp(heading))
 
     fun lineToYSplineHeading(posY: Double, heading: Rotation2d) =
         PathBuilder(posPathBuilder.lineToY(posY), addHeadingSegment { this.splineUntil(it, heading) })
@@ -484,7 +478,7 @@ class SafePathBuilder internal constructor(private val pathBuilder: PathBuilder)
     fun lineToXConstantHeading(posX: Double) = ConstantPathBuilder(pathBuilder.lineToXConstantHeading(posX))
     fun lineToXLinearHeading(posX: Double, heading: Rotation2d) =
         RestrictedPathBuilder(pathBuilder.lineToXLinearHeading(posX, heading))
-    fun linetoXLinearHeading(posX: Double, heading: Double) = lineToXLinearHeading(posX, Rotation2d.exp(heading))
+    fun lineToXLinearHeading(posX: Double, heading: Double) = lineToXLinearHeading(posX, Rotation2d.exp(heading))
     fun lineToXSplineHeading(posX: Double, heading: Rotation2d) =
         SafePathBuilder(pathBuilder.lineToXSplineHeading(posX, heading))
     fun lineToXSplineHeading(posX: Double, heading: Double) = lineToXSplineHeading(posX, Rotation2d.exp(heading))
@@ -493,7 +487,7 @@ class SafePathBuilder internal constructor(private val pathBuilder: PathBuilder)
     fun lineToYConstantHeading(posY: Double) = ConstantPathBuilder(pathBuilder.lineToXConstantHeading(posY))
     fun lineToYLinearHeading(posY: Double, heading: Rotation2d) =
         RestrictedPathBuilder(pathBuilder.lineToYLinearHeading(posY, heading))
-    fun linetoYLinearHeading(posY: Double, heading: Double) = lineToYLinearHeading(posY, Rotation2d.exp(heading))
+    fun lineToYLinearHeading(posY: Double, heading: Double) = lineToYLinearHeading(posY, Rotation2d.exp(heading))
     fun lineToYSplineHeading(posY: Double, heading: Rotation2d) =
         SafePathBuilder(pathBuilder.lineToYSplineHeading(posY, heading))
     fun lineToYSplineHeading(posY: Double, heading: Double) = lineToYSplineHeading(posY, Rotation2d.exp(heading))
@@ -585,3 +579,264 @@ class RestrictedPathBuilder internal constructor(private val pathBuilder: PathBu
 
     fun build() = pathBuilder.build()
 }
+
+fun interface PoseMapper {
+    fun map(pose: Transform2d): Transform2d
+}
+
+class TrajectoryBuilder private constructor(
+    private val pathBuilder: PathBuilder,
+    private val beginEndVel: Double,
+    private val baseVelConstraint: VelConstraint,
+    private val baseAccelConstraint: AccelConstraint,
+    private val resolution: Double,
+    private val poseMapper: PoseMapper,
+    private val velConstraints: List<VelConstraint>,
+    private val accelConstraints: List<AccelConstraint>,
+) {
+    @JvmOverloads
+    constructor(
+        beginPose: Transform2d,
+        beginTangent: Rotation2d,
+        eps: Double,
+        beginEndVel: Double,
+        baseVelConstraint: VelConstraint,
+        baseAccelConstraint: AccelConstraint,
+        resolution: Double,
+        poseMapper: PoseMapper = PoseMapper { it }
+    ) :
+        this(
+            PathBuilder(beginPose, beginTangent, eps),
+            beginEndVel, baseVelConstraint, baseAccelConstraint, resolution,
+            poseMapper, emptyList(), emptyList()
+        )
+
+    fun add(
+        newPathBuilder: PathBuilder,
+        velConstraintOverride: VelConstraint?,
+        accelConstraintOverride: AccelConstraint?
+    ) =
+        TrajectoryBuilder(
+            newPathBuilder, beginEndVel, baseVelConstraint, baseAccelConstraint, resolution, poseMapper,
+            velConstraints + listOf(velConstraintOverride ?: baseVelConstraint),
+            accelConstraints + listOf(accelConstraintOverride ?: baseAccelConstraint)
+        )
+
+    @JvmOverloads
+    fun forward(
+        dist: Double,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) =
+        add(pathBuilder.forward(dist), velConstraintOverride, accelConstraintOverride)
+
+    @JvmOverloads
+    fun forwardConstantHeading(
+        dist: Double,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) =
+        add(pathBuilder.forwardConstantHeading(dist), velConstraintOverride, accelConstraintOverride)
+
+    @JvmOverloads
+    fun forwardLinearHeading(
+        dist: Double,
+        heading: Rotation2d,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) =
+        add(pathBuilder.forwardLinearHeading(dist, heading), velConstraintOverride, accelConstraintOverride)
+    @JvmOverloads
+    fun forwardLinearHeading(
+        dist: Double,
+        heading: Double,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) =
+        add(pathBuilder.forwardLinearHeading(dist, heading), velConstraintOverride, accelConstraintOverride)
+
+    fun forwardSplineHeading(
+        dist: Double,
+        heading: Rotation2d,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) =
+        add(pathBuilder.forwardSplineHeading(dist, heading), velConstraintOverride, accelConstraintOverride)
+    fun forwardSplineHeading(
+        dist: Double,
+        heading: Double,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) =
+        add(pathBuilder.forwardSplineHeading(dist, heading), velConstraintOverride, accelConstraintOverride)
+
+    fun lineToX(
+        posX: Double,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) =
+        add(pathBuilder.lineToX(posX), velConstraintOverride, accelConstraintOverride)
+
+    fun lineToXConstantHeading(
+        posX: Double,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) =
+        add(pathBuilder.lineToXConstantHeading(posX), velConstraintOverride, accelConstraintOverride)
+
+    fun lineToXLinearHeading(
+        posX: Double,
+        heading: Rotation2d,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) =
+        add(pathBuilder.lineToXLinearHeading(posX, heading), velConstraintOverride, accelConstraintOverride)
+    fun lineToXLinearHeading(
+        posX: Double,
+        heading: Double,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) =
+        add(pathBuilder.lineToXLinearHeading(posX, heading), velConstraintOverride, accelConstraintOverride)
+
+    fun lineToXSplineHeading(
+        posX: Double,
+        heading: Rotation2d,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) =
+        add(pathBuilder.lineToXSplineHeading(posX, heading), velConstraintOverride, accelConstraintOverride)
+    fun lineToXSplineHeading(
+        posX: Double,
+        heading: Double,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) =
+        add(pathBuilder.lineToXSplineHeading(posX, heading), velConstraintOverride, accelConstraintOverride)
+
+    fun lineToY(
+        posY: Double,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) =
+        add(pathBuilder.lineToY(posY), velConstraintOverride, accelConstraintOverride)
+
+    fun lineToYConstantHeading(
+        posY: Double,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) =
+        add(pathBuilder.lineToYConstantHeading(posY), velConstraintOverride, accelConstraintOverride)
+
+    fun lineToYLinearHeading(
+        posY: Double,
+        heading: Rotation2d,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) =
+        add(pathBuilder.lineToYLinearHeading(posY, heading), velConstraintOverride, accelConstraintOverride)
+    fun lineToYLinearHeading(
+        posY: Double,
+        heading: Double,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) =
+        add(pathBuilder.lineToYLinearHeading(posY, heading), velConstraintOverride, accelConstraintOverride)
+
+    fun lineToYSplineHeading(
+        posY: Double,
+        heading: Rotation2d,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) =
+        add(pathBuilder.lineToYSplineHeading(posY, heading), velConstraintOverride, accelConstraintOverride)
+    fun lineToYSplineHeading(
+        posY: Double,
+        heading: Double,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) =
+        add(pathBuilder.lineToYSplineHeading(posY, heading), velConstraintOverride, accelConstraintOverride)
+
+    fun splineTo(
+        pos: Position2d,
+        tangent: Rotation2d,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) =
+        add(pathBuilder.splineTo(pos, tangent), velConstraintOverride, accelConstraintOverride)
+    fun splineTo(
+        pos: Position2d,
+        tangent: Double,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) =
+        add(pathBuilder.splineTo(pos, tangent), velConstraintOverride, accelConstraintOverride)
+
+    fun splineToConstantHeading(
+        pos: Position2d,
+        tangent: Rotation2d,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) =
+        add(pathBuilder.splineToConstantHeading(pos, tangent), velConstraintOverride, accelConstraintOverride)
+    fun splineToConstantHeading(
+        pos: Position2d,
+        tangent: Double,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) =
+        add(pathBuilder.splineToConstantHeading(pos, tangent), velConstraintOverride, accelConstraintOverride)
+
+    fun splineToLinearHeading(
+        pose: Transform2d,
+        tangent: Rotation2d,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) =
+        add(pathBuilder.splineToLinearHeading(pose, tangent), velConstraintOverride, accelConstraintOverride)
+    fun splineToLinearHeading(
+        pose: Transform2d,
+        tangent: Double,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) =
+        add(pathBuilder.splineToLinearHeading(pose, tangent), velConstraintOverride, accelConstraintOverride)
+
+    fun splineToSplineHeading(
+        pose: Transform2d,
+        tangent: Rotation2d,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) =
+        add(pathBuilder.splineToSplineHeading(pose, tangent), velConstraintOverride, accelConstraintOverride)
+    fun splineToSplineHeading(
+        pose: Transform2d,
+        tangent: Double,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) =
+        add(pathBuilder.splineToSplineHeading(pose, tangent), velConstraintOverride, accelConstraintOverride)
+
+    fun build(): Trajectory {
+        val path = pathBuilder.build()
+        return Trajectory(
+            object : PosePath {
+                override fun length() = path.length
+                override fun get(s: Double, n: Int): Transform2dDual<Arclength> {
+                    val pose = path[s, n]
+                    return pose.withTransform(poseMapper.map(pose.value()))
+                }
+            },
+            profile(
+                path, beginEndVel,
+                CompositeVelConstraint(velConstraints, path.offsets.drop(1)),
+                CompositeAccelConstraint(accelConstraints, path.offsets.drop(1)),
+                resolution,
+            ),
+            path.offsets
+        )
+    }
+}
+
+// TODO: safe trajectory builder

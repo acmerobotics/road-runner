@@ -67,15 +67,27 @@ class DualNum<Param> internal constructor(private val values: DoubleArray) {
     operator fun get(i: Int) = values[i]
     fun values() = values.toList()
 
-    fun addFirst(x: Double) = DualNum<Param>(
-        DoubleArray(size() + 1) {
-            if (it == 0) {
-                x
-            } else {
-                values[it - 1]
+    fun withFirst(x: Double) =
+        DualNum<Param>(
+            DoubleArray(size()) {
+                if (it == 0) {
+                    x
+                } else {
+                    values[it]
+                }
             }
-        }
-    )
+        )
+
+    fun addFront(x: Double) =
+        DualNum<Param>(
+            DoubleArray(size() + 1) {
+                if (it == 0) {
+                    x
+                } else {
+                    values[it - 1]
+                }
+            }
+        )
 
     fun drop(n: Int) = DualNum<Param>(DoubleArray(size() - n) { values[it + n] })
 

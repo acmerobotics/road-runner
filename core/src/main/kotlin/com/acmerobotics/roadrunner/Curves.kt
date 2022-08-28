@@ -314,8 +314,8 @@ data class SplineHeadingPath(
                 // s(t) = t * len
                 (DualNum.variable<Internal>(1.0, 3) * length).let { s ->
                     QuinticSpline1(
-                        begin.velocity().addFirst(0.0).reparam(s),
-                        end.velocity().addFirst(end.value() - begin.value()).reparam(s),
+                        begin.velocity().addFront(0.0).reparam(s),
+                        end.velocity().addFront(end.value() - begin.value()).reparam(s),
                     )
                 }
             }
@@ -385,6 +385,10 @@ data class CompositePosePath(
     @JvmField
     val offsets: List<Double> = paths.scan(0.0) { acc, path -> acc + path.length() },
 ) : PosePath {
+    init {
+        require(paths.size + 1 == offsets.size)
+    }
+
     @JvmField
     val length = offsets.last()
 

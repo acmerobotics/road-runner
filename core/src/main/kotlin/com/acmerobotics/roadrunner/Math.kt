@@ -28,6 +28,8 @@ fun clamp(x: Double, lo: Double, hi: Double): Double {
     return x
 }
 
+data class MinMax(@JvmField val min: Double, @JvmField val max: Double)
+
 /**
  * @usesMathJax
  *

@@ -34,8 +34,8 @@ class RamseteTest {
         val profile = TimeProfile(
             profile(
                 path, 0.0,
-                kinematics.WheelVelConstraintFun(10.0),
-                ProfileAccelConstraintFun(-20.0, 20.0),
+                kinematics.WheelVelConstraint(10.0),
+                ProfileAccelConstraint(-20.0, 20.0),
                 0.25,
             ).baseProfile
         )

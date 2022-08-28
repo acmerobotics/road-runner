@@ -65,8 +65,8 @@ data class MecanumKinematics @JvmOverloads constructor(
         t.transVel.x + t.transVel.y * lateralMultiplier + t.rotVel * trackWidth,
     )
 
-    inner class WheelVelConstraintFun(@JvmField val maxWheelVel: Double) : SimpleVelConstraintFun {
-        override fun maxRobotVel(robotPose: Transform2dDual<Arclength>): Double {
+    inner class WheelVelConstraint(@JvmField val maxWheelVel: Double) : VelConstraint {
+        override fun maxRobotVel(robotPose: Transform2dDual<Arclength>, path: PosePath, s: Double): Double {
             val txRobotWorld = robotPose.value().inverse()
             val robotVelWorld = robotPose.velocity().value()
             val robotVelRobot = txRobotWorld * robotVelWorld
@@ -119,8 +119,8 @@ data class TankKinematics(@JvmField val trackWidth: Double) {
     }
 
     // TODO: can probably be made generic, though lack of associated types may pose a difficulty
-    inner class WheelVelConstraintFun(@JvmField val maxWheelVel: Double) : SimpleVelConstraintFun {
-        override fun maxRobotVel(robotPose: Transform2dDual<Arclength>): Double {
+    inner class WheelVelConstraint(@JvmField val maxWheelVel: Double) : VelConstraint {
+        override fun maxRobotVel(robotPose: Transform2dDual<Arclength>, path: PosePath, s: Double): Double {
             val txRobotWorld = robotPose.value().inverse()
             val robotVelWorld = robotPose.velocity().value()
             val robotVelRobot = txRobotWorld * robotVelWorld

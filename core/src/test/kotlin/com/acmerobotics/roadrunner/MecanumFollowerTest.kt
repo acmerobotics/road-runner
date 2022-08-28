@@ -38,8 +38,8 @@ class MecanumFollowerTest {
                 path,
                 0.0,
                 // TODO: angular velocity constraint
-                kinematics.WheelVelConstraintFun(50.0),
-                ProfileAccelConstraintFun(-25.0, 25.0),
+                kinematics.WheelVelConstraint(50.0),
+                ProfileAccelConstraint(-25.0, 25.0),
                 0.25,
             ).baseProfile
         )
@@ -142,8 +142,8 @@ class MecanumFollowerTest {
                 path,
                 5.0,
                 // TODO: angular velocity constraint
-                kinematics.WheelVelConstraintFun(50.0),
-                ProfileAccelConstraintFun(-25.0, 25.0),
+                kinematics.WheelVelConstraint(50.0),
+                ProfileAccelConstraint(-25.0, 25.0),
                 0.25,
             ).baseProfile
 

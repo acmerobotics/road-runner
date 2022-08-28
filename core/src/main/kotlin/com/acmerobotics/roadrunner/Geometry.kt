@@ -16,6 +16,8 @@ import kotlin.math.tan
 data class Position2d(@JvmField val x: Double, @JvmField val y: Double) {
     operator fun plus(v: Vector2d) = Position2d(x + v.x, y + v.y)
     operator fun minus(p: Position2d) = Vector2d(x - p.x, y - p.y)
+
+    fun free() = Vector2d(x, y)
 }
 
 /**
@@ -90,6 +92,8 @@ data class Vector2dDual<Param>(@JvmField val x: DualNum<Param>, @JvmField val y:
 
     fun drop(n: Int) = Vector2dDual(x.drop(n), y.drop(n))
     fun value() = Vector2d(x.value(), y.value())
+
+    fun withVec(v: Vector2d) = Vector2dDual(x.withFirst(v.x), y.withFirst(v.y))
 }
 
 /**
@@ -169,6 +173,8 @@ data class Rotation2dDual<Param>(@JvmField val real: DualNum<Param>, @JvmField v
     // derivative of atan2 under unit norm assumption
     fun velocity() = real * imag.drop(1) - imag * real.drop(1)
     fun value() = Rotation2d(real.value(), imag.value())
+
+    fun withRot(r: Rotation2d) = Rotation2dDual(real.withFirst(r.real), imag.withFirst(r.imag))
 }
 
 /**
@@ -269,6 +275,8 @@ data class Transform2dDual<Param>(
 
     fun value() = Transform2d(trans.value(), rot.value())
     fun velocity() = Twist2dDual(trans.drop(1), rot.velocity())
+
+    fun withTransform(t: Transform2d) = Transform2dDual(trans.withVec(t.trans), rot.withRot(t.rot))
 }
 
 /**
