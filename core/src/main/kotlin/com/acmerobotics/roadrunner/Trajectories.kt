@@ -45,7 +45,7 @@ class TimeTrajectory(
 
     constructor(t: DisplacementTrajectory) : this(t.path, TimeProfile(t.profile))
 
-    operator fun get(t: Double): Transform2dDual<Time> {
+    operator fun get(t: Double): Pose2dDual<Time> {
         val s = profile[t]
         return path[s.value(), 3].reparam(s)
     }

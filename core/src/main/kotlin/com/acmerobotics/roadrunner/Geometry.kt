@@ -163,7 +163,7 @@ data class Rotation2dDual<Param>(@JvmField val real: DualNum<Param>, @JvmField v
         Rotation2dDual(real * r.real - imag * r.imag, real * r.imag + imag * r.real)
     operator fun times(r: Rotation2d) =
         Rotation2dDual(real * r.real - imag * r.imag, real * r.imag + imag * r.real)
-    operator fun times(t: Transform2d) = Transform2dDual(this * t.trans, this * t.rot)
+    operator fun times(t: Pose2d) = Pose2dDual(this * t.trans, this * t.rot)
 
     fun inverse() = Rotation2dDual(real, -imag)
 
@@ -182,19 +182,18 @@ data class Rotation2dDual<Param>(@JvmField val real: DualNum<Param>, @JvmField v
  *
  * 2D rigid transform comprised of [rot] followed by [trans].
  *
- * Transform names should take the form `txDestSource` to denote that the transform turns positions, vectors, twists,
- * etc. expressed in frame `Source` into frame `Dest`. This convention should extend to transformation (overloads of
- * [times]) inputs and outputs with the last word in a variable name indicating the frame the quantity is expressed in.
- * For example, the property `xDest = txDestSource * xSource` for all quantities `x` of any supported type.
+ * The pose `destPoseSource` denotes the transform from frame `Source` into frame `Dest`. It can be applied with
+ * `times()` to change the coordinates of `xSource` into `xDest` where `x` is a vector, twist, or even another pose:
+ * `xDest = destPoseSource * xSource`. The awkward names take some getting used to, but they avoid many routine errors.
  *
- * Transforms named `txWorldSource` for any frame `Source` are referred to as poses and are commonly abbreviated as
- * `sourcePose`.
+ * Transforms into the world frame are common enough to warrant a shorthand. The pose `worldPoseSource` can be shortened
+ * to `poseSource` for any frame `Source`.
  *
  * Advanced: Transforms in two dimensions comprise a Lie group referred to as SE(2). The terminology [exp] and [log]
  * comes from the Lie theory, and [this paper](https://arxiv.org/abs/1812.01537) gives a targeted exposition of the key
  * fundamentals.
  */
-data class Transform2d(
+data class Pose2d(
     @JvmField
     val trans: Vector2d,
     @JvmField
@@ -205,7 +204,7 @@ data class Transform2d(
 
     companion object {
         @JvmStatic
-        fun exp(incr: Twist2dIncrement): Transform2d {
+        fun exp(incr: Twist2dIncrement): Pose2d {
             val rotation = Rotation2d.exp(incr.rotIncr)
 
             val u = incr.rotIncr + epsCopySign(incr.rotIncr)
@@ -216,19 +215,19 @@ data class Transform2d(
                 (c * incr.transIncr.x + s * incr.transIncr.y) / u
             )
 
-            return Transform2d(translation, rotation)
+            return Pose2d(translation, rotation)
         }
     }
 
     operator fun plus(t: Twist2dIncrement) = this * exp(t)
-    fun minusExp(t: Transform2d) = t.inverse() * this
-    operator fun minus(t: Transform2d) = minusExp(t).log()
+    fun minusExp(t: Pose2d) = t.inverse() * this
+    operator fun minus(t: Pose2d) = minusExp(t).log()
 
-    operator fun times(t: Transform2d) = Transform2d(rot * t.trans + trans, rot * t.rot)
+    operator fun times(t: Pose2d) = Pose2d(rot * t.trans + trans, rot * t.rot)
     operator fun times(v: Vector2d) = rot * v + trans
     operator fun times(t: Twist2d) = Twist2d(rot * t.transVel, t.rotVel)
 
-    fun inverse() = Transform2d(rot.inverse() * -trans, rot.inverse())
+    fun inverse() = Pose2d(rot.inverse() * -trans, rot.inverse())
 
     fun log(): Twist2dIncrement {
         val theta = rot.log()
@@ -246,9 +245,9 @@ data class Transform2d(
 }
 
 /**
- * Dual version of [Transform2d].
+ * Dual version of [Pose2d].
  */
-data class Transform2dDual<Param>(
+data class Pose2dDual<Param>(
     @JvmField
     val trans: Vector2dDual<Param>,
     @JvmField
@@ -256,27 +255,27 @@ data class Transform2dDual<Param>(
 ) {
     companion object {
         @JvmStatic
-        fun <Param> constant(t: Transform2d, n: Int) =
-            Transform2dDual<Param>(Vector2dDual.constant(t.trans, n), Rotation2dDual.constant(t.rot, n))
+        fun <Param> constant(t: Pose2d, n: Int) =
+            Pose2dDual<Param>(Vector2dDual.constant(t.trans, n), Rotation2dDual.constant(t.rot, n))
     }
 
-    operator fun plus(t: Twist2dIncrement) = this * Transform2d.exp(t)
+    operator fun plus(t: Twist2dIncrement) = this * Pose2d.exp(t)
 
-    operator fun times(t: Transform2d) = Transform2dDual(rot * t.trans + trans, rot * t.rot)
-    operator fun times(t: Transform2dDual<Param>) = Transform2dDual(rot * t.trans + trans, rot * t.rot)
+    operator fun times(t: Pose2d) = Pose2dDual(rot * t.trans + trans, rot * t.rot)
+    operator fun times(t: Pose2dDual<Param>) = Pose2dDual(rot * t.trans + trans, rot * t.rot)
     operator fun times(t: Twist2dDual<Param>) = Twist2dDual(rot * t.transVel, t.rotVel)
 
     fun inverse() = rot.inverse().let {
-        Transform2dDual(it * -trans, it)
+        Pose2dDual(it * -trans, it)
     }
 
     fun <NewParam> reparam(oldParam: DualNum<NewParam>) =
-        Transform2dDual(trans.reparam(oldParam), rot.reparam(oldParam))
+        Pose2dDual(trans.reparam(oldParam), rot.reparam(oldParam))
 
-    fun value() = Transform2d(trans.value(), rot.value())
+    fun value() = Pose2d(trans.value(), rot.value())
     fun velocity() = Twist2dDual(trans.drop(1), rot.velocity())
 
-    fun withTransform(t: Transform2d) = Transform2dDual(trans.withVec(t.trans), rot.withRot(t.rot))
+    fun withTransform(t: Pose2d) = Pose2dDual(trans.withVec(t.trans), rot.withRot(t.rot))
 }
 
 /**

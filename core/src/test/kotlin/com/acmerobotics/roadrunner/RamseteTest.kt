@@ -42,17 +42,17 @@ class RamseteTest {
 
         val controller = RamseteController(trackWidth, bBar = 2.0)
 
-        // var pose = Transform2(
+        // var pose = (
         //     Vector2(-1.0, -1.0),
         //     PI / 8
         // )
 
-        var pose = Transform2d(
+        var pose = Pose2d(
             Vector2d(-5.0, -10.0),
             0.0
         )
 
-        val targetPoses = mutableListOf<Transform2d>()
+        val targetPoses = mutableListOf<Pose2d>()
         val poses = mutableListOf(pose)
 
         val dt = 0.01

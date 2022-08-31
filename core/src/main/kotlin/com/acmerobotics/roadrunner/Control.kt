@@ -64,12 +64,12 @@ class HolonomicController(
      * @return velocity command in the actual frame
      */
     fun compute(
-        targetPose: Transform2dDual<Time>,
-        actualPose: Transform2d,
+        targetPose: Pose2dDual<Time>,
+        actualPose: Pose2d,
         actualVelActual: Twist2d,
     ): Twist2dDual<Time> {
         val targetVelWorld = targetPose.velocity()
-        val txActualWorld = Transform2dDual.constant<Time>(actualPose.inverse(), 2)
+        val txActualWorld = Pose2dDual.constant<Time>(actualPose.inverse(), 2)
         val targetVelActual = txActualWorld * targetVelWorld
 
         val velErrorActual = targetVelActual.value() - actualVelActual
@@ -130,8 +130,8 @@ class RamseteController @JvmOverloads constructor(
      */
     fun compute(
         s: DualNum<Time>,
-        targetPose: Transform2dDual<Arclength>,
-        actualPose: Transform2d,
+        targetPose: Pose2dDual<Arclength>,
+        actualPose: Pose2d,
     ): Twist2dDual<Time> {
         val vRef = s[1]
         val omegaRef = targetPose.reparam(s).rot.velocity()[0]

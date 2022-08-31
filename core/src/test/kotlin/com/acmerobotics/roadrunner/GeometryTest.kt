@@ -32,7 +32,7 @@ class GeometryTest {
                 ),
                 Random.Default.nextDouble(),
             )
-            val incrActual = Transform2d.exp(incrExp).log()
+            val incrActual = Pose2d.exp(incrExp).log()
             assertEquals(incrExp.transIncr.x, incrActual.transIncr.x, 1e-6)
             assertEquals(incrExp.transIncr.y, incrActual.transIncr.y, 1e-6)
             assertEquals(incrExp.rotIncr, incrActual.rotIncr, 1e-6)
@@ -49,7 +49,7 @@ class GeometryTest {
                 ),
                 Random.Default.nextDouble(),
             )
-            val incrActual = Transform2d.exp(incrExp).inverse().inverse().log()
+            val incrActual = Pose2d.exp(incrExp).inverse().inverse().log()
             assertEquals(incrExp.transIncr.x, incrActual.transIncr.x, 1e-6)
             assertEquals(incrExp.transIncr.y, incrActual.transIncr.y, 1e-6)
             assertEquals(incrExp.rotIncr, incrActual.rotIncr, 1e-6)
@@ -58,8 +58,8 @@ class GeometryTest {
 
     @Test
     fun testLocalErrorExample() {
-        val target = Transform2d(Vector2d(1.0, 2.0), Rotation2d.exp(0.0))
-        val actual = Transform2d(Vector2d(1.0, 1.0), Rotation2d.exp(PI / 2))
+        val target = Pose2d(Vector2d(1.0, 2.0), Rotation2d.exp(0.0))
+        val actual = Pose2d(Vector2d(1.0, 1.0), Rotation2d.exp(PI / 2))
         val e = target.minusExp(actual)
 
         assertEquals(1.0, e.trans.x, 1e-6)

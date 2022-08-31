@@ -32,7 +32,7 @@ class Demo {
         )
 
         var s = 0.0
-        var pose = Transform2dDual<Time>(
+        var pose = Pose2dDual<Time>(
             Vector2dDual(
                 DualNum.constant(5.0, 3),
                 DualNum.constant(5.0, 3),
@@ -40,8 +40,8 @@ class Demo {
             Rotation2dDual.exp(DualNum.constant(0.0, 3)),
         )
 
-        val measured = mutableListOf<Transform2d>()
-        val targets = mutableListOf<Transform2d>()
+        val measured = mutableListOf<Pose2d>()
+        val targets = mutableListOf<Pose2d>()
 
         while (true) {
             s = project(path, pose.trans.value().bind(), s)

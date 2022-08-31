@@ -341,7 +341,7 @@ data class SplineHeadingPath(
  * Pose path \((x(s), y(s), \theta(s))\)
  */
 interface PosePath {
-    operator fun get(s: Double, n: Int): Transform2dDual<Arclength>
+    operator fun get(s: Double, n: Int): Pose2dDual<Arclength>
 
     fun length(): Double
 
@@ -357,7 +357,7 @@ data class TangentPath(
 ) : PosePath {
     // NOTE: n+1 guarantees enough derivatives for tangent
     override operator fun get(s: Double, n: Int) = path[s, n + 1].let {
-        Transform2dDual(it.free(), it.tangent() + offset)
+        Pose2dDual(it.free(), it.tangent() + offset)
     }
 
     override fun length() = path.length()
@@ -374,7 +374,7 @@ data class HeadingPosePath(
     }
 
     override fun get(s: Double, n: Int) =
-        Transform2dDual(posPath[s, n].free(), headingPath[s, n])
+        Pose2dDual(posPath[s, n].free(), headingPath[s, n])
 
     override fun length() = posPath.length()
 }
@@ -392,9 +392,9 @@ data class CompositePosePath(
     @JvmField
     val length = offsets.last()
 
-    override fun get(s: Double, n: Int): Transform2dDual<Arclength> {
+    override fun get(s: Double, n: Int): Pose2dDual<Arclength> {
         if (s > length) {
-            return Transform2dDual.constant(paths.last().end(1).value(), n)
+            return Pose2dDual.constant(paths.last().end(1).value(), n)
         }
 
         for ((offset, path) in offsets.zip(paths).reversed()) {
@@ -403,7 +403,7 @@ data class CompositePosePath(
             }
         }
 
-        return Transform2dDual.constant(paths.first()[0.0, 1].value(), n)
+        return Pose2dDual.constant(paths.first()[0.0, 1].value(), n)
     }
 
     override fun length() = length

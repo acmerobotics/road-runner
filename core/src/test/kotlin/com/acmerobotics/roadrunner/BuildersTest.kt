@@ -333,7 +333,7 @@ fun chartSpline(q: QuinticSpline1): XYChart {
             @Test
             fun testPathBuilderForward() {
                 val posePath = PathBuilder(
-                    Transform2d(
+                    Pose2d(
                         Vector2d(0.0, 0.0),
                         Rotation2d.exp(0.0),
                     ),

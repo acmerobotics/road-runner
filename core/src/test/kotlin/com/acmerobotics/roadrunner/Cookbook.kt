@@ -144,7 +144,7 @@ fun persistentBuilders() {
 fun setWheelPowers(powers: MecanumKinematics.WheelVelocities<Time>) {
 }
 
-fun fieldCentric(kinematics: MecanumKinematics, poseEstimate: Transform2d, leftStick: Vector2d, rightStick: Vector2d) {
+fun fieldCentric(kinematics: MecanumKinematics, poseEstimate: Pose2d, leftStick: Vector2d, rightStick: Vector2d) {
     setWheelPowers(
         kinematics.inverse(
             Twist2dDual.constant(
@@ -170,7 +170,7 @@ fun setWheelVelocities(vels: MecanumKinematics.WheelVelocities<Time>) {
 val TRANS_GAIN = 10.0
 val ROT_GAIN = 0.1
 
-fun goToPoint(kinematics: MecanumKinematics, initialPoseEstimate: Transform2d, targetPose: Transform2d) {
+fun goToPoint(kinematics: MecanumKinematics, initialPoseEstimate: Pose2d, targetPose: Pose2d) {
     var poseEstimate = initialPoseEstimate
     // TODO: termination criterion
     while (true) {
@@ -199,7 +199,7 @@ fun clock(): Double {
 
 fun turnWithProfile(
     kinematics: MecanumKinematics,
-    initialPoseEstimate: Transform2d,
+    initialPoseEstimate: Pose2d,
     maxAngVel: Double,
     maxAbsAngAccel: Double,
     angle: Double

@@ -380,12 +380,12 @@ class PathBuilder private constructor(
     private val posPathBuilder: PositionPathBuilder,
     private val posePathBuilder: (CompositePositionPath<Arclength>, Int) -> PosePathBuilder
 ) {
-    constructor(beginPose: Transform2d, beginTangent: Rotation2d, eps: Double) :
+    constructor(beginPose: Pose2d, beginTangent: Rotation2d, eps: Double) :
         this(
             PositionPathBuilder(beginPose.trans.bind(), beginTangent, eps),
             { path, _ -> PosePathBuilder(path, beginPose.rot) }
         )
-    constructor(beginPose: Transform2d, beginTangent: Double, eps: Double) :
+    constructor(beginPose: Pose2d, beginTangent: Double, eps: Double) :
         this(beginPose, Rotation2d.exp(beginTangent), eps)
 
     private fun addHeadingSegment(f: PosePathBuilder.(Double) -> PosePathBuilder): (
@@ -443,15 +443,15 @@ class PathBuilder private constructor(
     fun splineToConstantHeading(pos: Position2d, tangent: Double) =
         splineToConstantHeading(pos, Rotation2d.exp(tangent))
 
-    fun splineToLinearHeading(pose: Transform2d, tangent: Rotation2d) = PathBuilder(
+    fun splineToLinearHeading(pose: Pose2d, tangent: Rotation2d) = PathBuilder(
         posPathBuilder.splineTo(pose.trans.bind(), tangent), addHeadingSegment { this.linearUntil(it, pose.rot) }
     )
-    fun splineToLinearHeading(pose: Transform2d, tangent: Double) = splineToLinearHeading(pose, Rotation2d.exp(tangent))
+    fun splineToLinearHeading(pose: Pose2d, tangent: Double) = splineToLinearHeading(pose, Rotation2d.exp(tangent))
 
-    fun splineToSplineHeading(pose: Transform2d, tangent: Rotation2d) = PathBuilder(
+    fun splineToSplineHeading(pose: Pose2d, tangent: Rotation2d) = PathBuilder(
         posPathBuilder.splineTo(pose.trans.bind(), tangent), addHeadingSegment { this.splineUntil(it, pose.rot) }
     )
-    fun splineToSplineHeading(pose: Transform2d, tangent: Double) = splineToSplineHeading(pose, Rotation2d.exp(tangent))
+    fun splineToSplineHeading(pose: Pose2d, tangent: Double) = splineToSplineHeading(pose, Rotation2d.exp(tangent))
 
     fun build(): CompositePosePath {
         val posPath = posPathBuilder.build()
@@ -460,9 +460,9 @@ class PathBuilder private constructor(
 }
 
 class SafePathBuilder internal constructor(private val pathBuilder: PathBuilder) {
-    constructor(beginPose: Transform2d, beginTangent: Rotation2d, eps: Double) :
+    constructor(beginPose: Pose2d, beginTangent: Rotation2d, eps: Double) :
         this(PathBuilder(beginPose, beginTangent, eps))
-    constructor(beginPose: Transform2d, beginTangent: Double, eps: Double) :
+    constructor(beginPose: Pose2d, beginTangent: Double, eps: Double) :
         this(beginPose, Rotation2d.exp(beginTangent), eps)
 
     fun forward(dist: Double) = TangentPathBuilder(pathBuilder.forward(dist))
@@ -498,12 +498,12 @@ class SafePathBuilder internal constructor(private val pathBuilder: PathBuilder)
         ConstantPathBuilder(pathBuilder.splineToConstantHeading(pos, tangent))
     fun splineToConstantHeading(pos: Position2d, tangent: Double) =
         splineToConstantHeading(pos, Rotation2d.exp(tangent))
-    fun splineToLinearHeading(pose: Transform2d, tangent: Rotation2d) =
+    fun splineToLinearHeading(pose: Pose2d, tangent: Rotation2d) =
         RestrictedPathBuilder(pathBuilder.splineToLinearHeading(pose, tangent))
-    fun splineToLinearHeading(pose: Transform2d, tangent: Double) = splineToLinearHeading(pose, Rotation2d.exp(tangent))
-    fun splineToSplineHeading(pose: Transform2d, tangent: Rotation2d) =
+    fun splineToLinearHeading(pose: Pose2d, tangent: Double) = splineToLinearHeading(pose, Rotation2d.exp(tangent))
+    fun splineToSplineHeading(pose: Pose2d, tangent: Rotation2d) =
         SafePathBuilder(pathBuilder.splineToSplineHeading(pose, tangent))
-    fun splineToSplineHeading(pose: Transform2d, tangent: Double) = splineToSplineHeading(pose, Rotation2d.exp(tangent))
+    fun splineToSplineHeading(pose: Pose2d, tangent: Double) = splineToSplineHeading(pose, Rotation2d.exp(tangent))
 
     fun build() = pathBuilder.build()
 }
@@ -526,9 +526,9 @@ class TangentPathBuilder internal constructor(private val pathBuilder: PathBuild
 
     fun splineTo(pos: Position2d, tangent: Rotation2d) = TangentPathBuilder(pathBuilder.splineTo(pos, tangent))
     fun splineTo(pos: Position2d, tangent: Double) = splineTo(pos, Rotation2d.exp(tangent))
-    fun splineToSplineHeading(pose: Transform2d, tangent: Rotation2d) =
+    fun splineToSplineHeading(pose: Pose2d, tangent: Rotation2d) =
         SafePathBuilder(pathBuilder.splineToSplineHeading(pose, tangent))
-    fun splineToSplineHeading(pose: Transform2d, tangent: Double) = splineToSplineHeading(pose, Rotation2d.exp(tangent))
+    fun splineToSplineHeading(pose: Pose2d, tangent: Double) = splineToSplineHeading(pose, Rotation2d.exp(tangent))
 
     fun build() = pathBuilder.build()
 }
@@ -553,9 +553,9 @@ class ConstantPathBuilder internal constructor(private val pathBuilder: PathBuil
         ConstantPathBuilder(pathBuilder.splineToConstantHeading(pos, tangent))
     fun splineToConstantHeading(pos: Position2d, tangent: Double) =
         splineToConstantHeading(pos, Rotation2d.exp(tangent))
-    fun splineToSplineHeading(pose: Transform2d, tangent: Rotation2d) =
+    fun splineToSplineHeading(pose: Pose2d, tangent: Rotation2d) =
         SafePathBuilder(pathBuilder.splineToSplineHeading(pose, tangent))
-    fun splineToSplineHeading(pose: Transform2d, tangent: Double) = splineToSplineHeading(pose, Rotation2d.exp(tangent))
+    fun splineToSplineHeading(pose: Pose2d, tangent: Double) = splineToSplineHeading(pose, Rotation2d.exp(tangent))
 
     fun build() = pathBuilder.build()
 }
@@ -573,15 +573,15 @@ class RestrictedPathBuilder internal constructor(private val pathBuilder: PathBu
         SafePathBuilder(pathBuilder.lineToYSplineHeading(posY, heading))
     fun lineToYSplineHeading(posY: Double, heading: Double) = lineToYSplineHeading(posY, Rotation2d.exp(heading))
 
-    fun splineToSplineHeading(pose: Transform2d, tangent: Rotation2d) =
+    fun splineToSplineHeading(pose: Pose2d, tangent: Rotation2d) =
         SafePathBuilder(pathBuilder.splineToSplineHeading(pose, tangent))
-    fun splineToSplineHeading(pose: Transform2d, tangent: Double) = splineToSplineHeading(pose, Rotation2d.exp(tangent))
+    fun splineToSplineHeading(pose: Pose2d, tangent: Double) = splineToSplineHeading(pose, Rotation2d.exp(tangent))
 
     fun build() = pathBuilder.build()
 }
 
 fun interface PoseMapper {
-    fun map(pose: Transform2d): Transform2d
+    fun map(pose: Pose2d): Pose2d
 }
 
 class TrajectoryBuilder private constructor(
@@ -596,7 +596,7 @@ class TrajectoryBuilder private constructor(
 ) {
     @JvmOverloads
     constructor(
-        beginPose: Transform2d,
+        beginPose: Pose2d,
         beginTangent: Rotation2d,
         eps: Double,
         beginEndVel: Double,
@@ -789,14 +789,14 @@ class TrajectoryBuilder private constructor(
         add(pathBuilder.splineToConstantHeading(pos, tangent), velConstraintOverride, accelConstraintOverride)
 
     fun splineToLinearHeading(
-        pose: Transform2d,
+        pose: Pose2d,
         tangent: Rotation2d,
         velConstraintOverride: VelConstraint? = null,
         accelConstraintOverride: AccelConstraint? = null
     ) =
         add(pathBuilder.splineToLinearHeading(pose, tangent), velConstraintOverride, accelConstraintOverride)
     fun splineToLinearHeading(
-        pose: Transform2d,
+        pose: Pose2d,
         tangent: Double,
         velConstraintOverride: VelConstraint? = null,
         accelConstraintOverride: AccelConstraint? = null
@@ -804,14 +804,14 @@ class TrajectoryBuilder private constructor(
         add(pathBuilder.splineToLinearHeading(pose, tangent), velConstraintOverride, accelConstraintOverride)
 
     fun splineToSplineHeading(
-        pose: Transform2d,
+        pose: Pose2d,
         tangent: Rotation2d,
         velConstraintOverride: VelConstraint? = null,
         accelConstraintOverride: AccelConstraint? = null
     ) =
         add(pathBuilder.splineToSplineHeading(pose, tangent), velConstraintOverride, accelConstraintOverride)
     fun splineToSplineHeading(
-        pose: Transform2d,
+        pose: Pose2d,
         tangent: Double,
         velConstraintOverride: VelConstraint? = null,
         accelConstraintOverride: AccelConstraint? = null
@@ -823,7 +823,7 @@ class TrajectoryBuilder private constructor(
         return Trajectory(
             object : PosePath {
                 override fun length() = path.length
-                override fun get(s: Double, n: Int): Transform2dDual<Arclength> {
+                override fun get(s: Double, n: Int): Pose2dDual<Arclength> {
                     val pose = path[s, n]
                     return pose.withTransform(poseMapper.map(pose.value()))
                 }
@@ -842,7 +842,7 @@ class TrajectoryBuilder private constructor(
 class SafeTrajectoryBuilder internal constructor(private val trajBuilder: TrajectoryBuilder) {
     @JvmOverloads
     constructor(
-        beginPose: Transform2d,
+        beginPose: Pose2d,
         beginTangent: Rotation2d,
         eps: Double,
         beginEndVel: Double,
@@ -1060,7 +1060,7 @@ class SafeTrajectoryBuilder internal constructor(private val trajBuilder: Trajec
         splineToConstantHeading(pos, Rotation2d.exp(tangent), velConstraintOverride, accelConstraintOverride)
     @JvmOverloads
     fun splineToLinearHeading(
-        pose: Transform2d,
+        pose: Pose2d,
         tangent: Rotation2d,
         velConstraintOverride: VelConstraint? = null,
         accelConstraintOverride: AccelConstraint? = null
@@ -1072,14 +1072,14 @@ class SafeTrajectoryBuilder internal constructor(private val trajBuilder: Trajec
         )
     @JvmOverloads
     fun splineToLinearHeading(
-        pose: Transform2d,
+        pose: Pose2d,
         tangent: Double,
         velConstraintOverride: VelConstraint? = null,
         accelConstraintOverride: AccelConstraint? = null
     ) = splineToLinearHeading(pose, Rotation2d.exp(tangent), velConstraintOverride, accelConstraintOverride)
     @JvmOverloads
     fun splineToSplineHeading(
-        pose: Transform2d,
+        pose: Pose2d,
         tangent: Rotation2d,
         velConstraintOverride: VelConstraint? = null,
         accelConstraintOverride: AccelConstraint? = null
@@ -1091,7 +1091,7 @@ class SafeTrajectoryBuilder internal constructor(private val trajBuilder: Trajec
         )
     @JvmOverloads
     fun splineToSplineHeading(
-        pose: Transform2d,
+        pose: Pose2d,
         tangent: Double,
         velConstraintOverride: VelConstraint? = null,
         accelConstraintOverride: AccelConstraint? = null
@@ -1195,7 +1195,7 @@ class TangentTrajectoryBuilder internal constructor(private val trajBuilder: Tra
     ) = splineTo(pos, Rotation2d.exp(tangent), velConstraintOverride, accelConstraintOverride)
     @JvmOverloads
     fun splineToSplineHeading(
-        pose: Transform2d,
+        pose: Pose2d,
         tangent: Rotation2d,
         velConstraintOverride: VelConstraint? = null,
         accelConstraintOverride: AccelConstraint? = null
@@ -1207,7 +1207,7 @@ class TangentTrajectoryBuilder internal constructor(private val trajBuilder: Tra
         )
     @JvmOverloads
     fun splineToSplineHeading(
-        pose: Transform2d,
+        pose: Pose2d,
         tangent: Double,
         velConstraintOverride: VelConstraint? = null,
         accelConstraintOverride: AccelConstraint? = null
@@ -1329,7 +1329,7 @@ class ConstantTrajectoryBuilder internal constructor(private val trajBuilder: Tr
         splineToConstantHeading(pos, Rotation2d.exp(tangent), velConstraintOverride, accelConstraintOverride)
     @JvmOverloads
     fun splineToSplineHeading(
-        pose: Transform2d,
+        pose: Pose2d,
         tangent: Rotation2d,
         velConstraintOverride: VelConstraint? = null,
         accelConstraintOverride: AccelConstraint? = null
@@ -1341,7 +1341,7 @@ class ConstantTrajectoryBuilder internal constructor(private val trajBuilder: Tr
         )
     @JvmOverloads
     fun splineToSplineHeading(
-        pose: Transform2d,
+        pose: Pose2d,
         tangent: Double,
         velConstraintOverride: VelConstraint? = null,
         accelConstraintOverride: AccelConstraint? = null
@@ -1413,7 +1413,7 @@ class RestrictedTrajectoryBuilder internal constructor(private val trajBuilder: 
 
     @JvmOverloads
     fun splineToSplineHeading(
-        pose: Transform2d,
+        pose: Pose2d,
         tangent: Rotation2d,
         velConstraintOverride: VelConstraint? = null,
         accelConstraintOverride: AccelConstraint? = null
@@ -1425,7 +1425,7 @@ class RestrictedTrajectoryBuilder internal constructor(private val trajBuilder: 
         )
     @JvmOverloads
     fun splineToSplineHeading(
-        pose: Transform2d,
+        pose: Pose2d,
         tangent: Double,
         velConstraintOverride: VelConstraint? = null,
         accelConstraintOverride: AccelConstraint? = null

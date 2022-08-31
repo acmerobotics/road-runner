@@ -506,18 +506,18 @@ fun merge(p1: DisplacementProfile, p2: DisplacementProfile): DisplacementProfile
 }
 
 fun interface VelConstraint {
-    fun maxRobotVel(robotPose: Transform2dDual<Arclength>, path: PosePath, s: Double): Double
+    fun maxRobotVel(robotPose: Pose2dDual<Arclength>, path: PosePath, s: Double): Double
 }
 
 fun interface AccelConstraint {
-    fun minMaxProfileAccel(robotPose: Transform2dDual<Arclength>, path: PosePath, s: Double): MinMax
+    fun minMaxProfileAccel(robotPose: Pose2dDual<Arclength>, path: PosePath, s: Double): MinMax
 }
 
 class MinVelConstraint(
     @JvmField
     val constraints: List<VelConstraint>,
 ) : VelConstraint {
-    override fun maxRobotVel(robotPose: Transform2dDual<Arclength>, path: PosePath, s: Double) =
+    override fun maxRobotVel(robotPose: Pose2dDual<Arclength>, path: PosePath, s: Double) =
         constraints.minOf { it.maxRobotVel(robotPose, path, s) }
 }
 
@@ -529,14 +529,14 @@ class ProfileAccelConstraint(
 ) : AccelConstraint {
     private val minMax = MinMax(minAccel, maxAccel)
 
-    override fun minMaxProfileAccel(robotPose: Transform2dDual<Arclength>, path: PosePath, s: Double) = minMax
+    override fun minMaxProfileAccel(robotPose: Pose2dDual<Arclength>, path: PosePath, s: Double) = minMax
 }
 
 class AngularVelConstraint(
     @JvmField
     val maxAngVel: Double,
 ) : VelConstraint {
-    override fun maxRobotVel(robotPose: Transform2dDual<Arclength>, path: PosePath, s: Double) =
+    override fun maxRobotVel(robotPose: Pose2dDual<Arclength>, path: PosePath, s: Double) =
         maxAngVel / robotPose.rot.velocity().value()
 }
 
@@ -551,7 +551,7 @@ class CompositeVelConstraint(
         // TODO: require ordering?
     }
 
-    override fun maxRobotVel(robotPose: Transform2dDual<Arclength>, path: PosePath, s: Double): Double {
+    override fun maxRobotVel(robotPose: Pose2dDual<Arclength>, path: PosePath, s: Double): Double {
         for ((offset, constraint) in partitions.zip(constraints.drop(1)).reversed()) {
             if (s >= offset) {
                 return constraint.maxRobotVel(robotPose, path, s)
@@ -573,7 +573,7 @@ class CompositeAccelConstraint(
         // TODO: require ordering?
     }
 
-    override fun minMaxProfileAccel(robotPose: Transform2dDual<Arclength>, path: PosePath, s: Double): MinMax {
+    override fun minMaxProfileAccel(robotPose: Pose2dDual<Arclength>, path: PosePath, s: Double): MinMax {
         for ((offset, constraint) in partitions.zip(constraints.drop(1)).reversed()) {
             if (s >= offset) {
                 return constraint.minMaxProfileAccel(robotPose, path, s)

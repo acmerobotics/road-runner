@@ -48,7 +48,7 @@ class MecanumFollowerTest {
 
         val ff = MotorFeedforward(0.0, 1 / 60.0, 0.0)
 
-        var poseEstimate = Transform2d(
+        var poseEstimate = Pose2d(
             Vector2d(0.0, 0.0),
             Rotation2d.exp(0.0),
         )
@@ -152,7 +152,7 @@ class MecanumFollowerTest {
         val ff = MotorFeedforward(0.0, 1 / 60.0, 0.0)
 
         var poseEstimate =
-            Transform2d(
+            Pose2d(
                 Vector2d(1.0, 0.0),
                 Rotation2d.exp(0.0),
             )
