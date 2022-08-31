@@ -11,12 +11,12 @@ class RamseteTest {
     fun testRamsete() {
         val path = TangentPath(
             PositionPathBuilder(
-                Position2d(0.0, 0.0),
+                Vector2d(0.0, 0.0),
                 0.0,
                 1e-6
             )
                 .splineTo(
-                    Position2d(30.0, 30.0),
+                    Vector2d(30.0, 30.0),
                     PI / 4
                 )
                 .lineToY(60.0)

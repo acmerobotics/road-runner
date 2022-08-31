@@ -11,41 +11,6 @@ import kotlin.math.tan
 /**
  * @usesMathJax
  *
- * Position \((x, y)\)
- */
-data class Position2d(@JvmField val x: Double, @JvmField val y: Double) {
-    operator fun plus(v: Vector2d) = Position2d(x + v.x, y + v.y)
-    operator fun minus(p: Position2d) = Vector2d(x - p.x, y - p.y)
-
-    fun free() = Vector2d(x, y)
-}
-
-/**
- * Dual version of [Position2d].
- */
-data class Position2dDual<Param>(@JvmField val x: DualNum<Param>, @JvmField val y: DualNum<Param>) {
-    companion object {
-        @JvmStatic
-        fun <Param> constant(p: Position2d, n: Int) = Position2dDual<Param>(
-            DualNum.constant(p.x, n), DualNum.constant(p.y, n)
-        )
-    }
-
-    operator fun minus(p: Position2dDual<Param>) = Vector2dDual(x - p.x, y - p.y)
-
-    fun free() = Vector2dDual(x, y)
-
-    fun <NewParam> reparam(oldParam: DualNum<NewParam>) = Position2dDual(x.reparam(oldParam), y.reparam(oldParam))
-
-    fun value() = Position2d(x.value(), y.value())
-    fun tangentVec() = Vector2dDual(x.drop(1), y.drop(1))
-}
-
-fun Position2dDual<Arclength>.tangent() = Rotation2dDual(x.drop(1), y.drop(1))
-
-/**
- * @usesMathJax
- *
  * Vector \((x, y)\)
  */
 data class Vector2d(@JvmField val x: Double, @JvmField val y: Double) {
@@ -60,7 +25,8 @@ data class Vector2d(@JvmField val x: Double, @JvmField val y: Double) {
     fun sqrNorm() = this dot this
     fun norm() = sqrt(sqrNorm())
 
-    fun bind() = Position2d(x, y)
+    // precondition: this is normalized
+    fun angleCast() = Rotation2d(x, y)
 }
 
 /**
@@ -75,7 +41,6 @@ data class Vector2dDual<Param>(@JvmField val x: DualNum<Param>, @JvmField val y:
 
     operator fun plus(v: Vector2d) = Vector2dDual(x + v.x, y + v.y)
     operator fun plus(v: Vector2dDual<Param>) = Vector2dDual(x + v.x, y + v.y)
-    operator fun plus(p: Position2d) = Position2dDual(x + p.x, y + p.y)
     operator fun minus(v: Vector2dDual<Param>) = Vector2dDual(x - v.x, y - v.y)
     operator fun unaryMinus() = Vector2dDual(-x, -y)
 
@@ -85,13 +50,16 @@ data class Vector2dDual<Param>(@JvmField val x: DualNum<Param>, @JvmField val y:
     fun sqrNorm() = this dot this
     fun norm() = sqrNorm().sqrt()
 
-    fun bind() = Position2dDual(x, y)
+    fun bind() = Vector2dDual(x, y)
 
     fun <NewParam> reparam(oldParam: DualNum<NewParam>) =
         Vector2dDual(x.reparam(oldParam), y.reparam(oldParam))
 
     fun drop(n: Int) = Vector2dDual(x.drop(n), y.drop(n))
     fun value() = Vector2d(x.value(), y.value())
+
+    // precondition: this is normalized
+    fun angleCast() = Rotation2dDual(x, y)
 
     fun withVec(v: Vector2d) = Vector2dDual(x.withFirst(v.x), y.withFirst(v.y))
 }
@@ -207,7 +175,7 @@ data class Pose2d(
         fun exp(incr: Twist2dIncrement): Pose2d {
             val rotation = Rotation2d.exp(incr.rotIncr)
 
-            val u = incr.rotIncr + epsCopySign(incr.rotIncr)
+            val u = incr.rotIncr + snz(incr.rotIncr)
             val c = 1 - cos(u)
             val s = sin(u)
             val translation = Vector2d(
@@ -232,7 +200,7 @@ data class Pose2d(
     fun log(): Twist2dIncrement {
         val theta = rot.log()
 
-        val halfu = 0.5 * theta + epsCopySign(theta)
+        val halfu = 0.5 * theta + snz(theta)
         val v = halfu / tan(halfu)
         return Twist2dIncrement(
             Vector2d(

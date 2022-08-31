@@ -17,16 +17,16 @@ class MecanumFollowerTest {
 
         val path = TangentPath(
             PositionPathBuilder(
-                Position2d(0.0, 0.0),
+                Vector2d(0.0, 0.0),
                 Rotation2d.exp(0.0),
                 1e-6,
             )
                 .splineTo(
-                    Position2d(15.0, 15.0),
+                    Vector2d(15.0, 15.0),
                     Rotation2d.exp(PI),
                 )
                 .splineTo(
-                    Position2d(5.0, 35.0),
+                    Vector2d(5.0, 35.0),
                     Rotation2d.exp(PI / 3),
                 )
                 .build(),
@@ -121,16 +121,16 @@ class MecanumFollowerTest {
 
         val path = TangentPath(
             PositionPathBuilder(
-                Position2d(0.0, 0.0),
+                Vector2d(0.0, 0.0),
                 Rotation2d.exp(0.0),
                 1e-6,
             )
                 .splineTo(
-                    Position2d(15.0, 15.0),
+                    Vector2d(15.0, 15.0),
                     Rotation2d.exp(PI),
                 )
                 .splineTo(
-                    Position2d(5.0, 35.0),
+                    Vector2d(5.0, 35.0),
                     Rotation2d.exp(PI / 3),
                 )
                 .build(),
@@ -173,7 +173,7 @@ class MecanumFollowerTest {
                 break
             }
 
-            s = project(path, poseEstimate.trans.bind(), s)
+            s = project(path, poseEstimate.trans, s)
             val targetPose = path[s, 3]
 
             println(s)

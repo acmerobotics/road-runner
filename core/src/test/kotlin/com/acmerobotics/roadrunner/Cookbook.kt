@@ -19,16 +19,16 @@ fun isFollowing(): Boolean {
 
 fun main() {
     val posPath = PositionPathBuilder(
-        Position2d(0.0, 0.0),
+        Vector2d(0.0, 0.0),
         Rotation2d.exp(0.0),
         1e-6,
     )
         .splineTo(
-            Position2d(15.0, 15.0),
+            Vector2d(15.0, 15.0),
             Rotation2d.exp(PI),
         )
         .splineTo(
-            Position2d(5.0, 35.0),
+            Vector2d(5.0, 35.0),
             Rotation2d.exp(PI / 3),
         )
         .build()
@@ -88,25 +88,25 @@ fun main() {
 // current TS impl is only magically exception safe
 fun persistentBuilders() {
     val builder = PositionPathBuilder(
-        Position2d(0.0, 0.0),
+        Vector2d(0.0, 0.0),
         Rotation2d.exp(0.0),
         1e-6,
     )
         .splineTo(
-            Position2d(15.0, 15.0),
+            Vector2d(15.0, 15.0),
             Rotation2d.exp(PI),
         )
 
     val posPath1 = builder
         .splineTo(
-            Position2d(5.0, 35.0),
+            Vector2d(5.0, 35.0),
             Rotation2d.exp(PI / 3),
         )
         .build()
 
     val posPath2 = builder
         .splineTo(
-            Position2d(5.0, 25.0),
+            Vector2d(5.0, 25.0),
             Rotation2d.exp(PI / 3),
         )
         .build()

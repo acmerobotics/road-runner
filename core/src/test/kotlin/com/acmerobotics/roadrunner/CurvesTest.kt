@@ -14,12 +14,12 @@ import kotlin.test.assertEquals
 
 infix fun Vector2d.det(other: Vector2d) = x * other.y - y * other.x
 
-fun Position2d.free() = Vector2d(x, y)
+fun Vector2d.free() = Vector2d(x, y)
 
 private fun approxLength(
-    p1: Position2d,
-    p2: Position2d,
-    p3: Position2d
+    p1: Vector2d,
+    p2: Vector2d,
+    p3: Vector2d
 ): Double {
     val chord = (p3 - p1).norm()
 
@@ -37,7 +37,7 @@ private fun approxLength(
         val y1 = x2 - x1
         val y2 = x2 - x3
 
-        val center = Position2d(
+        val center = Vector2d(
             (y1 * v2.y - y2 * v1.y) / det, (y2 * v1.x - y1 * v2.x) / det
         )
         val radius = (p1 - center).norm()
@@ -45,7 +45,7 @@ private fun approxLength(
     }
 }
 
-fun Position2dDual<Internal>.curvature(): Double {
+fun Vector2dDual<Internal>.curvature(): Double {
     val (_, dx, d2x) = x.values()
     val (_, dy, d2y) = y.values()
     val derivNorm = sqrt(dx * dx + dy * dy)
@@ -80,8 +80,8 @@ class ArcApproxArcCurve2(
             sLo: Double,
             tLo: Double,
             tHi: Double,
-            pLo: Position2dDual<Internal>,
-            pHi: Position2dDual<Internal>,
+            pLo: Vector2dDual<Internal>,
+            pHi: Vector2dDual<Internal>,
             depth: Int,
         ): Samples {
             val tMid = 0.5 * (tLo + tHi)

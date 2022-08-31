@@ -139,7 +139,7 @@ class RamseteController @JvmOverloads constructor(
         val k = 2.0 * zeta * sqrt(omegaRef * omegaRef + b * vRef * vRef)
 
         fun sinc(x: Double): Double {
-            val u = x + epsCopySign(x)
+            val u = x + snz(x)
             return sin(u) / u
         }
 

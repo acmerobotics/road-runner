@@ -11,7 +11,7 @@ private const val EPS = 2.2e-15
  * Function \(snz(x)\) from section VI.A of the [SymForce paper](https://arxiv.org/abs/2204.07889) for use in
  * singularity handling.
  */
-fun epsCopySign(x: Double) =
+fun snz(x: Double) =
     if (x >= 0.0) {
         EPS
     } else {

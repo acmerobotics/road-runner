@@ -126,7 +126,7 @@ fun chartSpline(q: QuinticSpline1): XYChart {
             fun testForward() {
                 val r = Random.Default
                 repeat(100) {
-                    val beginPos = Position2d(r.nextDouble(), r.nextDouble())
+                    val beginPos = Vector2d(r.nextDouble(), r.nextDouble())
                     val beginTangent = Rotation2d.exp(r.nextDouble())
 
                     val mag = r.nextDouble()
@@ -138,11 +138,11 @@ fun chartSpline(q: QuinticSpline1): XYChart {
 
                     assertEquals(beginPos.x, posPath.begin(1).value().x, 1e-6)
                     assertEquals(beginPos.y, posPath.begin(1).value().y, 1e-6)
-                    assertEquals(0.0, beginTangent - posPath.begin(2).tangent().value(), 1e-6)
+                    assertEquals(0.0, beginTangent - posPath.begin(2).drop(1).angleCast().value(), 1e-6)
 
                     assertEquals(endPos.x, posPath.end(1).value().x, 1e-6)
                     assertEquals(endPos.y, posPath.end(1).value().y, 1e-6)
-                    assertEquals(0.0, beginTangent - posPath.end(2).tangent().value(), 1e-6)
+                    assertEquals(0.0, beginTangent - posPath.end(2).drop(1).angleCast().value(), 1e-6)
                 }
             }
 
@@ -150,9 +150,9 @@ fun chartSpline(q: QuinticSpline1): XYChart {
             fun testSplineTo() {
                 val r = Random.Default
                 repeat(100) {
-                    val beginPos = Position2d(r.nextDouble(), r.nextDouble())
+                    val beginPos = Vector2d(r.nextDouble(), r.nextDouble())
                     val beginTangent = Rotation2d.exp(r.nextDouble())
-                    val endPos = Position2d(r.nextDouble(), r.nextDouble())
+                    val endPos = Vector2d(r.nextDouble(), r.nextDouble())
                     val endTangent = Rotation2d.exp(r.nextDouble())
 
                     val posPath = PositionPathBuilder(beginPos, beginTangent, 1e-6)
@@ -161,23 +161,23 @@ fun chartSpline(q: QuinticSpline1): XYChart {
 
                     assertEquals(beginPos.x, posPath.begin(1).value().x, 1e-6)
                     assertEquals(beginPos.y, posPath.begin(1).value().y, 1e-6)
-                    assertEquals(0.0, beginTangent - posPath.begin(2).tangent().value(), 1e-6)
+                    assertEquals(0.0, beginTangent - posPath.begin(2).drop(1).angleCast().value(), 1e-6)
 
                     assertEquals(endPos.x, posPath.end(1).value().x, 1e-6)
                     assertEquals(endPos.y, posPath.end(1).value().y, 1e-6)
-                    assertEquals(0.0, endTangent - posPath.end(2).tangent().value(), 1e-6)
+                    assertEquals(0.0, endTangent - posPath.end(2).drop(1).angleCast().value(), 1e-6)
                 }
             }
 
             @Test
             fun testTangentHeading() {
                 val posPath = PositionPathBuilder(
-                    Position2d(0.0, 0.0),
+                    Vector2d(0.0, 0.0),
                     Rotation2d.exp(0.0),
                     1e-6
                 )
                     .splineTo(
-                        Position2d(15.0, 15.0),
+                        Vector2d(15.0, 15.0),
                         Rotation2d.exp(PI),
                     )
                     .build()
@@ -191,12 +191,12 @@ fun chartSpline(q: QuinticSpline1): XYChart {
             @Test
             fun testSplineHeading() {
                 val posPathPre = PositionPathBuilder(
-                    Position2d(0.0, 0.0),
+                    Vector2d(0.0, 0.0),
                     Rotation2d.exp(0.0),
                     1e-6,
                 )
                     .splineTo(
-                        Position2d(15.0, 15.0),
+                        Vector2d(15.0, 15.0),
                         Rotation2d.exp(PI),
                     )
 //            .lineTo(
@@ -205,12 +205,12 @@ fun chartSpline(q: QuinticSpline1): XYChart {
                     .build()
 
                 val posPath = PositionPathBuilder(
-                    Position2d(0.0, 0.0),
+                    Vector2d(0.0, 0.0),
                     Rotation2d.exp(0.0),
                     1e-6,
                 )
                     .splineTo(
-                        (Vector2d(15.0, 15.0) / posPathPre.length).bind(),
+                        Vector2d(15.0, 15.0) / posPathPre.length,
                         Rotation2d.exp(PI),
                     )
                     .build()
@@ -248,12 +248,12 @@ fun chartSpline(q: QuinticSpline1): XYChart {
             @Test
             fun testLinearSplineHeading() {
                 val posPath = PositionPathBuilder(
-                    Position2d(0.0, 0.0),
+                    Vector2d(0.0, 0.0),
                     Rotation2d.exp(0.0),
                     1e-6,
                 )
                     .splineTo(
-                        Position2d(15.0, 15.0),
+                        Vector2d(15.0, 15.0),
                         Rotation2d.exp(PI),
                     )
                     .build()
@@ -268,12 +268,12 @@ fun chartSpline(q: QuinticSpline1): XYChart {
             @Test
             fun testSplineLinearHeading() {
                 val posPath = PositionPathBuilder(
-                    Position2d(0.0, 0.0),
+                    Vector2d(0.0, 0.0),
                     Rotation2d.exp(0.0),
                     1e-6,
                 )
                     .splineTo(
-                        Position2d(15.0, 15.0),
+                        Vector2d(15.0, 15.0),
                         Rotation2d.exp(PI),
                     )
                     .build()
@@ -288,12 +288,12 @@ fun chartSpline(q: QuinticSpline1): XYChart {
             @Test
             fun testSplineSplineHeading() {
                 val posPath = PositionPathBuilder(
-                    Position2d(0.0, 0.0),
+                    Vector2d(0.0, 0.0),
                     Rotation2d.exp(0.0),
                     1e-6,
                 )
                     .splineTo(
-                        Position2d(15.0, 15.0),
+                        Vector2d(15.0, 15.0),
                         Rotation2d.exp(PI),
                     )
                     .build()
@@ -308,16 +308,16 @@ fun chartSpline(q: QuinticSpline1): XYChart {
             @Test
             fun testComplex() {
                 val posPath = PositionPathBuilder(
-                    Position2d(0.0, 0.0),
+                    Vector2d(0.0, 0.0),
                     Rotation2d.exp(0.0),
                     1e-6,
                 )
                     .splineTo(
-                        Position2d(15.0, 15.0),
+                        Vector2d(15.0, 15.0),
                         Rotation2d.exp(PI),
                     )
                     .splineTo(
-                        Position2d(5.0, 35.0),
+                        Vector2d(5.0, 35.0),
                         Rotation2d.exp(PI / 3),
                     )
                     .build()
@@ -350,12 +350,12 @@ fun chartSpline(q: QuinticSpline1): XYChart {
             @Test
             fun testConstantLinear() {
                 val posPath = PositionPathBuilder(
-                    Position2d(0.0, 0.0),
+                    Vector2d(0.0, 0.0),
                     Rotation2d.exp(0.0),
                     1e-6,
                 )
                     .splineTo(
-                        Position2d(15.0, 15.0),
+                        Vector2d(15.0, 15.0),
                         Rotation2d.exp(PI),
                     )
                     .build()
@@ -406,7 +406,7 @@ fun chartSpline(q: QuinticSpline1): XYChart {
             fun testSafePathBuilder() {
                 repeat(100) {
                     val posPath = PositionPathBuilder(
-                        Position2d(0.0, 0.0),
+                        Vector2d(0.0, 0.0),
                         Rotation2d.exp(0.0),
                         1e-6,
                     )
@@ -427,7 +427,7 @@ fun chartSpline(q: QuinticSpline1): XYChart {
             fun testBackwardLine() {
                 assertFails {
                     PositionPathBuilder(
-                        Position2d(0.0, 0.0),
+                        Vector2d(0.0, 0.0),
                         Rotation2d.exp(0.0),
                         1e-6,
                     )
@@ -440,7 +440,7 @@ fun chartSpline(q: QuinticSpline1): XYChart {
             fun testBackwardLine2() {
                 assertFails {
                     PositionPathBuilder(
-                        Position2d(0.0, 0.0),
+                        Vector2d(0.0, 0.0),
                         Rotation2d.exp(0.0),
                         1e-6,
                     )

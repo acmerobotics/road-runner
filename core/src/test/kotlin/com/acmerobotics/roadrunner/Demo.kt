@@ -44,7 +44,7 @@ class Demo {
         val targets = mutableListOf<Pose2d>()
 
         while (true) {
-            s = project(path, pose.trans.value().bind(), s)
+            s = project(path, pose.trans.value(), s)
 
             if (s >= path.length() - 0.25) {
                 break
