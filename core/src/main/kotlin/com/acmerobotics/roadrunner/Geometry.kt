@@ -60,8 +60,6 @@ data class Vector2dDual<Param>(@JvmField val x: DualNum<Param>, @JvmField val y:
 
     // precondition: this is normalized
     fun angleCast() = Rotation2dDual(x, y)
-
-    fun withVec(v: Vector2d) = Vector2dDual(x.withFirst(v.x), y.withFirst(v.y))
 }
 
 /**
@@ -242,8 +240,6 @@ data class Pose2dDual<Param>(
 
     fun value() = Pose2d(trans.value(), rot.value())
     fun velocity() = Twist2dDual(trans.drop(1), rot.velocity())
-
-    fun withTransform(t: Pose2d) = Pose2dDual(trans.withVec(t.trans), rot.withRot(t.rot))
 }
 
 /**

@@ -580,20 +580,20 @@ class RestrictedPathBuilder internal constructor(private val pathBuilder: PathBu
     fun build() = pathBuilder.build()
 }
 
-fun interface PoseMapper {
-    fun map(pose: Pose2d): Pose2d
-}
-
 class TrajectoryBuilder private constructor(
     private val pathBuilder: PathBuilder,
     private val beginEndVel: Double,
     private val baseVelConstraint: VelConstraint,
     private val baseAccelConstraint: AccelConstraint,
     private val resolution: Double,
-    private val poseMapper: PoseMapper,
+    private val poseMap: PoseMap,
     private val velConstraints: List<VelConstraint>,
     private val accelConstraints: List<AccelConstraint>,
 ) {
+    fun interface PoseMap {
+        fun map(pose: Pose2dDual<Arclength>): Pose2dDual<Arclength>
+    }
+
     @JvmOverloads
     constructor(
         beginPose: Pose2d,
@@ -603,12 +603,12 @@ class TrajectoryBuilder private constructor(
         baseVelConstraint: VelConstraint,
         baseAccelConstraint: AccelConstraint,
         resolution: Double,
-        poseMapper: PoseMapper = PoseMapper { it }
+        poseMap: PoseMap = PoseMap { it }
     ) :
         this(
             PathBuilder(beginPose, beginTangent, eps),
             beginEndVel, baseVelConstraint, baseAccelConstraint, resolution,
-            poseMapper, emptyList(), emptyList()
+            poseMap, emptyList(), emptyList()
         )
 
     private fun add(
@@ -617,7 +617,7 @@ class TrajectoryBuilder private constructor(
         accelConstraintOverride: AccelConstraint?
     ) =
         TrajectoryBuilder(
-            newPathBuilder, beginEndVel, baseVelConstraint, baseAccelConstraint, resolution, poseMapper,
+            newPathBuilder, beginEndVel, baseVelConstraint, baseAccelConstraint, resolution, poseMap,
             velConstraints + listOf(velConstraintOverride ?: baseVelConstraint),
             accelConstraints + listOf(accelConstraintOverride ?: baseAccelConstraint)
         )
@@ -819,22 +819,21 @@ class TrajectoryBuilder private constructor(
         add(pathBuilder.splineToSplineHeading(pose, tangent), velConstraintOverride, accelConstraintOverride)
 
     fun build(): Trajectory {
-        val path = pathBuilder.build()
+        val rawPath = pathBuilder.build()
+        val path = object : PosePath {
+            override fun length() = rawPath.length
+            override fun get(s: Double, n: Int) = poseMap.map(rawPath[s, n])
+        }
+
         return Trajectory(
-            object : PosePath {
-                override fun length() = path.length
-                override fun get(s: Double, n: Int): Pose2dDual<Arclength> {
-                    val pose = path[s, n]
-                    return pose.withTransform(poseMapper.map(pose.value()))
-                }
-            },
+            path,
             profile(
                 path, beginEndVel,
-                CompositeVelConstraint(velConstraints, path.offsets.drop(1)),
-                CompositeAccelConstraint(accelConstraints, path.offsets.drop(1)),
+                CompositeVelConstraint(velConstraints, rawPath.offsets.drop(1)),
+                CompositeAccelConstraint(accelConstraints, rawPath.offsets.drop(1)),
                 resolution,
             ),
-            path.offsets
+            rawPath.offsets
         )
     }
 }
@@ -849,13 +848,13 @@ class SafeTrajectoryBuilder internal constructor(private val trajBuilder: Trajec
         baseVelConstraint: VelConstraint,
         baseAccelConstraint: AccelConstraint,
         resolution: Double,
-        poseMapper: PoseMapper = PoseMapper { it }
+        poseMap: TrajectoryBuilder.PoseMap = TrajectoryBuilder.PoseMap { it }
     ) :
         this(
             TrajectoryBuilder(
                 beginPose, beginTangent, eps,
                 beginEndVel, baseVelConstraint, baseAccelConstraint, resolution,
-                poseMapper,
+                poseMap,
             )
         )
 
