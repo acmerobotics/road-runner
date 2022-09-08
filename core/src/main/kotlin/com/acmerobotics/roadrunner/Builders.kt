@@ -608,7 +608,7 @@ class TrajectoryBuilder private constructor(
         this(
             PathBuilder(beginPose, beginTangent, eps),
             beginEndVel, baseVelConstraint, baseAccelConstraint, resolution,
-            poseMap, emptyList(), emptyList()
+            poseMap, listOf(baseVelConstraint), listOf(baseAccelConstraint)
         )
 
     private fun add(
@@ -655,6 +655,7 @@ class TrajectoryBuilder private constructor(
     ) =
         add(pathBuilder.forwardLinearHeading(dist, heading), velConstraintOverride, accelConstraintOverride)
 
+    @JvmOverloads
     fun forwardSplineHeading(
         dist: Double,
         heading: Rotation2d,
@@ -662,6 +663,7 @@ class TrajectoryBuilder private constructor(
         accelConstraintOverride: AccelConstraint? = null
     ) =
         add(pathBuilder.forwardSplineHeading(dist, heading), velConstraintOverride, accelConstraintOverride)
+    @JvmOverloads
     fun forwardSplineHeading(
         dist: Double,
         heading: Double,
@@ -670,6 +672,7 @@ class TrajectoryBuilder private constructor(
     ) =
         add(pathBuilder.forwardSplineHeading(dist, heading), velConstraintOverride, accelConstraintOverride)
 
+    @JvmOverloads
     fun lineToX(
         posX: Double,
         velConstraintOverride: VelConstraint? = null,
@@ -677,6 +680,7 @@ class TrajectoryBuilder private constructor(
     ) =
         add(pathBuilder.lineToX(posX), velConstraintOverride, accelConstraintOverride)
 
+    @JvmOverloads
     fun lineToXConstantHeading(
         posX: Double,
         velConstraintOverride: VelConstraint? = null,
@@ -684,6 +688,7 @@ class TrajectoryBuilder private constructor(
     ) =
         add(pathBuilder.lineToXConstantHeading(posX), velConstraintOverride, accelConstraintOverride)
 
+    @JvmOverloads
     fun lineToXLinearHeading(
         posX: Double,
         heading: Rotation2d,
@@ -691,6 +696,7 @@ class TrajectoryBuilder private constructor(
         accelConstraintOverride: AccelConstraint? = null
     ) =
         add(pathBuilder.lineToXLinearHeading(posX, heading), velConstraintOverride, accelConstraintOverride)
+    @JvmOverloads
     fun lineToXLinearHeading(
         posX: Double,
         heading: Double,
@@ -699,6 +705,7 @@ class TrajectoryBuilder private constructor(
     ) =
         add(pathBuilder.lineToXLinearHeading(posX, heading), velConstraintOverride, accelConstraintOverride)
 
+    @JvmOverloads
     fun lineToXSplineHeading(
         posX: Double,
         heading: Rotation2d,
@@ -706,6 +713,7 @@ class TrajectoryBuilder private constructor(
         accelConstraintOverride: AccelConstraint? = null
     ) =
         add(pathBuilder.lineToXSplineHeading(posX, heading), velConstraintOverride, accelConstraintOverride)
+    @JvmOverloads
     fun lineToXSplineHeading(
         posX: Double,
         heading: Double,
@@ -714,6 +722,7 @@ class TrajectoryBuilder private constructor(
     ) =
         add(pathBuilder.lineToXSplineHeading(posX, heading), velConstraintOverride, accelConstraintOverride)
 
+    @JvmOverloads
     fun lineToY(
         posY: Double,
         velConstraintOverride: VelConstraint? = null,
@@ -721,6 +730,7 @@ class TrajectoryBuilder private constructor(
     ) =
         add(pathBuilder.lineToY(posY), velConstraintOverride, accelConstraintOverride)
 
+    @JvmOverloads
     fun lineToYConstantHeading(
         posY: Double,
         velConstraintOverride: VelConstraint? = null,
@@ -728,6 +738,7 @@ class TrajectoryBuilder private constructor(
     ) =
         add(pathBuilder.lineToYConstantHeading(posY), velConstraintOverride, accelConstraintOverride)
 
+    @JvmOverloads
     fun lineToYLinearHeading(
         posY: Double,
         heading: Rotation2d,
@@ -735,6 +746,7 @@ class TrajectoryBuilder private constructor(
         accelConstraintOverride: AccelConstraint? = null
     ) =
         add(pathBuilder.lineToYLinearHeading(posY, heading), velConstraintOverride, accelConstraintOverride)
+    @JvmOverloads
     fun lineToYLinearHeading(
         posY: Double,
         heading: Double,
@@ -743,6 +755,7 @@ class TrajectoryBuilder private constructor(
     ) =
         add(pathBuilder.lineToYLinearHeading(posY, heading), velConstraintOverride, accelConstraintOverride)
 
+    @JvmOverloads
     fun lineToYSplineHeading(
         posY: Double,
         heading: Rotation2d,
@@ -750,6 +763,7 @@ class TrajectoryBuilder private constructor(
         accelConstraintOverride: AccelConstraint? = null
     ) =
         add(pathBuilder.lineToYSplineHeading(posY, heading), velConstraintOverride, accelConstraintOverride)
+    @JvmOverloads
     fun lineToYSplineHeading(
         posY: Double,
         heading: Double,
@@ -758,6 +772,7 @@ class TrajectoryBuilder private constructor(
     ) =
         add(pathBuilder.lineToYSplineHeading(posY, heading), velConstraintOverride, accelConstraintOverride)
 
+    @JvmOverloads
     fun splineTo(
         pos: Vector2d,
         tangent: Rotation2d,
@@ -765,6 +780,7 @@ class TrajectoryBuilder private constructor(
         accelConstraintOverride: AccelConstraint? = null
     ) =
         add(pathBuilder.splineTo(pos, tangent), velConstraintOverride, accelConstraintOverride)
+    @JvmOverloads
     fun splineTo(
         pos: Vector2d,
         tangent: Double,
@@ -773,6 +789,7 @@ class TrajectoryBuilder private constructor(
     ) =
         add(pathBuilder.splineTo(pos, tangent), velConstraintOverride, accelConstraintOverride)
 
+    @JvmOverloads
     fun splineToConstantHeading(
         pos: Vector2d,
         tangent: Rotation2d,
@@ -780,6 +797,7 @@ class TrajectoryBuilder private constructor(
         accelConstraintOverride: AccelConstraint? = null
     ) =
         add(pathBuilder.splineToConstantHeading(pos, tangent), velConstraintOverride, accelConstraintOverride)
+    @JvmOverloads
     fun splineToConstantHeading(
         pos: Vector2d,
         tangent: Double,
@@ -788,6 +806,7 @@ class TrajectoryBuilder private constructor(
     ) =
         add(pathBuilder.splineToConstantHeading(pos, tangent), velConstraintOverride, accelConstraintOverride)
 
+    @JvmOverloads
     fun splineToLinearHeading(
         pose: Pose2d,
         tangent: Rotation2d,
@@ -795,6 +814,7 @@ class TrajectoryBuilder private constructor(
         accelConstraintOverride: AccelConstraint? = null
     ) =
         add(pathBuilder.splineToLinearHeading(pose, tangent), velConstraintOverride, accelConstraintOverride)
+    @JvmOverloads
     fun splineToLinearHeading(
         pose: Pose2d,
         tangent: Double,
@@ -803,6 +823,7 @@ class TrajectoryBuilder private constructor(
     ) =
         add(pathBuilder.splineToLinearHeading(pose, tangent), velConstraintOverride, accelConstraintOverride)
 
+    @JvmOverloads
     fun splineToSplineHeading(
         pose: Pose2d,
         tangent: Rotation2d,
@@ -810,6 +831,7 @@ class TrajectoryBuilder private constructor(
         accelConstraintOverride: AccelConstraint? = null
     ) =
         add(pathBuilder.splineToSplineHeading(pose, tangent), velConstraintOverride, accelConstraintOverride)
+    @JvmOverloads
     fun splineToSplineHeading(
         pose: Pose2d,
         tangent: Double,

@@ -513,6 +513,21 @@ fun interface AccelConstraint {
     fun minMaxProfileAccel(robotPose: Pose2dDual<Arclength>, path: PosePath, s: Double): MinMax
 }
 
+class TranslationalVelConstraint(
+    @JvmField
+    val minTransVel: Double,
+) : VelConstraint {
+    override fun maxRobotVel(robotPose: Pose2dDual<Arclength>, path: PosePath, s: Double) = minTransVel
+}
+
+class AngularVelConstraint(
+    @JvmField
+    val maxAngVel: Double,
+) : VelConstraint {
+    override fun maxRobotVel(robotPose: Pose2dDual<Arclength>, path: PosePath, s: Double) =
+        maxAngVel / robotPose.rot.velocity().value()
+}
+
 class MinVelConstraint(
     @JvmField
     val constraints: List<VelConstraint>,
@@ -530,14 +545,6 @@ class ProfileAccelConstraint(
     private val minMax = MinMax(minAccel, maxAccel)
 
     override fun minMaxProfileAccel(robotPose: Pose2dDual<Arclength>, path: PosePath, s: Double) = minMax
-}
-
-class AngularVelConstraint(
-    @JvmField
-    val maxAngVel: Double,
-) : VelConstraint {
-    override fun maxRobotVel(robotPose: Pose2dDual<Arclength>, path: PosePath, s: Double) =
-        maxAngVel / robotPose.rot.velocity().value()
 }
 
 class CompositeVelConstraint(
