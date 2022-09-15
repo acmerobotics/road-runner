@@ -74,7 +74,7 @@ class HolonomicController(
 
         val velErrorActual = targetVelActual.value() - actualVelActual
 
-        val error = actualPose.minusExp(targetPose.value())
+        val error = targetPose.value().minusExp(actualPose)
         return targetVelActual +
             Twist2d(
                 Vector2d(
@@ -144,7 +144,7 @@ class RamseteController @JvmOverloads constructor(
         }
 
         // TODO: add acceleration feedforward?
-        val error = actualPose.minusExp(targetPose.value())
+        val error = targetPose.value().minusExp(actualPose)
         return Twist2dDual.constant(
             Twist2d(
                 Vector2d(
@@ -153,7 +153,7 @@ class RamseteController @JvmOverloads constructor(
                 ),
                 omegaRef + k * error.rot.log() + b * vRef * sinc(error.rot.log()),
             ),
-            1
+            2
         )
     }
 }

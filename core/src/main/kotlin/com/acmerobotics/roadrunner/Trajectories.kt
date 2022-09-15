@@ -29,6 +29,10 @@ class DisplacementTrajectory(
 ) {
     constructor(t: Trajectory) : this(t.path, t.profile.baseProfile)
 
+    fun length() = path.length()
+
+    fun project(query: Vector2d, init: Double) = project(path, query, init)
+
     operator fun get(s: Double) = path[s, 3].reparam(profile[s])
 }
 

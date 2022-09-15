@@ -40,7 +40,7 @@ publishing {
         create<MavenPublication>("maven") {
             groupId = "com.acmerobotics.roadrunner"
             artifactId = "core"
-            version = "0.6.0-SNAPSHOT"
+            version = "1.0.0-beta0"
 
             from(components["java"])
         }

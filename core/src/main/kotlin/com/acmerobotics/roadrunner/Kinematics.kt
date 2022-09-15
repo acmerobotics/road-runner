@@ -34,7 +34,7 @@ data class MecanumKinematics @JvmOverloads constructor(
         val rightFront: DualNum<Param>,
     )
 
-    fun <Param> forward(w: WheelIncrements<Param>) = Twist2dIncrementDual(
+    fun <Param> forward(w: WheelIncrements<Param>) = Twist2dIncrDual(
         Vector2dDual(
             (w.leftFront + w.leftBack + w.rightBack + w.rightFront) * 0.25,
             (-w.leftFront + w.leftBack - w.rightBack + w.rightFront) * (0.25 / lateralMultiplier),
@@ -89,7 +89,7 @@ data class TankKinematics(@JvmField val trackWidth: Double) {
         val right: DualNum<Param>,
     )
 
-    fun <Param> forward(w: WheelIncrements<Param>) = Twist2dIncrementDual(
+    fun <Param> forward(w: WheelIncrements<Param>) = Twist2dIncrDual(
         Vector2dDual(
             (w.left + w.right) * 0.5,
             DualNum.constant(0.0, w.left.size()),

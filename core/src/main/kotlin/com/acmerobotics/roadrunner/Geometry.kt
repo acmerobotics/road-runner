@@ -170,7 +170,7 @@ data class Pose2d(
 
     companion object {
         @JvmStatic
-        fun exp(incr: Twist2dIncrement): Pose2d {
+        fun exp(incr: Twist2dIncr): Pose2d {
             val rotation = Rotation2d.exp(incr.rotIncr)
 
             val u = incr.rotIncr + snz(incr.rotIncr)
@@ -185,7 +185,7 @@ data class Pose2d(
         }
     }
 
-    operator fun plus(t: Twist2dIncrement) = this * exp(t)
+    operator fun plus(t: Twist2dIncr) = this * exp(t)
     fun minusExp(t: Pose2d) = t.inverse() * this
     operator fun minus(t: Pose2d) = minusExp(t).log()
 
@@ -195,12 +195,12 @@ data class Pose2d(
 
     fun inverse() = Pose2d(rot.inverse() * -trans, rot.inverse())
 
-    fun log(): Twist2dIncrement {
+    fun log(): Twist2dIncr {
         val theta = rot.log()
 
         val halfu = 0.5 * theta + snz(theta)
         val v = halfu / tan(halfu)
-        return Twist2dIncrement(
+        return Twist2dIncr(
             Vector2d(
                 v * trans.x + halfu * trans.y,
                 -halfu * trans.x + v * trans.y,
@@ -225,7 +225,7 @@ data class Pose2dDual<Param>(
             Pose2dDual<Param>(Vector2dDual.constant(t.trans, n), Rotation2dDual.constant(t.rot, n))
     }
 
-    operator fun plus(t: Twist2dIncrement) = this * Pose2d.exp(t)
+    operator fun plus(t: Twist2dIncr) = this * Pose2d.exp(t)
 
     operator fun times(t: Pose2d) = Pose2dDual(rot * t.trans + trans, rot * t.rot)
     operator fun times(t: Pose2dDual<Param>) = Pose2dDual(rot * t.trans + trans, rot * t.rot)
@@ -264,12 +264,12 @@ data class Twist2dDual<Param>(@JvmField val transVel: Vector2dDual<Param>, @JvmF
     fun value() = Twist2d(transVel.value(), rotVel.value())
 }
 
-data class Twist2dIncrement(@JvmField val transIncr: Vector2d, @JvmField val rotIncr: Double)
+data class Twist2dIncr(@JvmField val transIncr: Vector2d, @JvmField val rotIncr: Double)
 
-data class Twist2dIncrementDual<Param>(
+data class Twist2dIncrDual<Param>(
     @JvmField val transIncr: Vector2dDual<Param>,
     @JvmField val rotIncr: DualNum<Param>
 ) {
-    fun value() = Twist2dIncrement(transIncr.value(), rotIncr.value())
+    fun value() = Twist2dIncr(transIncr.value(), rotIncr.value())
     fun velocity() = Twist2dDual(transIncr.drop(1), rotIncr.drop(1))
 }

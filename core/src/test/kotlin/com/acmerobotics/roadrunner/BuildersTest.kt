@@ -448,5 +448,18 @@ fun chartSpline(q: QuinticSpline1): XYChart {
                         .build()
                 }
             }
+
+            @Test
+            fun testLineSpline() {
+                TrajectoryBuilder(
+                    Pose2d(0.0, 0.0, 0.0), Rotation2d.exp(0.0), 1e-6, 0.0,
+                    TranslationalVelConstraint(40.0),
+                    ProfileAccelConstraint(-30.0, 50.0),
+                    1.0
+                )
+                    .forward(20.0)
+                    .splineTo(Vector2d(40.0, 55.0), PI / 2)
+                    .build()
+            }
         }
         

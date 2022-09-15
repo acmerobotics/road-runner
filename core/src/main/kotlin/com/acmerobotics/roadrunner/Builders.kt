@@ -147,9 +147,9 @@ class PosePathBuilder private constructor(
     // invariants:
     // - posPath is C2-continuous
     // - state segments satisfy continuity guarantees
-    // - state encodes heading for [0.0, beginDisp)
+    // - state encodes heading for [0.0, endDisp)
     private val posPath: PositionPath<Arclength>,
-    private val beginDisp: Double,
+    private val endDisp: Double,
     private val state: State,
 ) {
     constructor(path: PositionPath<Arclength>, beginHeading: Rotation2d) :
@@ -182,7 +182,7 @@ class PosePathBuilder private constructor(
     class RotationContinuityException : RuntimeException()
 
     private fun addEagerPosePath(disp: Double, segment: PosePath): PosePathBuilder {
-        require(disp > beginDisp)
+        require(disp > endDisp)
 
         val beginHeadingDual = segment.begin(3).rot
 
@@ -211,7 +211,7 @@ class PosePathBuilder private constructor(
     }
 
     private fun viewUntil(disp: Double) =
-        PositionPathView(posPath, beginDisp, disp - beginDisp)
+        PositionPathView(posPath, endDisp, disp - endDisp)
 
     /**
      * Fills in tangent headings until displacement [disp].
@@ -220,7 +220,7 @@ class PosePathBuilder private constructor(
         disp,
         TangentPath(
             viewUntil(disp),
-            state.endHeading - posPath[disp, 2].drop(1).value().angleCast()
+            state.endHeading - posPath[endDisp, 2].drop(1).value().angleCast()
         )
     )
 
@@ -231,7 +231,7 @@ class PosePathBuilder private constructor(
         disp,
         HeadingPosePath(
             viewUntil(disp),
-            ConstantHeadingPath(state.endHeading, disp - beginDisp),
+            ConstantHeadingPath(state.endHeading, disp - endDisp),
         )
     )
 
@@ -242,7 +242,7 @@ class PosePathBuilder private constructor(
         disp,
         HeadingPosePath(
             viewUntil(disp),
-            LinearHeadingPath(state.endHeading, heading - state.endHeading, disp - beginDisp)
+            LinearHeadingPath(state.endHeading, heading - state.endHeading, disp - endDisp)
         )
     )
 
@@ -260,7 +260,7 @@ class PosePathBuilder private constructor(
      * other heading segment. And in fact the heading at both knots will be \(C^2\)-continuous.
      */
     fun splineUntil(disp: Double, heading: Rotation2d): PosePathBuilder {
-        require(disp > beginDisp)
+        require(disp > endDisp)
 
         return PosePathBuilder(
             posPath, disp,
@@ -271,20 +271,20 @@ class PosePathBuilder private constructor(
                             state.segments + listOf(
                                 HeadingPosePath(
                                     viewUntil(disp),
-                                    SplineHeadingPath(state.endHeadingDual, it, disp - beginDisp),
+                                    SplineHeadingPath(state.endHeadingDual, it, disp - endDisp),
                                 )
                             )
                         }
                     }
                     is Lazy -> {
                         {
-                            val beginTangent = posPath[beginDisp, 4].drop(1).angleCast()
+                            val beginTangent = posPath[endDisp, 4].drop(1).angleCast()
                             val beginHeading = beginTangent.withRot(state.endHeading)
 
                             state.makePaths(beginHeading) + listOf(
                                 HeadingPosePath(
                                     viewUntil(disp),
-                                    SplineHeadingPath(beginHeading, it, disp - beginDisp)
+                                    SplineHeadingPath(beginHeading, it, disp - endDisp)
                                 )
                             )
                         }
@@ -313,13 +313,13 @@ class PosePathBuilder private constructor(
     fun splineUntilEnd(heading: Double) = splineUntilEnd(Rotation2d.exp(heading))
 
     internal fun build(): CompositePosePath {
-        require(beginDisp == posPath.length())
+        require(endDisp == posPath.length())
 
         return CompositePosePath(
             when (state) {
                 is Eager -> state.segments
                 is Lazy -> {
-                    val endTangent = posPath[beginDisp, 4].drop(1).angleCast()
+                    val endTangent = posPath[endDisp, 4].drop(1).angleCast()
                     val endHeading = endTangent.withRot(state.endHeading)
 
                     state.makePaths(endHeading)

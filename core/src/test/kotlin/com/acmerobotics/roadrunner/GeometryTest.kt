@@ -25,7 +25,7 @@ class GeometryTest {
     @Test
     fun testTransformExpLog() {
         repeat(100) {
-            val incrExp = Twist2dIncrement(
+            val incrExp = Twist2dIncr(
                 Vector2d(
                     Random.Default.nextDouble(),
                     Random.Default.nextDouble(),
@@ -42,7 +42,7 @@ class GeometryTest {
     @Test
     fun testTransformInverseInverse() {
         repeat(100) {
-            val incrExp = Twist2dIncrement(
+            val incrExp = Twist2dIncr(
                 Vector2d(
                     Random.Default.nextDouble(),
                     Random.Default.nextDouble(),

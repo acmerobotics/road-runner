@@ -65,7 +65,7 @@ class RamseteTest {
             val command = controller.compute(s, targetPose, pose).value()
 
             pose +=
-                Twist2dIncrement(
+                Twist2dIncr(
                     command.transVel * dt,
                     command.rotVel * dt
                 )
