@@ -1,38 +1,141 @@
 package com.acmerobotics.roadrunner
 
-import com.acmerobotics.roadrunner.geometry.Pose2d
-import com.acmerobotics.roadrunner.kinematics.MecanumKinematics
-import com.acmerobotics.roadrunner.kinematics.SwerveKinematics
-import com.acmerobotics.roadrunner.kinematics.TankKinematics
-import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
 import kotlin.math.PI
+import kotlin.math.abs
+import kotlin.random.Random
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class KinematicsTest {
     @Test
-    fun testTankKinematics() {
-        val actualVelocity = Pose2d(2.0, 0.0, -PI / 4)
-        val wheelVelocities = TankKinematics.robotToWheelVelocities(actualVelocity, 10.0)
-        val predictedVelocity = TankKinematics.wheelToRobotVelocities(wheelVelocities, 10.0)
-        assertTrue(predictedVelocity epsilonEquals actualVelocity)
+    fun testMecKinematicsComposition() {
+        val kinematics = MecanumKinematics(10.0)
+
+        val r = Random.Default
+        repeat(100) {
+            val t = Twist2d(
+                Vector2d(r.nextDouble(), r.nextDouble()),
+                r.nextDouble()
+            )
+
+            val vs = kinematics.inverse(Twist2dDual.constant<Time>(t, 1)).all()
+
+            val t2 = kinematics.forward(
+                MecanumKinematics.WheelIncrements(
+                    vs[0], vs[1], vs[2], vs[3],
+                )
+            ).value()
+
+            assertEquals(t.transVel.x, t2.transIncr.x, 1e-6)
+            assertEquals(t.transVel.y, t2.transIncr.y, 1e-6)
+            assertEquals(t.rotVel, t2.rotIncr, 1e-6)
+        }
     }
 
     @Test
-    fun testMecanumKinematics() {
-        val actualVelocity = Pose2d(2.0, 1.0, -PI / 4)
-        val wheelVelocities = MecanumKinematics.robotToWheelVelocities(actualVelocity, 10.0, 5.0)
-        val predictedVelocity = MecanumKinematics.wheelToRobotVelocities(wheelVelocities, 10.0, 5.0)
-        assertTrue(predictedVelocity epsilonEquals actualVelocity)
+    fun testMecWheelVelocityLimiting() {
+        val kinematics = MecanumKinematics(10.0)
+
+        val posPath = PositionPathBuilder(
+            Vector2d(0.0, 0.0),
+            Rotation2d.exp(0.0),
+            1e-6,
+        )
+            .splineTo(
+                Vector2d(15.0, 15.0),
+                Rotation2d.exp(PI),
+            )
+            .splineTo(
+                Vector2d(5.0, 35.0),
+                Rotation2d.exp(PI / 3),
+            )
+            .build()
+
+        val path = TangentPath(posPath, 0.0)
+        val profile = profile(
+            path, 0.0,
+            kinematics.WheelVelConstraint(10.0),
+            ProfileAccelConstraint(-10.0, 10.0),
+            0.01,
+        ).baseProfile
+
+        val ts = range(0.0, profile.disps.last(), 100)
+        val maxWheelVelMag = ts.maxOf { time ->
+            val s = profile[time]
+            val pose = path[s.value(), 2].reparam(s)
+            kinematics.inverse(pose.inverse() * pose.velocity())
+                .all()
+                .map { it.value() }
+                .maxOf { abs(it) }
+        }
+        assert(maxWheelVelMag < 10.1)
+
+        saveProfiles("mec", TimeProfile(profile))
     }
 
     @Test
-    fun testSwerveKinematics() {
-        val actualVelocity = Pose2d(2.0, -1.25, -PI / 4)
-        val wheelVelocities = SwerveKinematics.robotToWheelVelocities(actualVelocity, 10.0, 5.0)
-        val moduleOrientations = SwerveKinematics.robotToModuleOrientations(actualVelocity, 10.0, 5.0)
-        val predictedVelocity = SwerveKinematics.wheelToRobotVelocities(wheelVelocities, moduleOrientations, 10.0, 5.0)
-        assertTrue(predictedVelocity epsilonEquals actualVelocity)
+    fun testTankKinematicsComposition() {
+        val kinematics = TankKinematics(10.0)
+
+        val r = Random.Default
+        repeat(100) {
+            val t = Twist2d(
+                Vector2d(r.nextDouble(), 0.0),
+                r.nextDouble()
+            )
+
+            val vs = kinematics.inverse(Twist2dDual.constant<Time>(t, 1)).all()
+
+            val t2 = kinematics.forward(
+                TankKinematics.WheelIncrements(
+                    vs[0], vs[1],
+                )
+            ).value()
+
+            assertEquals(t.transVel.x, t2.transIncr.x, 1e-6)
+            assertEquals(t.transVel.y, t2.transIncr.y, 1e-6)
+            assertEquals(t.rotVel, t2.rotIncr, 1e-6)
+        }
+    }
+
+    @Test
+    fun testTankWheelVelocityLimiting() {
+        val kinematics = TankKinematics(10.0)
+
+        val posPath = PositionPathBuilder(
+            Vector2d(0.0, 0.0),
+            Rotation2d.exp(0.0),
+            1e-6,
+        )
+            .splineTo(
+                Vector2d(15.0, 15.0),
+                Rotation2d.exp(PI),
+            )
+            .splineTo(
+                Vector2d(5.0, 35.0),
+                Rotation2d.exp(PI / 3),
+            )
+            .build()
+
+        val path = TangentPath(posPath, 0.0)
+        val profile = profile(
+            path, 0.0,
+            kinematics.WheelVelConstraint(10.0),
+            ProfileAccelConstraint(-10.0, 10.0),
+            0.01,
+        ).baseProfile
+
+        val ts = range(0.0, profile.disps.last(), 100)
+        val maxWheelVelMag = ts.maxOf { time ->
+            val s = profile[time]
+            val pose = path[s.value(), 2].reparam(s)
+            kinematics.inverse(pose.inverse() * pose.velocity())
+                .all()
+                .map { it.value() }
+                .maxOf { abs(it) }
+        }
+        assert(maxWheelVelMag < 10.1)
+
+        saveProfiles("tank", TimeProfile(profile))
     }
 }
