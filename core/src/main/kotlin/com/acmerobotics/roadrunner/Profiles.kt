@@ -2,6 +2,7 @@
 
 package com.acmerobotics.roadrunner
 
+import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
@@ -336,6 +337,10 @@ fun forwardProfile(
     maxVels: List<Double>,
     maxAccels: List<Double>,
 ): DisplacementProfile {
+    require(beginVel >= 0.0)
+    require(maxVels.all { v -> v > 0.0 })
+    require(maxAccels.all { v -> v > 0.0 })
+
     val newDisps = mutableListOf(0.0)
     val vels = mutableListOf(beginVel)
     val accels = mutableListOf<Double>()
@@ -517,6 +522,10 @@ class TranslationalVelConstraint(
     @JvmField
     val minTransVel: Double,
 ) : VelConstraint {
+    init {
+        require(minTransVel > 0.0)
+    }
+
     override fun maxRobotVel(robotPose: Pose2dDual<Arclength>, path: PosePath, s: Double) = minTransVel
 }
 
@@ -524,8 +533,12 @@ class AngularVelConstraint(
     @JvmField
     val maxAngVel: Double,
 ) : VelConstraint {
+    init {
+        require(maxAngVel > 0.0)
+    }
+
     override fun maxRobotVel(robotPose: Pose2dDual<Arclength>, path: PosePath, s: Double) =
-        maxAngVel / robotPose.rot.velocity().value()
+        abs(maxAngVel / robotPose.rot.velocity().value())
 }
 
 class MinVelConstraint(
@@ -542,6 +555,11 @@ class ProfileAccelConstraint(
     @JvmField
     val maxAccel: Double,
 ) : AccelConstraint {
+    init {
+        require(minAccel < 0.0)
+        require(maxAccel > 0.0)
+    }
+
     private val minMax = MinMax(minAccel, maxAccel)
 
     override fun minMaxProfileAccel(robotPose: Pose2dDual<Arclength>, path: PosePath, s: Double) = minMax

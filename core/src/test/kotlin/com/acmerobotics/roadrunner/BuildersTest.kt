@@ -121,6 +121,17 @@ fun chartSpline(q: QuinticSpline1): XYChart {
             )
         }
 
+        fun chartPosePathXY(posePath: PosePath): XYChart {
+            val params = range(-1.0, posePath.length() + 1.0, 1000)
+            val positions = params.map { posePath[it, 1].trans.value() }
+
+            return QuickChart.getChart(
+                "Path", "x", "y", "Path",
+                positions.map { it.x }.toDoubleArray(),
+                positions.map { it.y }.toDoubleArray(),
+            )
+        }
+
         class BuildersTest {
             @Test
             fun testForward() {
@@ -345,6 +356,30 @@ fun chartSpline(q: QuinticSpline1): XYChart {
                     .build()
 
                 saveChart("pathBuilder/forward", chartPosePath(posePath))
+            }
+
+            @Test
+            fun testIssue82() {
+                val traj = TrajectoryBuilder(
+                    Pose2d(0.0, 0.0, 0.0),
+                    Rotation2d.exp(0.0),
+                    1e-6,
+                    0.0,
+                    MinVelConstraint(
+                        listOf(
+                            MecanumKinematics(7.0, 1.0).WheelVelConstraint(10.0),
+                            AngularVelConstraint(PI / 4)
+                        )
+                    ),
+                    ProfileAccelConstraint(-10.0, 15.0),
+                    0.25
+                )
+                    .splineTo(Vector2d(20.0, -20.0), -PI / 2)
+                    .build()
+
+                saveChart("trajBuilder/issue82", chartPosePath(traj.path))
+                saveChart("trajBuilder/issue82XY", chartPosePathXY(traj.path))
+                saveChart("trajBuilder/issue82Profile", chartTimeProfile(TimeProfile(traj.profile.baseProfile)))
             }
 
             @Test
