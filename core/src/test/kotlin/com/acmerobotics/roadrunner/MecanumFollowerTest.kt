@@ -16,7 +16,7 @@ class MecanumFollowerTest {
         val kinematics = MecanumKinematics(3.0)
 
         val path = TangentPath(
-            PositionPathBuilder(
+            PosPathSeqBuilder(
                 Vector2d(0.0, 0.0),
                 Rotation2d.exp(0.0),
                 1e-6,
@@ -29,7 +29,8 @@ class MecanumFollowerTest {
                     Vector2d(5.0, 35.0),
                     Rotation2d.exp(PI / 3),
                 )
-                .build(),
+                .build()
+                .first(),
             0.0,
         )
 
@@ -120,7 +121,7 @@ class MecanumFollowerTest {
         val kinematics = MecanumKinematics(3.0)
 
         val path = TangentPath(
-            PositionPathBuilder(
+            PosPathSeqBuilder(
                 Vector2d(0.0, 0.0),
                 Rotation2d.exp(0.0),
                 1e-6,
@@ -133,7 +134,8 @@ class MecanumFollowerTest {
                     Vector2d(5.0, 35.0),
                     Rotation2d.exp(PI / 3),
                 )
-                .build(),
+                .build()
+                .first(),
             0.0,
         )
 

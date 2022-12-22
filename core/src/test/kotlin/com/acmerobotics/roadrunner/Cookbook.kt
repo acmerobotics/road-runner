@@ -18,7 +18,7 @@ fun isFollowing(): Boolean {
 }
 
 fun main() {
-    val posPath = PositionPathBuilder(
+    val posPath = PosPathSeqBuilder(
         Vector2d(0.0, 0.0),
         Rotation2d.exp(0.0),
         1e-6,
@@ -32,6 +32,7 @@ fun main() {
             Rotation2d.exp(PI / 3),
         )
         .build()
+        .first()
 
     // TODO: wrap this in a disposable command?
     val marker = posPath.offsets[1]
@@ -87,7 +88,7 @@ fun main() {
 
 // current TS impl is only magically exception safe
 fun persistentBuilders() {
-    val builder = PositionPathBuilder(
+    val builder = PosPathSeqBuilder(
         Vector2d(0.0, 0.0),
         Rotation2d.exp(0.0),
         1e-6,

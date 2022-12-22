@@ -10,7 +10,7 @@ class RamseteTest {
     @Test
     fun testRamsete() {
         val path = TangentPath(
-            PositionPathBuilder(
+            PosPathSeqBuilder(
                 Vector2d(0.0, 0.0),
                 0.0,
                 1e-6
@@ -24,7 +24,8 @@ class RamseteTest {
                 //     Position2(60.0, 60.0),
                 //     0.0
                 // )
-                .build(),
+                .build()
+                .first(),
             0.0
         )
 

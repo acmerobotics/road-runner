@@ -36,7 +36,7 @@ class KinematicsTest {
     fun testMecWheelVelocityLimiting() {
         val kinematics = MecanumKinematics(10.0)
 
-        val posPath = PositionPathBuilder(
+        val posPath = PosPathSeqBuilder(
             Vector2d(0.0, 0.0),
             Rotation2d.exp(0.0),
             1e-6,
@@ -50,6 +50,7 @@ class KinematicsTest {
                 Rotation2d.exp(PI / 3),
             )
             .build()
+            .first()
 
         val path = TangentPath(posPath, 0.0)
         val profile = profile(
@@ -102,7 +103,7 @@ class KinematicsTest {
     fun testTankWheelVelocityLimiting() {
         val kinematics = TankKinematics(10.0)
 
-        val posPath = PositionPathBuilder(
+        val posPath = PosPathSeqBuilder(
             Vector2d(0.0, 0.0),
             Rotation2d.exp(0.0),
             1e-6,
@@ -116,6 +117,7 @@ class KinematicsTest {
                 Rotation2d.exp(PI / 3),
             )
             .build()
+            .first()
 
         val path = TangentPath(posPath, 0.0)
         val profile = profile(
