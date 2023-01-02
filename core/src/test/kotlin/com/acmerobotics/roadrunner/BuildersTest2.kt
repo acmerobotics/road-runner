@@ -21,8 +21,8 @@ class BuildersTest2 {
         assertEquals(
             1,
             posBase
-                .forward(12.0)
-                .forward(12.0)
+                .lineToX(12.0)
+                .lineToX(24.0)
                 .build()
                 .size
         )
@@ -30,9 +30,9 @@ class BuildersTest2 {
         assertEquals(
             2,
             posBase
-                .forward(12.0)
+                .lineToX(12.0)
                 // automatic tangent reversal occurs here
-                .forward(-12.0)
+                .lineToX(0.0)
                 .build()
                 .size
         )
@@ -44,19 +44,9 @@ class BuildersTest2 {
         }
 
         assertEquals(
-            2,
-            posBase
-                .forward(12.0)
-                // automatic tangent reversal occurs here
-                .forward(-12.0)
-                .build()
-                .size
-        )
-
-        assertEquals(
             1,
             posBase
-                .forward(-12.0)
+                .lineToX(-12.0)
                 .build()
                 .size
         )
@@ -90,7 +80,7 @@ class BuildersTest2 {
         assertEquals(
             1,
             posBase
-                .forward(10.0)
+                .lineToX(10.0)
                 .splineTo(Vector2d(10.0, 0.0), 0.0)
                 .build()
                 .size
@@ -104,7 +94,7 @@ class BuildersTest2 {
             Rotation2d.exp(0.0),
             1e-6,
         )
-            .forward(10.0)
+            .lineToX(10.0)
             .build()
             .first()
 

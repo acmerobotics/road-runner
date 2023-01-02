@@ -93,14 +93,19 @@ class FieldGraphics(
     }
 }
 
-fun videoBuilder() =
+fun videoBuilder(beginPose: Pose2d = Pose2d(0.0, 0.0, 0.0)) =
     TrajectoryActionBuilder(
         { TurnAction(it) },
         { TrajectoryAction(it) },
-        Pose2d(0.0, 0.0, 0.0),
+        beginPose,
         1e-6,
         TurnConstraints(PI / 2, -PI / 2, PI / 2),
-        TranslationalVelConstraint(50.0),
+        MinVelConstraint(
+            listOf(
+                TranslationalVelConstraint(50.0),
+                AngularVelConstraint(PI / 2),
+            )
+        ),
         ProfileAccelConstraint(-40.0, 40.0),
         0.25,
     )

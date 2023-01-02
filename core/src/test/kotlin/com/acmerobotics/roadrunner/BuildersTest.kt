@@ -133,7 +133,7 @@ fun chartSpline(q: QuinticSpline1): XYChart {
 
         class BuildersTest {
             @Test
-            fun testForward() {
+            fun testLineToX() {
                 val r = Random.Default
                 repeat(100) {
                     val beginPos = Vector2d(r.nextDouble(), r.nextDouble())
@@ -143,7 +143,7 @@ fun chartSpline(q: QuinticSpline1): XYChart {
                     val endPos = beginPos + beginTangent.vec() * mag
 
                     val posPath = PosPathSeqBuilder(beginPos, beginTangent, 1e-6)
-                        .forward(mag)
+                        .lineToX(mag)
                         .build()
                         .first()
 
@@ -356,7 +356,7 @@ fun chartSpline(q: QuinticSpline1): XYChart {
             }
 
             @Test
-            fun testPathBuilderForward() {
+            fun testPathBuilderLineToX() {
                 val posePath = PathBuilder(
                     Pose2d(
                         Vector2d(0.0, 0.0),
@@ -364,12 +364,12 @@ fun chartSpline(q: QuinticSpline1): XYChart {
                     ),
                     1e-6,
                 )
-                    .forwardLinearHeading(10.0, PI / 2)
-                    .forwardSplineHeading(10.0, -PI / 2)
+                    .lineToXLinearHeading(10.0, PI / 2)
+                    .lineToXSplineHeading(20.0, -PI / 2)
                     .build()
                     .first()
 
-                saveChart("pathBuilder/forward", chartPosePath(posePath))
+                saveChart("pathBuilder/lineToX", chartPosePath(posePath))
             }
 
             @Test
@@ -462,7 +462,7 @@ fun chartSpline(q: QuinticSpline1): XYChart {
                         Rotation2d.exp(0.0),
                         1e-6,
                     )
-                        .forward(25.0)
+                        .lineToX(25.0)
                         .build()
                         .first()
 
@@ -494,7 +494,7 @@ fun chartSpline(q: QuinticSpline1): XYChart {
                     Rotation2d.exp(0.0),
                     1e-6,
                 )
-                    .forward(-10.0)
+                    .lineToX(-10.0)
                     .build()
             }
 
@@ -506,7 +506,7 @@ fun chartSpline(q: QuinticSpline1): XYChart {
                     ProfileAccelConstraint(-30.0, 50.0),
                     1.0
                 )
-                    .forward(20.0)
+                    .lineToX(20.0)
                     .splineTo(Vector2d(40.0, 55.0), PI / 2)
                     .build()
             }

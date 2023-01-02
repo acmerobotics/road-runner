@@ -6,15 +6,6 @@ class SafePathBuilder internal constructor(private val pathBuilder: PathBuilder)
     constructor(beginPose: Pose2d, beginTangent: Double, eps: Double) :
         this(beginPose, Rotation2d.exp(beginTangent), eps)
 
-    fun forward(dist: Double) = TangentPathBuilder(pathBuilder.forward(dist))
-    fun forwardConstantHeading(dist: Double) = ConstantPathBuilder(pathBuilder.forwardConstantHeading(dist))
-    fun forwardLinearHeading(dist: Double, heading: Rotation2d) =
-        RestrictedPathBuilder(pathBuilder.forwardLinearHeading(dist, heading))
-    fun forwardLinearHeading(dist: Double, heading: Double) = forwardLinearHeading(dist, Rotation2d.exp(heading))
-    fun forwardSplineHeading(dist: Double, heading: Rotation2d) =
-        SafePathBuilder(pathBuilder.forwardSplineHeading(dist, heading))
-    fun forwardSplineHeading(dist: Double, heading: Double) = forwardSplineHeading(dist, Rotation2d.exp(heading))
-
     fun lineToX(posX: Double) = TangentPathBuilder(pathBuilder.lineToX(posX))
     fun lineToXConstantHeading(posX: Double) = ConstantPathBuilder(pathBuilder.lineToXConstantHeading(posX))
     fun lineToXLinearHeading(posX: Double, heading: Rotation2d) =
@@ -50,11 +41,6 @@ class SafePathBuilder internal constructor(private val pathBuilder: PathBuilder)
 }
 
 class TangentPathBuilder internal constructor(private val pathBuilder: PathBuilder) {
-    fun forward(dist: Double) = TangentPathBuilder(pathBuilder.forward(dist))
-    fun forwardSplineHeading(dist: Double, heading: Rotation2d) =
-        SafePathBuilder(pathBuilder.forwardSplineHeading(dist, heading))
-    fun forwardSplineHeading(dist: Double, heading: Double) = forwardSplineHeading(dist, Rotation2d.exp(heading))
-
     fun lineToX(posX: Double) = TangentPathBuilder(pathBuilder.lineToX(posX))
     fun lineToXSplineHeading(posX: Double, heading: Rotation2d) =
         SafePathBuilder(pathBuilder.lineToXSplineHeading(posX, heading))
@@ -75,11 +61,6 @@ class TangentPathBuilder internal constructor(private val pathBuilder: PathBuild
 }
 
 class ConstantPathBuilder internal constructor(private val pathBuilder: PathBuilder) {
-    fun forwardConstantHeading(dist: Double) = ConstantPathBuilder(pathBuilder.forwardConstantHeading(dist))
-    fun forwardSplineHeading(dist: Double, heading: Rotation2d) =
-        SafePathBuilder(pathBuilder.forwardSplineHeading(dist, heading))
-    fun forwardSplineHeading(dist: Double, heading: Double) = forwardSplineHeading(dist, Rotation2d.exp(heading))
-
     fun lineToXConstantHeading(posX: Double) = ConstantPathBuilder(pathBuilder.lineToXConstantHeading(posX))
     fun lineToXSplineHeading(posX: Double, heading: Rotation2d) =
         SafePathBuilder(pathBuilder.lineToXSplineHeading(posX, heading))
@@ -102,10 +83,6 @@ class ConstantPathBuilder internal constructor(private val pathBuilder: PathBuil
 }
 
 class RestrictedPathBuilder internal constructor(private val pathBuilder: PathBuilder) {
-    fun forwardSplineHeading(dist: Double, heading: Rotation2d) =
-        SafePathBuilder(pathBuilder.forwardSplineHeading(dist, heading))
-    fun forwardSplineHeading(dist: Double, heading: Double) = forwardSplineHeading(dist, Rotation2d.exp(heading))
-
     fun lineToXSplineHeading(posX: Double, heading: Rotation2d) =
         SafePathBuilder(pathBuilder.lineToXSplineHeading(posX, heading))
     fun lineToXSplineHeading(posX: Double, heading: Double) = lineToXSplineHeading(posX, Rotation2d.exp(heading))
@@ -203,61 +180,6 @@ class SafeTrajectoryBuilder internal constructor(private val trajBuilder: Trajec
             beginPose, Rotation2d.exp(beginTangent),
             eps, beginEndVel, baseVelConstraint, baseAccelConstraint, resolution, poseMap
         )
-
-    @JvmOverloads
-    fun forward(
-        dist: Double,
-        velConstraintOverride: VelConstraint? = null,
-        accelConstraintOverride: AccelConstraint? = null
-    ) = TangentTrajectoryBuilder(trajBuilder.forward(dist, velConstraintOverride, accelConstraintOverride))
-    @JvmOverloads
-    fun forwardConstantHeading(
-        dist: Double,
-        velConstraintOverride: VelConstraint? = null,
-        accelConstraintOverride: AccelConstraint? = null
-    ) = ConstantTrajectoryBuilder(
-        trajBuilder.forwardConstantHeading(
-            dist, velConstraintOverride, accelConstraintOverride
-        )
-    )
-    @JvmOverloads
-    fun forwardLinearHeading(
-        dist: Double,
-        heading: Rotation2d,
-        velConstraintOverride: VelConstraint? = null,
-        accelConstraintOverride: AccelConstraint? = null
-    ) =
-        RestrictedTrajectoryBuilder(
-            trajBuilder.forwardLinearHeading(
-                dist, heading, velConstraintOverride, accelConstraintOverride
-            )
-        )
-    @JvmOverloads
-    fun forwardLinearHeading(
-        dist: Double,
-        heading: Double,
-        velConstraintOverride: VelConstraint? = null,
-        accelConstraintOverride: AccelConstraint? = null
-    ) = forwardLinearHeading(dist, Rotation2d.exp(heading), velConstraintOverride, accelConstraintOverride)
-    @JvmOverloads
-    fun forwardSplineHeading(
-        dist: Double,
-        heading: Rotation2d,
-        velConstraintOverride: VelConstraint? = null,
-        accelConstraintOverride: AccelConstraint? = null
-    ) =
-        SafeTrajectoryBuilder(
-            trajBuilder.forwardSplineHeading(
-                dist, heading, velConstraintOverride, accelConstraintOverride
-            )
-        )
-    @JvmOverloads
-    fun forwardSplineHeading(
-        dist: Double,
-        heading: Double,
-        velConstraintOverride: VelConstraint? = null,
-        accelConstraintOverride: AccelConstraint? = null
-    ) = forwardSplineHeading(dist, Rotation2d.exp(heading), velConstraintOverride, accelConstraintOverride)
 
     @JvmOverloads
     fun lineToX(
@@ -447,32 +369,6 @@ class SafeTrajectoryBuilder internal constructor(private val trajBuilder: Trajec
 
 class TangentTrajectoryBuilder internal constructor(private val trajBuilder: TrajectoryBuilder) {
     @JvmOverloads
-    fun forward(
-        dist: Double,
-        velConstraintOverride: VelConstraint? = null,
-        accelConstraintOverride: AccelConstraint? = null
-    ) = TangentTrajectoryBuilder(trajBuilder.forward(dist, velConstraintOverride, accelConstraintOverride))
-    @JvmOverloads
-    fun forwardSplineHeading(
-        dist: Double,
-        heading: Rotation2d,
-        velConstraintOverride: VelConstraint? = null,
-        accelConstraintOverride: AccelConstraint? = null
-    ) =
-        SafeTrajectoryBuilder(
-            trajBuilder.forwardSplineHeading(
-                dist, heading, velConstraintOverride, accelConstraintOverride
-            )
-        )
-    @JvmOverloads
-    fun forwardSplineHeading(
-        dist: Double,
-        heading: Double,
-        velConstraintOverride: VelConstraint? = null,
-        accelConstraintOverride: AccelConstraint? = null
-    ) = forwardSplineHeading(dist, Rotation2d.exp(heading), velConstraintOverride, accelConstraintOverride)
-
-    @JvmOverloads
     fun lineToX(
         posX: Double,
         velConstraintOverride: VelConstraint? = null,
@@ -562,36 +458,6 @@ class TangentTrajectoryBuilder internal constructor(private val trajBuilder: Tra
 }
 
 class ConstantTrajectoryBuilder internal constructor(private val trajBuilder: TrajectoryBuilder) {
-    @JvmOverloads
-    fun forwardConstantHeading(
-        dist: Double,
-        velConstraintOverride: VelConstraint? = null,
-        accelConstraintOverride: AccelConstraint? = null
-    ) = ConstantTrajectoryBuilder(
-        trajBuilder.forwardConstantHeading(
-            dist, velConstraintOverride, accelConstraintOverride
-        )
-    )
-    @JvmOverloads
-    fun forwardSplineHeading(
-        dist: Double,
-        heading: Rotation2d,
-        velConstraintOverride: VelConstraint? = null,
-        accelConstraintOverride: AccelConstraint? = null
-    ) =
-        SafeTrajectoryBuilder(
-            trajBuilder.forwardSplineHeading(
-                dist, heading, velConstraintOverride, accelConstraintOverride
-            )
-        )
-    @JvmOverloads
-    fun forwardSplineHeading(
-        dist: Double,
-        heading: Double,
-        velConstraintOverride: VelConstraint? = null,
-        accelConstraintOverride: AccelConstraint? = null
-    ) = forwardSplineHeading(dist, Rotation2d.exp(heading), velConstraintOverride, accelConstraintOverride)
-
     @JvmOverloads
     fun lineToXConstantHeading(
         posX: Double,
@@ -696,26 +562,6 @@ class ConstantTrajectoryBuilder internal constructor(private val trajBuilder: Tr
 }
 
 class RestrictedTrajectoryBuilder internal constructor(private val trajBuilder: TrajectoryBuilder) {
-    @JvmOverloads
-    fun forwardSplineHeading(
-        dist: Double,
-        heading: Rotation2d,
-        velConstraintOverride: VelConstraint? = null,
-        accelConstraintOverride: AccelConstraint? = null
-    ) =
-        SafeTrajectoryBuilder(
-            trajBuilder.forwardSplineHeading(
-                dist, heading, velConstraintOverride, accelConstraintOverride
-            )
-        )
-    @JvmOverloads
-    fun forwardSplineHeading(
-        dist: Double,
-        heading: Double,
-        velConstraintOverride: VelConstraint? = null,
-        accelConstraintOverride: AccelConstraint? = null
-    ) = forwardSplineHeading(dist, Rotation2d.exp(heading), velConstraintOverride, accelConstraintOverride)
-
     @JvmOverloads
     fun lineToXSplineHeading(
         posX: Double,
