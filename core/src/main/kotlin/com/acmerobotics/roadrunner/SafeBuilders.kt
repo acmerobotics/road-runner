@@ -2,7 +2,7 @@ package com.acmerobotics.roadrunner
 
 class SafePathBuilder internal constructor(private val pathBuilder: PathBuilder) {
     constructor(beginPose: Pose2d, beginTangent: Rotation2d, eps: Double) :
-        this(PathBuilder(beginPose, beginTangent, eps))
+        this(PathBuilder(beginPose, eps).setTangent(beginTangent))
     constructor(beginPose: Pose2d, beginTangent: Double, eps: Double) :
         this(beginPose, Rotation2d.exp(beginTangent), eps)
 
@@ -182,10 +182,26 @@ class SafeTrajectoryBuilder internal constructor(private val trajBuilder: Trajec
     ) :
         this(
             TrajectoryBuilder(
-                beginPose, beginTangent, eps,
+                beginPose, eps,
                 beginEndVel, baseVelConstraint, baseAccelConstraint, resolution,
                 poseMap,
-            )
+            ).setTangent(beginTangent)
+        )
+
+    @JvmOverloads
+    constructor(
+        beginPose: Pose2d,
+        beginTangent: Double,
+        eps: Double,
+        beginEndVel: Double,
+        baseVelConstraint: VelConstraint,
+        baseAccelConstraint: AccelConstraint,
+        resolution: Double,
+        poseMap: TrajectoryBuilder.PoseMap = TrajectoryBuilder.PoseMap { it }
+    ) :
+        this(
+            beginPose, Rotation2d.exp(beginTangent),
+            eps, beginEndVel, baseVelConstraint, baseAccelConstraint, resolution, poseMap
         )
 
     @JvmOverloads

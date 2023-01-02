@@ -1,3 +1,5 @@
+val libVersion: String by rootProject.extra
+
 plugins {
     id("org.jetbrains.kotlin.jvm") version "1.6.20"
 
@@ -40,7 +42,7 @@ publishing {
         create<MavenPublication>("maven") {
             groupId = "com.acmerobotics.roadrunner"
             artifactId = "core"
-            version = "1.0.0-beta0"
+            version = libVersion
 
             from(components["java"])
         }

@@ -62,7 +62,7 @@ data class QuinticSpline1(
      * @param[t] \(t\)
      */
     operator fun get(t: Double, n: Int) = DualNum<Internal>(
-        List(n) {
+        DoubleArray(n) {
             when (it) {
                 0 -> ((((a * t + b) * t + c) * t + d) * t + e) * t + f
                 1 -> (((5.0 * a * t + 4.0 * b) * t + 3.0 * c) * t + 2.0 * d) * t + e
@@ -225,6 +225,10 @@ data class CompositePositionPath<Param> @JvmOverloads constructor(
 ) : PositionPath<Param> {
     @JvmField
     val length = offsets.last()
+
+    init {
+        require(paths.isNotEmpty())
+    }
 
     override fun get(param: Double, n: Int): Vector2dDual<Param> {
         if (param > length) {
