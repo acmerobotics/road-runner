@@ -1,6 +1,5 @@
 package com.acmerobotics.roadrunner
 
-// short and non-generic for ease of use
 class Trajectory(
     @JvmField
     val path: PosePath,
