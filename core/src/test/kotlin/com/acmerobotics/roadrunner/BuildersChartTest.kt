@@ -11,7 +11,7 @@ class BuildersChartTest {
             Rotation2d.exp(0.0),
             1e-6,
         )
-            .forward(10.0)
+            .lineToX(10.0)
             .splineTo(Vector2d(20.0, -10.0), -PI / 2)
             .build()
         require(paths.size == 1)

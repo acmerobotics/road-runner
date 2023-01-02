@@ -50,7 +50,7 @@ class ActionRegressionTest {
             TrajectoryActionBuilder(
                 { TurnAction(it) },
                 { TrajectoryAction(it) },
-                Pose2d(0.0, 0.0, PI / 2),
+                Pose2d(0.0, 0.0, 0.0),
                 1e-3,
                 TurnConstraints(2.0, -1.0, 1.0),
                 TranslationalVelConstraint(20.0),
@@ -61,7 +61,7 @@ class ActionRegressionTest {
         assertEquals(
             "SequentialAction(initialActions=[Trajectory])",
             base
-                .forward(10.0)
+                .lineToX(10.0)
                 .build()
                 .toString()
         )
@@ -69,8 +69,8 @@ class ActionRegressionTest {
         assertEquals(
             "SequentialAction(initialActions=[Trajectory])",
             base
-                .forward(10.0)
-                .forward(10.0)
+                .lineToX(10.0)
+                .lineToX(20.0)
                 .build()
                 .toString(),
         )
@@ -78,9 +78,9 @@ class ActionRegressionTest {
         assertEquals(
             "SequentialAction(initialActions=[Trajectory, SleepAction(dt=10.0), Trajectory])",
             base
-                .forward(10.0)
+                .lineToX(10.0)
                 .waitSeconds(10.0)
-                .forward(10.0)
+                .lineToX(20.0)
                 .build()
                 .toString()
         )
@@ -88,10 +88,10 @@ class ActionRegressionTest {
         assertEquals(
             "SequentialAction(initialActions=[Trajectory, Trajectory, Trajectory])",
             base
-                .forward(10.0)
-                .forwardLinearHeading(10.0, Rotation2d.exp(1.57))
-                .forward(10.0)
-                .forward(10.0)
+                .lineToX(10.0)
+                .lineToXLinearHeading(20.0, Rotation2d.exp(1.57))
+                .lineToX(30.0)
+                .lineToX(40.0)
                 .build()
                 .toString()
         )
@@ -101,11 +101,11 @@ class ActionRegressionTest {
                 "SequentialAction(initialActions=" +
                 "[Trajectory, Trajectory]), SequentialAction(initialActions=[SleepAction(dt=2.0), A])])])",
             base
-                .forward(10.0)
-                .forwardLinearHeading(10.0, Rotation2d.exp(1.57))
+                .lineToX(10.0)
+                .lineToXLinearHeading(20.0, Rotation2d.exp(1.57))
                 .afterTime(2.0, LabelAction("A"))
-                .forward(10.0)
-                .forward(10.0)
+                .lineToX(25.0)
+                .lineToX(30.0)
                 .build()
                 .toString()
         )
@@ -116,12 +116,12 @@ class ActionRegressionTest {
                 "Trajectory, Trajectory]), SequentialAction(initialActions=[SleepAction(dt=2.0), A]), " +
                 "SequentialAction(initialActions=[SleepAction(dt=3.499999999999996), B])])])",
             base
-                .forward(10.0)
-                .forwardLinearHeading(10.0, Rotation2d.exp(1.57))
+                .lineToX(10.0)
+                .lineToXLinearHeading(20.0, Rotation2d.exp(1.57))
                 .afterTime(2.0, LabelAction("A"))
-                .forward(5.0)
+                .lineToX(25.0)
                 .afterTime(1.5, LabelAction("B"))
-                .forward(10.0)
+                .lineToX(35.0)
                 .build()
                 .toString()
         )
@@ -147,7 +147,7 @@ class ActionRegressionTest {
             base
                 .afterDisp(1.0, LabelAction("A"))
                 .waitSeconds(10.0)
-                .forward(10.0)
+                .lineToX(10.0)
                 .build()
                 .toString()
         }
@@ -158,7 +158,7 @@ class ActionRegressionTest {
                 "initialActions=[SleepAction(dt=0.44721359549995765), A])])",
             base
                 .afterDisp(1.0, LabelAction("A"))
-                .forward(10.0)
+                .lineToX(10.0)
                 .build()
                 .toString()
         )
@@ -169,7 +169,7 @@ class ActionRegressionTest {
                 "initialActions=[SleepAction(dt=0.316227766016838), A])])",
             base
                 .afterDisp(1.0, LabelAction("A"))
-                .forward(0.25)
+                .lineToX(0.25)
                 .build()
                 .toString()
         )
@@ -180,8 +180,8 @@ class ActionRegressionTest {
                 "SequentialAction(initialActions=[SleepAction(dt=0.316227766016838), A])])",
             base
                 .afterDisp(1.0, LabelAction("A"))
-                .forward(0.25)
-                .forwardLinearHeading(10.0, PI / 4)
+                .lineToX(0.25)
+                .lineToXLinearHeading(10.25, PI / 4)
                 .build()
                 .toString()
         )
