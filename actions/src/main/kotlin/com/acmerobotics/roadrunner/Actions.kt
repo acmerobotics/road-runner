@@ -5,30 +5,26 @@ package com.acmerobotics.roadrunner
 import com.acmerobotics.dashboard.canvas.Canvas
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket
 
-interface Action {
+/**
+ * Concurrent task for cooperative multitasking with some FTC dashboard hooks. Actions may have mutable state.
+ */
+fun interface Action {
+    /**
+     * Runs a single uninterruptible block. Returns true if the action should run again and false if it has completed.
+     * A telemetry packet [p] is provided to record any information on the action's progress.
+     */
     fun run(p: TelemetryPacket): Boolean
-    fun preview(c: Canvas)
+
+    /**
+     * Draws a preview of the action on canvas [fieldOverlay].
+     */
+    fun preview(fieldOverlay: Canvas) {}
 }
 
-data class ParallelAction(
-    val initialActions: List<Action>
-) : Action {
-    private var actions = initialActions
-
-    constructor(vararg actions: Action) : this(actions.asList())
-
-    override fun run(p: TelemetryPacket): Boolean {
-        actions = actions.filter { it.run(p) }
-        return actions.isNotEmpty()
-    }
-
-    override fun preview(c: Canvas) {
-        for (a in initialActions) {
-            a.preview(c)
-        }
-    }
-}
-
+/**
+ * Action combinator that executes the action group [initialActions] in series. Each action is run one after the other.
+ * When an action completes, the next one is immediately run. This action completes when the last actions completes.
+ */
 data class SequentialAction(
     val initialActions: List<Action>
 ) : Action {
@@ -49,15 +45,45 @@ data class SequentialAction(
         }
     }
 
-    override fun preview(c: Canvas) {
+    override fun preview(fieldOverlay: Canvas) {
         for (a in initialActions) {
-            a.preview(c)
+            a.preview(fieldOverlay)
         }
     }
 }
 
+/**
+ * Action combinator that executes the action group [initialActions] in parallel. Each call to [run] on this action
+ * calls [run] on _every_ live child action in the order provided. Completed actions are removed from the rotation
+ * and _do not_ prevent the completion of other actions. This action completes when all of [initialActions] have.
+ */
+data class ParallelAction(
+    val initialActions: List<Action>
+) : Action {
+    private var actions = initialActions
+
+    constructor(vararg actions: Action) : this(actions.asList())
+
+    override fun run(p: TelemetryPacket): Boolean {
+        actions = actions.filter { it.run(p) }
+        return actions.isNotEmpty()
+    }
+
+    override fun preview(fieldOverlay: Canvas) {
+        for (a in initialActions) {
+            a.preview(fieldOverlay)
+        }
+    }
+}
+
+/**
+ * Returns [System.nanoTime] in seconds.
+ */
 fun now() = System.nanoTime() * 1e-9
 
+/**
+ * Primitive sleep action that stalls for [dt] seconds.
+ */
 data class SleepAction(val dt: Double) : Action {
     private var beginTs = -1.0
 
@@ -72,7 +98,7 @@ data class SleepAction(val dt: Double) : Action {
         return t < dt
     }
 
-    override fun preview(c: Canvas) {}
+    override fun preview(fieldOverlay: Canvas) {}
 }
 
 private fun seqCons(hd: Action, tl: Action): Action =
@@ -82,30 +108,37 @@ private fun seqCons(hd: Action, tl: Action): Action =
         SequentialAction(hd, tl)
     }
 
-sealed class MarkerFactory(
+private sealed class MarkerFactory(
     val segmentIndex: Int,
 ) {
     abstract fun make(t: TimeTrajectory, segmentDisp: Double): Action
 }
 
-class TimeMarkerFactory(segmentIndex: Int, val dt: Double, val a: Action) : MarkerFactory(segmentIndex) {
+private class TimeMarkerFactory(segmentIndex: Int, val dt: Double, val a: Action) : MarkerFactory(segmentIndex) {
     override fun make(t: TimeTrajectory, segmentDisp: Double) =
         seqCons(SleepAction(t.profile.inverse(segmentDisp) + dt), a)
 }
 
-class DispMarkerFactory(segmentIndex: Int, val ds: Double, val a: Action) : MarkerFactory(segmentIndex) {
+private class DispMarkerFactory(segmentIndex: Int, val ds: Double, val a: Action) : MarkerFactory(segmentIndex) {
     override fun make(t: TimeTrajectory, segmentDisp: Double) =
         seqCons(SleepAction(t.profile.inverse(segmentDisp + ds)), a)
 }
 
-interface TrajectoryActionFactory {
-    fun fromTurn(t: TimeTurn): Action
-    fun fromTrajectory(t: TimeTrajectory): Action
+fun interface TurnActionFactory {
+    fun make(t: TimeTurn): Action
 }
 
+fun interface TrajectoryActionFactory {
+    fun make(t: TimeTrajectory): Action
+}
+
+/**
+ * Builder that combines trajectories, turns, and other actions.
+ */
 class TrajectoryActionBuilder private constructor(
     // constants
-    val factory: TrajectoryActionFactory,
+    val turnActionFactory: TurnActionFactory,
+    val trajectoryActionFactory: TrajectoryActionFactory,
     val eps: Double,
     val baseTurnConstraints: TurnConstraints,
     val baseVelConstraint: VelConstraint,
@@ -122,7 +155,8 @@ class TrajectoryActionBuilder private constructor(
 ) {
     @JvmOverloads
     constructor(
-        factory: TrajectoryActionFactory,
+        turnActionFactory: TurnActionFactory,
+        trajectoryActionFactory: TrajectoryActionFactory,
         beginPose: Pose2d,
         eps: Double,
         baseTurnConstraints: TurnConstraints,
@@ -132,7 +166,8 @@ class TrajectoryActionBuilder private constructor(
         poseMap: TrajectoryBuilder.PoseMap = TrajectoryBuilder.PoseMap { it },
     ) :
         this(
-            factory,
+            turnActionFactory,
+            trajectoryActionFactory,
             eps,
             baseTurnConstraints,
             baseVelConstraint,
@@ -161,7 +196,8 @@ class TrajectoryActionBuilder private constructor(
         cont: (Action) -> Action,
     ) :
         this(
-            ab.factory,
+            ab.turnActionFactory,
+            ab.trajectoryActionFactory,
             ab.eps,
             ab.baseTurnConstraints,
             ab.baseVelConstraint,
@@ -176,6 +212,9 @@ class TrajectoryActionBuilder private constructor(
             cont
         )
 
+    /**
+     * Ends the current trajectory in progress. No-op if no trajectory segments are pending.
+     */
     fun endTrajectory() =
         if (n == 0) {
             require(ms.isEmpty())
@@ -206,7 +245,7 @@ class TrajectoryActionBuilder private constructor(
                     Pair(tail, ms)
                 ) { (traj, offset), (acc, ms) ->
                     val timeTraj = TimeTrajectory(traj)
-                    val actions = mutableListOf(seqCons(factory.fromTrajectory(timeTraj), acc))
+                    val actions = mutableListOf(seqCons(trajectoryActionFactory.make(timeTraj), acc))
                     val msRem = mutableListOf<MarkerFactory>()
                     for (m in ms) {
                         val i = m.segmentIndex - offset
@@ -230,6 +269,9 @@ class TrajectoryActionBuilder private constructor(
             }
         }
 
+    /**
+     * Stops the current trajectory (like [endTrajectory]) and adds action [a] next.
+     */
     fun stopAndAdd(a: Action): TrajectoryActionBuilder {
         val b = endTrajectory()
         return TrajectoryActionBuilder(b, b.tb, b.n, b.lastPose, b.lastTangent, b.ms) { tail ->
@@ -237,14 +279,32 @@ class TrajectoryActionBuilder private constructor(
         }
     }
 
+    /**
+     * Waits [t] seconds.
+     */
+    // TODO: handle negative case?
     fun waitSeconds(t: Double) = stopAndAdd(SleepAction(t))
 
+    /**
+     * Schedules action [a] to execute in parallel starting at a displacement [ds] after the last trajectory segment.
+     * The action start is clamped to the span of the current trajectory.
+     *
+     * Cannot be called without an applicable pending trajectory.
+     */
+    // TODO: handle negative/before trajectory begin case?
+    // TODO: Should calling this without an applicable trajectory implicitly begin an empty trajectory and execute the
+    // action immediately?
     fun afterDisp(ds: Double, a: Action) =
         TrajectoryActionBuilder(
             this, tb, n, lastPose, lastTangent,
             ms + listOf(DispMarkerFactory(n, ds, a)), cont
         )
 
+    /**
+     * Schedules action [a] to execute in parallel starting [dt] seconds after the last trajectory segment, turn, or
+     * other action.
+     */
+    // TODO: handle negative/before trajectory begin case?
     fun afterTime(dt: Double, a: Action) =
         if (n == 0) {
             TrajectoryActionBuilder(this, tb, 0, lastPose, lastTangent, emptyList()) { tail ->
@@ -268,7 +328,7 @@ class TrajectoryActionBuilder private constructor(
     fun turn(angle: Double, turnConstraintsOverride: TurnConstraints? = null): TrajectoryActionBuilder {
         val b = endTrajectory()
         val b2 = b.stopAndAdd(
-            factory.fromTurn(
+            turnActionFactory.make(
                 TimeTurn(b.lastPose, angle, turnConstraintsOverride ?: baseTurnConstraints)
             )
         )

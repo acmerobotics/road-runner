@@ -11,6 +11,13 @@ data class TurnConstraints(
     val maxAngAccel: Double,
 )
 
+/**
+ * A time-indexed turn beginning at [beginPose] and rotating CCW [angle] radians subject to [constraints].
+ *
+ * Note: Regardless of whether the turn is to the left or to the right, the max accel limit is applied when speeding up
+ * and the min accel limit is applied when speeding down.
+ */
+// TODO: Do the semantics in the above note make sense?
 class TimeTurn(
     @JvmField
     val beginPose: Pose2d,
@@ -19,9 +26,6 @@ class TimeTurn(
     @JvmField
     val constraints: TurnConstraints,
 ) {
-    // NOTE: I think the acceleration limit semantics here are what we want. Regardless of
-    // whether the turn is to the left or to the right, max accel limit is applied ramping
-    // up in speed and the min accel limit is applied ramping down.
     @JvmField
     val profile = TimeProfile(
         constantProfile(

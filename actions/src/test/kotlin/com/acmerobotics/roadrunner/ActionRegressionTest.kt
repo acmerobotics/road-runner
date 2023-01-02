@@ -12,7 +12,7 @@ class TrajectoryAction(val t: TimeTrajectory) : Action {
         TODO("Not yet implemented")
     }
 
-    override fun preview(c: Canvas) {
+    override fun preview(fieldOverlay: Canvas) {
         TODO("Not yet implemented")
     }
 
@@ -24,7 +24,7 @@ class TurnAction(val t: TimeTurn) : Action {
         TODO("Not yet implemented")
     }
 
-    override fun preview(c: Canvas) {
+    override fun preview(fieldOverlay: Canvas) {
         TODO("Not yet implemented")
     }
 
@@ -36,7 +36,7 @@ class LabelAction(private val s: String) : Action {
         TODO("Not yet implemented")
     }
 
-    override fun preview(c: Canvas) {
+    override fun preview(fieldOverlay: Canvas) {
         TODO("Not yet implemented")
     }
 
@@ -48,10 +48,8 @@ class ActionRegressionTest {
     fun testTrajectoryActionBuilder() {
         val base =
             TrajectoryActionBuilder(
-                object : TrajectoryActionFactory {
-                    override fun fromTrajectory(t: TimeTrajectory) = TrajectoryAction(t)
-                    override fun fromTurn(t: TimeTurn) = TurnAction(t)
-                },
+                { TurnAction(it) },
+                { TrajectoryAction(it) },
                 Pose2d(0.0, 0.0, PI / 2),
                 1e-3,
                 TurnConstraints(2.0, -1.0, 1.0),

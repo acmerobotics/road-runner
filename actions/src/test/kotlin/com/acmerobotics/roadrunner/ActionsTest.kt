@@ -18,7 +18,7 @@ class Counter(
             false
         }
 
-    override fun preview(c: Canvas) {}
+    override fun preview(fieldOverlay: Canvas) {}
 }
 
 fun runBlockingCount(a: Action): Int {

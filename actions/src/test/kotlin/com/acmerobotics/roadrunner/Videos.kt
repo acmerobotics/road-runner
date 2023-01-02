@@ -95,10 +95,8 @@ class FieldGraphics(
 
 fun videoBuilder() =
     TrajectoryActionBuilder(
-        object : TrajectoryActionFactory {
-            override fun fromTrajectory(t: TimeTrajectory) = TrajectoryAction(t)
-            override fun fromTurn(t: TimeTurn) = TurnAction(t)
-        },
+        { TurnAction(it) },
+        { TrajectoryAction(it) },
         Pose2d(0.0, 0.0, 0.0),
         1e-6,
         TurnConstraints(PI / 2, -PI / 2, PI / 2),
