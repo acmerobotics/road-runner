@@ -54,28 +54,6 @@ class BuildersTest2 {
         )
 
         assertEquals(
-            2,
-            posBase
-                .forward(12.0)
-                .setReversed(true) // manual reversal is also acceptable
-                .forward(12.0)
-                .build()
-                .size
-        )
-
-        assertEquals(
-            2,
-            posBase
-                .forward(12.0)
-                .setReversed(true)
-                .setReversed(false) // sure, do it as many times as you need
-                .forward(-12.0)
-                .build()
-                .size
-        )
-
-        // automatic reversal also works at the beginning
-        assertEquals(
             1,
             posBase
                 .forward(-12.0)
@@ -103,16 +81,6 @@ class BuildersTest2 {
                 .size
         )
 
-        assertEquals(
-            2,
-            posBase
-                .splineTo(Vector2d(24.0, -24.0), PI / 2)
-                .setReversed(true)
-                .splineTo(Vector2d(0.0, 0.0), 0.0)
-                .build()
-                .size
-        )
-
         assertFails {
             posBase
                 .splineTo(Vector2d(0.0, 0.0), 0.0)
@@ -124,15 +92,6 @@ class BuildersTest2 {
             posBase
                 .forward(10.0)
                 .splineTo(Vector2d(10.0, 0.0), 0.0)
-                .build()
-                .size
-        )
-
-        assertEquals(
-            1,
-            posBase
-                .setReversed(true)
-                .forward(-10.0)
                 .build()
                 .size
         )

@@ -115,14 +115,14 @@ fun writeVideo(f: File, a: Action, fps: Int = 5) {
             when (a) {
                 is SequentialAction -> {
                     var t = t0
-                    for (a2 in a.actions) {
+                    for (a2 in a.initialActions) {
                         t = aux(t, a2)
                     }
                     return t
                 }
 
                 is ParallelAction -> {
-                    return a.actions.maxOf { a2 ->
+                    return a.initialActions.maxOf { a2 ->
                         aux(t0, a2)
                     }
                 }
@@ -220,8 +220,8 @@ fun writeVideo(f: File, a: Action, fps: Int = 5) {
 
         fun drawPreview(a: Action) {
             when (a) {
-                is SequentialAction -> a.actions.forEach(::drawPreview)
-                is ParallelAction -> a.actions.forEach(::drawPreview)
+                is SequentialAction -> a.initialActions.forEach(::drawPreview)
+                is ParallelAction -> a.initialActions.forEach(::drawPreview)
                 is TrajectoryAction -> {
                     g.setColor(Color(0x7A4CAF50, true))
                     g.strokeLine(

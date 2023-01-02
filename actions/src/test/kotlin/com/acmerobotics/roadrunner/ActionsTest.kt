@@ -6,25 +6,24 @@ import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 class Counter(
-    val n: Int,
-    val f: () -> Unit,
+    private var n: Int,
+    private val f: () -> Unit,
 ) : Action {
     override fun run(p: TelemetryPacket) =
-        if (n <= 0) {
-            null
-        } else {
+        if (n > 0) {
             f()
-            Counter(n - 1, f)
+            n--
+            true
+        } else {
+            false
         }
 
     override fun preview(c: Canvas) {}
 }
 
 fun runBlockingCount(a: Action): Int {
-    var a2: Action? = a
-    var i = -1
-    while (a2 != null) {
-        a2 = a2.run(TelemetryPacket())
+    var i = 0
+    while (a.run(TelemetryPacket())) {
         i += 1
     }
     return i

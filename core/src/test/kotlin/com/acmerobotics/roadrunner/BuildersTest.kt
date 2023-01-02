@@ -7,7 +7,6 @@ import kotlin.math.PI
 import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFails
 
 fun chartSpline(q: QuinticSpline1): XYChart {
     val ts = range(0.0, 1.0, 1000)
@@ -363,7 +362,6 @@ fun chartSpline(q: QuinticSpline1): XYChart {
                         Vector2d(0.0, 0.0),
                         Rotation2d.exp(0.0),
                     ),
-                    Rotation2d.exp(0.0),
                     1e-6,
                 )
                     .forwardLinearHeading(10.0, PI / 2)
@@ -378,7 +376,6 @@ fun chartSpline(q: QuinticSpline1): XYChart {
             fun testIssue82() {
                 val traj = TrajectoryBuilder(
                     Pose2d(0.0, 0.0, 0.0),
-                    Rotation2d.exp(0.0),
                     1e-6,
                     0.0,
                     MinVelConstraint(
@@ -481,34 +478,30 @@ fun chartSpline(q: QuinticSpline1): XYChart {
 
             @Test
             fun testBackwardLine() {
-                assertFails {
-                    PosPathSeqBuilder(
-                        Vector2d(0.0, 0.0),
-                        Rotation2d.exp(0.0),
-                        1e-6,
-                    )
-                        .lineToX(-10.0)
-                        .build()
-                }
+                PosPathSeqBuilder(
+                    Vector2d(0.0, 0.0),
+                    Rotation2d.exp(0.0),
+                    1e-6,
+                )
+                    .lineToX(-10.0)
+                    .build()
             }
 
             @Test
             fun testBackwardLine2() {
-                assertFails {
-                    PosPathSeqBuilder(
-                        Vector2d(0.0, 0.0),
-                        Rotation2d.exp(0.0),
-                        1e-6,
-                    )
-                        .forward(-10.0)
-                        .build()
-                }
+                PosPathSeqBuilder(
+                    Vector2d(0.0, 0.0),
+                    Rotation2d.exp(0.0),
+                    1e-6,
+                )
+                    .forward(-10.0)
+                    .build()
             }
 
             @Test
             fun testLineSpline() {
                 TrajectoryBuilder(
-                    Pose2d(0.0, 0.0, 0.0), Rotation2d.exp(0.0), 1e-6, 0.0,
+                    Pose2d(0.0, 0.0, 0.0), 1e-6, 0.0,
                     TranslationalVelConstraint(40.0),
                     ProfileAccelConstraint(-30.0, 50.0),
                     1.0

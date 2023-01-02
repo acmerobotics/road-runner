@@ -8,7 +8,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFails
 
 class TrajectoryAction(val t: TimeTrajectory) : Action {
-    override fun run(p: TelemetryPacket): Action? {
+    override fun run(p: TelemetryPacket): Boolean {
         TODO("Not yet implemented")
     }
 
@@ -20,7 +20,7 @@ class TrajectoryAction(val t: TimeTrajectory) : Action {
 }
 
 class TurnAction(val t: TimeTurn) : Action {
-    override fun run(p: TelemetryPacket): Action? {
+    override fun run(p: TelemetryPacket): Boolean {
         TODO("Not yet implemented")
     }
 
@@ -32,7 +32,7 @@ class TurnAction(val t: TimeTurn) : Action {
 }
 
 class LabelAction(private val s: String) : Action {
-    override fun run(p: TelemetryPacket): Action? {
+    override fun run(p: TelemetryPacket): Boolean {
         TODO("Not yet implemented")
     }
 
@@ -61,7 +61,7 @@ class ActionRegressionTest {
             )
 
         assertEquals(
-            "SequentialAction(actions=[TrajectoryAction])",
+            "SequentialAction(initialActions=[Trajectory])",
             base
                 .forward(10.0)
                 .build()
@@ -69,7 +69,7 @@ class ActionRegressionTest {
         )
 
         assertEquals(
-            "SequentialAction(actions=[TrajectoryAction])",
+            "SequentialAction(initialActions=[Trajectory])",
             base
                 .forward(10.0)
                 .forward(10.0)
@@ -78,7 +78,7 @@ class ActionRegressionTest {
         )
 
         assertEquals(
-            "SequentialAction(actions=[TrajectoryAction, SleepAction(dt=10.0), TrajectoryAction])",
+            "SequentialAction(initialActions=[Trajectory, SleepAction(dt=10.0), Trajectory])",
             base
                 .forward(10.0)
                 .waitSeconds(10.0)
@@ -88,7 +88,7 @@ class ActionRegressionTest {
         )
 
         assertEquals(
-            "SequentialAction(actions=[TrajectoryAction, TrajectoryAction, TrajectoryAction])",
+            "SequentialAction(initialActions=[Trajectory, Trajectory, Trajectory])",
             base
                 .forward(10.0)
                 .forwardLinearHeading(10.0, Rotation2d.exp(1.57))
@@ -99,8 +99,9 @@ class ActionRegressionTest {
         )
 
         assertEquals(
-            "SequentialAction(actions=[TrajectoryAction, ParallelAction(actions=[SequentialAction(actions=" +
-                "[TrajectoryAction, TrajectoryAction]), SequentialAction(actions=[SleepAction(dt=2.0), A])])])",
+            "SequentialAction(initialActions=[Trajectory, ParallelAction(initialActions=[" +
+                "SequentialAction(initialActions=" +
+                "[Trajectory, Trajectory]), SequentialAction(initialActions=[SleepAction(dt=2.0), A])])])",
             base
                 .forward(10.0)
                 .forwardLinearHeading(10.0, Rotation2d.exp(1.57))
@@ -112,9 +113,10 @@ class ActionRegressionTest {
         )
 
         assertEquals(
-            "SequentialAction(actions=[TrajectoryAction, ParallelAction(actions=[SequentialAction(actions=[" +
-                "TrajectoryAction, TrajectoryAction]), SequentialAction(actions=[SleepAction(dt=2.0), A]), " +
-                "SequentialAction(actions=[SleepAction(dt=3.499999999999996), B])])])",
+            "SequentialAction(initialActions=[Trajectory, ParallelAction(initialActions=[" +
+                "SequentialAction(initialActions=[" +
+                "Trajectory, Trajectory]), SequentialAction(initialActions=[SleepAction(dt=2.0), A]), " +
+                "SequentialAction(initialActions=[SleepAction(dt=3.499999999999996), B])])])",
             base
                 .forward(10.0)
                 .forwardLinearHeading(10.0, Rotation2d.exp(1.57))
@@ -127,7 +129,8 @@ class ActionRegressionTest {
         )
 
         assertEquals(
-            "ParallelAction(actions=[SequentialAction(actions=[]), SequentialAction(actions=[" +
+            "ParallelAction(initialActions=[SequentialAction(initialActions=[]), " +
+                "SequentialAction(initialActions=[" +
                 "SleepAction(dt=1.0), a])])",
             base
                 .afterTime(1.0, LabelAction("a"))
@@ -152,8 +155,9 @@ class ActionRegressionTest {
         }
 
         assertEquals(
-            "ParallelAction(actions=[SequentialAction(actions=[TrajectoryAction]), SequentialAction(" +
-                "actions=[SleepAction(dt=0.44721359549995765), A])])",
+            "ParallelAction(initialActions=[SequentialAction(initialActions=[Trajectory]), " +
+                "SequentialAction(" +
+                "initialActions=[SleepAction(dt=0.44721359549995765), A])])",
             base
                 .afterDisp(1.0, LabelAction("A"))
                 .forward(10.0)
@@ -162,8 +166,9 @@ class ActionRegressionTest {
         )
 
         assertEquals(
-            "ParallelAction(actions=[SequentialAction(actions=[TrajectoryAction]), SequentialAction(" +
-                "actions=[SleepAction(dt=0.316227766016838), A])])",
+            "ParallelAction(initialActions=[SequentialAction(initialActions=[Trajectory]), " +
+                "SequentialAction(" +
+                "initialActions=[SleepAction(dt=0.316227766016838), A])])",
             base
                 .afterDisp(1.0, LabelAction("A"))
                 .forward(0.25)
@@ -172,8 +177,9 @@ class ActionRegressionTest {
         )
 
         assertEquals(
-            "ParallelAction(actions=[SequentialAction(actions=[TrajectoryAction, TrajectoryAction]), " +
-                "SequentialAction(actions=[SleepAction(dt=0.316227766016838), A])])",
+            "ParallelAction(initialActions=[SequentialAction(initialActions=[Trajectory, " +
+                "Trajectory]), " +
+                "SequentialAction(initialActions=[SleepAction(dt=0.316227766016838), A])])",
             base
                 .afterDisp(1.0, LabelAction("A"))
                 .forward(0.25)

@@ -5,48 +5,52 @@ package com.acmerobotics.roadrunner
 import com.acmerobotics.dashboard.canvas.Canvas
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket
 
-// NOTE: Actions need not be immutable. Most will return this from run()
 interface Action {
-    fun run(p: TelemetryPacket): Action?
+    fun run(p: TelemetryPacket): Boolean
     fun preview(c: Canvas)
 }
 
-data class ParallelAction(val actions: List<Action>) : Action {
+data class ParallelAction(
+    val initialActions: List<Action>
+) : Action {
+    private var actions = initialActions
+
     constructor(vararg actions: Action) : this(actions.asList())
 
-    override fun run(p: TelemetryPacket) =
-        actions.mapNotNull { it.run(p) }.let { actions ->
-            if (actions.isEmpty()) {
-                null
-            } else {
-                ParallelAction(actions)
-            }
-        }
+    override fun run(p: TelemetryPacket): Boolean {
+        actions = actions.filter { it.run(p) }
+        return actions.isNotEmpty()
+    }
 
     override fun preview(c: Canvas) {
-        for (a in actions) {
+        for (a in initialActions) {
             a.preview(c)
         }
     }
 }
 
-data class SequentialAction(val actions: List<Action>) : Action {
+data class SequentialAction(
+    val initialActions: List<Action>
+) : Action {
+    private var actions = initialActions
+
     constructor(vararg actions: Action) : this(actions.asList())
 
-    override fun run(p: TelemetryPacket): Action? =
+    override tailrec fun run(p: TelemetryPacket): Boolean {
         if (actions.isEmpty()) {
-            null
-        } else {
-            val a = actions.first().run(p)
-            if (a == null) {
-                SequentialAction(actions.drop(1)).run(p)
-            } else {
-                SequentialAction(listOf(a) + actions.drop(1))
-            }
+            return false
         }
 
+        return if (actions.first().run(p)) {
+            true
+        } else {
+            actions = actions.drop(1)
+            run(p)
+        }
+    }
+
     override fun preview(c: Canvas) {
-        for (a in actions) {
+        for (a in initialActions) {
             a.preview(c)
         }
     }
@@ -57,7 +61,7 @@ fun now() = System.nanoTime() * 1e-9
 data class SleepAction(val dt: Double) : Action {
     private var beginTs = -1.0
 
-    override fun run(p: TelemetryPacket): Action? {
+    override fun run(p: TelemetryPacket): Boolean {
         val t = if (beginTs < 0) {
             beginTs = now()
             0.0
@@ -65,11 +69,7 @@ data class SleepAction(val dt: Double) : Action {
             now() - beginTs
         }
 
-        return if (t < dt) {
-            this
-        } else {
-            null
-        }
+        return t < dt
     }
 
     override fun preview(c: Canvas) {}
@@ -77,7 +77,7 @@ data class SleepAction(val dt: Double) : Action {
 
 private fun seqCons(hd: Action, tl: Action): Action =
     if (tl is SequentialAction) {
-        SequentialAction(listOf(hd) + tl.actions)
+        SequentialAction(listOf(hd) + tl.initialActions)
     } else {
         SequentialAction(hd, tl)
     }
