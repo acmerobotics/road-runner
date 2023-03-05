@@ -8,7 +8,7 @@ import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-fun chartSpline(q: QuinticSpline1): XYChart {
+fun chartSpline(q: QuinticSpline1d): XYChart {
     val ts = range(0.0, 1.0, 1000)
     val xs = ts.map { q[it, 3] }
 
@@ -28,7 +28,7 @@ fun chartSpline(q: QuinticSpline1): XYChart {
             }
         }
 
-        fun chartSplineExpLog(q: QuinticSpline1): XYChart {
+        fun chartSplineExpLog(q: QuinticSpline1d): XYChart {
             val ts = range(0.0, 1.0, 1000)
             val xs = ts.map { Rotation2dDual.exp(q[it, 3]) + 0.3 }
 

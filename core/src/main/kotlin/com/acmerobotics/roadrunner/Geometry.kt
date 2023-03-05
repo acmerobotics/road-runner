@@ -140,7 +140,7 @@ data class Rotation2dDual<Param>(@JvmField val real: DualNum<Param>, @JvmField v
     fun velocity() = real * imag.drop(1) - imag * real.drop(1)
     fun value() = Rotation2d(real.value(), imag.value())
 
-    fun withRot(r: Rotation2d) = Rotation2dDual(real.withFirst(r.real), imag.withFirst(r.imag))
+    fun withValue(r: Rotation2d) = Rotation2dDual(real.withValue(r.real), imag.withValue(r.imag))
 }
 
 /**

@@ -21,11 +21,11 @@ repositories {
 }
 
 dependencies {
-    implementation(kotlin("stdlib-jdk8"))
+    api(kotlin("stdlib-jdk8"))
 
-    implementation(project(":core"))
+    api(project(":core"))
 
-    implementation("com.acmerobotics.dashboard:core:0.4.7")
+    api("com.acmerobotics.dashboard:core:0.4.7")
 
     testImplementation("org.jetbrains.kotlin:kotlin-test")
 }

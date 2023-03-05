@@ -67,7 +67,7 @@ class DualNum<Param> internal constructor(private val values: DoubleArray) {
     operator fun get(i: Int) = values[i]
     fun values() = values.toList()
 
-    fun withFirst(x: Double) =
+    fun withValue(x: Double) =
         DualNum<Param>(
             DoubleArray(size()) {
                 if (it == 0) {

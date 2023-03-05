@@ -183,19 +183,19 @@ class CurvesTest {
     @Test
     fun testArcLengthReparam() {
         val spline =
-            QuinticSpline2(
-                QuinticSpline1(
+            QuinticSpline2d(
+                QuinticSpline1d(
                     DualNum(doubleArrayOf(0.0, 10.0, 30.0)),
                     DualNum(doubleArrayOf(20.0, 30.0, 0.0)),
                 ),
-                QuinticSpline1(
+                QuinticSpline1d(
                     DualNum(doubleArrayOf(0.0, 15.0, 10.0)),
                     DualNum(doubleArrayOf(20.0, 20.0, 0.0)),
                 ),
             )
 
         val curveExp = ArcApproxArcCurve2(spline)
-        val curveActual = ArclengthReparamCurve2(spline, 1e-6)
+        val curveActual = ArclengthReparamCurve2d(spline, 1e-6)
 
         range(0.0, min(curveExp.length, curveActual.length), 100)
             .forEach {
@@ -210,7 +210,7 @@ class CurvesTest {
             val begin = DualNum<Internal>(doubleArrayOf(r.nextDouble(), r.nextDouble(), r.nextDouble()))
             val end = DualNum<Internal>(doubleArrayOf(r.nextDouble(), r.nextDouble(), r.nextDouble()))
 
-            val spline = QuinticSpline1(begin, end)
+            val spline = QuinticSpline1d(begin, end)
 
             val splineBegin = spline[0.0, 3]
             assertEquals(begin[0], splineBegin[0], 1e-6)
@@ -228,7 +228,7 @@ class CurvesTest {
     fun testSplineGet() {
         val r = Random.Default
         repeat(100) {
-            val spline = QuinticSpline1(
+            val spline = QuinticSpline1d(
                 DualNum(doubleArrayOf(r.nextDouble(), r.nextDouble(), r.nextDouble())),
                 DualNum(doubleArrayOf(r.nextDouble(), r.nextDouble(), r.nextDouble())),
             )

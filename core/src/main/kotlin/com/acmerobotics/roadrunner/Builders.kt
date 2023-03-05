@@ -143,13 +143,13 @@ class PosPathSeqBuilder private constructor(
         val beginDeriv = nextBeginTangent.vec() * dist
         val endDeriv = tangent.vec() * dist
 
-        val spline = ArclengthReparamCurve2(
-            QuinticSpline2(
-                QuinticSpline1(
+        val spline = ArclengthReparamCurve2d(
+            QuinticSpline2d(
+                QuinticSpline1d(
                     DualNum(doubleArrayOf(nextBeginPos.x, beginDeriv.x, 0.0)),
                     DualNum(doubleArrayOf(pos.x, endDeriv.x, 0.0))
                 ),
-                QuinticSpline1(
+                QuinticSpline1d(
                     DualNum(doubleArrayOf(nextBeginPos.y, beginDeriv.y, 0.0)),
                     DualNum(doubleArrayOf(pos.y, endDeriv.y, 0.0)),
                 )
@@ -330,7 +330,7 @@ class PosePathSeqBuilder private constructor(
                     is Lazy -> {
                         {
                             val beginTangent = posPath[endDisp, 4].drop(1).angleCast()
-                            val beginHeading = beginTangent.withRot(state.endHeading)
+                            val beginHeading = beginTangent.withValue(state.endHeading)
 
                             state.makePaths(beginHeading) + listOf(
                                 HeadingPosePath(
@@ -372,7 +372,7 @@ class PosePathSeqBuilder private constructor(
                     is Eager -> state.segments
                     is Lazy -> {
                         val endTangent = posPath[endDisp, 4].drop(1).angleCast()
-                        val endHeading = endTangent.withRot(state.endHeading)
+                        val endHeading = endTangent.withValue(state.endHeading)
 
                         state.makePaths(endHeading)
                     }
@@ -502,6 +502,23 @@ class PathBuilder private constructor(
     }
 }
 
+fun interface PoseMap {
+    fun map(pose: Pose2dDual<Arclength>): Pose2dDual<Arclength>
+    fun map(pose: Pose2d) = map(Pose2dDual.constant(pose, 1)).value()
+}
+
+class IdentityPoseMap : PoseMap {
+    override fun map(pose: Pose2dDual<Arclength>) = pose
+}
+
+data class MappedPosePath(
+    val basePath: PosePath,
+    val poseMap: PoseMap,
+) : PosePath {
+    override fun length() = basePath.length()
+    override fun get(s: Double, n: Int) = poseMap.map(basePath[s, n])
+}
+
 class TrajectoryBuilder private constructor(
     private val pathBuilder: PathBuilder,
     private val beginEndVel: Double,
@@ -512,11 +529,6 @@ class TrajectoryBuilder private constructor(
     private val velConstraints: List<VelConstraint>,
     private val accelConstraints: List<AccelConstraint>,
 ) {
-    fun interface PoseMap {
-        fun map(pose: Pose2dDual<Arclength>): Pose2dDual<Arclength>
-        fun map(pose: Pose2d) = map(Pose2dDual.constant<Arclength>(pose, 1)).value()
-    }
-
     @JvmOverloads
     constructor(
         beginPose: Pose2d,
@@ -525,7 +537,7 @@ class TrajectoryBuilder private constructor(
         baseVelConstraint: VelConstraint,
         baseAccelConstraint: AccelConstraint,
         resolution: Double,
-        poseMap: PoseMap = PoseMap { it }
+        poseMap: PoseMap = IdentityPoseMap(),
     ) :
         this(
             PathBuilder(beginPose, eps),
@@ -731,10 +743,7 @@ class TrajectoryBuilder private constructor(
         val rawPaths = pathBuilder.build()
         val offsets = rawPaths.scan(0) { acc, rawPath -> acc + rawPath.paths.size }
         return rawPaths.zip(offsets).map { (rawPath, offset) ->
-            val path = object : PosePath {
-                override fun length() = rawPath.length
-                override fun get(s: Double, n: Int) = poseMap.map(rawPath[s, n])
-            }
+            val path = MappedPosePath(rawPath, poseMap)
 
             // TODO: pretty confusing having offsets and partitions both in the API
             // maybe just stick with offsets?

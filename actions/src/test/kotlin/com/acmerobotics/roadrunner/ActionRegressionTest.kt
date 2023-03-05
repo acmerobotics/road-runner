@@ -52,10 +52,11 @@ class ActionRegressionTest {
                 { TrajectoryAction(it) },
                 Pose2d(0.0, 0.0, 0.0),
                 1e-3,
+                0.0,
                 TurnConstraints(2.0, -1.0, 1.0),
                 TranslationalVelConstraint(20.0),
                 ProfileAccelConstraint(-10.0, 10.0),
-                1e-2
+                0.25,
             )
 
         assertEquals(

@@ -9,13 +9,13 @@ class Demo {
     @Test
     fun test() {
         val path = TangentPath(
-            ArclengthReparamCurve2(
-                QuinticSpline2(
-                    QuinticSpline1(
+            ArclengthReparamCurve2d(
+                QuinticSpline2d(
+                    QuinticSpline1d(
                         DualNum(doubleArrayOf(0.0, 40.0, 0.0)),
                         DualNum(doubleArrayOf(80.0, 40.0, 0.0)),
                     ),
-                    QuinticSpline1(
+                    QuinticSpline1d(
                         DualNum(doubleArrayOf(0.0, 0.0, 0.0)),
                         DualNum(doubleArrayOf(20.0, 0.0, 0.0)),
                     ),

@@ -2,7 +2,7 @@ package com.acmerobotics.roadrunner
 
 class Trajectory(
     @JvmField
-    val path: PosePath,
+    val path: MappedPosePath,
     @JvmField
     val profile: CancelableProfile,
     @JvmField

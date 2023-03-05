@@ -140,14 +140,17 @@ class TrajectoryActionBuilder private constructor(
     val turnActionFactory: TurnActionFactory,
     val trajectoryActionFactory: TrajectoryActionFactory,
     val eps: Double,
+    val beginEndVel: Double,
     val baseTurnConstraints: TurnConstraints,
     val baseVelConstraint: VelConstraint,
     val baseAccelConstraint: AccelConstraint,
     val resolution: Double,
-    val poseMap: TrajectoryBuilder.PoseMap,
+    val poseMap: PoseMap,
     // vary throughout
     private val tb: TrajectoryBuilder,
     private val n: Int,
+    // lastPose, lastTangent are post-mapped
+    private val lastPoseUnmapped: Pose2d,
     private val lastPose: Pose2d,
     private val lastTangent: Rotation2d,
     private val ms: List<MarkerFactory>,
@@ -159,29 +162,32 @@ class TrajectoryActionBuilder private constructor(
         trajectoryActionFactory: TrajectoryActionFactory,
         beginPose: Pose2d,
         eps: Double,
+        beginEndVel: Double,
         baseTurnConstraints: TurnConstraints,
         baseVelConstraint: VelConstraint,
         baseAccelConstraint: AccelConstraint,
         resolution: Double,
-        poseMap: TrajectoryBuilder.PoseMap = TrajectoryBuilder.PoseMap { it },
+        poseMap: PoseMap = IdentityPoseMap(),
     ) :
         this(
             turnActionFactory,
             trajectoryActionFactory,
             eps,
+            beginEndVel,
             baseTurnConstraints,
             baseVelConstraint,
             baseAccelConstraint,
             resolution,
             poseMap,
             TrajectoryBuilder(
-                beginPose, eps,
-                beginEndVel = 0.0, baseVelConstraint, baseAccelConstraint, resolution,
+                beginPose, eps, beginEndVel,
+                baseVelConstraint, baseAccelConstraint, resolution,
                 poseMap,
             ),
             0,
             beginPose,
-            beginPose.rot,
+            poseMap.map(beginPose),
+            poseMap.map(beginPose).rot,
             emptyList(),
             { it },
         )
@@ -190,6 +196,7 @@ class TrajectoryActionBuilder private constructor(
         ab: TrajectoryActionBuilder,
         tb: TrajectoryBuilder,
         n: Int,
+        lastPoseUnmapped: Pose2d,
         lastPose: Pose2d,
         lastTangent: Rotation2d,
         ms: List<MarkerFactory>,
@@ -199,6 +206,7 @@ class TrajectoryActionBuilder private constructor(
             ab.turnActionFactory,
             ab.trajectoryActionFactory,
             ab.eps,
+            ab.beginEndVel,
             ab.baseTurnConstraints,
             ab.baseVelConstraint,
             ab.baseAccelConstraint,
@@ -206,6 +214,7 @@ class TrajectoryActionBuilder private constructor(
             ab.poseMap,
             tb,
             n,
+            lastPoseUnmapped,
             lastPose,
             lastTangent,
             ms,
@@ -222,21 +231,23 @@ class TrajectoryActionBuilder private constructor(
             this
         } else {
             val ts = tb.build()
+            val endPoseUnmapped = ts.last().path.basePath.end(1).value()
             val end = ts.last().path.end(2)
             val endPose = end.value()
             val endTangent = end.velocity().value().transVel.angleCast()
             TrajectoryActionBuilder(
                 this,
                 TrajectoryBuilder(
-                    endPose,
+                    endPoseUnmapped,
                     eps,
-                    beginEndVel = 0.0,
+                    beginEndVel,
                     baseVelConstraint,
                     baseAccelConstraint,
                     resolution,
                     poseMap
                 ),
                 0,
+                endPoseUnmapped,
                 endPose,
                 endTangent,
                 emptyList()
@@ -274,7 +285,7 @@ class TrajectoryActionBuilder private constructor(
      */
     fun stopAndAdd(a: Action): TrajectoryActionBuilder {
         val b = endTrajectory()
-        return TrajectoryActionBuilder(b, b.tb, b.n, b.lastPose, b.lastTangent, b.ms) { tail ->
+        return TrajectoryActionBuilder(b, b.tb, b.n, b.lastPoseUnmapped, b.lastPose, b.lastTangent, b.ms) { tail ->
             b.cont(seqCons(a, tail))
         }
     }
@@ -296,7 +307,7 @@ class TrajectoryActionBuilder private constructor(
     // action immediately?
     fun afterDisp(ds: Double, a: Action) =
         TrajectoryActionBuilder(
-            this, tb, n, lastPose, lastTangent,
+            this, tb, n, lastPoseUnmapped, lastPose, lastTangent,
             ms + listOf(DispMarkerFactory(n, ds, a)), cont
         )
 
@@ -307,45 +318,53 @@ class TrajectoryActionBuilder private constructor(
     // TODO: handle negative/before trajectory begin case?
     fun afterTime(dt: Double, a: Action) =
         if (n == 0) {
-            TrajectoryActionBuilder(this, tb, 0, lastPose, lastTangent, emptyList()) { tail ->
+            TrajectoryActionBuilder(this, tb, 0, lastPoseUnmapped, lastPose, lastTangent, emptyList()) { tail ->
                 cont(ParallelAction(tail, seqCons(SleepAction(dt), a)))
             }
         } else {
             TrajectoryActionBuilder(
-                this, tb, n, lastPose, lastTangent,
+                this, tb, n, lastPoseUnmapped, lastPose, lastTangent,
                 ms + listOf(TimeMarkerFactory(n, dt, a)), cont
             )
         }
 
     fun setTangent(r: Rotation2d) =
-        TrajectoryActionBuilder(this, tb.setTangent(r), n, lastPose, lastTangent, ms, cont)
+        TrajectoryActionBuilder(this, tb.setTangent(r), n, lastPoseUnmapped, lastPose, lastTangent, ms, cont)
     fun setTangent(r: Double) = setTangent(Rotation2d.exp(r))
 
     fun setReversed(reversed: Boolean) =
-        TrajectoryActionBuilder(this, tb.setReversed(reversed), n, lastPose, lastTangent, ms, cont)
+        TrajectoryActionBuilder(this, tb.setReversed(reversed), n, lastPoseUnmapped, lastPose, lastTangent, ms, cont)
 
     @JvmOverloads
     fun turn(angle: Double, turnConstraintsOverride: TurnConstraints? = null): TrajectoryActionBuilder {
         val b = endTrajectory()
+        val mappedAngle =
+            poseMap.map(
+                Pose2dDual(
+                    Vector2dDual.constant(b.lastPose.trans, 2),
+                    Rotation2dDual.constant<Arclength>(b.lastPose.rot, 2) + DualNum(listOf(0.0, angle))
+                )
+            ).rot.velocity().value()
         val b2 = b.stopAndAdd(
             turnActionFactory.make(
-                TimeTurn(b.lastPose, angle, turnConstraintsOverride ?: baseTurnConstraints)
+                TimeTurn(b.lastPose, mappedAngle, turnConstraintsOverride ?: baseTurnConstraints)
             )
         )
-        val lastPose = Pose2d(b2.lastPose.trans, b2.lastPose.rot + angle)
-        val lastTangent = b2.lastTangent + angle
+        val lastPoseUnmapped = Pose2d(b2.lastPoseUnmapped.trans, b2.lastPoseUnmapped.rot + angle)
+        val lastPose = Pose2d(b2.lastPose.trans, b2.lastPose.rot + mappedAngle)
+        val lastTangent = b2.lastTangent + mappedAngle
         return TrajectoryActionBuilder(
             b2,
             TrajectoryBuilder(
-                lastPose,
+                lastPoseUnmapped,
                 eps,
-                beginEndVel = 0.0,
+                beginEndVel,
                 baseVelConstraint,
                 baseAccelConstraint,
                 resolution,
                 poseMap
             ),
-            b2.n, lastPose, lastTangent, b2.ms, b2.cont
+            b2.n, lastPoseUnmapped, lastPose, lastTangent, b2.ms, b2.cont
         )
     }
     @JvmOverloads
@@ -367,7 +386,7 @@ class TrajectoryActionBuilder private constructor(
         tb.lineToX(
             posX, velConstraintOverride, accelConstraintOverride
         ),
-        n + 1, lastPose, lastTangent, ms, cont
+        n + 1, lastPoseUnmapped, lastPose, lastTangent, ms, cont
     )
 
     @JvmOverloads
@@ -380,7 +399,7 @@ class TrajectoryActionBuilder private constructor(
         tb.lineToXConstantHeading(
             posX, velConstraintOverride, accelConstraintOverride
         ),
-        n + 1, lastPose, lastTangent, ms, cont
+        n + 1, lastPoseUnmapped, lastPose, lastTangent, ms, cont
     )
 
     @JvmOverloads
@@ -394,7 +413,7 @@ class TrajectoryActionBuilder private constructor(
         tb.lineToXLinearHeading(
             posX, heading, velConstraintOverride, accelConstraintOverride
         ),
-        n + 1, lastPose, lastTangent, ms, cont
+        n + 1, lastPoseUnmapped, lastPose, lastTangent, ms, cont
     )
     @JvmOverloads
     fun lineToXLinearHeading(
@@ -407,7 +426,7 @@ class TrajectoryActionBuilder private constructor(
         tb.lineToXLinearHeading(
             posX, heading, velConstraintOverride, accelConstraintOverride
         ),
-        n + 1, lastPose, lastTangent, ms, cont
+        n + 1, lastPoseUnmapped, lastPose, lastTangent, ms, cont
     )
 
     @JvmOverloads
@@ -421,7 +440,7 @@ class TrajectoryActionBuilder private constructor(
         tb.lineToXSplineHeading(
             posX, heading, velConstraintOverride, accelConstraintOverride
         ),
-        n + 1, lastPose, lastTangent, ms, cont
+        n + 1, lastPoseUnmapped, lastPose, lastTangent, ms, cont
     )
     @JvmOverloads
     fun lineToXSplineHeading(
@@ -434,7 +453,7 @@ class TrajectoryActionBuilder private constructor(
         tb.lineToXSplineHeading(
             posX, heading, velConstraintOverride, accelConstraintOverride
         ),
-        n + 1, lastPose, lastTangent, ms, cont
+        n + 1, lastPoseUnmapped, lastPose, lastTangent, ms, cont
     )
 
     @JvmOverloads
@@ -447,7 +466,7 @@ class TrajectoryActionBuilder private constructor(
         tb.lineToY(
             posY, velConstraintOverride, accelConstraintOverride
         ),
-        n + 1, lastPose, lastTangent, ms, cont
+        n + 1, lastPoseUnmapped, lastPose, lastTangent, ms, cont
     )
 
     @JvmOverloads
@@ -460,7 +479,7 @@ class TrajectoryActionBuilder private constructor(
         tb.lineToYConstantHeading(
             posY, velConstraintOverride, accelConstraintOverride
         ),
-        n + 1, lastPose, lastTangent, ms, cont
+        n + 1, lastPoseUnmapped, lastPose, lastTangent, ms, cont
     )
 
     @JvmOverloads
@@ -474,7 +493,7 @@ class TrajectoryActionBuilder private constructor(
         tb.lineToYLinearHeading(
             posY, heading, velConstraintOverride, accelConstraintOverride
         ),
-        n + 1, lastPose, lastTangent, ms, cont
+        n + 1, lastPoseUnmapped, lastPose, lastTangent, ms, cont
     )
     @JvmOverloads
     fun lineToYLinearHeading(
@@ -487,7 +506,7 @@ class TrajectoryActionBuilder private constructor(
         tb.lineToYLinearHeading(
             posY, heading, velConstraintOverride, accelConstraintOverride
         ),
-        n + 1, lastPose, lastTangent, ms, cont
+        n + 1, lastPoseUnmapped, lastPose, lastTangent, ms, cont
     )
 
     @JvmOverloads
@@ -501,7 +520,7 @@ class TrajectoryActionBuilder private constructor(
         tb.lineToYSplineHeading(
             posY, heading, velConstraintOverride, accelConstraintOverride
         ),
-        n + 1, lastPose, lastTangent, ms, cont
+        n + 1, lastPoseUnmapped, lastPose, lastTangent, ms, cont
     )
     @JvmOverloads
     fun lineToYSplineHeading(
@@ -514,7 +533,7 @@ class TrajectoryActionBuilder private constructor(
         tb.lineToYSplineHeading(
             posY, heading, velConstraintOverride, accelConstraintOverride
         ),
-        n + 1, lastPose, lastTangent, ms, cont
+        n + 1, lastPoseUnmapped, lastPose, lastTangent, ms, cont
     )
 
     @JvmOverloads
@@ -528,7 +547,7 @@ class TrajectoryActionBuilder private constructor(
         tb.splineTo(
             pos, tangent, velConstraintOverride, accelConstraintOverride
         ),
-        n + 1, lastPose, lastTangent, ms, cont
+        n + 1, lastPoseUnmapped, lastPose, lastTangent, ms, cont
     )
     @JvmOverloads
     fun splineTo(
@@ -541,7 +560,7 @@ class TrajectoryActionBuilder private constructor(
         tb.splineTo(
             pos, tangent, velConstraintOverride, accelConstraintOverride
         ),
-        n + 1, lastPose, lastTangent, ms, cont
+        n + 1, lastPoseUnmapped, lastPose, lastTangent, ms, cont
     )
 
     @JvmOverloads
@@ -555,7 +574,7 @@ class TrajectoryActionBuilder private constructor(
         tb.splineToConstantHeading(
             pos, tangent, velConstraintOverride, accelConstraintOverride
         ),
-        n + 1, lastPose, lastTangent, ms, cont
+        n + 1, lastPoseUnmapped, lastPose, lastTangent, ms, cont
     )
     @JvmOverloads
     fun splineToConstantHeading(
@@ -568,7 +587,7 @@ class TrajectoryActionBuilder private constructor(
         tb.splineToConstantHeading(
             pos, tangent, velConstraintOverride, accelConstraintOverride
         ),
-        n + 1, lastPose, lastTangent, ms, cont
+        n + 1, lastPoseUnmapped, lastPose, lastTangent, ms, cont
     )
 
     @JvmOverloads
@@ -582,7 +601,7 @@ class TrajectoryActionBuilder private constructor(
         tb.splineToLinearHeading(
             pose, tangent, velConstraintOverride, accelConstraintOverride
         ),
-        n + 1, lastPose, lastTangent, ms, cont
+        n + 1, lastPoseUnmapped, lastPose, lastTangent, ms, cont
     )
     @JvmOverloads
     fun splineToLinearHeading(
@@ -595,7 +614,7 @@ class TrajectoryActionBuilder private constructor(
         tb.splineToLinearHeading(
             pose, tangent, velConstraintOverride, accelConstraintOverride
         ),
-        n + 1, lastPose, lastTangent, ms, cont
+        n + 1, lastPoseUnmapped, lastPose, lastTangent, ms, cont
     )
 
     @JvmOverloads
@@ -609,7 +628,7 @@ class TrajectoryActionBuilder private constructor(
         tb.splineToSplineHeading(
             pose, tangent, velConstraintOverride, accelConstraintOverride
         ),
-        n + 1, lastPose, lastTangent, ms, cont
+        n + 1, lastPoseUnmapped, lastPose, lastTangent, ms, cont
     )
     @JvmOverloads
     fun splineToSplineHeading(
@@ -622,8 +641,10 @@ class TrajectoryActionBuilder private constructor(
         tb.splineToSplineHeading(
             pose, tangent, velConstraintOverride, accelConstraintOverride
         ),
-        n + 1, lastPose, lastTangent, ms, cont
+        n + 1, lastPoseUnmapped, lastPose, lastTangent, ms, cont
     )
 
-    fun build() = endTrajectory().cont(SequentialAction())
+    fun build(): Action {
+        return endTrajectory().cont(SequentialAction())
+    }
 }

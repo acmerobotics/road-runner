@@ -155,7 +155,7 @@ class SafeTrajectoryBuilder internal constructor(private val trajBuilder: Trajec
         baseVelConstraint: VelConstraint,
         baseAccelConstraint: AccelConstraint,
         resolution: Double,
-        poseMap: TrajectoryBuilder.PoseMap = TrajectoryBuilder.PoseMap { it }
+        poseMap: PoseMap = IdentityPoseMap(),
     ) :
         this(
             TrajectoryBuilder(
@@ -174,7 +174,7 @@ class SafeTrajectoryBuilder internal constructor(private val trajBuilder: Trajec
         baseVelConstraint: VelConstraint,
         baseAccelConstraint: AccelConstraint,
         resolution: Double,
-        poseMap: TrajectoryBuilder.PoseMap = TrajectoryBuilder.PoseMap { it }
+        poseMap: PoseMap = IdentityPoseMap(),
     ) :
         this(
             beginPose, Rotation2d.exp(beginTangent),

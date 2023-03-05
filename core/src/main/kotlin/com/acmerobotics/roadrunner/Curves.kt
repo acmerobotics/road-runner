@@ -19,7 +19,7 @@ class Internal
  * @property[e] \(e\)
  * @property[f] \(f\)
  */
-data class QuinticSpline1(
+data class QuinticSpline1d(
     @JvmField
     val a: Double,
     @JvmField
@@ -99,18 +99,23 @@ interface PositionPath<Param> {
 }
 
 /**
- * Path comprised of two [QuinticSpline1]s.
+ * Path comprised of two [QuinticSpline1d]s.
  */
-data class QuinticSpline2(
+data class QuinticSpline2d(
     @JvmField
-    val x: QuinticSpline1,
+    val x: QuinticSpline1d,
     @JvmField
-    val y: QuinticSpline1,
+    val y: QuinticSpline1d,
 ) : PositionPath<Internal> {
     override fun get(param: Double, n: Int) = Vector2dDual(x[param, n], y[param, n])
 
     override fun length() = 1.0
 }
+
+/**
+ * Arclength parameter for [DualNum].
+ */
+class Arclength
 
 /**
  * Line beginning at position [begin], pointed in direction [dir], and having length [length].
@@ -145,14 +150,9 @@ data class Line(
 }
 
 /**
- * Arclength parameter for [DualNum].
- */
-class Arclength
-
-/**
  * Arclength reparameterization of [curve].
  */
-data class ArclengthReparamCurve2(
+data class ArclengthReparamCurve2d(
     @JvmField
     val curve: PositionPath<Internal>,
     @JvmField
@@ -303,7 +303,7 @@ data class SplineHeadingPath(
     @JvmField
     val begin: Rotation2d,
     @JvmField
-    val spline: QuinticSpline1,
+    val spline: QuinticSpline1d,
     @JvmField
     val length: Double,
 ) : HeadingPath {
@@ -317,7 +317,7 @@ data class SplineHeadingPath(
             require(end.size() >= 3).let {
                 // s(t) = t * len
                 (DualNum.variable<Internal>(1.0, 3) * length).let { s ->
-                    QuinticSpline1(
+                    QuinticSpline1d(
                         begin.velocity().addFront(0.0).reparam(s),
                         end.velocity().addFront(end.value() - begin.value()).reparam(s),
                     )
