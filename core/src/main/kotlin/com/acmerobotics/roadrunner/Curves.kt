@@ -139,7 +139,14 @@ data class Line(
         end: Vector2d,
     ) : this(
         begin,
-        (end - begin) / (end - begin).norm(),
+        (end - begin).let { diff ->
+            val norm = diff.norm()
+            if (norm < 1e-6) {
+                Vector2d(1.0, 0.0)
+            } else {
+                diff / norm
+            }
+        },
         (end - begin).norm(),
     )
 

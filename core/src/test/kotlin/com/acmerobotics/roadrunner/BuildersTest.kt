@@ -506,5 +506,42 @@ fun chartSpline(q: QuinticSpline1d): XYChart {
                     .splineTo(Vector2d(40.0, 55.0), PI / 2)
                     .build()
             }
+
+            @Test
+            fun testTrivialLineToX() {
+                TrajectoryBuilder(
+                    Pose2d(0.0, 0.0, 0.0), 1e-6, 0.0,
+                    TranslationalVelConstraint(40.0),
+                    ProfileAccelConstraint(-30.0, 50.0),
+                    1.0
+                )
+                    .lineToX(0.0)
+                    .build()
+            }
+
+            @Test
+            fun testTrivialLineToX2() {
+                TrajectoryBuilder(
+                    Pose2d(0.0, 0.0, 0.0), 1e-6, 0.0,
+                    TranslationalVelConstraint(40.0),
+                    ProfileAccelConstraint(-30.0, 50.0),
+                    1.0
+                )
+                    .lineToX(0.0)
+                    .lineToX(10.0)
+                    .build()
+            }
+
+            @Test
+            fun testTrivialSpline() {
+                TrajectoryBuilder(
+                    Pose2d(0.0, 0.0, 0.0), 1e-6, 0.0,
+                    TranslationalVelConstraint(40.0),
+                    ProfileAccelConstraint(-30.0, 50.0),
+                    1.0
+                )
+                    .splineTo(Vector2d(0.0, 0.0), 0.0)
+                    .build()
+            }
         }
         

@@ -134,11 +134,6 @@ class PosPathSeqBuilder private constructor(
     fun splineTo(pos: Vector2d, tangent: Rotation2d): PosPathSeqBuilder {
         val dist = (pos - nextBeginPos).norm()
 
-        if (dist < eps) {
-            // TODO: Is there a good way to warn about this? Failing like the old API is harsh.
-            return this
-        }
-
         // NOTE: First derivatives will be normalized by arc length reparam, so the magnitudes need not match at knots.
         val beginDeriv = nextBeginTangent.vec() * dist
         val endDeriv = tangent.vec() * dist
@@ -224,7 +219,7 @@ class PosePathSeqBuilder private constructor(
     ) : State
 
     private fun addEagerPosePath(disp: Double, segment: PosePath): PosePathSeqBuilder {
-        require(endDisp < disp && disp <= posPath.length())
+        require(endDisp <= disp && disp <= posPath.length())
 
         val beginHeadingDual = segment.begin(3).heading
 
