@@ -87,12 +87,12 @@ fun chartSpline(q: QuinticSpline1d): XYChart {
 //            poses.map { it.translation.x[0] }.toDoubleArray(),
 //            poses.map { it.translation.y[0] }.toDoubleArray(),
 //            poses.map { it.rotation.log()[0] }.toDoubleArray(),
-                    poses.map { it.trans.x[1] }.toDoubleArray(),
-                    poses.map { it.trans.y[1] }.toDoubleArray(),
-                    poses.map { it.rot.velocity()[0] }.toDoubleArray(),
-                    poses.map { it.trans.x[2] }.toDoubleArray(),
-                    poses.map { it.trans.y[2] }.toDoubleArray(),
-                    poses.map { it.rot.velocity()[1] }.toDoubleArray(),
+                    poses.map { it.position.x[1] }.toDoubleArray(),
+                    poses.map { it.position.y[1] }.toDoubleArray(),
+                    poses.map { it.heading.velocity()[0] }.toDoubleArray(),
+                    poses.map { it.position.x[2] }.toDoubleArray(),
+                    poses.map { it.position.y[2] }.toDoubleArray(),
+                    poses.map { it.heading.velocity()[1] }.toDoubleArray(),
                 )
             )
         }
@@ -113,16 +113,16 @@ fun chartSpline(q: QuinticSpline1d): XYChart {
                 arrayOf(
 //            poses.map { it.translation.x[0] }.toDoubleArray(),
 //            poses.map { it.translation.y[0] }.toDoubleArray(),
-                    poses.map { it.rot.value().log() }.toDoubleArray(),
-                    poses.map { it.rot.velocity()[0] }.toDoubleArray(),
-                    poses.map { it.rot.velocity()[1] }.toDoubleArray(),
+                    poses.map { it.heading.value().log() }.toDoubleArray(),
+                    poses.map { it.heading.velocity()[0] }.toDoubleArray(),
+                    poses.map { it.heading.velocity()[1] }.toDoubleArray(),
                 )
             )
         }
 
         fun chartPosePathXY(posePath: PosePath): XYChart {
             val params = range(-1.0, posePath.length() + 1.0, 1000)
-            val positions = params.map { posePath[it, 1].trans.value() }
+            val positions = params.map { posePath[it, 1].position.value() }
 
             return QuickChart.getChart(
                 "Path", "x", "y", "Path",

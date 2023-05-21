@@ -318,8 +318,8 @@ data class SplineHeadingPath(
                 // s(t) = t * len
                 (DualNum.variable<Internal>(1.0, 3) * length).let { s ->
                     QuinticSpline1d(
-                        begin.velocity().addFront(0.0).reparam(s),
-                        end.velocity().addFront(end.value() - begin.value()).reparam(s),
+                        DualNum.cons(0.0, begin.velocity()).reparam(s),
+                        DualNum.cons(end.value() - begin.value(), end.velocity()).reparam(s),
                     )
                 }
             }
@@ -431,7 +431,7 @@ fun project(path: PositionPath<Arclength>, query: Vector2d, init: Double): Doubl
 fun project(path: PosePath, query: Vector2d, init: Double): Double {
     // TODO: is ten iterations enough?
     return (1..10).fold(init) { s, _ ->
-        val guess = path[s, 3].trans.bind()
+        val guess = path[s, 3].position.bind()
         val ds = (query - guess.value()) dot guess.drop(1).value()
         clamp(s + ds, 0.0, path.length())
     }

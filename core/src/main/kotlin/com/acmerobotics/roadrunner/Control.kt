@@ -66,8 +66,8 @@ class HolonomicController(
     fun compute(
         targetPose: Pose2dDual<Time>,
         actualPose: Pose2d,
-        actualVelActual: Twist2d,
-    ): Twist2dDual<Time> {
+        actualVelActual: PoseVelocity2d,
+    ): PoseVelocity2dDual<Time> {
         val targetVelWorld = targetPose.velocity()
         val txActualWorld = Pose2dDual.constant<Time>(actualPose.inverse(), 2)
         val targetVelActual = txActualWorld * targetVelWorld
@@ -76,19 +76,19 @@ class HolonomicController(
 
         val error = targetPose.value().minusExp(actualPose)
         return targetVelActual +
-            Twist2d(
+            PoseVelocity2d(
                 Vector2d(
-                    axialPosGain * error.trans.x,
-                    lateralPosGain * error.trans.y,
+                    axialPosGain * error.position.x,
+                    lateralPosGain * error.position.y,
                 ),
-                headingGain * error.rot.log(),
+                headingGain * error.heading.log(),
             ) +
-            Twist2d(
+            PoseVelocity2d(
                 Vector2d(
-                    axialVelGain * velErrorActual.transVel.x,
-                    lateralVelGain * velErrorActual.transVel.y,
+                    axialVelGain * velErrorActual.linearVel.x,
+                    lateralVelGain * velErrorActual.linearVel.y,
                 ),
-                headingVelGain * velErrorActual.rotVel,
+                headingVelGain * velErrorActual.angVel,
             )
     }
 }
@@ -132,9 +132,9 @@ class RamseteController @JvmOverloads constructor(
         s: DualNum<Time>,
         targetPose: Pose2dDual<Arclength>,
         actualPose: Pose2d,
-    ): Twist2dDual<Time> {
+    ): PoseVelocity2dDual<Time> {
         val vRef = s[1]
-        val omegaRef = targetPose.reparam(s).rot.velocity()[0]
+        val omegaRef = targetPose.reparam(s).heading.velocity()[0]
 
         val k = 2.0 * zeta * sqrt(omegaRef * omegaRef + b * vRef * vRef)
 
@@ -145,13 +145,13 @@ class RamseteController @JvmOverloads constructor(
 
         // TODO: add acceleration feedforward?
         val error = targetPose.value().minusExp(actualPose)
-        return Twist2dDual.constant(
-            Twist2d(
+        return PoseVelocity2dDual.constant(
+            PoseVelocity2d(
                 Vector2d(
-                    vRef * error.rot.real + k * error.trans.x,
+                    vRef * error.heading.real + k * error.position.x,
                     0.0
                 ),
-                omegaRef + k * error.rot.log() + b * vRef * sinc(error.rot.log()),
+                omegaRef + k * error.heading.log() + b * vRef * sinc(error.heading.log()),
             ),
             2
         )

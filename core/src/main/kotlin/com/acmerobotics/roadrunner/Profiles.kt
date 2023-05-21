@@ -538,7 +538,7 @@ class AngularVelConstraint(
     }
 
     override fun maxRobotVel(robotPose: Pose2dDual<Arclength>, path: PosePath, s: Double) =
-        abs(maxAngVel / robotPose.rot.velocity().value())
+        abs(maxAngVel / robotPose.heading.velocity().value())
 }
 
 class MinVelConstraint(

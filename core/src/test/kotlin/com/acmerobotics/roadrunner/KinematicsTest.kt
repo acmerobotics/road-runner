@@ -13,12 +13,12 @@ class KinematicsTest {
 
         val r = Random.Default
         repeat(100) {
-            val t = Twist2d(
+            val t = PoseVelocity2d(
                 Vector2d(r.nextDouble(), r.nextDouble()),
                 r.nextDouble()
             )
 
-            val vs = kinematics.inverse(Twist2dDual.constant<Time>(t, 1)).all()
+            val vs = kinematics.inverse(PoseVelocity2dDual.constant<Time>(t, 1)).all()
 
             val t2 = kinematics.forward(
                 MecanumKinematics.WheelIncrements(
@@ -26,9 +26,9 @@ class KinematicsTest {
                 )
             ).value()
 
-            assertEquals(t.transVel.x, t2.transIncr.x, 1e-6)
-            assertEquals(t.transVel.y, t2.transIncr.y, 1e-6)
-            assertEquals(t.rotVel, t2.rotIncr, 1e-6)
+            assertEquals(t.linearVel.x, t2.line.x, 1e-6)
+            assertEquals(t.linearVel.y, t2.line.y, 1e-6)
+            assertEquals(t.angVel, t2.angle, 1e-6)
         }
     }
 
@@ -80,12 +80,12 @@ class KinematicsTest {
 
         val r = Random.Default
         repeat(100) {
-            val t = Twist2d(
+            val t = PoseVelocity2d(
                 Vector2d(r.nextDouble(), 0.0),
                 r.nextDouble()
             )
 
-            val vs = kinematics.inverse(Twist2dDual.constant<Time>(t, 1)).all()
+            val vs = kinematics.inverse(PoseVelocity2dDual.constant<Time>(t, 1)).all()
 
             val t2 = kinematics.forward(
                 TankKinematics.WheelIncrements(
@@ -93,9 +93,9 @@ class KinematicsTest {
                 )
             ).value()
 
-            assertEquals(t.transVel.x, t2.transIncr.x, 1e-6)
-            assertEquals(t.transVel.y, t2.transIncr.y, 1e-6)
-            assertEquals(t.rotVel, t2.rotIncr, 1e-6)
+            assertEquals(t.linearVel.x, t2.line.x, 1e-6)
+            assertEquals(t.linearVel.y, t2.line.y, 1e-6)
+            assertEquals(t.angVel, t2.angle, 1e-6)
         }
     }
 

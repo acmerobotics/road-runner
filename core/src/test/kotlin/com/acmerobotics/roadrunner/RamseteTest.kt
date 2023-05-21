@@ -66,9 +66,9 @@ class RamseteTest {
             val command = controller.compute(s, targetPose, pose).value()
 
             pose +=
-                Twist2dIncr(
-                    command.transVel * dt,
-                    command.rotVel * dt
+                Twist2d(
+                    command.linearVel * dt,
+                    command.angVel * dt
                 )
 
             targetPoses.add(targetPose.value())
@@ -81,13 +81,13 @@ class RamseteTest {
         graph.title = "Ramsete Follower Sim"
         graph.addSeries(
             "Target Trajectory",
-            targetPoses.map { it.trans.x }.toDoubleArray(),
-            targetPoses.map { it.trans.y }.toDoubleArray()
+            targetPoses.map { it.position.x }.toDoubleArray(),
+            targetPoses.map { it.position.y }.toDoubleArray()
         )
         graph.addSeries(
             "Actual Trajectory",
-            poses.map { it.trans.x }.toDoubleArray(),
-            poses.map { it.trans.y }.toDoubleArray()
+            poses.map { it.position.x }.toDoubleArray(),
+            poses.map { it.position.y }.toDoubleArray()
         )
         graph.seriesMap.values.forEach { it.marker = None() }
         graph.styler.theme = MatlabTheme()

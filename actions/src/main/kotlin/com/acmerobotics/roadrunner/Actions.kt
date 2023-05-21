@@ -187,7 +187,7 @@ class TrajectoryActionBuilder private constructor(
             0,
             beginPose,
             poseMap.map(beginPose),
-            poseMap.map(beginPose).rot,
+            poseMap.map(beginPose).heading,
             emptyList(),
             { it },
         )
@@ -234,7 +234,7 @@ class TrajectoryActionBuilder private constructor(
             val endPoseUnmapped = ts.last().path.basePath.end(1).value()
             val end = ts.last().path.end(2)
             val endPose = end.value()
-            val endTangent = end.velocity().value().transVel.angleCast()
+            val endTangent = end.velocity().value().linearVel.angleCast()
             TrajectoryActionBuilder(
                 this,
                 TrajectoryBuilder(
@@ -341,17 +341,17 @@ class TrajectoryActionBuilder private constructor(
         val mappedAngle =
             poseMap.map(
                 Pose2dDual(
-                    Vector2dDual.constant(b.lastPose.trans, 2),
-                    Rotation2dDual.constant<Arclength>(b.lastPose.rot, 2) + DualNum(listOf(0.0, angle))
+                    Vector2dDual.constant(b.lastPose.position, 2),
+                    Rotation2dDual.constant<Arclength>(b.lastPose.heading, 2) + DualNum(listOf(0.0, angle))
                 )
-            ).rot.velocity().value()
+            ).heading.velocity().value()
         val b2 = b.stopAndAdd(
             turnActionFactory.make(
                 TimeTurn(b.lastPose, mappedAngle, turnConstraintsOverride ?: baseTurnConstraints)
             )
         )
-        val lastPoseUnmapped = Pose2d(b2.lastPoseUnmapped.trans, b2.lastPoseUnmapped.rot + angle)
-        val lastPose = Pose2d(b2.lastPose.trans, b2.lastPose.rot + mappedAngle)
+        val lastPoseUnmapped = Pose2d(b2.lastPoseUnmapped.position, b2.lastPoseUnmapped.heading + angle)
+        val lastPose = Pose2d(b2.lastPose.position, b2.lastPose.heading + mappedAngle)
         val lastTangent = b2.lastTangent + mappedAngle
         return TrajectoryActionBuilder(
             b2,
@@ -370,7 +370,7 @@ class TrajectoryActionBuilder private constructor(
     @JvmOverloads
     fun turnTo(heading: Rotation2d, turnConstraintsOverride: TurnConstraints? = null): TrajectoryActionBuilder {
         val b = endTrajectory()
-        return b.turn(heading - b.lastPose.rot, turnConstraintsOverride)
+        return b.turn(heading - b.lastPose.heading, turnConstraintsOverride)
     }
     @JvmOverloads
     fun turnTo(heading: Double, turnConstraintsOverride: TurnConstraints? = null) =

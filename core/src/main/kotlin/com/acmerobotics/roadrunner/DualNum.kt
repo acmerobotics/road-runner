@@ -50,6 +50,18 @@ class DualNum<Param> internal constructor(private val values: DoubleArray) {
                 }
             }
         )
+
+        @JvmStatic
+        fun <Param> cons(x: Double, d: DualNum<Param>) =
+            DualNum<Param>(
+                DoubleArray(d.size() + 1) {
+                    if (it == 0) {
+                        x
+                    } else {
+                        d.values[it - 1]
+                    }
+                }
+            )
     }
 
     /**
@@ -66,28 +78,6 @@ class DualNum<Param> internal constructor(private val values: DoubleArray) {
     fun value() = values.first()
     operator fun get(i: Int) = values[i]
     fun values() = values.toList()
-
-    fun withValue(x: Double) =
-        DualNum<Param>(
-            DoubleArray(size()) {
-                if (it == 0) {
-                    x
-                } else {
-                    values[it]
-                }
-            }
-        )
-
-    fun addFront(x: Double) =
-        DualNum<Param>(
-            DoubleArray(size() + 1) {
-                if (it == 0) {
-                    x
-                } else {
-                    values[it - 1]
-                }
-            }
-        )
 
     fun drop(n: Int) = DualNum<Param>(DoubleArray(size() - n) { values[it + n] })
 

@@ -115,7 +115,7 @@ class ActionRegressionTest {
             "SequentialAction(initialActions=[Trajectory, ParallelAction(initialActions=[" +
                 "SequentialAction(initialActions=[" +
                 "Trajectory, Trajectory]), SequentialAction(initialActions=[SleepAction(dt=2.0), A]), " +
-                "SequentialAction(initialActions=[SleepAction(dt=3.499999999999996), B])])])",
+                "SequentialAction(initialActions=[SleepAction(dt=3.500000000000001), B])])])",
             base
                 .lineToX(10.0)
                 .lineToXLinearHeading(20.0, Rotation2d.exp(1.57))
@@ -156,7 +156,7 @@ class ActionRegressionTest {
         assertEquals(
             "ParallelAction(initialActions=[SequentialAction(initialActions=[Trajectory]), " +
                 "SequentialAction(" +
-                "initialActions=[SleepAction(dt=0.44721359549995765), A])])",
+                "initialActions=[SleepAction(dt=0.44721359549995804), A])])",
             base
                 .afterDisp(1.0, LabelAction("A"))
                 .lineToX(10.0)
@@ -167,7 +167,7 @@ class ActionRegressionTest {
         assertEquals(
             "ParallelAction(initialActions=[SequentialAction(initialActions=[Trajectory]), " +
                 "SequentialAction(" +
-                "initialActions=[SleepAction(dt=0.316227766016838), A])])",
+                "initialActions=[SleepAction(dt=0.31622776601683794), A])])",
             base
                 .afterDisp(1.0, LabelAction("A"))
                 .lineToX(0.25)
@@ -178,7 +178,7 @@ class ActionRegressionTest {
         assertEquals(
             "ParallelAction(initialActions=[SequentialAction(initialActions=[Trajectory, " +
                 "Trajectory]), " +
-                "SequentialAction(initialActions=[SleepAction(dt=0.316227766016838), A])])",
+                "SequentialAction(initialActions=[SleepAction(dt=0.31622776601683794), A])])",
             base
                 .afterDisp(1.0, LabelAction("A"))
                 .lineToX(0.25)

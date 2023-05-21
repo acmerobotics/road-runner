@@ -148,8 +148,8 @@ fun setWheelPowers(powers: MecanumKinematics.WheelVelocities<Time>) {
 fun fieldCentric(kinematics: MecanumKinematics, poseEstimate: Pose2d, leftStick: Vector2d, rightStick: Vector2d) {
     setWheelPowers(
         kinematics.inverse(
-            Twist2dDual.constant(
-                poseEstimate.inverse() * Twist2d(leftStick, rightStick.x),
+            PoseVelocity2dDual.constant(
+                poseEstimate.inverse() * PoseVelocity2d(leftStick, rightStick.x),
                 1
             )
         )
@@ -182,10 +182,10 @@ fun goToPoint(kinematics: MecanumKinematics, initialPoseEstimate: Pose2d, target
         val error = targetPose.minusExp(poseEstimate)
         // TODO: one could write some sugar
         // inverse() could take a Twist2
-        val command = Twist2dDual.constant<Time>(
-            Twist2d(
-                error.trans * TRANS_GAIN,
-                error.rot.log() * ROT_GAIN,
+        val command = PoseVelocity2dDual.constant<Time>(
+            PoseVelocity2d(
+                error.position * TRANS_GAIN,
+                error.heading.log() * ROT_GAIN,
             ),
             1
         )
@@ -215,12 +215,12 @@ fun turnWithProfile(
         poseEstimate += kinematics.forward(getWheelIncrements()).value()
 
         val targetTurn = profile[clock()]
-        val targetRot = initialPoseEstimate.rot + targetTurn[0]
-        val angError = targetRot - poseEstimate.rot
+        val targetRot = initialPoseEstimate.heading + targetTurn[0]
+        val angError = targetRot - poseEstimate.heading
 
         setWheelVelocities(
             kinematics.inverse(
-                Twist2dDual(
+                PoseVelocity2dDual(
                     Vector2dDual.constant(Vector2d(0.0, 0.0), 2),
                     Rotation2dDual.exp(targetTurn).velocity() + angError * ROT_GAIN
                 )

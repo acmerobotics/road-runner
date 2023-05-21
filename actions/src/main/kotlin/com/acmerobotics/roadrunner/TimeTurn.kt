@@ -46,14 +46,14 @@ class TimeTurn(
     operator fun get(t: Double): Pose2dDual<Time> {
         val x = profile[t]
         return Pose2dDual(
-            Vector2dDual.constant(beginPose.trans, x.size()),
+            Vector2dDual.constant(beginPose.position, x.size()),
             Rotation2dDual.exp(
                 if (reversed) {
                     x.unaryMinus()
                 } else {
                     x
                 }
-            ) * beginPose.rot
+            ) * beginPose.heading
         )
     }
 }

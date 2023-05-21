@@ -168,6 +168,20 @@ class PosPathSeqBuilder private constructor(
     fun build() = paths + listOf(CompositePositionPath(segments))
 }
 
+private fun <Param> DualNum<Param>.withValue(x: Double) =
+    DualNum<Param>(
+        DoubleArray(size()) {
+            if (it == 0) {
+                x
+            } else {
+                values()[it]
+            }
+        }
+    )
+
+private fun <Param> Rotation2dDual<Param>.withValue(r: Rotation2d) =
+    Rotation2dDual(real.withValue(r.real), imag.withValue(r.imag))
+
 /**
  * @usesMathJax
  *
@@ -212,7 +226,7 @@ class PosePathSeqBuilder private constructor(
     private fun addEagerPosePath(disp: Double, segment: PosePath): PosePathSeqBuilder {
         require(endDisp < disp && disp <= posPath.length())
 
-        val beginHeadingDual = segment.begin(3).rot
+        val beginHeadingDual = segment.begin(3).heading
 
         return when (state) {
             is Eager -> {
@@ -229,7 +243,7 @@ class PosePathSeqBuilder private constructor(
                         disp,
                         Eager(
                             state.segments + listOf(segment),
-                            segment.end(3).rot
+                            segment.end(3).heading
                         )
                     )
                 } else {
@@ -239,7 +253,7 @@ class PosePathSeqBuilder private constructor(
                         disp,
                         Eager(
                             listOf(segment),
-                            segment.end(3).rot
+                            segment.end(3).heading
                         )
                     )
                 }
@@ -252,7 +266,7 @@ class PosePathSeqBuilder private constructor(
                     disp,
                     Eager(
                         state.makePaths(beginHeadingDual) + listOf(segment),
-                        segment.end(3).rot
+                        segment.end(3).heading
                     )
                 )
             }
@@ -390,10 +404,10 @@ class PathBuilder private constructor(
 ) {
     constructor(beginPose: Pose2d, eps: Double) :
         this(
-            beginPose.rot,
-            PosPathSeqBuilder(beginPose.trans, beginPose.rot, eps),
+            beginPose.heading,
+            PosPathSeqBuilder(beginPose.position, beginPose.heading, eps),
             emptyList(),
-            beginPose.rot,
+            beginPose.heading,
         )
 
     private fun copy(
@@ -469,14 +483,14 @@ class PathBuilder private constructor(
         splineToConstantHeading(pos, Rotation2d.exp(tangent))
 
     fun splineToLinearHeading(pose: Pose2d, tangent: Rotation2d) = copy(
-        posPathSeqBuilder.splineTo(pose.trans, tangent),
-        headingSegments + listOf { linearUntil(it, pose.rot) }, pose.rot
+        posPathSeqBuilder.splineTo(pose.position, tangent),
+        headingSegments + listOf { linearUntil(it, pose.heading) }, pose.heading
     )
     fun splineToLinearHeading(pose: Pose2d, tangent: Double) = splineToLinearHeading(pose, Rotation2d.exp(tangent))
 
     fun splineToSplineHeading(pose: Pose2d, tangent: Rotation2d) = copy(
-        posPathSeqBuilder.splineTo(pose.trans, tangent),
-        headingSegments + listOf { splineUntil(it, pose.rot) }, pose.rot
+        posPathSeqBuilder.splineTo(pose.position, tangent),
+        headingSegments + listOf { splineUntil(it, pose.heading) }, pose.heading
     )
     fun splineToSplineHeading(pose: Pose2d, tangent: Double) = splineToSplineHeading(pose, Rotation2d.exp(tangent))
 
@@ -495,7 +509,7 @@ class PathBuilder private constructor(
 
             posePaths.addAll(posePathSeqBuilder.build())
 
-            nextHeading = posePaths.last().end(1).value().rot
+            nextHeading = posePaths.last().end(1).value().heading
         }
 
         return posePaths

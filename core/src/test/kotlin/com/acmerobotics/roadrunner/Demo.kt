@@ -44,7 +44,7 @@ class Demo {
         val targets = mutableListOf<Pose2d>()
 
         while (true) {
-            s = project(path, pose.trans.value(), s)
+            s = project(path, pose.position.value(), s)
 
             if (s >= path.length() - 0.25) {
                 break
@@ -56,17 +56,17 @@ class Demo {
             targets.add(targetPose.value())
 
             val error = targetPose.value().minusExp(pose.value())
-            val correction = Twist2d(
-                error.trans * 0.5,
-                error.rot.log() * 0.01,
+            val correction = PoseVelocity2d(
+                error.position * 0.5,
+                error.heading.log() * 0.01,
             )
 
             val velocity = (targetPose.velocity() + correction).value()
 
             val dt = 0.01
-            pose += Twist2dIncr(
-                velocity.transVel * dt,
-                velocity.rotVel * dt,
+            pose += Twist2d(
+                velocity.linearVel * dt,
+                velocity.angVel * dt,
             )
         }
 
@@ -78,8 +78,8 @@ class Demo {
 
         chart.addSeries(
             "Target",
-            targets.map { it.trans.x }.toDoubleArray(),
-            targets.map { it.trans.y }.toDoubleArray(),
+            targets.map { it.position.x }.toDoubleArray(),
+            targets.map { it.position.y }.toDoubleArray(),
         ).let {
             it.marker = Circle()
             it.lineWidth = 0.0f
@@ -87,8 +87,8 @@ class Demo {
 
         chart.addSeries(
             "Actual",
-            measured.map { it.trans.x }.toDoubleArray(),
-            measured.map { it.trans.y }.toDoubleArray(),
+            measured.map { it.position.x }.toDoubleArray(),
+            measured.map { it.position.y }.toDoubleArray(),
         ).let {
             it.marker = Circle()
             it.lineWidth = 0.0f
