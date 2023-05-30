@@ -183,23 +183,7 @@ data class ArclengthReparamCurve2d(
     val length = samples.sums.last()
 
     fun reparam(s: Double): Double {
-        val index = samples.sums.binarySearch(s)
-        return if (index >= 0) {
-            samples.values[index]
-        } else {
-            val insIndex = -(index + 1)
-            when {
-                insIndex <= 0 -> 0.0
-                insIndex >= samples.values.size -> 1.0
-                else -> {
-                    val sLo = samples.sums[insIndex - 1]
-                    val sHi = samples.sums[insIndex]
-                    val tLo = samples.values[insIndex - 1]
-                    val tHi = samples.values[insIndex]
-                    lerp(s, sLo, sHi, tLo, tHi)
-                }
-            }
-        }
+        return lerpLookup(samples.sums, samples.values, s)
     }
 
     override fun get(param: Double, n: Int): Vector2dDual<Arclength> {

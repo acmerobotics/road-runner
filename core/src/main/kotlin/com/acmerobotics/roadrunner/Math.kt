@@ -126,3 +126,60 @@ fun integralScan(a: Double, b: Double, eps: Double, f: (Double) -> Double): Inte
 
     return IntegralScanResult(values, sums)
 }
+
+// precondition: source, target sorted and share the same length
+fun lerpLookup(source: List<Double>, target: List<Double>, query: Double): Double {
+    require(source.size == target.size)
+    require(source.isNotEmpty())
+
+    val index = source.binarySearch(query)
+    return if (index >= 0) {
+        target[index]
+    } else {
+        val insIndex = -(index + 1)
+        when {
+            insIndex <= 0 -> target.first()
+            insIndex >= source.size -> target.last()
+            else -> {
+                val sLo = source[insIndex - 1]
+                val sHi = source[insIndex]
+                val tLo = target[insIndex - 1]
+                val tHi = target[insIndex]
+                lerp(query, sLo, sHi, tLo, tHi)
+            }
+        }
+    }
+}
+
+// precondition: source, target sorted and share the same length; queries sorted
+fun lerpLookupMap(source: List<Double>, target: List<Double>, queries: List<Double>): List<Double> {
+    require(source.size == target.size)
+    require(source.isNotEmpty())
+
+    val result = mutableListOf<Double>()
+
+    var i = 0
+    for (query in queries) {
+        if (query < source[0]) {
+            result.add(target[0])
+            continue
+        }
+
+        while (i + 1 < source.size && source[i + 1] < query) {
+            i++
+        }
+
+        if (i + 1 == source.size) {
+            result.add(target.last())
+            continue
+        }
+
+        val sLo = source[i]
+        val sHi = source[i + 1]
+        val tLo = target[i]
+        val tHi = target[i + 1]
+        result.add(lerp(query, sLo, sHi, tLo, tHi))
+    }
+
+    return result
+}
