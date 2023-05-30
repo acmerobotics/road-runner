@@ -755,19 +755,17 @@ class TrajectoryBuilder private constructor(
         return rawPaths.zip(offsets).map { (rawPath, offset) ->
             val path = MappedPosePath(rawPath, poseMap)
 
-            // TODO: pretty confusing having offsets and partitions both in the API
-            // maybe just stick with offsets?
             Trajectory(
                 path,
                 profile(
                     path, beginEndVel,
                     CompositeVelConstraint(
                         velConstraints.slice(offset until offset + rawPath.paths.size),
-                        rawPath.offsets.drop(1).dropLast(1)
+                        rawPath.offsets,
                     ),
                     CompositeAccelConstraint(
                         accelConstraints.slice(offset until offset + rawPath.paths.size),
-                        rawPath.offsets.drop(1).dropLast(1)
+                        rawPath.offsets,
                     ),
                     dispResolution, angResolution
                 ),

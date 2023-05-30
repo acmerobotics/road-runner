@@ -578,15 +578,14 @@ class CompositeVelConstraint(
     @JvmField
     val constraints: List<VelConstraint>,
     @JvmField
-    val partitions: List<Double>
+    val offsets: List<Double>
 ) : VelConstraint {
     init {
-        require(constraints.size == partitions.size + 1)
-        // TODO: require ordering?
+        require(constraints.size + 1 == offsets.size)
     }
 
     override fun maxRobotVel(robotPose: Pose2dDual<Arclength>, path: PosePath, s: Double): Double {
-        for ((offset, constraint) in partitions.zip(constraints.drop(1)).reversed()) {
+        for ((offset, constraint) in offsets.zip(constraints).drop(1).reversed()) {
             if (s >= offset) {
                 return constraint.maxRobotVel(robotPose, path, s)
             }
@@ -600,15 +599,14 @@ class CompositeAccelConstraint(
     @JvmField
     val constraints: List<AccelConstraint>,
     @JvmField
-    val partitions: List<Double>
+    val offsets: List<Double>
 ) : AccelConstraint {
     init {
-        require(constraints.size == partitions.size + 1)
-        // TODO: require ordering?
+        require(constraints.size + 1 == offsets.size)
     }
 
     override fun minMaxProfileAccel(robotPose: Pose2dDual<Arclength>, path: PosePath, s: Double): MinMax {
-        for ((offset, constraint) in partitions.zip(constraints.drop(1)).reversed()) {
+        for ((offset, constraint) in offsets.zip(constraints).drop(1).reversed()) {
             if (s >= offset) {
                 return constraint.minMaxProfileAccel(robotPose, path, s)
             }
