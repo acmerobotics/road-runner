@@ -541,6 +541,86 @@ class TrajectoryActionBuilder private constructor(
     )
 
     @JvmOverloads
+    fun strafeTo(
+        pos: Vector2d,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) = TrajectoryActionBuilder(
+        this,
+        tb.strafeTo(
+            pos, velConstraintOverride, accelConstraintOverride
+        ),
+        n + 1, lastPoseUnmapped, lastPose, lastTangent, ms, cont
+    )
+
+    @JvmOverloads
+    fun strafeToConstantHeading(
+        pos: Vector2d,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) = TrajectoryActionBuilder(
+        this,
+        tb.strafeToConstantHeading(
+            pos, velConstraintOverride, accelConstraintOverride
+        ),
+        n + 1, lastPoseUnmapped, lastPose, lastTangent, ms, cont
+    )
+
+    @JvmOverloads
+    fun strafeToLinearHeading(
+        pos: Vector2d,
+        heading: Rotation2d,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) = TrajectoryActionBuilder(
+        this,
+        tb.strafeToLinearHeading(
+            pos, heading, velConstraintOverride, accelConstraintOverride
+        ),
+        n + 1, lastPoseUnmapped, lastPose, lastTangent, ms, cont
+    )
+    @JvmOverloads
+    fun strafeToLinearHeading(
+        pos: Vector2d,
+        heading: Double,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) = TrajectoryActionBuilder(
+        this,
+        tb.strafeToLinearHeading(
+            pos, heading, velConstraintOverride, accelConstraintOverride
+        ),
+        n + 1, lastPoseUnmapped, lastPose, lastTangent, ms, cont
+    )
+
+    @JvmOverloads
+    fun strafeToSplineHeading(
+        pos: Vector2d,
+        heading: Rotation2d,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) = TrajectoryActionBuilder(
+        this,
+        tb.strafeToSplineHeading(
+            pos, heading, velConstraintOverride, accelConstraintOverride
+        ),
+        n + 1, lastPoseUnmapped, lastPose, lastTangent, ms, cont
+    )
+    @JvmOverloads
+    fun strafeToSplineHeading(
+        pos: Vector2d,
+        heading: Double,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) = TrajectoryActionBuilder(
+        this,
+        tb.strafeToSplineHeading(
+            pos, heading, velConstraintOverride, accelConstraintOverride
+        ),
+        n + 1, lastPoseUnmapped, lastPose, lastTangent, ms, cont
+    )
+
+    @JvmOverloads
     fun splineTo(
         pos: Vector2d,
         tangent: Rotation2d,

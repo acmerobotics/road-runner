@@ -129,6 +129,23 @@ class PositionPathSeqBuilder private constructor(
     }
 
     /**
+     * Sets the tangent to point toward [pos], and adds a line segment in that direction.
+     */
+    fun strafeTo(pos: Vector2d): PositionPathSeqBuilder {
+        val diff = pos - nextBeginPos
+        // TODO: should we add a normalized() method or an angle() method?
+        val norm = diff.norm()
+        setTangent((diff / norm).angleCast())
+
+        return addSegment(
+            Line(
+                nextBeginPos,
+                pos
+            )
+        )
+    }
+
+    /**
      * Adds a spline segment to position [pos] with tangent [tangent].
      */
     fun splineTo(pos: Vector2d, tangent: Rotation2d): PositionPathSeqBuilder {
@@ -468,6 +485,22 @@ class PathBuilder private constructor(
         copy(positionPathSeqBuilder.lineToY(posY), headingSegments + listOf { splineUntil(it, heading) }, heading)
     fun lineToYSplineHeading(posY: Double, heading: Double) = lineToYSplineHeading(posY, Rotation2d.exp(heading))
 
+    fun strafeTo(pos: Vector2d) = copyTangent(
+        positionPathSeqBuilder.strafeTo(pos),
+        headingSegments + listOf { tangentUntil(it) }
+    )
+
+    fun strafeToConstantHeading(pos: Vector2d) =
+        copy(positionPathSeqBuilder.strafeTo(pos), headingSegments + listOf { constantUntil(it) }, endHeading)
+
+    fun strafeToLinearHeading(pos: Vector2d, heading: Rotation2d) =
+        copy(positionPathSeqBuilder.strafeTo(pos), headingSegments + listOf { linearUntil(it, heading) }, heading)
+    fun strafeToLinearHeading(pos: Vector2d, heading: Double) = strafeToLinearHeading(pos, Rotation2d.exp(heading))
+
+    fun strafeToSplineHeading(pos: Vector2d, heading: Rotation2d) =
+        copy(positionPathSeqBuilder.strafeTo(pos), headingSegments + listOf { splineUntil(it, heading) }, heading)
+    fun strafeToSplineHeading(pos: Vector2d, heading: Double) = strafeToSplineHeading(pos, Rotation2d.exp(heading))
+
     fun splineTo(pos: Vector2d, tangent: Rotation2d) =
         copyTangent(positionPathSeqBuilder.splineTo(pos, tangent), headingSegments + listOf { tangentUntil(it) })
     fun splineTo(pos: Vector2d, tangent: Double) = splineTo(pos, Rotation2d.exp(tangent))
@@ -680,6 +713,56 @@ class TrajectoryBuilder private constructor(
         accelConstraintOverride: AccelConstraint? = null
     ) =
         add(pathBuilder.lineToYSplineHeading(posY, heading), velConstraintOverride, accelConstraintOverride)
+
+    @JvmOverloads
+    fun strafeTo(
+        pos: Vector2d,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) =
+        add(pathBuilder.strafeTo(pos), velConstraintOverride, accelConstraintOverride)
+
+    @JvmOverloads
+    fun strafeToConstantHeading(
+        pos: Vector2d,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) =
+        add(pathBuilder.strafeToConstantHeading(pos), velConstraintOverride, accelConstraintOverride)
+
+    @JvmOverloads
+    fun strafeToLinearHeading(
+        pos: Vector2d,
+        heading: Rotation2d,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) =
+        add(pathBuilder.strafeToLinearHeading(pos, heading), velConstraintOverride, accelConstraintOverride)
+    @JvmOverloads
+    fun strafeToLinearHeading(
+        pos: Vector2d,
+        heading: Double,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) =
+        add(pathBuilder.strafeToLinearHeading(pos, heading), velConstraintOverride, accelConstraintOverride)
+
+    @JvmOverloads
+    fun strafeToSplineHeading(
+        pos: Vector2d,
+        heading: Rotation2d,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) =
+        add(pathBuilder.strafeToSplineHeading(pos, heading), velConstraintOverride, accelConstraintOverride)
+    @JvmOverloads
+    fun strafeToSplineHeading(
+        pos: Vector2d,
+        heading: Double,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) =
+        add(pathBuilder.strafeToSplineHeading(pos, heading), velConstraintOverride, accelConstraintOverride)
 
     @JvmOverloads
     fun splineTo(
