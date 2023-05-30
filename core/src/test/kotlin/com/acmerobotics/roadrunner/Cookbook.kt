@@ -18,7 +18,7 @@ fun isFollowing(): Boolean {
 }
 
 fun main() {
-    val posPath = PosPathSeqBuilder(
+    val posPath = PositionPathSeqBuilder(
         Vector2d(0.0, 0.0),
         Rotation2d.exp(0.0),
         1e-6,
@@ -88,7 +88,7 @@ fun main() {
 
 // current TS impl is only magically exception safe
 fun persistentBuilders() {
-    val builder = PosPathSeqBuilder(
+    val builder = PositionPathSeqBuilder(
         Vector2d(0.0, 0.0),
         Rotation2d.exp(0.0),
         1e-6,

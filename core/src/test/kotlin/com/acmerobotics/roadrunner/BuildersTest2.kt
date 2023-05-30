@@ -8,7 +8,7 @@ import kotlin.test.assertFails
 class BuildersTest2 {
     @Test
     fun testPosPathSeqBuilder() {
-        val posBase = PosPathSeqBuilder(
+        val posBase = PositionPathSeqBuilder(
             Vector2d(0.0, 0.0),
             Rotation2d.exp(0.0),
             1e-6,
@@ -89,7 +89,7 @@ class BuildersTest2 {
 
     @Test
     fun testPosePathSeqBuilder() {
-        val path = PosPathSeqBuilder(
+        val path = PositionPathSeqBuilder(
             Vector2d(0.0, 0.0),
             Rotation2d.exp(0.0),
             1e-6,

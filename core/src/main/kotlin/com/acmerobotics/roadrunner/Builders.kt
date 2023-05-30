@@ -11,7 +11,7 @@ import kotlin.math.abs
  * A new path is started whenever extending the current path would violate the continuity requirement. To manually
  * insert further path breaks, invoke this builder multiple times.
  */
-class PosPathSeqBuilder private constructor(
+class PositionPathSeqBuilder private constructor(
     private val eps: Double,
     private val paths: List<CompositePositionPath<Arclength>>,
     // invariants:
@@ -34,7 +34,7 @@ class PosPathSeqBuilder private constructor(
     ) : this(beginPos, Rotation2d.exp(beginTangent), eps)
 
     fun endPath() =
-        PosPathSeqBuilder(
+        PositionPathSeqBuilder(
             eps,
             if (segments.isEmpty()) {
                 paths
@@ -52,7 +52,7 @@ class PosPathSeqBuilder private constructor(
         } else {
             val b = endPath()
 
-            PosPathSeqBuilder(
+            PositionPathSeqBuilder(
                 b.eps,
                 b.paths,
                 b.segments,
@@ -62,7 +62,7 @@ class PosPathSeqBuilder private constructor(
         }
     fun setTangent(newTangent: Double) = setTangent(Rotation2d.exp(newTangent))
 
-    private fun addSegment(seg: PositionPath<Arclength>): PosPathSeqBuilder {
+    private fun addSegment(seg: PositionPath<Arclength>): PositionPathSeqBuilder {
         val begin = seg.begin(2)
         val beginPos = begin.value()
         val beginTangent = begin.drop(1).value().angleCast()
@@ -78,7 +78,7 @@ class PosPathSeqBuilder private constructor(
             this
         }
 
-        return PosPathSeqBuilder(
+        return PositionPathSeqBuilder(
             b.eps,
             b.paths,
             b.segments + listOf(seg),
@@ -92,7 +92,7 @@ class PosPathSeqBuilder private constructor(
      *
      * Adds a line segment that goes to \(x\)-coordinate [posX].
      */
-    fun lineToX(posX: Double): PosPathSeqBuilder {
+    fun lineToX(posX: Double): PositionPathSeqBuilder {
         require(abs(nextBeginTangent.real) > 1e-6) {
             "Path tangent orthogonal to the x-axis, try using lineToY() instead"
         }
@@ -113,7 +113,7 @@ class PosPathSeqBuilder private constructor(
      *
      * Adds a line segment that goes to \(y\)-coordinate [posY].
      */
-    fun lineToY(posY: Double): PosPathSeqBuilder {
+    fun lineToY(posY: Double): PositionPathSeqBuilder {
         require(abs(nextBeginTangent.imag) > 1e-6) {
             "Path tangent orthogonal to the y-axis, try using lineToX() instead"
         }
@@ -131,7 +131,7 @@ class PosPathSeqBuilder private constructor(
     /**
      * Adds a spline segment to position [pos] with tangent [tangent].
      */
-    fun splineTo(pos: Vector2d, tangent: Rotation2d): PosPathSeqBuilder {
+    fun splineTo(pos: Vector2d, tangent: Rotation2d): PositionPathSeqBuilder {
         val dist = (pos - nextBeginPos).norm()
 
         // NOTE: First derivatives will be normalized by arc length reparam, so the magnitudes need not match at knots.
@@ -393,37 +393,37 @@ class PosePathSeqBuilder private constructor(
 
 class PathBuilder private constructor(
     private val beginHeading: Rotation2d, // constant
-    private val posPathSeqBuilder: PosPathSeqBuilder,
+    private val positionPathSeqBuilder: PositionPathSeqBuilder,
     private val headingSegments: List<PosePathSeqBuilder.(Double) -> PosePathSeqBuilder>,
     private val endHeading: Rotation2d,
 ) {
     constructor(beginPose: Pose2d, eps: Double) :
         this(
             beginPose.heading,
-            PosPathSeqBuilder(beginPose.position, beginPose.heading, eps),
+            PositionPathSeqBuilder(beginPose.position, beginPose.heading, eps),
             emptyList(),
             beginPose.heading,
         )
 
     private fun copy(
-        posPathSeqBuilder: PosPathSeqBuilder,
+        positionPathSeqBuilder: PositionPathSeqBuilder,
         headingSegments: List<PosePathSeqBuilder.(Double) -> PosePathSeqBuilder>,
         endHeading: Rotation2d,
     ) =
-        PathBuilder(beginHeading, posPathSeqBuilder, headingSegments, endHeading)
+        PathBuilder(beginHeading, positionPathSeqBuilder, headingSegments, endHeading)
 
     private fun copyTangent(
-        posPathSeqBuilder: PosPathSeqBuilder,
+        positionPathSeqBuilder: PositionPathSeqBuilder,
         headingSegments: List<PosePathSeqBuilder.(Double) -> PosePathSeqBuilder>,
     ): PathBuilder {
-        val lastSeg = posPathSeqBuilder.build().last().paths.last()
+        val lastSeg = positionPathSeqBuilder.build().last().paths.last()
         val headingDiff = lastSeg.end(2).drop(1).angleCast().value() -
             lastSeg.begin(2).drop(1).angleCast().value()
-        return PathBuilder(beginHeading, posPathSeqBuilder, headingSegments, endHeading + headingDiff)
+        return PathBuilder(beginHeading, positionPathSeqBuilder, headingSegments, endHeading + headingDiff)
     }
 
     fun setTangent(r: Rotation2d) = PathBuilder(
-        beginHeading, posPathSeqBuilder.setTangent(r),
+        beginHeading, positionPathSeqBuilder.setTangent(r),
         headingSegments, endHeading
     )
     fun setTangent(r: Double) = setTangent(Rotation2d.exp(r))
@@ -437,60 +437,60 @@ class PathBuilder private constructor(
     )
 
     fun lineToX(posX: Double) = copyTangent(
-        posPathSeqBuilder.lineToX(posX),
+        positionPathSeqBuilder.lineToX(posX),
         headingSegments + listOf { tangentUntil(it) }
     )
 
     fun lineToXConstantHeading(posX: Double) =
-        copy(posPathSeqBuilder.lineToX(posX), headingSegments + listOf { constantUntil(it) }, endHeading)
+        copy(positionPathSeqBuilder.lineToX(posX), headingSegments + listOf { constantUntil(it) }, endHeading)
 
     fun lineToXLinearHeading(posX: Double, heading: Rotation2d) =
-        copy(posPathSeqBuilder.lineToX(posX), headingSegments + listOf { linearUntil(it, heading) }, heading)
+        copy(positionPathSeqBuilder.lineToX(posX), headingSegments + listOf { linearUntil(it, heading) }, heading)
     fun lineToXLinearHeading(posX: Double, heading: Double) = lineToXLinearHeading(posX, Rotation2d.exp(heading))
 
     fun lineToXSplineHeading(posX: Double, heading: Rotation2d) =
-        copy(posPathSeqBuilder.lineToX(posX), headingSegments + listOf { splineUntil(it, heading) }, heading)
+        copy(positionPathSeqBuilder.lineToX(posX), headingSegments + listOf { splineUntil(it, heading) }, heading)
     fun lineToXSplineHeading(posX: Double, heading: Double) = lineToXSplineHeading(posX, Rotation2d.exp(heading))
 
     fun lineToY(posY: Double) = copyTangent(
-        posPathSeqBuilder.lineToY(posY),
+        positionPathSeqBuilder.lineToY(posY),
         headingSegments + listOf { tangentUntil(it) }
     )
 
     fun lineToYConstantHeading(posY: Double) =
-        copy(posPathSeqBuilder.lineToY(posY), headingSegments + listOf { constantUntil(it) }, endHeading)
+        copy(positionPathSeqBuilder.lineToY(posY), headingSegments + listOf { constantUntil(it) }, endHeading)
 
     fun lineToYLinearHeading(posY: Double, heading: Rotation2d) =
-        copy(posPathSeqBuilder.lineToY(posY), headingSegments + listOf { linearUntil(it, heading) }, heading)
+        copy(positionPathSeqBuilder.lineToY(posY), headingSegments + listOf { linearUntil(it, heading) }, heading)
     fun lineToYLinearHeading(posY: Double, heading: Double) = lineToYLinearHeading(posY, Rotation2d.exp(heading))
 
     fun lineToYSplineHeading(posY: Double, heading: Rotation2d) =
-        copy(posPathSeqBuilder.lineToY(posY), headingSegments + listOf { splineUntil(it, heading) }, heading)
+        copy(positionPathSeqBuilder.lineToY(posY), headingSegments + listOf { splineUntil(it, heading) }, heading)
     fun lineToYSplineHeading(posY: Double, heading: Double) = lineToYSplineHeading(posY, Rotation2d.exp(heading))
 
     fun splineTo(pos: Vector2d, tangent: Rotation2d) =
-        copyTangent(posPathSeqBuilder.splineTo(pos, tangent), headingSegments + listOf { tangentUntil(it) })
+        copyTangent(positionPathSeqBuilder.splineTo(pos, tangent), headingSegments + listOf { tangentUntil(it) })
     fun splineTo(pos: Vector2d, tangent: Double) = splineTo(pos, Rotation2d.exp(tangent))
 
     fun splineToConstantHeading(pos: Vector2d, tangent: Rotation2d) =
-        copy(posPathSeqBuilder.splineTo(pos, tangent), headingSegments + listOf { constantUntil(it) }, endHeading)
+        copy(positionPathSeqBuilder.splineTo(pos, tangent), headingSegments + listOf { constantUntil(it) }, endHeading)
     fun splineToConstantHeading(pos: Vector2d, tangent: Double) =
         splineToConstantHeading(pos, Rotation2d.exp(tangent))
 
     fun splineToLinearHeading(pose: Pose2d, tangent: Rotation2d) = copy(
-        posPathSeqBuilder.splineTo(pose.position, tangent),
+        positionPathSeqBuilder.splineTo(pose.position, tangent),
         headingSegments + listOf { linearUntil(it, pose.heading) }, pose.heading
     )
     fun splineToLinearHeading(pose: Pose2d, tangent: Double) = splineToLinearHeading(pose, Rotation2d.exp(tangent))
 
     fun splineToSplineHeading(pose: Pose2d, tangent: Rotation2d) = copy(
-        posPathSeqBuilder.splineTo(pose.position, tangent),
+        positionPathSeqBuilder.splineTo(pose.position, tangent),
         headingSegments + listOf { splineUntil(it, pose.heading) }, pose.heading
     )
     fun splineToSplineHeading(pose: Pose2d, tangent: Double) = splineToSplineHeading(pose, Rotation2d.exp(tangent))
 
     fun build(): List<CompositePosePath> {
-        val posPaths = posPathSeqBuilder.build()
+        val posPaths = positionPathSeqBuilder.build()
         var i = 0
 
         val posePaths = mutableListOf<CompositePosePath>()

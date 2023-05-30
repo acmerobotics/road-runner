@@ -6,7 +6,7 @@ import kotlin.math.PI
 class BuildersChartTest {
     @Test
     fun chartPath() {
-        val paths = PosPathSeqBuilder(
+        val paths = PositionPathSeqBuilder(
             Vector2d(0.0, 0.0),
             Rotation2d.exp(0.0),
             1e-6,
