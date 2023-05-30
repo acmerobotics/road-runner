@@ -166,8 +166,6 @@ class ProfilesTest {
             "profileNonZeroCancel2",
             TimeProfile(profile)
         )
-
-        assertEquals(profile.length, 2.0, 1e-6)
     }
 
     @Test

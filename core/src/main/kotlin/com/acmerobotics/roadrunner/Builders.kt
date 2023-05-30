@@ -533,7 +533,8 @@ class TrajectoryBuilder private constructor(
     private val beginEndVel: Double,
     private val baseVelConstraint: VelConstraint,
     private val baseAccelConstraint: AccelConstraint,
-    private val resolution: Double,
+    private val dispResolution: Double,
+    private val angResolution: Double,
     private val poseMap: PoseMap,
     private val velConstraints: List<VelConstraint>,
     private val accelConstraints: List<AccelConstraint>,
@@ -545,12 +546,14 @@ class TrajectoryBuilder private constructor(
         beginEndVel: Double,
         baseVelConstraint: VelConstraint,
         baseAccelConstraint: AccelConstraint,
-        resolution: Double,
+        dispResolution: Double,
+        angResolution: Double,
         poseMap: PoseMap = IdentityPoseMap(),
     ) :
         this(
             PathBuilder(beginPose, eps),
-            beginEndVel, baseVelConstraint, baseAccelConstraint, resolution,
+            beginEndVel, baseVelConstraint, baseAccelConstraint,
+            dispResolution, angResolution,
             poseMap, listOf(), listOf()
         )
 
@@ -560,24 +563,22 @@ class TrajectoryBuilder private constructor(
         accelConstraintOverride: AccelConstraint?
     ) =
         TrajectoryBuilder(
-            newPathBuilder, beginEndVel, baseVelConstraint, baseAccelConstraint, resolution, poseMap,
+            newPathBuilder, beginEndVel, baseVelConstraint, baseAccelConstraint, dispResolution, angResolution, poseMap,
             velConstraints + listOf(velConstraintOverride ?: baseVelConstraint),
             accelConstraints + listOf(accelConstraintOverride ?: baseAccelConstraint)
         )
 
     fun setTangent(r: Rotation2d) =
         TrajectoryBuilder(
-            pathBuilder.setTangent(r), beginEndVel, baseVelConstraint, baseAccelConstraint, resolution, poseMap,
-            velConstraints,
-            accelConstraints,
+            pathBuilder.setTangent(r), beginEndVel, baseVelConstraint, baseAccelConstraint,
+            dispResolution, angResolution, poseMap, velConstraints, accelConstraints,
         )
     fun setTangent(r: Double) = setTangent(Rotation2d.exp(r))
 
     fun setReversed(reversed: Boolean) =
         TrajectoryBuilder(
-            pathBuilder.setReversed(reversed), beginEndVel, baseVelConstraint, baseAccelConstraint, resolution, poseMap,
-            velConstraints,
-            accelConstraints,
+            pathBuilder.setReversed(reversed), beginEndVel, baseVelConstraint, baseAccelConstraint,
+            dispResolution, angResolution, poseMap, velConstraints, accelConstraints,
         )
 
     @JvmOverloads
@@ -768,7 +769,7 @@ class TrajectoryBuilder private constructor(
                         accelConstraints.slice(offset until offset + rawPath.paths.size),
                         rawPath.offsets.drop(1).dropLast(1)
                     ),
-                    resolution,
+                    dispResolution, angResolution
                 ),
                 rawPath.offsets
             )

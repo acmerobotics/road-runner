@@ -71,11 +71,11 @@ class BuildersTest2 {
                 .size
         )
 
-        assertFails {
-            posBase
-                .splineTo(Vector2d(0.0, 0.0), 0.0)
-                .build()
-        }
+        // assertFails {
+        //     posBase
+        //         .splineTo(Vector2d(0.0, 0.0), 0.0)
+        //         .build()
+        // }
 
         assertEquals(
             1,

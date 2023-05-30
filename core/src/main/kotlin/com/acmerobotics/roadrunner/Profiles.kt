@@ -15,8 +15,13 @@ import kotlin.math.withSign
 class Time
 
 /**
- * Motion profile parameterized by displacement.
+ * Acceleration-limited motion profile parameterized by displacement.
+ *
+ * @param[disps] displacements, beginning at zero and sorted ascending
+ * @param[vels] velocities at [disps] values
+ * @param[accels] constant accelerations applied over each displacement interval
  */
+// NOTE: disps[0] = 0 is assumed by the merge() implementation.
 data class DisplacementProfile(
     @JvmField
     val disps: List<Double>,
@@ -62,6 +67,15 @@ data class DisplacementProfile(
     }
 }
 
+/**
+ * Displacement profile that can be canceled at any time to yield a new displacement profile
+ * that achieves the final velocity as soon as possible and then promptly ends.
+ *
+ * Cancellation profiles begin with a displacement of zero regardless of the provided cancellation
+ * displacement in the base profile.
+ *
+ * Cancellation doesn't modify the base displacement profile, allowing for multiple cancellations.
+ */
 class CancelableProfile(
     @JvmField val baseProfile: DisplacementProfile,
     @JvmField val disps: List<Double>,
@@ -72,20 +86,12 @@ class CancelableProfile(
         val vels = mutableListOf(baseProfile[x][1])
         val accels = mutableListOf<Double>()
 
-        val rawIndex = disps.binarySearch(x)
+        val rawIndex = this.disps.binarySearch(x)
         val beginIndex = if (rawIndex >= 0) {
-            rawIndex + 1
+            rawIndex
         } else {
             val insIndex = -(rawIndex + 1)
-            if (insIndex == 0) {
-                newDisps.add(-x)
-                vels.add(vels.last())
-                accels.add(0.0)
-
-                1
-            } else {
-                insIndex
-            }
+            max(1, insIndex)
         }
 
         val targetVel = baseProfile.vels.last()
@@ -96,7 +102,7 @@ class CancelableProfile(
             val targetDisp = newDisps.last() + (targetVel * targetVel - v * v) / (2 * a)
             if (x + targetDisp > disps[index]) {
                 newDisps.add(disps[index] - x)
-                vels.add(sqrt(v * v + 2 * a * (disps[index] - disps[index - 1])))
+                vels.add(sqrt(v * v + 2 * a * (this.disps[index] - this.disps[index - 1])))
                 accels.add(a)
             } else {
                 newDisps.add(targetDisp)
@@ -127,9 +133,11 @@ private fun timeScan(p: DisplacementProfile): List<Double> {
 }
 
 /**
- * Motion profile parameterized by time.
+ * Acceleration-limited motion profile parameterized by time.
+ *
+ * @param[dispProfile] displacement profile
+ * @param[times] time offsets of each displacement sample, starting at 0.0
  */
-// guaranteed monotonic
 data class TimeProfile @JvmOverloads constructor(
     @JvmField
     val dispProfile: DisplacementProfile,
@@ -254,7 +262,7 @@ fun profile(
 
     val samples = max(1, ceil(length / resolution).toInt())
 
-    val disps = rangeMiddle(0.0, length, samples)
+    val disps = rangeCentered(0.0, length, samples)
     val maxVels = disps.map(maxVel)
     val minAccels = disps.map(minAccel)
     val maxAccels = disps.map(maxAccel)
@@ -266,7 +274,7 @@ fun profile(
 }
 
 /**
- * Computes an approximately time-optimal profile from center-sampled constraints.
+ * Computes an approximately time-optimal profile from sampled constraints.
  *
  * @param[beginEndVel] beginning and ending velocity (must be the same to guarantee feasibility)
  * @param[maxVels] all positive
@@ -309,7 +317,7 @@ fun forwardProfile(
 ): DisplacementProfile {
     val samples = max(1, ceil(length / resolution).toInt())
 
-    val disps = rangeMiddle(0.0, length, samples)
+    val disps = rangeCentered(0.0, length, samples)
     val maxVels = disps.map(maxVel)
     val maxAccels = disps.map(maxAccel)
     return forwardProfile(
@@ -400,7 +408,7 @@ fun backwardProfile(
 
     val samples = max(1, ceil(length / resolution).toInt())
 
-    val disps = rangeMiddle(0.0, length, samples)
+    val disps = rangeCentered(0.0, length, samples)
     // TODO: verify signs?
     val maxVels = disps.map(maxVel)
     val minAccels = disps.map(minAccel)
@@ -425,7 +433,8 @@ fun backwardProfile(
     endVel: Double,
     minAccels: List<Double>,
 ) = forwardProfile(
-    disps, endVel, maxVels.reversed(), minAccels.reversed().map { -it }
+    disps.reversed().map { disps.last() - it }, endVel,
+    maxVels.reversed(), minAccels.reversed().map { -it }
 ).let {
     DisplacementProfile(
         it.disps.map { x -> it.length - x }.reversed(),
@@ -609,20 +618,42 @@ class CompositeAccelConstraint(
     }
 }
 
+fun samplePathByRotation(
+    path: PosePath,
+    angResolution: Double,
+): List<Double> {
+    val (values, sums) = integralScan(0.0, path.length(), 1e-6) {
+        // TODO: this is pretty wasteful
+        abs(path[it, 2].heading.velocity().value())
+    }
+
+    return lerpLookupMap(
+        sums, values,
+        rangeCentered(
+            0.0, sums.last(),
+            max(1, ceil(sums.last() / angResolution).toInt())
+        )
+    )
+}
+
 fun profile(
     path: PosePath,
     beginEndVel: Double,
     velConstraint: VelConstraint,
     accelConstraint: AccelConstraint,
-    resolution: Double,
+    dispResolution: Double,
+    angResolution: Double,
 ): CancelableProfile {
-    val samples = max(1, ceil(path.length() / resolution).toInt())
+    val len = path.length()
+    val dispSamples = rangeCentered(0.0, len, max(1, ceil(len / dispResolution).toInt()))
+    val angSamples = samplePathByRotation(path, angResolution)
+    val samples = (dispSamples + angSamples).sorted()
 
     val maxVels = mutableListOf<Double>()
     val minAccels = mutableListOf<Double>()
     val maxAccels = mutableListOf<Double>()
 
-    for (s in rangeMiddle(0.0, path.length(), samples)) {
+    for (s in samples) {
         val pose = path[s, 2]
 
         maxVels.add(velConstraint.maxRobotVel(pose, path, s))
@@ -633,7 +664,7 @@ fun profile(
     }
 
     return profile(
-        range(0.0, path.length(), samples + 1),
+        listOf(0.0) + samples.zip(samples.drop(1)).map { (a, b) -> 0.5 * (a + b) } + listOf(path.length()),
         beginEndVel, maxVels, minAccels, maxAccels
     )
 }
@@ -643,14 +674,18 @@ fun forwardProfile(
     beginVel: Double,
     velConstraint: VelConstraint,
     accelConstraint: AccelConstraint,
-    resolution: Double,
+    dispResolution: Double,
+    angResolution: Double,
 ): DisplacementProfile {
-    val samples = max(1, ceil(path.length() / resolution).toInt())
+    val len = path.length()
+    val dispSamples = rangeCentered(0.0, len, max(1, ceil(len / dispResolution).toInt()))
+    val angSamples = samplePathByRotation(path, angResolution)
+    val samples = (dispSamples + angSamples).sorted()
 
     val maxVels = mutableListOf<Double>()
     val maxAccels = mutableListOf<Double>()
 
-    for (s in rangeMiddle(0.0, path.length(), samples)) {
+    for (s in samples) {
         val pose = path[s, 2]
 
         maxVels.add(velConstraint.maxRobotVel(pose, path, s))
@@ -660,7 +695,7 @@ fun forwardProfile(
     }
 
     return forwardProfile(
-        range(0.0, path.length(), samples + 1),
+        listOf(0.0) + samples.zip(samples.drop(1)).map { (a, b) -> 0.5 * (a + b) } + listOf(path.length()),
         beginVel, maxVels, maxAccels,
     )
 }
@@ -670,14 +705,18 @@ fun backwardProfile(
     velConstraint: VelConstraint,
     endVel: Double,
     accelConstraint: AccelConstraint,
-    resolution: Double,
+    dispResolution: Double,
+    angResolution: Double,
 ): DisplacementProfile {
-    val samples = max(1, ceil(path.length() / resolution).toInt())
+    val len = path.length()
+    val dispSamples = rangeCentered(0.0, len, max(1, ceil(len / dispResolution).toInt()))
+    val angSamples = samplePathByRotation(path, angResolution)
+    val samples = (dispSamples + angSamples).sorted()
 
     val maxVels = mutableListOf<Double>()
     val minAccels = mutableListOf<Double>()
 
-    for (s in rangeMiddle(0.0, path.length(), samples)) {
+    for (s in samples) {
         val pose = path[s, 2]
 
         maxVels.add(velConstraint.maxRobotVel(pose, path, s))
@@ -687,7 +726,7 @@ fun backwardProfile(
     }
 
     return backwardProfile(
-        range(0.0, path.length(), samples + 1),
+        listOf(0.0) + samples.zip(samples.drop(1)).map { (a, b) -> 0.5 * (a + b) } + listOf(path.length()),
         maxVels, endVel, minAccels,
     )
 }

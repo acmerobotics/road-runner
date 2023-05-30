@@ -154,13 +154,14 @@ class SafeTrajectoryBuilder internal constructor(private val trajBuilder: Trajec
         beginEndVel: Double,
         baseVelConstraint: VelConstraint,
         baseAccelConstraint: AccelConstraint,
-        resolution: Double,
+        dispResolution: Double,
+        angResolution: Double,
         poseMap: PoseMap = IdentityPoseMap(),
     ) :
         this(
             TrajectoryBuilder(
                 beginPose, eps,
-                beginEndVel, baseVelConstraint, baseAccelConstraint, resolution,
+                beginEndVel, baseVelConstraint, baseAccelConstraint, dispResolution, angResolution,
                 poseMap,
             ).setTangent(beginTangent)
         )
@@ -173,12 +174,13 @@ class SafeTrajectoryBuilder internal constructor(private val trajBuilder: Trajec
         beginEndVel: Double,
         baseVelConstraint: VelConstraint,
         baseAccelConstraint: AccelConstraint,
-        resolution: Double,
+        dispResolution: Double,
+        angResolution: Double,
         poseMap: PoseMap = IdentityPoseMap(),
     ) :
         this(
             beginPose, Rotation2d.exp(beginTangent),
-            eps, beginEndVel, baseVelConstraint, baseAccelConstraint, resolution, poseMap
+            eps, beginEndVel, baseVelConstraint, baseAccelConstraint, dispResolution, angResolution, poseMap
         )
 
     @JvmOverloads

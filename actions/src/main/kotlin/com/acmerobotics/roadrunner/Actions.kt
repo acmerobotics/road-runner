@@ -144,7 +144,8 @@ class TrajectoryActionBuilder private constructor(
     val baseTurnConstraints: TurnConstraints,
     val baseVelConstraint: VelConstraint,
     val baseAccelConstraint: AccelConstraint,
-    val resolution: Double,
+    val dispResolution: Double,
+    val angResolution: Double,
     val poseMap: PoseMap,
     // vary throughout
     private val tb: TrajectoryBuilder,
@@ -166,7 +167,8 @@ class TrajectoryActionBuilder private constructor(
         baseTurnConstraints: TurnConstraints,
         baseVelConstraint: VelConstraint,
         baseAccelConstraint: AccelConstraint,
-        resolution: Double,
+        dispResolution: Double,
+        angResolution: Double,
         poseMap: PoseMap = IdentityPoseMap(),
     ) :
         this(
@@ -177,11 +179,12 @@ class TrajectoryActionBuilder private constructor(
             baseTurnConstraints,
             baseVelConstraint,
             baseAccelConstraint,
-            resolution,
+            dispResolution,
+            angResolution,
             poseMap,
             TrajectoryBuilder(
                 beginPose, eps, beginEndVel,
-                baseVelConstraint, baseAccelConstraint, resolution,
+                baseVelConstraint, baseAccelConstraint, dispResolution, angResolution,
                 poseMap,
             ),
             0,
@@ -210,7 +213,8 @@ class TrajectoryActionBuilder private constructor(
             ab.baseTurnConstraints,
             ab.baseVelConstraint,
             ab.baseAccelConstraint,
-            ab.resolution,
+            ab.dispResolution,
+            ab.angResolution,
             ab.poseMap,
             tb,
             n,
@@ -243,8 +247,8 @@ class TrajectoryActionBuilder private constructor(
                     beginEndVel,
                     baseVelConstraint,
                     baseAccelConstraint,
-                    resolution,
-                    poseMap
+                    dispResolution, angResolution,
+                    poseMap,
                 ),
                 0,
                 endPoseUnmapped,
@@ -361,7 +365,7 @@ class TrajectoryActionBuilder private constructor(
                 beginEndVel,
                 baseVelConstraint,
                 baseAccelConstraint,
-                resolution,
+                dispResolution, angResolution,
                 poseMap
             ),
             b2.n, lastPoseUnmapped, lastPose, lastTangent, b2.ms, b2.cont

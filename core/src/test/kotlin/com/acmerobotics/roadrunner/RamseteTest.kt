@@ -37,7 +37,7 @@ class RamseteTest {
                 path, 0.0,
                 kinematics.WheelVelConstraint(10.0),
                 ProfileAccelConstraint(-20.0, 20.0),
-                0.25,
+                0.25, 0.1,
             ).baseProfile
         )
 
