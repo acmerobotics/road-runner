@@ -409,7 +409,6 @@ fun backwardProfile(
     val samples = max(1, ceil(length / resolution).toInt())
 
     val disps = rangeCentered(0.0, length, samples)
-    // TODO: verify signs?
     val maxVels = disps.map(maxVel)
     val minAccels = disps.map(minAccel)
     return backwardProfile(

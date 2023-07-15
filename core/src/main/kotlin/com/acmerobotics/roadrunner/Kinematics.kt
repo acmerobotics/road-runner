@@ -52,9 +52,6 @@ data class MecanumKinematics @JvmOverloads constructor(
         @JvmField
         val rightFront: DualNum<Param>,
     ) {
-        // TODO: remove?
-        constructor(vels: List<DualNum<Param>>) : this(vels[0], vels[1], vels[2], vels[3])
-
         fun all() = listOf(leftFront, leftBack, rightBack, rightFront)
     }
 
@@ -103,9 +100,6 @@ data class TankKinematics(@JvmField val trackWidth: Double) {
         @JvmField
         val right: DualNum<Param>,
     ) {
-        // TODO: is this necessary?
-        constructor(vels: List<DualNum<Param>>) : this(vels[0], vels[1])
-
         fun all() = listOf(left, right)
     }
 

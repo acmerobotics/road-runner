@@ -23,7 +23,7 @@ fun interface Action {
 
 /**
  * Action combinator that executes the action group [initialActions] in series. Each action is run one after the other.
- * When an action completes, the next one is immediately run. This action completes when the last actions completes.
+ * When an action completes, the next one is immediately run. This action completes when the last action completes.
  */
 data class SequentialAction(
     val initialActions: List<Action>
@@ -297,8 +297,11 @@ class TrajectoryActionBuilder private constructor(
     /**
      * Waits [t] seconds.
      */
-    // TODO: handle negative case?
-    fun waitSeconds(t: Double) = stopAndAdd(SleepAction(t))
+    fun waitSeconds(t: Double): TrajectoryActionBuilder {
+        require(t >= 0.0)
+
+        return stopAndAdd(SleepAction(t))
+    }
 
     /**
      * Schedules action [a] to execute in parallel starting at a displacement [ds] after the last trajectory segment.
@@ -306,22 +309,25 @@ class TrajectoryActionBuilder private constructor(
      *
      * Cannot be called without an applicable pending trajectory.
      */
-    // TODO: handle negative/before trajectory begin case?
     // TODO: Should calling this without an applicable trajectory implicitly begin an empty trajectory and execute the
     // action immediately?
-    fun afterDisp(ds: Double, a: Action) =
-        TrajectoryActionBuilder(
+    fun afterDisp(ds: Double, a: Action): TrajectoryActionBuilder {
+        require(ds >= 0.0)
+
+        return TrajectoryActionBuilder(
             this, tb, n, lastPoseUnmapped, lastPose, lastTangent,
             ms + listOf(DispMarkerFactory(n, ds, a)), cont
         )
+    }
 
     /**
      * Schedules action [a] to execute in parallel starting [dt] seconds after the last trajectory segment, turn, or
      * other action.
      */
-    // TODO: handle negative/before trajectory begin case?
-    fun afterTime(dt: Double, a: Action) =
-        if (n == 0) {
+    fun afterTime(dt: Double, a: Action): TrajectoryActionBuilder {
+        require(dt >= 0.0)
+
+        return if (n == 0) {
             TrajectoryActionBuilder(this, tb, 0, lastPoseUnmapped, lastPose, lastTangent, emptyList()) { tail ->
                 cont(ParallelAction(tail, seqCons(SleepAction(dt), a)))
             }
@@ -331,6 +337,7 @@ class TrajectoryActionBuilder private constructor(
                 ms + listOf(TimeMarkerFactory(n, dt, a)), cont
             )
         }
+    }
 
     fun setTangent(r: Rotation2d) =
         TrajectoryActionBuilder(this, tb.setTangent(r), n, lastPoseUnmapped, lastPose, lastTangent, ms, cont)

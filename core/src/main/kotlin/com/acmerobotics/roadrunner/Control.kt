@@ -143,7 +143,6 @@ class RamseteController @JvmOverloads constructor(
             return sin(u) / u
         }
 
-        // TODO: add acceleration feedforward?
         val error = targetPose.value().minusExp(actualPose)
         return PoseVelocity2dDual.constant(
             PoseVelocity2d(

@@ -17,7 +17,6 @@ data class TurnConstraints(
  * Note: Regardless of whether the turn is to the left or to the right, the max accel limit is applied when speeding up
  * and the min accel limit is applied when speeding down.
  */
-// TODO: Do the semantics in the above note make sense?
 class TimeTurn(
     @JvmField
     val beginPose: Pose2d,
