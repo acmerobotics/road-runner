@@ -3,7 +3,7 @@ import java.net.URI
 val libVersion: String by rootProject.extra
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.6.20"
+    id("org.jetbrains.kotlin.jvm") version "1.9.0"
 
     `java-library`
 
