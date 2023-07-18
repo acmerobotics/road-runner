@@ -8,6 +8,7 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket
 /**
  * Concurrent task for cooperative multitasking with some FTC dashboard hooks. Actions may have mutable state.
  */
+@JvmDefaultWithoutCompatibility
 fun interface Action {
     /**
      * Runs a single uninterruptible block. Returns true if the action should run again and false if it has completed.

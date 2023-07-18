@@ -30,6 +30,12 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test")
 }
 
+kotlin {
+    compilerOptions {
+        freeCompilerArgs.set(listOf("-Xjvm-default=all"))
+    }
+}
+
 java {
     withSourcesJar()
 }
