@@ -60,8 +60,11 @@ fun rangeCentered(begin: Double, end: Double, samples: Int): List<Double> {
     return (0 until samples).map { begin + 0.5 * dx + dx * it }
 }
 
+// TODO: is the branch here okay? would snz() on the denominator be better?
 fun lerp(x: Double, fromLo: Double, fromHi: Double, toLo: Double, toHi: Double) =
-    toLo + (x - fromLo) * (toHi - toLo) / (fromHi - fromLo)
+    if (fromLo == fromHi) 0.0
+    else
+        toLo + (x - fromLo) * (toHi - toLo) / (fromHi - fromLo)
 
 data class IntegralScanResult(
     @JvmField
