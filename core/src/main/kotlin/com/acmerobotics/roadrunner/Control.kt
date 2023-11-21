@@ -68,14 +68,15 @@ class HolonomicController(
         actualPose: Pose2d,
         actualVelActual: PoseVelocity2d,
     ): PoseVelocity2dDual<Time> {
+        // TODO: Are these names useful for anyone else?
         val targetVelWorld = targetPose.velocity()
-        val txActualWorld = Pose2dDual.constant<Time>(actualPose.inverse(), 2)
-        val targetVelActual = txActualWorld * targetVelWorld
+        val txTargetWorld = Pose2dDual.constant<Time>(targetPose.value().inverse(), 2)
+        val targetVelTarget = txTargetWorld * targetVelWorld
 
-        val velErrorActual = targetVelActual.value() - actualVelActual
+        val velErrorActual = targetVelTarget.value() - actualVelActual
 
         val error = targetPose.value().minusExp(actualPose)
-        return targetVelActual +
+        return targetVelTarget +
             PoseVelocity2d(
                 Vector2d(
                     axialPosGain * error.position.x,
