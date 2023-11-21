@@ -79,6 +79,12 @@ data class Rotation2d(@JvmField val real: Double, @JvmField val imag: Double) {
          */
         @JvmStatic
         fun exp(theta: Double) = Rotation2d(cos(theta), sin(theta))
+
+        /**
+         * Alias for [exp].
+         */
+        @JvmStatic
+        fun fromDouble(theta: Double) = exp(theta)
     }
 
     operator fun plus(x: Double) = this * exp(x)
@@ -97,6 +103,11 @@ data class Rotation2d(@JvmField val real: Double, @JvmField val imag: Double) {
      * Get the rotation as a normalized [Double].
      */
     fun log() = atan2(imag, real)
+
+    /**
+     * Alias for [log].
+     */
+    fun toDouble() = log()
 }
 
 /**
