@@ -101,6 +101,26 @@ data class SleepAction(val dt: Double) : Action {
 
     override fun preview(fieldOverlay: Canvas) {}
 }
+fun interface InstantFunction {
+    fun run()
+}
+
+/**
+ * Instant action that executes [f] immediately.
+ */
+class InstantAction(val f: InstantFunction) : Action {
+    override fun run(p: TelemetryPacket): Boolean {
+        f.run()
+        return false
+    }
+}
+
+/**
+ * Null action that does nothing.
+ */
+class NullAction : Action {
+    override fun run(p: TelemetryPacket) = false
+}
 
 private fun seqCons(hd: Action, tl: Action): Action =
     if (tl is SequentialAction) {
@@ -294,6 +314,7 @@ class TrajectoryActionBuilder private constructor(
             b.cont(seqCons(a, tail))
         }
     }
+    fun stopAndAdd(f: InstantFunction) = stopAndAdd(InstantAction(f))
 
     /**
      * Waits [t] seconds.
@@ -320,6 +341,7 @@ class TrajectoryActionBuilder private constructor(
             ms + listOf(DispMarkerFactory(n, ds, a)), cont
         )
     }
+    fun afterDisp(ds: Double, f: InstantFunction) = afterDisp(ds, InstantAction(f))
 
     /**
      * Schedules action [a] to execute in parallel starting [dt] seconds after the last trajectory segment, turn, or
@@ -339,6 +361,7 @@ class TrajectoryActionBuilder private constructor(
             )
         }
     }
+    fun afterTime(dt: Double, f: InstantFunction) = afterTime(dt, InstantAction(f))
 
     fun setTangent(r: Rotation2d) =
         TrajectoryActionBuilder(this, tb.setTangent(r), n, lastPoseUnmapped, lastPose, lastTangent, ms, cont)
