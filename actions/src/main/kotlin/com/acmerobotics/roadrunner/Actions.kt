@@ -759,6 +759,17 @@ class TrajectoryActionBuilder private constructor(
         n + 1, lastPoseUnmapped, lastPose, lastTangent, ms, cont
     )
 
+    /**
+     * Creates a new builder with the same settings at the current pose, tangent.
+     */
+    fun fresh() = TrajectoryActionBuilder(
+        turnActionFactory,
+        trajectoryActionFactory,
+        lastPoseUnmapped,
+        eps, beginEndVel, baseTurnConstraints, baseVelConstraint, baseAccelConstraint,
+        dispResolution, angResolution, poseMap
+    ).setTangent(lastTangent)
+
     fun build(): Action {
         return endTrajectory().cont(SequentialAction())
     }
