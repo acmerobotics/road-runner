@@ -546,8 +546,9 @@ class PathBuilder private constructor(
 
 fun interface PoseMap {
     fun map(pose: Pose2dDual<Arclength>): Pose2dDual<Arclength>
-    fun map(pose: Pose2d) = map(Pose2dDual.constant(pose, 1)).value()
 }
+
+fun PoseMap.map(pose: Pose2d) = map(Pose2dDual.constant(pose, 1)).value()
 
 class IdentityPoseMap : PoseMap {
     override fun map(pose: Pose2dDual<Arclength>) = pose
