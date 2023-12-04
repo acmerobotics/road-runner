@@ -228,6 +228,11 @@ data class Pose2dDual<Param>(
     @JvmField
     val heading: Rotation2dDual<Param>,
 ) {
+    constructor(positionX: DualNum<Param>, positionY: DualNum<Param>, heading: Rotation2dDual<Param>) :
+        this(Vector2dDual(positionX, positionY), heading)
+    constructor(positionX: DualNum<Param>, positionY: DualNum<Param>, heading: DualNum<Param>) :
+        this(positionX, positionY, Rotation2dDual.exp(heading))
+
     companion object {
         @JvmStatic
         fun <Param> constant(p: Pose2d, n: Int) =
