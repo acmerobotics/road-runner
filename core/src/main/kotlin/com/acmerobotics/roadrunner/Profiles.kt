@@ -446,6 +446,8 @@ fun backwardProfile(
  * Merges [p1] and [p2] into another profile with the minimum velocity of the two at every point.
  */
 fun merge(p1: DisplacementProfile, p2: DisplacementProfile): DisplacementProfile {
+    // implicit requirements: p1, p2 represent same displacement interval [0, length]
+    // TODO: this limitation is not really necessary and somewhat adversely affects cancellation profiles
     val disps = mutableListOf(0.0)
     val vels = mutableListOf(min(p1.vels[0], p2.vels[0]))
     val accels = mutableListOf<Double>()
@@ -461,30 +463,43 @@ fun merge(p1: DisplacementProfile, p2: DisplacementProfile): DisplacementProfile
 
         val (endVel1, endVel2) =
             if (p1.disps[i] == p2.disps[j]) {
+                val p = Pair(
+                    p1.vels[i],
+                    p2.vels[j],
+                )
                 i++
                 j++
-                Pair(
-                    p1.vels[i - 1],
-                    p2.vels[j - 1],
-                )
+                p
             } else if (p1.disps[i] < p2.disps[j]) {
-                i++
-                Pair(
-                    p1.vels[i - 1],
+                val p = Pair(
+                    p1.vels[i],
+                    // compute the intermediate velocity, working back from the endpoint
+                    //   wny not compute velocities forward and use disps.last()?
+                    //   not really sure, though this might be more numerically stable / accumulate less error
+                    // TODO: I don't like max(0.0, ...) here, but it's better than NaNs
                     sqrt(
-                        p2.vels[j] * p2.vels[j] +
-                            2 * accel2 * (p1.disps[i - 1] - endDisp)
+                        max(
+                            0.0,
+                            p2.vels[j] * p2.vels[j] -
+                                2 * accel2 * (p2.disps[j] - p1.disps[i])
+                        )
                     )
                 )
+                i++
+                p
             } else {
-                j++
-                Pair(
+                val p = Pair(
                     sqrt(
-                        p1.vels[i] * p1.vels[i] +
-                            2 * accel1 * (p2.disps[j - 1] - endDisp)
+                        max(
+                            0.0,
+                            p1.vels[i] * p1.vels[i] -
+                                2 * accel1 * (p1.disps[i] - p2.disps[j])
+                        )
                     ),
-                    p2.vels[j - 1]
+                    p2.vels[j]
                 )
+                j++
+                p
             }
 
         val min1 = endVel1 < endVel2
@@ -498,9 +513,11 @@ fun merge(p1: DisplacementProfile, p2: DisplacementProfile): DisplacementProfile
                 accels.add(accel2)
             }
         } else if (accel1 == accel2) {
+            // this case mostly avoids a NaN below in weird cases
+            // usually accel1 == accel2 implies min1 == lastMin1
             disps.add(endDisp)
-            vels.add(endVel1)
-            accels.add(0.0)
+            vels.add(min(endVel1, endVel2))
+            accels.add(accel1)
         } else {
             val dx = (endVel2 * endVel2 - endVel1 * endVel1) / (2 * (accel2 - accel1))
             disps.add(endDisp - dx)
