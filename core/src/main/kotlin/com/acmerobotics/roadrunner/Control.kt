@@ -97,7 +97,7 @@ class HolonomicController(
 /**
  * @usesMathJax
  *
- * Ramsete controller for tracking tank trajectories with unit-less gains.
+ * Ramsete controller for tracking tank trajectories.
  *
  * The standard Ramsete control law from equation \((5.12)\) of [this paper](https://www.dis.uniroma1.it/~labrob/pub/papers/Ramsete01.pdf) is
  * \[
@@ -107,8 +107,8 @@ class HolonomicController(
  *     \omega_d + b v_d \frac{\sin(\theta_d - \theta)}{\theta_d - \theta} \Big\lbrack (x_d - x) \cos \theta - (y_d - y) \sin \theta \Big\rbrack + 2 \zeta \sqrt{\omega_d^2 + b v_d^2} (\theta_d - \theta)
  *   \end{pmatrix}
  * \]
- * where \(\zeta \in (0, 1)\) and \(b \gt 0\). To rid the gains of units, let \(b = \frac{\bar{b}}{l^2}\) where \(l\) is
- * the track width.
+ * where \(\zeta \in (0, 1)\) and \(b \gt 0\). Since \(b\) has units, we substitute \(b = \frac{\bar{b}}{l^2}\) where
+ * \(l\) is the track width.
  */
 // defaults taken from https://github.com/wpilibsuite/allwpilib/blob/3fdb2f767d466e00d19e487fdb64d33c22ccc7d5/wpimath/src/main/native/cpp/controller/RamseteController.cpp#L31-L33
 // with a track width of 1 meter
@@ -151,7 +151,7 @@ class RamseteController @JvmOverloads constructor(
                     vRef * error.heading.real + k * error.position.x,
                     0.0
                 ),
-                omegaRef + k * error.heading.log() + b * vRef * sinc(error.heading.log()),
+                omegaRef + k * error.heading.log() + b * vRef * sinc(error.heading.log()) * error.position.y,
             ),
             2
         )
