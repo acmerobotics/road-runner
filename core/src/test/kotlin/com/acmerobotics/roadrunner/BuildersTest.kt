@@ -391,6 +391,34 @@ fun chartSpline(q: QuinticSpline1d): XYChart {
                 saveChart("trajBuilder/issue82Profile", chartTimeProfile(TimeProfile(traj.profile.baseProfile)))
             }
 
+            // https://github.com/acmerobotics/road-runner/issues/97
+            @Test
+            fun testIssue97() {
+                val begin = Pose2d(-12.0, -62.0, Math.toRadians(270.0))
+                val end = Pose2d(-12.0, -48.0, Math.toRadians(270.0))
+
+                TrajectoryBuilder(
+                    // fails with the default test params
+                    // TEST_TRAJECTORY_BUILDER_PARAMS,
+                    TEST_TRAJECTORY_BUILDER_PARAMS.copy(
+                        profileParams = TEST_PROFILE_PARAMS.copy(
+                            angSamplingEps = 1e-2
+                        )
+                    ),
+                    begin,
+                    0.0,
+                    MinVelConstraint(
+                        listOf(
+                            MecanumKinematics(7.0, 1.0).WheelVelConstraint(10.0),
+                            AngularVelConstraint(PI / 4)
+                        )
+                    ),
+                    ProfileAccelConstraint(-10.0, 15.0),
+                )
+                    .splineTo(end.position, end.heading)
+                    .build()
+            }
+
             @Test
             fun testConstantLinear() {
                 val posPath = PositionPathSeqBuilder(
