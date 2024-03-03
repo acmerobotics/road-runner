@@ -635,8 +635,9 @@ class CompositeAccelConstraint(
 fun samplePathByRotation(
     path: PosePath,
     angResolution: Double,
+    eps: Double,
 ): List<Double> {
-    val (values, sums) = integralScan(0.0, path.length(), 1e-6) {
+    val (values, sums) = integralScan(0.0, path.length(), eps) {
         // TODO: this is pretty wasteful
         abs(path[it, 2].heading.velocity().value())
     }
@@ -650,17 +651,22 @@ fun samplePathByRotation(
     )
 }
 
+data class ProfileParams(
+    val dispResolution: Double,
+    val angResolution: Double,
+    val angSamplingEps: Double,
+)
+
 fun profile(
+    params: ProfileParams,
     path: PosePath,
     beginEndVel: Double,
     velConstraint: VelConstraint,
     accelConstraint: AccelConstraint,
-    dispResolution: Double,
-    angResolution: Double,
 ): CancelableProfile {
     val len = path.length()
-    val dispSamples = rangeCentered(0.0, len, max(1, ceil(len / dispResolution).toInt()))
-    val angSamples = samplePathByRotation(path, angResolution)
+    val dispSamples = rangeCentered(0.0, len, max(1, ceil(len / params.dispResolution).toInt()))
+    val angSamples = samplePathByRotation(path, params.angResolution, params.angSamplingEps)
     val samples = (dispSamples + angSamples).sorted()
 
     val maxVels = mutableListOf<Double>()
@@ -684,16 +690,15 @@ fun profile(
 }
 
 fun forwardProfile(
+    params: ProfileParams,
     path: PosePath,
     beginVel: Double,
     velConstraint: VelConstraint,
     accelConstraint: AccelConstraint,
-    dispResolution: Double,
-    angResolution: Double,
 ): DisplacementProfile {
     val len = path.length()
-    val dispSamples = rangeCentered(0.0, len, max(1, ceil(len / dispResolution).toInt()))
-    val angSamples = samplePathByRotation(path, angResolution)
+    val dispSamples = rangeCentered(0.0, len, max(1, ceil(len / params.dispResolution).toInt()))
+    val angSamples = samplePathByRotation(path, params.angResolution, params.angSamplingEps)
     val samples = (dispSamples + angSamples).sorted()
 
     val maxVels = mutableListOf<Double>()
@@ -715,16 +720,15 @@ fun forwardProfile(
 }
 
 fun backwardProfile(
+    params: ProfileParams,
     path: PosePath,
     velConstraint: VelConstraint,
     endVel: Double,
     accelConstraint: AccelConstraint,
-    dispResolution: Double,
-    angResolution: Double,
 ): DisplacementProfile {
     val len = path.length()
-    val dispSamples = rangeCentered(0.0, len, max(1, ceil(len / dispResolution).toInt()))
-    val angSamples = samplePathByRotation(path, angResolution)
+    val dispSamples = rangeCentered(0.0, len, max(1, ceil(len / params.dispResolution).toInt()))
+    val angSamples = samplePathByRotation(path, params.angResolution, params.angSamplingEps)
     val samples = (dispSamples + angSamples).sorted()
 
     val maxVels = mutableListOf<Double>()

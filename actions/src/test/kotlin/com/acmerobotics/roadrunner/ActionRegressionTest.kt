@@ -51,14 +51,12 @@ class ActionRegressionTest {
             TrajectoryActionBuilder(
                 { TurnAction(it) },
                 { TrajectoryAction(it) },
+                TEST_TRAJECTORY_BUILDER_PARAMS,
                 Pose2d(0.0, 0.0, 0.0),
-                1e-3,
                 0.0,
                 TurnConstraints(2.0, -1.0, 1.0),
                 TranslationalVelConstraint(20.0),
                 ProfileAccelConstraint(-10.0, 10.0),
-                0.25,
-                0.1,
             )
 
         assertEquals(

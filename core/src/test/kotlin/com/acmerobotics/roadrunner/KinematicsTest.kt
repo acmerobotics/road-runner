@@ -54,10 +54,10 @@ class KinematicsTest {
 
         val path = TangentPath(posPath, 0.0)
         val profile = profile(
+            TEST_PROFILE_PARAMS,
             path, 0.0,
             kinematics.WheelVelConstraint(10.0),
             ProfileAccelConstraint(-10.0, 10.0),
-            0.01, 0.1,
         ).baseProfile
 
         val ts = range(0.0, profile.disps.last(), 100)
@@ -121,10 +121,10 @@ class KinematicsTest {
 
         val path = TangentPath(posPath, 0.0)
         val profile = profile(
+            TEST_PROFILE_PARAMS,
             path, 0.0,
             kinematics.WheelVelConstraint(10.0),
             ProfileAccelConstraint(-10.0, 10.0),
-            0.01, 0.1,
         ).baseProfile
 
         val ts = range(0.0, profile.disps.last(), 100)

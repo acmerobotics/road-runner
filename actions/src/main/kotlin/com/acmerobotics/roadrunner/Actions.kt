@@ -160,13 +160,11 @@ class TrajectoryActionBuilder private constructor(
     // constants
     val turnActionFactory: TurnActionFactory,
     val trajectoryActionFactory: TrajectoryActionFactory,
-    val eps: Double,
+    val trajectoryBuilderParams: TrajectoryBuilderParams,
     val beginEndVel: Double,
     val baseTurnConstraints: TurnConstraints,
     val baseVelConstraint: VelConstraint,
     val baseAccelConstraint: AccelConstraint,
-    val dispResolution: Double,
-    val angResolution: Double,
     val poseMap: PoseMap,
     // vary throughout
     private val tb: TrajectoryBuilder,
@@ -182,30 +180,27 @@ class TrajectoryActionBuilder private constructor(
     constructor(
         turnActionFactory: TurnActionFactory,
         trajectoryActionFactory: TrajectoryActionFactory,
+        trajectoryBuilderParams: TrajectoryBuilderParams,
         beginPose: Pose2d,
-        eps: Double,
         beginEndVel: Double,
         baseTurnConstraints: TurnConstraints,
         baseVelConstraint: VelConstraint,
         baseAccelConstraint: AccelConstraint,
-        dispResolution: Double,
-        angResolution: Double,
         poseMap: PoseMap = IdentityPoseMap(),
     ) :
         this(
             turnActionFactory,
             trajectoryActionFactory,
-            eps,
+            trajectoryBuilderParams,
             beginEndVel,
             baseTurnConstraints,
             baseVelConstraint,
             baseAccelConstraint,
-            dispResolution,
-            angResolution,
             poseMap,
             TrajectoryBuilder(
-                beginPose, eps, beginEndVel,
-                baseVelConstraint, baseAccelConstraint, dispResolution, angResolution,
+                trajectoryBuilderParams,
+                beginPose, beginEndVel,
+                baseVelConstraint, baseAccelConstraint,
                 poseMap,
             ),
             0,
@@ -229,13 +224,11 @@ class TrajectoryActionBuilder private constructor(
         this(
             ab.turnActionFactory,
             ab.trajectoryActionFactory,
-            ab.eps,
+            ab.trajectoryBuilderParams,
             ab.beginEndVel,
             ab.baseTurnConstraints,
             ab.baseVelConstraint,
             ab.baseAccelConstraint,
-            ab.dispResolution,
-            ab.angResolution,
             ab.poseMap,
             tb,
             n,
@@ -263,12 +256,11 @@ class TrajectoryActionBuilder private constructor(
             TrajectoryActionBuilder(
                 this,
                 TrajectoryBuilder(
+                    trajectoryBuilderParams,
                     endPoseUnmapped,
-                    eps,
                     beginEndVel,
                     baseVelConstraint,
                     baseAccelConstraint,
-                    dispResolution, angResolution,
                     poseMap,
                 ),
                 0,
@@ -391,12 +383,11 @@ class TrajectoryActionBuilder private constructor(
         return TrajectoryActionBuilder(
             b2,
             TrajectoryBuilder(
+                trajectoryBuilderParams,
                 lastPoseUnmapped,
-                eps,
                 beginEndVel,
                 baseVelConstraint,
                 baseAccelConstraint,
-                dispResolution, angResolution,
                 poseMap
             ),
             b2.n, lastPoseUnmapped, lastPose, lastTangent, b2.ms, b2.cont
@@ -765,9 +756,10 @@ class TrajectoryActionBuilder private constructor(
     fun fresh() = TrajectoryActionBuilder(
         turnActionFactory,
         trajectoryActionFactory,
+        trajectoryBuilderParams,
         lastPoseUnmapped,
-        eps, beginEndVel, baseTurnConstraints, baseVelConstraint, baseAccelConstraint,
-        dispResolution, angResolution, poseMap
+        beginEndVel, baseTurnConstraints, baseVelConstraint, baseAccelConstraint,
+        poseMap
     ).setTangent(lastTangent)
 
     fun build(): Action {

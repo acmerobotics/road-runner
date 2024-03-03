@@ -28,6 +28,8 @@ dependencies {
     api("com.acmerobotics.dashboard:core:0.4.7")
 
     testImplementation("org.jetbrains.kotlin:kotlin-test")
+
+    testImplementation(testFixtures(project(":core")))
 }
 
 kotlin {

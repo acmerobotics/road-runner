@@ -371,8 +371,8 @@ fun chartSpline(q: QuinticSpline1d): XYChart {
             @Test
             fun testIssue82() {
                 val traj = TrajectoryBuilder(
+                    TEST_TRAJECTORY_BUILDER_PARAMS,
                     Pose2d(0.0, 0.0, 0.0),
-                    1e-6,
                     0.0,
                     MinVelConstraint(
                         listOf(
@@ -381,7 +381,6 @@ fun chartSpline(q: QuinticSpline1d): XYChart {
                         )
                     ),
                     ProfileAccelConstraint(-10.0, 15.0),
-                    0.25, 0.1,
                 )
                     .splineTo(Vector2d(20.0, -20.0), -PI / 2)
                     .build()
@@ -497,10 +496,10 @@ fun chartSpline(q: QuinticSpline1d): XYChart {
             @Test
             fun testLineSpline() {
                 TrajectoryBuilder(
-                    Pose2d(0.0, 0.0, 0.0), 1e-6, 0.0,
+                    TEST_TRAJECTORY_BUILDER_PARAMS,
+                    Pose2d(0.0, 0.0, 0.0), 0.0,
                     TranslationalVelConstraint(40.0),
                     ProfileAccelConstraint(-30.0, 50.0),
-                    1.0, 0.1,
                 )
                     .lineToX(20.0)
                     .splineTo(Vector2d(40.0, 55.0), PI / 2)
@@ -510,10 +509,10 @@ fun chartSpline(q: QuinticSpline1d): XYChart {
             @Test
             fun testTrivialLineToX() {
                 TrajectoryBuilder(
-                    Pose2d(0.0, 0.0, 0.0), 1e-6, 0.0,
+                    TEST_TRAJECTORY_BUILDER_PARAMS,
+                    Pose2d(0.0, 0.0, 0.0), 0.0,
                     TranslationalVelConstraint(40.0),
                     ProfileAccelConstraint(-30.0, 50.0),
-                    1.0, 0.1,
                 )
                     .lineToX(0.0)
                     .build()
@@ -522,10 +521,10 @@ fun chartSpline(q: QuinticSpline1d): XYChart {
             @Test
             fun testTrivialLineToX2() {
                 TrajectoryBuilder(
-                    Pose2d(0.0, 0.0, 0.0), 1e-6, 0.0,
+                    TEST_TRAJECTORY_BUILDER_PARAMS,
+                    Pose2d(0.0, 0.0, 0.0), 0.0,
                     TranslationalVelConstraint(40.0),
                     ProfileAccelConstraint(-30.0, 50.0),
-                    1.0, 0.1,
                 )
                     .lineToX(0.0)
                     .lineToX(10.0)
@@ -535,10 +534,10 @@ fun chartSpline(q: QuinticSpline1d): XYChart {
             @Test
             fun testTrivialSpline() {
                 TrajectoryBuilder(
-                    Pose2d(0.0, 0.0, 0.0), 1e-6, 0.0,
+                    TEST_TRAJECTORY_BUILDER_PARAMS,
+                    Pose2d(0.0, 0.0, 0.0), 0.0,
                     TranslationalVelConstraint(40.0),
                     ProfileAccelConstraint(-30.0, 50.0),
-                    1.0, 0.1,
                 )
                     .splineTo(Vector2d(0.0, 0.0), 0.0)
                     .build()

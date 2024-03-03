@@ -148,39 +148,37 @@ class RestrictedPosePathBuilder internal constructor(private val posePathSeqBuil
 class SafeTrajectoryBuilder internal constructor(private val trajBuilder: TrajectoryBuilder) {
     @JvmOverloads
     constructor(
+        params: TrajectoryBuilderParams,
         beginPose: Pose2d,
         beginTangent: Rotation2d,
-        eps: Double,
         beginEndVel: Double,
         baseVelConstraint: VelConstraint,
         baseAccelConstraint: AccelConstraint,
-        dispResolution: Double,
-        angResolution: Double,
         poseMap: PoseMap = IdentityPoseMap(),
     ) :
         this(
             TrajectoryBuilder(
-                beginPose, eps,
-                beginEndVel, baseVelConstraint, baseAccelConstraint, dispResolution, angResolution,
+                params,
+                beginPose,
+                beginEndVel, baseVelConstraint, baseAccelConstraint,
                 poseMap,
             ).setTangent(beginTangent)
         )
 
     @JvmOverloads
     constructor(
+        params: TrajectoryBuilderParams,
         beginPose: Pose2d,
         beginTangent: Double,
-        eps: Double,
         beginEndVel: Double,
         baseVelConstraint: VelConstraint,
         baseAccelConstraint: AccelConstraint,
-        dispResolution: Double,
-        angResolution: Double,
         poseMap: PoseMap = IdentityPoseMap(),
     ) :
         this(
+            params,
             beginPose, Rotation2d.exp(beginTangent),
-            eps, beginEndVel, baseVelConstraint, baseAccelConstraint, dispResolution, angResolution, poseMap
+            beginEndVel, baseVelConstraint, baseAccelConstraint, poseMap
         )
 
     @JvmOverloads
