@@ -1,1 +1,1 @@
-val libVersion by extra { "1.0.0-beta6" }
+val libVersion by extra { "1.0.0-beta7" }
