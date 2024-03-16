@@ -9,6 +9,11 @@ import kotlin.math.PI
 class RamseteTest {
     @Test
     fun testRamsete() {
+        testRamseteHelper(false)
+        testRamseteHelper(true)
+    }
+
+    fun testRamseteHelper(reversed: Boolean) {
         val path = TangentPath(
             PositionPathSeqBuilder(
                 Vector2d(0.0, 0.0),
@@ -20,13 +25,13 @@ class RamseteTest {
                     PI / 4
                 )
                 .lineToY(60.0)
-                // .splineTo(
-                //     Position2(60.0, 60.0),
-                //     0.0
-                // )
+                .splineTo(
+                    Vector2d(60.0, 90.0),
+                    PI,
+                )
                 .build()
                 .first(),
-            0.0
+            if (reversed) PI else 0.0
         )
 
         val trackWidth = 15.0
@@ -50,7 +55,7 @@ class RamseteTest {
 
         var pose = Pose2d(
             Vector2d(-5.0, -10.0),
-            0.0
+            if (reversed) PI else 0.0
         )
 
         val targetPoses = mutableListOf<Pose2d>()
@@ -91,6 +96,6 @@ class RamseteTest {
         )
         graph.seriesMap.values.forEach { it.marker = None() }
         graph.styler.theme = MatlabTheme()
-        saveChart("ramseteFollower", graph)
+        saveChart("ramseteFollower${if (reversed) "Reversed" else ""}", graph)
     }
 }

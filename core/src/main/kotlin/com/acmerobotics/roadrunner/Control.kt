@@ -134,7 +134,11 @@ class RamseteController @JvmOverloads constructor(
         targetPose: Pose2dDual<Arclength>,
         actualPose: Pose2d,
     ): PoseVelocity2dDual<Time> {
-        val vRef = s[1]
+        val targetHeading = targetPose.heading.value()
+        val tangentHeading = targetPose.position.drop(1).value().angleCast()
+        val dir = tangentHeading.real * targetHeading.real + tangentHeading.imag * targetHeading.imag
+        val vRef = dir * s[1]
+
         val omegaRef = targetPose.reparam(s).heading.velocity()[0]
 
         val k = 2.0 * zeta * sqrt(omegaRef * omegaRef + b * vRef * vRef)
