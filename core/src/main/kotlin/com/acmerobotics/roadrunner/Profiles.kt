@@ -91,7 +91,11 @@ class CancelableProfile(
             rawIndex
         } else {
             val insIndex = -(rawIndex + 1)
-            max(1, insIndex)
+            insIndex
+        }
+
+        if (beginIndex == 0) {
+            return DisplacementProfile(listOf(0.0), listOf(vels.first()), emptyList())
         }
 
         val targetVel = baseProfile.vels.last()

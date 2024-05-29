@@ -195,4 +195,18 @@ class ProfilesTest {
             assertEquals(clamp(t, 0.0, profile.duration), profile.inverse(profile[t][0]), 1e-2)
         }
     }
+
+    @Test
+    fun testIssue103CancelZero() {
+        val p = profile(
+            10.0,
+            3.0,
+            { (it - 5.0).pow(4.0) + 1.0 },
+            { -5.0 },
+            { 5.0 },
+            0.01,
+        )
+        assertEquals(DisplacementProfile(listOf(0.0), listOf(3.0), emptyList()), p.cancel(0.0))
+        assertEquals(DisplacementProfile(listOf(0.0), listOf(3.0), emptyList()), p.cancel(-1.0))
+    }
 }
