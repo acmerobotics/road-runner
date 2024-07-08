@@ -10,7 +10,7 @@ import kotlin.math.min
  * @param[Param] \(x\)
  * @property[values] \(\left(u, \frac{du}{dx}, \frac{d^2u}{dx^2}, \ldots, \frac{d^{n - 1} u}{dx^{n - 1}} \right)\)
  */
-class DualNum<Param> internal constructor(private val values: DoubleArray) {
+class DualNum<Param> constructor(private val values: DoubleArray) {
     constructor(values: List<Double>) : this(values.toDoubleArray())
 
     companion object {
