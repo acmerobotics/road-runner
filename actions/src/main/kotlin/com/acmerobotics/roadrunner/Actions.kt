@@ -269,7 +269,7 @@ class TrajectoryActionBuilder private constructor(
                 endTangent,
                 emptyList()
             ) { tail ->
-                val (aNew, msRem) = ts.zip(ts.scan(0) { acc, t -> acc + t.offsets.size }).foldRight(
+                val (aNew, msRem) = ts.zip(ts.scan(0) { acc, t -> acc + t.offsets.size - 1 }).foldRight(
                     Pair(tail, ms)
                 ) { (traj, offset), (acc, ms) ->
                     val timeTraj = TimeTrajectory(traj)
