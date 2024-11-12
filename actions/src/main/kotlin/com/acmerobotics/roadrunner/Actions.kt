@@ -76,6 +76,28 @@ data class ParallelAction(
         }
     }
 }
+/**
+ * Action combinator that executes the action group [initialActions] in parallel. Each call to [run] on this action
+ * calls [run] on _every_ live child action in the order provided. Once one action ends, all other actions are ended.
+*/
+
+data class RaceAction(
+    val initialActions: List<Action>
+) : Action {
+    private var actions = initialActions
+
+    constructor(vararg actions: Action) : this(actions.asList())
+
+    override fun run(p: TelemetryPacket): Boolean {
+        return actions.any { !it.run(p) }
+    }
+
+    override fun preview(fieldOverlay: Canvas) {
+        for (a in initialActions) {
+            a.preview(fieldOverlay)
+        }
+    }
+}
 
 /**
  * Returns [System.nanoTime] in seconds.
