@@ -79,17 +79,23 @@ data class ParallelAction(
 /**
  * Action combinator that executes the action group [initialActions] in parallel. Each call to [run] on this action
  * calls [run] on _every_ live child action in the order provided. Once one action ends, all other actions are ended.
+ * Optional Callback to run code after action is completed.
 */
 
 data class RaceAction(
-    val initialActions: List<Action>
+    val initialActions: List<Action>, 
+    val callback: (() -> Unit)? = null
 ) : Action {
     private var actions = initialActions
 
     constructor(vararg actions: Action) : this(actions.asList())
 
     override fun run(p: TelemetryPacket): Boolean {
-        return actions.any { !it.run(p) }
+        val result = actions.any { !it.run(p) }
+        if (result) {
+            callback?.invoke()
+        }
+        return result
     }
 
     override fun preview(fieldOverlay: Canvas) {
