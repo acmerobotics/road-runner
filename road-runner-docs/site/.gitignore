@@ -1,0 +1,10 @@
+.DS_Store
+/public
+
+*.mp4
+
+/content/docs
+*.zip
+
+/static/papers
+

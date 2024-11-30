@@ -1,0 +1,14 @@
+/public
+!/public/docs
+/public/docs/index.html
+/public/docs/index.xml
+/public/docs/meepmeep
+/public/docs/resources
+/public/docs/v0-5
+/public/docs/v1-0
+
+/site/content/docs
+
+/venv
+
+*.zip

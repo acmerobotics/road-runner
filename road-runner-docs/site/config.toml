@@ -1,0 +1,9 @@
+baseURL = 'https://rr.brott.dev'
+languageCode = 'en-us'
+title = 'Road Runner Docs'
+
+theme = 'hugo-book'
+
+BookTheme = 'dark'
+BookPortableLinks = true
+BookServiceWorker = true
