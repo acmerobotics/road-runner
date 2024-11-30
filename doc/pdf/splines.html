@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Ryan Brott" />
+  <title>Quintic Splines for FTC</title>
+  <style>
+    html {
+      line-height: 1.5;
+      font-family: Georgia, serif;
+      font-size: 20px;
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 1em;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
+      font-size: 85%;
+      margin: 0;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <script
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"
+  type="text/javascript"></script>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Quintic Splines for FTC</h1>
+<p class="author">Ryan Brott</p>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#problem">Problem</a></li>
+<li><a href="#preliminaries">Preliminaries</a>
+<ul>
+<li><a href="#coordinate-system">Coordinate System</a></li>
+<li><a href="#vectors-and-parametric-curves">Vectors and Parametric
+Curves</a></li>
+</ul></li>
+<li><a href="#interpolation">Interpolation</a></li>
+<li><a href="#reparametrization">Reparametrization</a>
+<ul>
+<li><a href="#arc-length">Arc Length</a></li>
+<li><a href="#trajectory">Trajectory</a></li>
+</ul></li>
+<li><a href="#heading">Heading</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul>
+</nav>
+<h1 id="introduction">Introduction</h1>
+<p>In this paper, we explore the use of quintic splines for more
+sophisticated robot pathing in FTC. Traditionally, FTC robot autonomous
+motion consists of a series of linear movements (including holonomic
+drive strafing) and point turns. Although these simple path primitives
+generally suffice, they are not time-optimal under reasonable kinematic
+constraints, especially for nonholonomic (e.g., tank/differential)
+drivetrains. That is, the fastest route between two poses in general is
+not two point turns and a line.<a href="#fn1" class="footnote-ref"
+id="fnref1" role="doc-noteref"><sup>1</sup></a> To address this, we
+propose the use of quintic splines to achieve quick, smooth motion on
+the field.</p>
+<p>In the first part of the paper, we will describe the problem in depth
+and give motivation for splines. In the second half, we explore some of
+the mathematics behind quintic splines (and parametric curves more
+generally) including interpolation, reparametrization, and heading
+computation.</p>
+<h1 id="problem">Problem</h1>
+<p>In FTC, it’s standard to have a sequence a poses that you want the
+robot to follow in autonomous (although pre-planned motions can also be
+utilized in TeleOp). For example, in the Relic Recovery game, a common
+movement task may be moving from one pose on the balancing stone to
+another in front of the cryptobox. This is traditionally handled with a
+series of straight lines and turns that are executed with 1D position
+PID controllers and potentially motor-based velocity PID (e.g.,
+<code>RUN_USING_ENCODER</code>).</p>
+<p>For many game tasks and teams, this is a perfectly viable approach.
+However, in scenarios where speed is desirable (such as the effectively
+unlimited scoring potential in Relic Recovery autonomous), conventional
+methods tend to become less effective. Higher speeds usually lead to
+greater wheel accelerations and slippage, hindering odometry.
+Additionally, the feedback controllers may have more chaotic transient
+behavior or decreased steady-state performance.</p>
+<p>In this case, motion profiling can be used to achieve higher speeds
+without sacrificing accuracy by observing the robot’s physical
+constraints (e.g., maximum velocity, acceleration).<a href="#fn2"
+class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>.
+However, this is only part of the solution; in fact, motion profiling
+amplifies the discontinuities between the elements of a conventional
+pose-to-pose path. Each transition between rotation and translations
+demands a full deceleration-acceleration cycle.</p>
+<p>To eliminate this unnecessary pause, we seek to combine the rotation
+and translation into a single smooth curve. Although many curves
+suffice, splines are typically employed for this purpose. For
+simplicity, this paper only considers polynomial splines<a href="#fn3"
+class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>.
+Quintic splines in particular were selected for their balance between
+continuity and curvature although the methods described can be easily
+extended to polynomials of arbitrary odd degree.</p>
+<h1 id="preliminaries">Preliminaries</h1>
+<h2 id="coordinate-system">Coordinate System</h2>
+<p>Before constructing paths, it is imperative to define a consistent
+coordinate system. With this coordinate frame, points on the field can
+be uniquely described. This allows for the specification of robot poses
+which consist of the position and a heading direction. This heading is
+typically encoded as angle from the <span
+class="math inline">\(x\)</span>-axis. <a href="#fig:coordinate_system"
+data-reference-type="autoref"
+data-reference="fig:coordinate_system">[fig:coordinate_system]</a> shows
+a sample coordinate system for the Relic Recovery field. When
+determining a coordinate system, it is advantageous to choose axes
+around the symmetries of the environment. For the standard square FTC
+field, this comprises putting the origin at the center and placing the
+planar axes perpendicular to the field walls.</p>
+<h2 id="vectors-and-parametric-curves">Vectors and Parametric
+Curves</h2>
+<p>To fully understand the following mathematics, it helps to grasp a
+little vector calculus (don’t be scared — only basic knowledge of
+single-variable calculus is required). Recall that a Euclidean vector
+<span class="math inline">\(\mathbf{v}\)</span> in <span
+class="math inline">\(n\)</span> dimensions (<span
+class="math inline">\(\mathbf{v} \in \mathbb{R}^n\)</span>) uniquely
+encodes a single point in the space (commonly represented as an arrow
+from the origin to the point). This vector can be decomposed into <span
+class="math inline">\(n\)</span> components: <span
+class="math display">\[\mathbf{v} = (x_1, x_2, \ldots, x_n)\]</span> The
+length of a vector is given by its norm: <span
+class="math display">\[\lvert \mathbf{v} \rvert = \sqrt{x_1^2 + x_2^2 +
+\ldots + x_n^2}\]</span></p>
+<p>Aside from vector addition and scalar multiplication, two additional
+operations are commonly defined between Euclidean vectors. First, the
+dot product is defined as the scalar sum of the element-wise products of
+two vectors: <span class="math display">\[\mathbf{v} \cdot \mathbf{w} =
+v_1w_1 + v_2w_2 + ... + v_nw_n\]</span> Note that the norm can be
+alternatively expressed as <span class="math inline">\(\lvert \mathbf{v}
+\rvert = \sqrt{\mathbf{v} \cdot \mathbf{v}}\)</span>. Second, the cross
+product is defined for three-dimensional vectors as the
+pseudo-determinant of this quasi-matrix: <span
+class="math display">\[\mathbf{v} \times \mathbf{w} =
+\begin{vmatrix}
+    \hat{\imath} &amp; \hat{\jmath} &amp; \hat{k}\\[4pt]
+    v_1 &amp; v_2 &amp; v_3\\[4pt]
+    w_1 &amp; w_2 &amp; w_3
+\end{vmatrix}\]</span></p>
+<p>Two-dimensional curves can be represented as graphs of
+one-dimensional functions (<span class="math inline">\(y =
+f(x)\)</span>). However, this puts unnecessary constraints on the set of
+possible curves (e.g., no two points on the curve can share the same
+x-value, no self-intersections, no vertical tangents), especially in
+higher dimensions. Instead, we will represent curves as a series of
+vectors that trace out the shape. This is analogous to a parametric
+curve <span class="math inline">\(\mathbf{r}(t)\)</span> which maps a
+single real parameter <span class="math inline">\(t\)</span> to the
+corresponding path vector (<span
+class="math inline">\(\mathbf{r}:\mathbb R\to\mathbb R^n\)</span>).
+Intuitively, <span class="math inline">\(\mathbf{r}(t)\)</span> can be
+thought of as the trajectory of a fly located at <span
+class="math inline">\(\mathbf{r}(t_0)\)</span> in the instant <span
+class="math inline">\(t=t_0\)</span>.</p>
+<p>Parametric curves can be represented as a vector of single-variable
+functions: <span class="math display">\[\mathbf{v}(t) = (x_1(t), x_2(t),
+\ldots, x_n(t))\]</span> As one might expect, <span
+class="math inline">\(\mathbf{r}(t)\)</span> can be differentiated
+component-by-component: <span class="math display">\[\mathbf{v}&#39;(t)
+= (x_1&#39;(t), x_2&#39;(t), \ldots, x_n&#39;(t))\]</span> Derivatives
+of dot products and cross products can also be computed: <span
+class="math display">\[\begin{split}
+    \frac{d}{dt} \Big[\ \mathbf{r}_1(t) \cdot \mathbf{r}_2(t)\ \Big]
+&amp;= \mathbf{r}_1(t) \cdot \mathbf{r}_2&#39;(t) +\mathbf{r}_1&#39;(t)
+\cdot \mathbf{r}_2(t) \\
+    \frac{d}{dt} \Big[\ \mathbf{r}_1(t) \times \mathbf{r}_2(t)\ \Big]
+&amp;= \mathbf{r}_1(t) \times \mathbf{r}_2&#39;(t) +\mathbf{r}_1&#39;(t)
+\times \mathbf{r}_2(t)
+\end{split}\]</span></p>
+<p>A parametric curve is said to be <span
+class="math inline">\(C^n\)</span> if its nth-order derivatives are
+defined and continuous everywhere on its domain (<span
+class="math inline">\(n\)</span> here is distinct from the <span
+class="math inline">\(n\)</span> in <span class="math inline">\(\mathbb
+R^n\)</span>). For the rest of the paper, we will restrict our attention
+to two-dimensional parametric curves <span
+class="math inline">\(\mathbf{r}(t)=(x(t), y(t))\)</span>.</p>
+<h1 id="interpolation">Interpolation</h1>
+<p>Quintic splines consist of a series of segments assembled together
+into a single piecewise curve. Each of the segments is a parametric
+curve with a quintic polynomial for each component. The ith segment of a
+two-dimensional quintic spline of <span class="math inline">\(n\)</span>
+segments can be represented as the following: <span
+class="math display">\[\begin{cases}
+        x^{(i)}(t) = a^{(i)}_xt^5 + b^{(i)}_xt^4 + c^{(i)}_xt^3 +
+d^{(i)}_xt^2 + e^{(i)}_xt + f^{(i)}_x\\
+        y^{(i)}(t) = a^{(i)}_yt^5 + b^{(i)}_yt^4 + c^{(i)}_yt^3 +
+d^{(i)}_yt^2 + e^{(i)}_yt + f^{(i)}_y
+    \end{cases}
+    \quad \text{where} \quad 0 \leq t \leq 1\]</span> Now the goal of
+interpolation is to “fit” these polynomials between a series of <span
+class="math inline">\(n+1\)</span> points (commonly referred to as
+knots) labeled <span class="math inline">\((x_i, y_i)\)</span>. To
+accomplish this, we can impose the conditions <span
+class="math inline">\(x^{(i)}(0) = x_i\)</span> and <span
+class="math inline">\(x^{(i)}(1) = x_{i+1}\)</span> (and correspondingly
+for <span class="math inline">\(y^{(i)}(t)\)</span>). Additionally, to
+ensure greater continuity, we also match the first and second
+derivatives at each knot point<a href="#fn4" class="footnote-ref"
+id="fnref4" role="doc-noteref"><sup>4</sup></a>: <span
+class="math display">\[\begin{split}
+    \frac{dx^{(i)}}{dt}\biggr\rvert_{t=0} &amp;= x&#39;_i\\
+    \frac{dx^{(i)}}{dt}\biggr\rvert_{t=1} &amp;= x&#39;_{i+1}\\
+    \frac{d^2x^{(i)}}{dt^2}\biggr\rvert_{t=0} &amp;=
+x^{\prime\prime}_i\\
+    \frac{d^2x^{(i)}}{dt^2}\biggr\rvert_{t=1} &amp;=
+x^{\prime\prime}_{i+1}\\
+\end{split}\]</span> <span class="math display">\[(\text{and analogously
+for }y)\]</span> Collectively, these constraints guarantee that the
+overall spline will be (by construction) <span
+class="math inline">\(C^2\)</span>. They also fully define the
+polynomial coefficients for each spline segment. To actually compute the
+coefficients, we simply need to solve the linear system with following
+matrix representation: <span class="math display">\[\begin{bmatrix}
+    0 &amp; 0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 \\[4pt]
+    0 &amp; 0 &amp; 0 &amp; 0 &amp; 1 &amp; 0 \\[4pt]
+    0 &amp; 0 &amp; 0 &amp; 2 &amp; 0 &amp; 0 \\[4pt]
+    1 &amp; 1 &amp; 1 &amp; 1 &amp; 1 &amp; 1 \\[4pt]
+    5 &amp; 4 &amp; 3 &amp; 2 &amp; 1 &amp; 0 \\[4pt]
+    20 &amp; 12 &amp; 6 &amp; 2 &amp; 0 &amp; 0
+\end{bmatrix}
+\begin{bmatrix}
+    a_x \\[4pt]
+    b_x \\[4pt]
+    c_x \\[4pt]
+    d_x \\[4pt]
+    e_x \\[4pt]
+    f_x
+\end{bmatrix}
+=
+\begin{bmatrix}
+    x_i \\[4pt]
+    x&#39;_i \\[4pt]
+    x^{\prime\prime}_i \\[4pt]
+    x_{i+1} \\[4pt]
+    x&#39;_{i+1} \\[4pt]
+    x^{\prime\prime}_{i+1}
+\end{bmatrix}\]</span> This equation can then be solved to yield the
+coefficients with your favorite matrix library (or put in row echelon
+form to yield a set of back-substitutable equations).</p>
+<h1 id="reparametrization">Reparametrization</h1>
+<h2 id="arc-length">Arc Length</h2>
+<p>Now that we’ve interpolated the spline segments, we have to join
+together all of the spline segments into a single piecewise function of
+a unified variable. To accomplish this, we’re going to reparametrize
+<span class="math inline">\(\mathbf{r}(t)\)</span> from <span
+class="math inline">\(t \in [0, 1]\)</span> to the arc length parameter
+<span class="math inline">\(s\)</span>. Although it sounds complex,
+<span class="math inline">\(s\)</span> is just the true displacement
+along the path, and it traces out the curve with unit speed (<span
+class="math inline">\(\lvert \mathbf{r}&#39;(s) \rvert =
+\sqrt{\big(\frac{dx}{ds}\big)^2 + \big(\frac{dy}{ds}\big)^2} =
+1\)</span>). This procedure is completely generic, allowing you to
+combine arbitrary parametric curve with (basically) the same knot
+derivatives.</p>
+<p>To shift from <span class="math inline">\(t\)</span> to <span
+class="math inline">\(s\)</span>, we first have to define <span
+class="math inline">\(t(s)\)</span>. This is difficult to represent
+analytically although the inverse function <span
+class="math inline">\(s(t)\)</span> is relatively simple: <span
+class="math display">\[s(t) = \int_0^t \! \lvert \mathbf{r}&#39;(\tau)
+\rvert \, d\tau = \int_0^t \! \sqrt{\bigg(\frac{dx}{d\tau}\bigg)^2 +
+\bigg(\frac{dy}{d\tau}\bigg)^2} \, d\tau\]</span> In practice, <span
+class="math inline">\(t(s)\)</span> can be obtained by numerically
+evaluating the above integral and stopping when the integral sum reaches
+<span class="math inline">\(s\)</span>.</p>
+<p>By computing <span class="math inline">\(t(s)\)</span>, we can
+determine <span class="math inline">\(\mathbf{r}(s)\)</span> by
+composition: <span class="math inline">\(\mathbf{r}(s) =
+\mathbf{r}(t(s))\)</span>. Next, differentiating yields the new
+parametrized derivative: <span class="math display">\[\begin{split}
+    \mathbf{r}&#39;(s) &amp;= \mathbf{r}&#39;(t)\ t&#39;(s) \\
+                   &amp;= \frac{\mathbf{r}&#39;(t)}{s&#39;(t)} \\
+                   &amp;= \frac{\mathbf{r}&#39;(t)}{\lvert
+\mathbf{r}&#39;(t) \rvert} \\
+\end{split}\]</span> This makes sense intuitively as <span
+class="math inline">\(\frac{\mathbf{r}&#39;(t)}{\lvert
+\mathbf{r}&#39;(t) \rvert}\)</span> is just a normalized version of
+<span class="math inline">\(\mathbf{r}&#39;(t)\)</span> that satisfies
+the condition <span class="math inline">\(\lvert \mathbf{r}&#39;(s)
+\rvert = 1\)</span>. We similarly obtain the new second and third
+derivatives by differentiating again<a href="#fn5" class="footnote-ref"
+id="fnref5" role="doc-noteref"><sup>5</sup></a><span
+class="math inline">\(^{,}\)</span><a href="#fn6" class="footnote-ref"
+id="fnref6" role="doc-noteref"><sup>6</sup></a>: <span
+class="math display">\[\begin{split}
+    \mathbf{r}&#39;&#39;(s) &amp;= \frac{\mathbf{r}&#39;&#39;(t)}{\lvert
+\mathbf{r}&#39;(t) \rvert^2} - \frac{\mathbf{r}&#39;(t)\
+\mathbf{r}&#39;&#39;(t) \cdot \mathbf{r}&#39;(t)}{\lvert
+\mathbf{r}&#39;(t) \rvert^4} \\
+                    &amp;= \frac{\mathbf{r}&#39;&#39;(t)\
+\mathbf{r}&#39;(t) \cdot \mathbf{r}&#39;(t) - \mathbf{r}&#39;(t)\
+\mathbf{r}&#39;&#39;(t) \cdot \mathbf{r}&#39;(t)}{\lvert
+\mathbf{r}&#39;(t) \rvert^4} \\
+                    &amp;= \frac{\mathbf{r}&#39;(t) \times
+(\mathbf{r}&#39;&#39;(t) \times \mathbf{r}&#39;(t))}{\lvert
+\mathbf{r}&#39;(t) \rvert^4} \\
+    \mathbf{r}&#39;&#39;&#39;(s) &amp;= \frac{\mathbf{r}&#39;(t) \times
+(\mathbf{r}&#39;&#39;&#39;(t) \times \mathbf{r}&#39;(t)) +
+\mathbf{r}&#39;&#39;(t) \times (\mathbf{r}&#39;&#39;(t) \times
+\mathbf{r}&#39;(t))}{\lvert \mathbf{r}&#39;(t) \rvert^9}
+\end{split}\]</span></p>
+<h2 id="trajectory">Trajectory</h2>
+<p>Now, all of the spline segments and various other parametric curves
+are combined into a single curve <span
+class="math inline">\(\mathbf{r}(s)\)</span>. However, this still needs
+to be combined with the motion profile to yield the robot’s kinematic
+state over time.</p>
+<p>Let <span class="math inline">\(s(t)\)</span> be the generated motion
+profile (note: this <span class="math inline">\(t\)</span> actually
+refers to time; it’s different from the <span
+class="math inline">\(t\)</span> used earlier). Now the velocity and
+acceleration of the robot can be determined: <span
+class="math display">\[\begin{split}
+    \mathbf{v}(t) &amp;= \frac{d}{dt} \Big[\ \mathbf{r}(s(t))\ \Big] \\
+                  &amp;= \mathbf{r}&#39;(s(t)) s&#39;(t) \\
+    \mathbf{a}(t) &amp;= \frac{d}{dt} \Big[\ \mathbf{r}&#39;(s(t))
+s&#39;(t)\ \Big] \\
+                  &amp;= \mathbf{r}&#39;&#39;(s(t)) [s&#39;(t)]^2 +
+\mathbf{r}&#39;(s(t)) s&#39;&#39;(t)
+\end{split}\]</span></p>
+<h1 id="heading">Heading</h1>
+<p>The discussion in the previous sections has been limited to the
+translational components of the path. This, of course, must be
+accompanied by some sort of angular motion. For holonomic drives, the
+heading can be controlled completely independently. In this case,
+heading can be treated as a third independent path component that can be
+specified by an arbitrary parametric curve.</p>
+<p>However, for nonholonomic drives, the heading is constrained to the
+direction of travel. For parametric curves, this direction is given by
+the vector <span class="math inline">\(\mathbf{r}&#39;(s)\)</span>:
+<span class="math display">\[\theta(s) = \arctan
+\frac{y&#39;(s)}{x&#39;(s)}\]</span> In practice, <span
+class="math inline">\(\theta(s)\)</span> is computed with the
+two-argument version of <span class="math inline">\(\arctan\)</span>,
+eliminating issues arising from signs and cases when <span
+class="math inline">\(x&#39;(s) = 0\)</span>. Of course, the derivatives
+are also necessary: <span class="math display">\[\begin{split}
+    \theta&#39;(s) &amp;=
+\frac{1}{\big(\frac{y&#39;(s)}{x&#39;(s)}\big)^2+1} \cdot
+\frac{x&#39;(s)y&#39;&#39;(s) - y&#39;(s)x&#39;&#39;(s)}{[x&#39;(s)]^2}
+\\
+               &amp;= \frac{x&#39;(s)y&#39;&#39;(s) -
+y&#39;(s)x&#39;&#39;(s)}{[x&#39;(s)]^2 + [y&#39;(s)]^2} \\
+               &amp;= x&#39;(s)y&#39;&#39;(s) - y&#39;(s)x&#39;&#39;(s)
+\\
+    \theta&#39;&#39;(s) &amp;= \big[x&#39;&#39;(s)y&#39;&#39;(s) +
+x&#39;(s)y&#39;&#39;&#39;(s)\big] - \big[y&#39;&#39;(s)x&#39;&#39;(s) -
+y&#39;(s)x&#39;&#39;&#39;(s)\big] \\
+                &amp;= x&#39;(s)y&#39;&#39;&#39;(s) -
+y&#39;(s)x&#39;&#39;&#39;(s)
+\end{split}\]</span> Notice that the expressions for <span
+class="math inline">\(\theta^{(n)}(s)\)</span> involve <span
+class="math inline">\(\mathbf{r}(s)\)</span> derivatives of order <span
+class="math inline">\(n + 1\)</span> and lower. Hence, <span
+class="math inline">\(C^2\)</span> <span
+class="math inline">\(\mathbf{r}(s)\)</span> only guarantees <span
+class="math inline">\(C^1\)</span> <span
+class="math inline">\(\theta(s)\)</span>. This heading derivative
+continuity is one of the primary reasons for quintic over cubic
+splines.</p>
+<h1 id="conclusion">Conclusion</h1>
+<p>This paper discussed the motivation for splines in FTC and some
+mathematics for generating basic quintic splines. The author hopes this
+will help further the proliferation of advanced motion planning
+techniques in FTC.</p>
+<section class="footnotes footnotes-end-of-document"
+role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1" role="doc-endnote"><p>The keen reader will realize that
+this is not necessarily the case for holonomic drives. All pose-to-pose
+movements can be executed with a combination of strafing and rotating.
+Nevertheless, splines can still be of use. For one, traveling along the
+tangent can reduce dead reckoning odometrical errors accrued from
+translating on the lateral axis (especially for mecanum drives).
+Additionally, splines can help navigate around obstacles in situations
+where piecewise linear paths would normally be required.<a
+href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2" role="doc-endnote"><p>For a good introduction to motion
+profiling, see the canonical talk by mentors from FRC teams 254 and 971:
+<a href="https://www.youtube.com/watch?v=8319J1BEHwM"
+class="uri">https://www.youtube.com/watch?v=8319J1BEHwM</a><a
+href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3" role="doc-endnote"><p><a
+href="http://www.ryanjuckett.com/programming/biarc-interpolation/"
+class="uri">http://www.ryanjuckett.com/programming/biarc-interpolation/</a>
+is a great introduction to biarc splines.<a href="#fnref3"
+class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4" role="doc-endnote"><p>This is generally the best choice for
+splines in the context of path planning although other schemes are
+occasionally employed. For instance, one can instead force the third and
+fourth derivatives to equal zero.<a href="#fnref4" class="footnote-back"
+role="doc-backlink">↩︎</a></p></li>
+<li id="fn5" role="doc-endnote"><p>This derivation depends heavily on
+the BAC-CAB identity: <span class="math inline">\(\mathbf{a} \times
+(\mathbf{b} \times \mathbf{c}) = \mathbf{b} (\mathbf{a} \cdot
+\mathbf{c}) - \mathbf{c} (\mathbf{a} \cdot \mathbf{b})\)</span>.<a
+href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn6" role="doc-endnote"><p><span class="math inline">\(\kappa(s)
+= \lvert \mathbf{r}&#39;&#39;(s) \rvert\)</span> is the curvature of
+<span class="math inline">\(\mathbf{r}(s)\)</span>. Note that quintic
+splines also guarantee continuous curvature.<a href="#fnref6"
+class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+</body>
+</html>

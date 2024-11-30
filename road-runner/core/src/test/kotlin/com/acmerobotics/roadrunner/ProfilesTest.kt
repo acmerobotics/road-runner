@@ -209,4 +209,49 @@ class ProfilesTest {
         assertEquals(DisplacementProfile(listOf(0.0), listOf(3.0), emptyList()), p.cancel(0.0))
         assertEquals(DisplacementProfile(listOf(0.0), listOf(3.0), emptyList()), p.cancel(-1.0))
     }
+
+    @Test
+    fun testSemicircleProfile() =
+        saveProfiles(
+            "semicircleProfile",
+            TimeProfile(
+                TrajectoryBuilder(
+                    TEST_TRAJECTORY_BUILDER_PARAMS,
+                    Pose2d(0.0, 0.0, 0.0),
+                    0.0,
+                    MinVelConstraint(
+                        listOf(
+                            MecanumKinematics(10.0).WheelVelConstraint(10.0),
+                            AngularVelConstraint(10.0)
+                        )
+                    ),
+                    ProfileAccelConstraint(-10.0, 10.0),
+                )
+                    .splineTo(Vector2d(30.0, 30.0), Math.PI / 2)
+                    .splineTo(Vector2d(0.0, 60.0), Math.PI)
+                    .build()
+                    .first()
+                    .profile.baseProfile
+            )
+        )
+
+    @Test
+    fun testSemicircle2Profile() =
+        saveProfiles(
+            "semicircle2Profile",
+            TimeProfile(
+                TrajectoryBuilder(
+                    TEST_TRAJECTORY_BUILDER_PARAMS,
+                    Pose2d(0.0, 0.0, 0.0),
+                    0.0,
+                    TranslationalVelConstraint(10.0),
+                    ProfileAccelConstraint(-10.0, 10.0),
+                )
+                    .splineTo(Vector2d(30.0, 30.0), Math.PI / 2)
+                    .splineTo(Vector2d(0.0, 60.0), Math.PI)
+                    .build()
+                    .first()
+                    .profile.baseProfile
+            )
+        )
 }

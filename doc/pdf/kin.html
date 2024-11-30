@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Ryan Brott" />
+  <title>Mobile Robot Kinematics for FTC</title>
+  <style>
+    html {
+      line-height: 1.5;
+      font-family: Georgia, serif;
+      font-size: 20px;
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 1em;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
+      font-size: 85%;
+      margin: 0;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <script
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"
+  type="text/javascript"></script>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Mobile Robot Kinematics for FTC</h1>
+<p class="author">Ryan Brott</p>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#drive-kinematics">Drive Kinematics</a>
+<ul>
+<li><a href="#robots-as-rigid-bodies">Robots as Rigid Bodies</a></li>
+<li><a href="#differential-drives">Differential Drives</a></li>
+<li><a href="#mecanum-drives">Mecanum Drives</a></li>
+<li><a href="#swerve-drives">Swerve Drives</a></li>
+</ul></li>
+<li><a href="#odometry">Odometry</a>
+<ul>
+<li><a href="#constant-velocity-odometry">Constant Velocity
+Odometry</a></li>
+<li><a href="#tracking-wheels">Tracking Wheels</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="introduction">Introduction</h1>
+<p>In FIRST Tech Challenge (FTC), kinematics are used all of the
+time—they’re essential to robot operation. However, few teams understand
+where the relationships come from or even acknowledge them explicitly,
+especially for holonomic drives. This paper intends to demystify the
+role and derivation of drive kinematics with a unified approach.</p>
+<h1 id="drive-kinematics">Drive Kinematics</h1>
+<p>This section systematically derives the forward and inverse
+kinematics for a variety of drives found in FTC (i.e., differential,
+mecanum, and swerve). The forward kinematics describe how the robot
+moves with specific wheel velocities. The inverse kinematics describe
+the opposite—how the wheels move during a given robot motion.</p>
+<h2 id="robots-as-rigid-bodies">Robots as Rigid Bodies</h2>
+<p>Most FTC robots have a robust structure that holds all of the
+components together into one coherent system. When acted upon by a
+force, the robot does not materially deform, and its constituent parts
+remain essentially fixed relative to each other. Objects with this
+property are called rigid bodies, and their kinematics can be summarized
+with a single translational and angular velocity vector pair. The
+translational velocity describes the motion of the axis or tation, while
+the angular velocity magnitude points along the axis of rotation and has
+magnitude equal to the angular speed.<br />
+<br />
+Consider a point in the body with position <span
+class="math inline">\(\vec{r}\)</span>. This position can be written as
+the sum <span class="math inline">\(\vec{R} +
+\vec{r}^{\,\prime}\)</span> where <span
+class="math inline">\(\vec{R}\)</span> points from the origin to the
+axis of rotation and <span
+class="math inline">\(\vec{r}^{\,\prime}\)</span> extends perpendicular
+to <span class="math inline">\(\vec{\omega}\)</span>. Differentiation<a
+href="#fn1" class="footnote-ref" id="fnref1"
+role="doc-noteref"><sup>1</sup></a> gives the velocity relationship
+<span class="math display">\[\begin{aligned}
+    \frac{d\vec{r}}{dt} &amp;= \frac{d\vec{R}}{dt} +
+\frac{d\vec{r}^{\,\prime}}{dt} \\
+    &amp;= \vec{V} + \vec{\omega}
+\times\vec{r}^{\,\prime}.\end{aligned}\]</span> As FTC robots are
+generally confined to a plane, we have <span
+class="math display">\[\begin{aligned}
+    \vec{r} &amp;= x \, \hat{\imath} + y \, \hat{\jmath}\\
+    \vec{V} &amp;= v_x \, \hat{\imath} + v_y \, \hat{\jmath}\\
+    \vec{\omega} &amp;= \omega \, \hat{k}.\end{aligned}\]</span> In this
+special case, the velocity is <span class="math display">\[\vec{v} =
+\frac{d\vec{r}}{dt} = (v_x - y \, \omega) \, \hat{\imath} + (v_y + x \,
+\omega) \, \hat{\jmath}.\]</span><br />
+Now for a given configuration <span class="math inline">\((v_x, v_y,
+\omega)\)</span> it is possible to compute the two-dimensional velocity
+of any point on the robot.</p>
+<h2 id="differential-drives">Differential Drives</h2>
+<p>Perhaps the simplest practical mobile robot drive configuration is a
+differential drive with two normal wheels. These wheels have radius
+<span class="math inline">\(R\)</span> and are spaced <span
+class="math inline">\(2l\)</span> units apart. Let the center of
+rotation (i.e., the midpoint of the wheel positions) be the origin with
+the wheel axles laying parallel to the y-axis. With this setup, the
+wheel center positions are <span class="math inline">\((\pm l,
+0)\)</span>.<br />
+<br />
+Using the results of the previous subsection, the desired velocities are
+<span class="math display">\[\begin{aligned}
+    \vec{v}_l &amp;= (v_x - l \, \omega) \, \hat{\imath} + v_y \,
+\hat{\jmath}\\
+    \vec{v}_r &amp;= (v_x + l \, \omega) \, \hat{\imath} + v_y \,
+\hat{\jmath}.\end{aligned}\]</span> Furthermore, the orientation of the
+wheels gives us the tangential velocities in terms of the wheel angular
+velocities <span class="math display">\[\begin{aligned}
+    \vec{v}^{\,\prime}_l &amp;= \omega_l R \, \hat{\imath}\\
+    \vec{v}^{\,\prime}_r &amp;= \omega_r R \,
+\hat{\imath}.\end{aligned}\]</span> For traction wheels, the
+corresponding velocities must <em>exactly</em> match. This yields the
+equations <span class="math display">\[\begin{aligned}
+    v_x - l \, \omega &amp;= \omega_l R \\
+    v_x + l \, \omega &amp;= \omega_r R \\
+    v_y &amp;= 0 \\
+    v_y &amp;= 0.\end{aligned}\]</span> From this we can solve to obtain
+the forward and inverse kinematics <span
+class="math display">\[\begin{aligned}[c]
+        v_x &amp;= \frac{R}{2}(\omega_l + \omega_r) \\
+        v_y &amp;= 0 \\
+        \omega &amp;= \frac{R}{2l}(\omega_r - \omega_l),
+    \end{aligned}
+    \qquad\qquad
+    \begin{aligned}[c]
+        \omega_l &amp;= \frac{v_x - l \, \omega}{R} \\
+        \omega_r &amp;= \frac{v_x + l \, \omega}{R}.
+    \end{aligned}\]</span> In matrix form, these relations are <span
+class="math display">\[\begin{bmatrix}
+        v_x \\
+        v_y \\
+        \omega
+    \end{bmatrix}
+    =
+    \frac{R}{2}
+    \begin{bmatrix}
+        1 &amp; 1 \\
+        0 &amp; 0 \\
+        -\frac{1}{l} &amp; \frac{1}{l}
+    \end{bmatrix}
+    \begin{bmatrix}
+        \omega_l \\
+        \omega_r
+    \end{bmatrix},
+    \qquad\qquad
+    \begin{bmatrix}
+        \omega_l \\
+        \omega_r
+    \end{bmatrix}
+    =
+    \frac{1}{R}
+    \begin{bmatrix}
+        1 &amp; 0 &amp; -l\\
+        1 &amp; 0 &amp; l
+    \end{bmatrix}
+    \begin{bmatrix}
+        v_x \\
+        v_y \\
+        \omega
+    \end{bmatrix}.\]</span> These same kinematics can be applied to
+differential drives with multiple wheels per side. However, you’ll
+quickly realize that it is no longer possible to satisfy all the
+constraints. To rotate properly, the wheels must overcome static
+friction and slide parallel to the wheel axis. This slippage can be
+mathematically accounted for by treating this scrub direction as a
+passive degree of freedom (like an omni wheel) as we’ll see in the next
+section. With this assumption, the kinematics are the same as above with
+all motors on each side sharing the same velocity.</p>
+<h2 id="mecanum-drives">Mecanum Drives</h2>
+<p>Mecanum drives consist of four mecanum wheels with rollers at <span
+class="math inline">\(45\degree\)</span> angles with respect to the axle
+positioned in a rectangle. Looking from above, the main diagonal wheels
+have counterclockwise-rotated rollers, while the alternate diagonal
+wheels have clockwise-rotated rollers. The careful combination of these
+two different directions enables omnidirectional movement. The track
+width (distance between opposing wheels) is <span
+class="math inline">\(2l\)</span> and the wheelbase (distance between
+adjacent wheels) is <span class="math inline">\(2b\)</span>. Place the
+center of rotation at the origin as before with wheel center positions
+<span class="math inline">\((\pm l, \pm b)\)</span>.<br />
+<br />
+Using the same procedure as before, we obtain <span
+class="math display">\[\begin{aligned}
+    \vec{v}_{fl} &amp;= (v_x - l \, \omega) \, \hat{\imath} + (v_y + b
+\, \omega) \, \hat{\jmath}\\
+    \vec{v}_{bl} &amp;= (v_x - l \, \omega) \, \hat{\imath} + (v_y - b
+\, \omega) \, \hat{\jmath}\\
+    \vec{v}_{br} &amp;= (v_x + l \, \omega) \, \hat{\imath} + (v_y - b
+\, \omega) \, \hat{\jmath}\\
+    \vec{v}_{fr} &amp;= (v_x + l \, \omega) \, \hat{\imath} + (v_y + b
+\, \omega) \, \hat{\jmath}.\end{aligned}\]</span> Computing the
+tangential velocities from the angular velocities is bit trickier for
+mecanum wheels. The tangential force acts <span
+class="math inline">\(45\degree\)</span> from the roller, resulting in a
+speed reduction of <span class="math inline">\(\sqrt{2}\)</span>. The
+direction of the velocity points perpendicular to the roller axis
+(viewed from above). Thus, the velocities are <span
+class="math display">\[\begin{aligned}
+    \vec{v}^{\,\prime}_{fl} &amp;= \frac{R \, \omega_{fl}}{2}
+(\hat{\imath} - \hat{\jmath})\\
+    \vec{v}^{\,\prime}_{bl} &amp;= \frac{R \, \omega_{bl}}{2}
+(\hat{\imath} + \hat{\jmath})\\
+    \vec{v}^{\,\prime}_{br} &amp;= \frac{R \, \omega_{br}}{2}
+(\hat{\imath} - \hat{\jmath})\\
+    \vec{v}^{\,\prime}_{fr} &amp;= \frac{R \, \omega_{fr}}{2}
+(\hat{\imath} + \hat{\jmath}).\end{aligned}\]</span> The vectors can’t
+be directly equated for non-square configurations due to the passive
+motion of the rollers. Instead we equate the portion of each vector in
+the tangential velocity direction. For example, the front left
+constraint is <span class="math display">\[\vec{v}_{fl} \cdot
+\vec{v}^{\,\prime}_{fl} = \vec{v}^{\,\prime}_{fl} \cdot
+\vec{v}^{\,\prime}_{fl}.\]</span> The final system is <span
+class="math display">\[\begin{aligned}
+    \frac{R \, \omega_{fl}}{2}(v_x - l \, \omega - v_y - b \, \omega)
+&amp;= \frac{R^2\omega_{fl}^2}{2}\\
+    \frac{R \, \omega_{bl}}{2}(v_x - l \, \omega + v_y - b \, \omega)
+&amp;= \frac{R^2\omega_{bl}^2}{2}\\
+    \frac{R \, \omega_{br}}{2}(v_x + l \, \omega - v_y + b \, \omega)
+&amp;= \frac{R^2\omega_{br}^2}{2}\\
+    \frac{R \, \omega_{fr}}{2}(v_x + l \, \omega + v_y + b \, \omega)
+&amp;= \frac{R^2\omega_{fr}^2}{2}.\end{aligned}\]</span> which yields
+the matrix kinematics <span class="math display">\[\begin{bmatrix}
+        v_x \\
+        v_y \\
+        \omega
+    \end{bmatrix}
+    =
+    \frac{R}{4}
+    \begin{bmatrix}
+        1 &amp; 1 &amp; 1 &amp; 1 \\
+        -1 &amp; 1 &amp; -1 &amp; 1 \\
+        -\frac{1}{l+b} &amp; -\frac{1}{l+b} &amp; \frac{1}{l+b} &amp;
+\frac{1}{l+b}
+    \end{bmatrix}
+    \begin{bmatrix}
+        \omega_{lf} \\
+        \omega_{lb} \\
+        \omega_{rb} \\
+        \omega_{rf}
+    \end{bmatrix}
+    \qquad\qquad
+    \begin{bmatrix}
+        \omega_{lf} \\
+        \omega_{lb} \\
+        \omega_{rb} \\
+        \omega_{rf}
+    \end{bmatrix}
+    =
+    \frac{1}{R}
+    \begin{bmatrix}
+        1 &amp; -1 &amp; -(l + b) \\
+        1 &amp; 1 &amp; -(l + b) \\
+        1 &amp; -1 &amp; (l + b) \\
+        1 &amp; 1 &amp; (l + b)
+    \end{bmatrix}
+    \begin{bmatrix}
+        v_x \\
+        v_y \\
+        \omega
+    \end{bmatrix}\]</span></p>
+<h2 id="swerve-drives">Swerve Drives</h2>
+<p>Unlike the previous drives, swerve drives have actuated wheel
+directions. Nevertheless, swerve kinematics can still be derived within
+the same framework. Let each wheel have coordinates <span
+class="math inline">\((x_i, y_i)\)</span>, orientation <span
+class="math inline">\(\phi_i\)</span>, tangential velocity <span
+class="math inline">\(\vec{v}_i\)</span>, and angular velocity <span
+class="math inline">\(\omega_i\)</span>.<br />
+<br />
+For simplicity, we will assume the swerve wheels do not slip and
+directly equate the tangential velocities: <span
+class="math inline">\(v_x - y_i \, \omega = R \, \omega_i
+\operatorname{cos} \phi_i\)</span> and <span class="math inline">\(v_y +
+x_i \, \omega = R \, \omega_i \operatorname{sin} \phi_i\)</span>. This
+gives the following inverse kinematics<a href="#fn2"
+class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>:
+<span class="math display">\[\begin{aligned}
+    \phi_i &amp;= \operatorname{atan2} \big( v_y + x_i \, \omega, \; v_x
+- y_i \, \omega \big)\\
+    \omega_i &amp;= \frac{1}{R} \sqrt{(v_x - y_i \, \omega)^2 + (v_y +
+x_i \, \omega)^2}\end{aligned}\]</span></p>
+<p>Forward kinematics for a collection of multiple wheels can be
+computed by solving the corresponding overdetermined system.</p>
+<h1 id="odometry">Odometry</h1>
+<p>The previous section focused on finding the relationship between
+configuration and wheel velocities. This by itself is sufficient to
+employ the inverse kinematics for sending the appropriate control
+signals. However, the forward kinematics cannot be directly used for
+odometry. To localize the robot, the local velocities must be integrated
+into positions and transformed into the global frame.</p>
+<h2 id="constant-velocity-odometry">Constant Velocity Odometry</h2>
+<p>For simplicity, this method assumes constant translational and
+rotational velocity over each measurement period. In practice, this is a
+good assumption so long as measurements are frequent enough
+(additionally, estimating acceleration or other higher order derivatives
+robustly from wheel position data is nontrivial).<br />
+<br />
+Without loss of generality, we take the robot heading <span
+class="math inline">\(\theta\)</span> to be <span
+class="math inline">\(0\)</span> initially. A measurement is then taken
+<span class="math inline">\(\Delta t\)</span> time later. During this
+period the robot’s global velocity is <span
+class="math display">\[\begin{bmatrix}
+    \dot{x}_G \\
+    \dot{y}_G \\
+    \dot{\theta}_G
+\end{bmatrix}
+=
+\begin{bmatrix}
+    \operatorname{cos} \theta &amp; -\operatorname{sin} \theta &amp; 0
+\\
+    \operatorname{sin} \theta &amp; \operatorname{cos} \theta &amp; 0 \\
+    0 &amp; 0 &amp; 1
+\end{bmatrix}
+\begin{bmatrix}
+    \dot{x}_R \\
+    \dot{y}_R \\
+    \dot{\theta}_R
+\end{bmatrix}.\]</span> Integrating this over time gives <span
+class="math display">\[\begin{bmatrix}
+    \Delta x_G \\
+    \Delta y_G \\
+    \Delta \theta_G
+\end{bmatrix}
+=
+\begin{bmatrix}
+    \frac{\operatorname{sin} \Delta \theta_R}{\Delta \theta_R} &amp;
+-\frac{1 - \operatorname{cos} \Delta \theta_R}{\Delta \theta_R} &amp; 0
+\\[4pt]
+    \frac{1 - \operatorname{cos} \Delta \theta_R}{\Delta \theta_R} &amp;
+\frac{\operatorname{sin} \Delta \theta_R}{\Delta \theta_R} &amp; 0
+\\[4pt]
+    0 &amp; 0 &amp; 1
+\end{bmatrix}
+\begin{bmatrix}
+    \Delta x_R \\
+    \Delta y_R \\
+    \Delta \theta_R
+\end{bmatrix}.\]</span> This can then be rotated and added to the
+previous estimate to complete the update <span
+class="math display">\[\begin{bmatrix}
+    x_{G,\,t+1} \\
+    y_{G,\,t+1} \\
+    \theta_{G,\,t+1}
+\end{bmatrix}
+=
+\begin{bmatrix}
+    x_{G,\,t} \\
+    y_{G,\,t} \\
+    \theta_{G,\,t}
+\end{bmatrix}
++
+\begin{bmatrix}
+    \operatorname{cos} \theta_{G,\,t} &amp; -\operatorname{sin}
+\theta_{G,\,t} &amp; 0 \\
+    \operatorname{sin} \theta_{G,\,t} &amp; \operatorname{cos}
+\theta_{G,\,t} &amp; 0 \\
+    0 &amp; 0 &amp; 1
+\end{bmatrix}
+\begin{bmatrix}
+    \frac{\operatorname{sin} \Delta \theta_R}{\Delta \theta_R} &amp;
+-\frac{1 - \operatorname{cos} \Delta \theta_R}{\Delta \theta_R} &amp; 0
+\\[4pt]
+    \frac{1 - \operatorname{cos} \Delta \theta_R}{\Delta \theta_R} &amp;
+\frac{\operatorname{sin} \Delta \theta_R}{\Delta \theta_R} &amp; 0
+\\[4pt]
+    0 &amp; 0 &amp; 1
+\end{bmatrix}
+\begin{bmatrix}
+    \Delta x_R \\
+    \Delta y_R \\
+    \Delta \theta_R
+\end{bmatrix}.\]</span></p>
+<h2 id="tracking-wheels">Tracking Wheels</h2>
+<p>Tracking wheels are passive omni wheels intended solely for odometry.
+Each wheel has an arbitrary position <span class="math inline">\((x_i,
+y_i)\)</span> and orientation <span
+class="math inline">\(\phi_i\)</span> in the robot frame. Similar to
+swerve, the tangential velocities of each wheel are <span
+class="math inline">\(\vec{v}_i = (v_x - y_i \, \omega) \, \hat{\imath}
++ (v_y + x_i \, \omega) \, \hat{\jmath}\)</span> and <span
+class="math inline">\(\vec{v}^{\,\prime}_i = R \, \omega_i
+(\operatorname{cos} \phi_i \, \hat{\imath} + \operatorname{sin} \phi_i
+\, \hat{\jmath})\)</span>. <span class="math display">\[\omega_i =
+\frac{1}{R}\Big[v_x \operatorname{cos} \phi_i + v_y \operatorname{sin}
+\phi_i + \omega \, (x_i \operatorname{sin} \phi_i - y_i
+\operatorname{cos} \phi_i)\Big]\]</span> If placed properly, three
+tracking wheels are sufficient to determine the <span
+class="math inline">\((v_x, v_y, \omega)\)</span> configuration: <span
+class="math display">\[\begin{bmatrix}
+    \omega_1\\
+    \omega_2\\
+    \omega_3
+\end{bmatrix}
+=
+\frac{1}{R}
+\begin{bmatrix}
+    \operatorname{cos} \phi_1 &amp; \operatorname{sin} \phi_1 &amp; x_1
+\operatorname{sin} \phi_1 - y_1 \operatorname{cos} \phi_1 \\
+    \operatorname{cos} \phi_2 &amp; \operatorname{sin} \phi_2 &amp; x_2
+\operatorname{sin} \phi_2 - y_2 \operatorname{cos} \phi_2 \\
+    \operatorname{cos} \phi_3 &amp; \operatorname{sin} \phi_3 &amp; x_3
+\operatorname{sin} \phi_3 - y_3 \operatorname{cos} \phi_3 \\
+\end{bmatrix}
+\begin{bmatrix}
+    v_x\\
+    v_y\\
+    \omega
+\end{bmatrix}\]</span> <span class="math display">\[\begin{bmatrix}
+    \Delta \theta_1\\
+    \Delta \theta_2\\
+    \Delta \theta_3
+\end{bmatrix}
+=
+\frac{1}{R}
+\begin{bmatrix}
+    \operatorname{cos} \phi_1 &amp; \operatorname{sin} \phi_1 &amp; x_1
+\operatorname{sin} \phi_1 - y_1 \operatorname{cos} \phi_1 \\
+    \operatorname{cos} \phi_2 &amp; \operatorname{sin} \phi_2 &amp; x_2
+\operatorname{sin} \phi_2 - y_2 \operatorname{cos} \phi_2 \\
+    \operatorname{cos} \phi_3 &amp; \operatorname{sin} \phi_3 &amp; x_3
+\operatorname{sin} \phi_3 - y_3 \operatorname{cos} \phi_3 \\
+\end{bmatrix}
+\begin{bmatrix}
+    \Delta x_R\\
+    \Delta y_R\\
+    \Delta \theta_R
+\end{bmatrix}\]</span> For example, take the common configuration of two
+tracking wheels placed parallel to the robot’s <span
+class="math inline">\(x\)</span>-axis at <span
+class="math inline">\((0,\pm y_0)\)</span> and a third placed parallel
+to the robot’s <span class="math inline">\(y\)</span>-axis at <span
+class="math inline">\((x_0,0)\)</span>. For simplicity, all wheels point
+in the positive direction of their corresponding axis. This gives the
+following matrices: <span class="math display">\[\begin{bmatrix}
+        \Delta \theta_1\\
+        \Delta \theta_2\\
+        \Delta \theta_3
+    \end{bmatrix}
+    =
+    \frac{1}{R}
+    \begin{bmatrix}
+        1 &amp; 0 &amp; -y_0 \\
+        1 &amp; 0 &amp; y_0 \\
+        0 &amp; 1 &amp; x_0 \\
+    \end{bmatrix}
+    \begin{bmatrix}
+        \Delta x_R\\
+        \Delta y_R\\
+        \Delta \theta_R
+    \end{bmatrix}\]</span> <span class="math display">\[\begin{bmatrix}
+        \Delta x_R\\
+        \Delta y_R\\
+        \Delta \theta_R
+    \end{bmatrix}
+    =
+    \frac{R}{2y_0}
+    \begin{bmatrix}
+        y_0 &amp; y_0 &amp; 0\\
+        x_0 &amp; -x_0 &amp; 2y_0\\
+        -1 &amp; 1 &amp; 0\\
+    \end{bmatrix}
+    \begin{bmatrix}
+        \Delta \theta_1\\
+        \Delta \theta_2\\
+        \Delta \theta_3
+    \end{bmatrix}
+    \quad\leftrightarrow\quad
+    \begin{aligned}[c]
+        \Delta x_R &amp;= \frac{R}{2}(\Delta \theta_1 + \Delta
+\theta_2)\\
+        \Delta y_R &amp;= R\bigg[\frac{x_0}{2y_0}(\Delta \theta_1 -
+\Delta \theta_2) + \Delta \theta_3\bigg]\\
+        \Delta \theta_R &amp;= \frac{R}{2y_0}(\Delta \theta_2 - \Delta
+\theta_1)
+    \end{aligned}\]</span> Two tracking wheels and a heading sensor is
+also sufficient for localization. <span
+class="math display">\[\begin{bmatrix}
+    \Delta \theta_1\\
+    \Delta \theta_2\\
+    \Delta \theta_3
+\end{bmatrix}
+=
+\frac{1}{R}
+\begin{bmatrix}
+    \operatorname{cos} \phi_1 &amp; \operatorname{sin} \phi_1 &amp; x_1
+\operatorname{sin} \phi_1 - y_1 \operatorname{cos} \phi_1 \\
+    \operatorname{cos} \phi_2 &amp; \operatorname{sin} \phi_2 &amp; x_2
+\operatorname{sin} \phi_2 - y_2 \operatorname{cos} \phi_2 \\
+    0 &amp; 0 &amp; R\\
+\end{bmatrix}
+\begin{bmatrix}
+    \Delta x_R\\
+    \Delta y_R\\
+    \Delta \theta_R
+\end{bmatrix}\]</span></p>
+<section class="footnotes footnotes-end-of-document"
+role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1" role="doc-endnote"><p>The time derivative of a vector <span
+class="math inline">\(\vec{v}\)</span> in pure rotation described by
+<span class="math inline">\(\vec{\omega}\)</span> is <span
+class="math inline">\(\frac{d\vec{v}}{dt} = \vec{\omega}
+\times\vec{v}\)</span>.<a href="#fnref1" class="footnote-back"
+role="doc-backlink">↩︎</a></p></li>
+<li id="fn2" role="doc-endnote"><p><span
+class="math inline">\(\operatorname{atan2}\)</span> is the standard
+two-argument arctangent function available in most programming
+environments<a href="#fnref2" class="footnote-back"
+role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+</body>
+</html>

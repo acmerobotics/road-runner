@@ -33,4 +33,32 @@ class BuildersChartTest {
             )
         )
     }
+
+    // https://github.com/acmerobotics/road-runner/issues/107
+    @Test
+    fun chartIssue107() {
+        val paths = PositionPathSeqBuilder(
+            Vector2d(0.0, 0.0),
+            Rotation2d.exp(0.0),
+            1e-6,
+        )
+            .splineTo(Vector2d(30.0, 30.0), PI / 2)
+            .splineTo(Vector2d(0.0, 60.0), PI)
+            .build()
+        require(paths.size == 1)
+        val path = paths.first()
+
+        val posePath = PosePathSeqBuilder(path, 0.0)
+            .tangentUntilEnd()
+            .first()
+
+        saveChartPanel(
+            "panels/issue107", 1000,
+            listOf(
+                // chartPosePathXY(posePath),
+                chartPosePath(posePath),
+                chartPosePathHeading(posePath),
+            )
+        )
+    }
 }
