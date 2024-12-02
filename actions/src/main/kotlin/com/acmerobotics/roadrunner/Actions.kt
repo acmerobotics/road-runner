@@ -83,19 +83,12 @@ data class ParallelAction(
 */
 
 data class RaceAction(
-    val initialActions: List<Action>, 
-    val callback: (() -> Unit)? = null
-) : Action {
-    private var actions = initialActions
-
+    val actions: List<Action>, 
     constructor(vararg actions: Action) : this(actions.asList())
 
     override fun run(p: TelemetryPacket): Boolean {
-        val result = actions.any { !it.run(p) }
-        if (result) {
-            callback?.invoke()
-        }
-        return result
+        val done = actions.any { !it.run(p) }
+        return done
     }
 
     override fun preview(fieldOverlay: Canvas) {
