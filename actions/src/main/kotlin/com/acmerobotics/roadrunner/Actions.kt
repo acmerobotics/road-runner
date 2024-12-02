@@ -88,7 +88,7 @@ data class RaceAction(
 
     override fun run(p: TelemetryPacket): Boolean {
         val done = actions.any { !it.run(p) }
-        return done
+        return !done
     }
 
     override fun preview(fieldOverlay: Canvas) {
