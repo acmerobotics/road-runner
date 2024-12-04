@@ -47,7 +47,7 @@ data class SequentialAction(
     }
 
     override fun preview(fieldOverlay: Canvas) {
-        for (a in initialActions) {
+        for (a in actions) {
             a.preview(fieldOverlay)
         }
     }
@@ -76,23 +76,21 @@ data class ParallelAction(
         }
     }
 }
-/**
- * Action combinator that executes the action group [initialActions] in parallel. Each call to [run] on this action
- * calls [run] on _every_ live child action in the order provided. Once one action ends, all other actions are ended.
- * Optional Callback to run code after action is completed.
-*/
 
+/**
+ * Action combinator that executes the action group [actions] in parallel. Each call to [run] on this action
+ * calls [run] on _every_ live child action in the order provided. Once one action ends, all other actions are ended.
+*/
 data class RaceAction(
-    val actions: List<Action>, 
+    val actions: List<Action>
+) : Action {
+
     constructor(vararg actions: Action) : this(actions.asList())
 
-    override fun run(p: TelemetryPacket): Boolean {
-        val done = actions.any { !it.run(p) }
-        return !done
-    }
+    override fun run(p: TelemetryPacket): Boolean = !actions.any { !it.run(p) }
 
     override fun preview(fieldOverlay: Canvas) {
-        for (a in initialActions) {
+        for (a in actions) {
             a.preview(fieldOverlay)
         }
     }
