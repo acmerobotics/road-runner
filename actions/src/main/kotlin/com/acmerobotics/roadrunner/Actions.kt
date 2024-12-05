@@ -47,7 +47,7 @@ data class SequentialAction(
     }
 
     override fun preview(fieldOverlay: Canvas) {
-        for (a in actions) {
+        for (a in initialActions) {
             a.preview(fieldOverlay)
         }
     }
