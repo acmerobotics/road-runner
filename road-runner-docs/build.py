@@ -67,15 +67,11 @@ def main_samples(args):
         with dest_path.open("w") as f:
             f.write("".join(parts))
 
-    for path in (base_dir / "raw-docs").glob("**/*.mp4"):
-        dest_path = base_dir / "docs" / path.relative_to(base_dir / "raw-docs")
-        dest_path.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(path, dest_path)
-
-    for path in (base_dir / "raw-docs").glob("**/*.png"):
-        dest_path = base_dir / "docs" / path.relative_to(base_dir / "raw-docs")
-        dest_path.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(path, dest_path)
+    for ext in ("mp4", "png", "jpg"):
+        for path in (base_dir / "raw-docs").glob(f"**/*.{ext}"):
+            dest_path = base_dir / "docs" / path.relative_to(base_dir / "raw-docs")
+            dest_path.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(path, dest_path)
 
 
 def main_papers(args):

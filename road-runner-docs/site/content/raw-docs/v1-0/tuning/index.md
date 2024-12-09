@@ -293,7 +293,7 @@ A multiplicative factor alone unfortunately doesn't adequately capture the
 strafing behavior of most robots. It's common to see a plot with a plateau in
 the beginning:
 
-![](typical-lateral-ramp-regression.png)
+![](typical-lateral-ramp-regression.jpg)
 
 There's nothing much to be done about the poor fit during tuning. Future
 versions of Road Runner may change the strafing model to get a better fit
