@@ -5,6 +5,9 @@ weight: 25
 
 # API Docs
 
+* `1.0.1`
+  * `core`: [KDoc](/docs/v1-0-1/core/kdoc/), [Javadoc](/docs/v1-0-1/core/javadoc/)
+  * `actions`: [KDoc](/docs/v1-0-1/actions/kdoc/), [Javadoc](/docs/v1-0-1/actions/javadoc/)
 * `1.0.0`
   * `core`: [KDoc](/docs/v1-0-0/core/kdoc/), [Javadoc](/docs/v1-0-0/core/javadoc/)
   * `actions`: [KDoc](/docs/v1-0-0/actions/kdoc/), [Javadoc](/docs/v1-0-0/actions/javadoc/)
