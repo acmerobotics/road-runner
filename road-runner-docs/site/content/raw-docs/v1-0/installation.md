@@ -53,8 +53,8 @@ is **not** backwards compatible.
    between the `android` and `dependencies` blocks. Also put
    ```groovy
    implementation "com.acmerobotics.roadrunner:ftc:0.1.14"
-   implementation "com.acmerobotics.roadrunner:core:1.0.0"
-   implementation "com.acmerobotics.roadrunner:actions:1.0.0"
+   implementation "com.acmerobotics.roadrunner:core:1.0.1"
+   implementation "com.acmerobotics.roadrunner:actions:1.0.1"
    implementation "com.acmerobotics.dashboard:dashboard:0.4.16"
    ```
    at the end of the `dependencies` block.
