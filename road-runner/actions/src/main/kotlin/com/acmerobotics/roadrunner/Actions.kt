@@ -263,7 +263,7 @@ class TrajectoryActionBuilder private constructor(
      */
     fun endTrajectory() =
         if (n == 0) {
-            require(ms.isEmpty())
+            require(ms.isEmpty()) { "Cannot end trajectory with pending markers" }
 
             this
         } else {
@@ -310,7 +310,7 @@ class TrajectoryActionBuilder private constructor(
                     }
                 }
 
-                require(msRem.isEmpty())
+                require(msRem.isEmpty()) { "Unresolved markers" }
 
                 cont(aNew)
             }
@@ -331,7 +331,7 @@ class TrajectoryActionBuilder private constructor(
      * Waits [t] seconds.
      */
     fun waitSeconds(t: Double): TrajectoryActionBuilder {
-        require(t >= 0.0)
+        require(t >= 0.0) { "Time ($t) must be non-negative" }
 
         return stopAndAdd(SleepAction(t))
     }
@@ -345,7 +345,7 @@ class TrajectoryActionBuilder private constructor(
     // TODO: Should calling this without an applicable trajectory implicitly begin an empty trajectory and execute the
     // action immediately?
     fun afterDisp(ds: Double, a: Action): TrajectoryActionBuilder {
-        require(ds >= 0.0)
+        require(ds >= 0.0) { "Displacement ($ds) must be non-negative" }
 
         return TrajectoryActionBuilder(
             this, tb, n, lastPoseUnmapped, lastPose, lastTangent,
@@ -359,7 +359,7 @@ class TrajectoryActionBuilder private constructor(
      * other action.
      */
     fun afterTime(dt: Double, a: Action): TrajectoryActionBuilder {
-        require(dt >= 0.0)
+        require(dt >= 0.0) { "Time ($dt) must be non-negative" }
 
         return if (n == 0) {
             TrajectoryActionBuilder(this, tb, 0, lastPoseUnmapped, lastPose, lastTangent, emptyList()) { tail ->

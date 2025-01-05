@@ -72,7 +72,9 @@ class DualNum<Param> constructor(private val values: DoubleArray) {
     fun size() = values.size
 
     init {
-        require(size() <= 4)
+        require(size() <= 4) {
+            "Only derivatives up to 3rd order are supported"
+        }
     }
 
     fun value() = values.first()

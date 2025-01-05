@@ -218,7 +218,9 @@ data class CompositePositionPath<Param> @JvmOverloads constructor(
     val length = offsets.last()
 
     init {
-        require(paths.isNotEmpty())
+        require(paths.isNotEmpty()) {
+            "Composite path must contain at least one path"
+        }
     }
 
     override fun get(param: Double, n: Int): Vector2dDual<Param> {
@@ -365,7 +367,9 @@ data class HeadingPosePath(
     val headingPath: HeadingPath,
 ) : PosePath {
     init {
-        require(posPath.length() == headingPath.length())
+        require(posPath.length() == headingPath.length()) {
+            "posPath.length (${posPath.length()}) != headingPath.length (${headingPath.length()})"
+        }
     }
 
     override fun get(s: Double, n: Int) =
@@ -381,7 +385,9 @@ data class CompositePosePath(
     val offsets: List<Double> = paths.scan(0.0) { acc, path -> acc + path.length() },
 ) : PosePath {
     init {
-        require(paths.size + 1 == offsets.size)
+        require(paths.size + 1 == offsets.size) {
+            "paths.size (${paths.size}) + 1 != offsets.size (${offsets.size})"
+        }
     }
 
     @JvmField

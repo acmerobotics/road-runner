@@ -115,8 +115,8 @@ data class Rotation2d(@JvmField val real: Double, @JvmField val imag: Double) {
  */
 data class Rotation2dDual<Param>(@JvmField val real: DualNum<Param>, @JvmField val imag: DualNum<Param>) {
     init {
-        require(real.size() == imag.size())
-        require(real.size() <= 3)
+        require(real.size() == imag.size()) { "Real and imaginary parts must have the same size" }
+        require(real.size() <= 3) { "Only derivatives up to 2nd order are supported" }
     }
 
     companion object {

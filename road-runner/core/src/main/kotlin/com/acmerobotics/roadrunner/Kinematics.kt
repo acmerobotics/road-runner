@@ -104,7 +104,9 @@ data class TankKinematics(@JvmField val trackWidth: Double) {
     }
 
     fun <Param> inverse(t: PoseVelocity2dDual<Param>): WheelVelocities<Param> {
-        require(t.linearVel.y.values().all { abs(it) < 1e-6 })
+        require(t.linearVel.y.values().all { abs(it) < 1e-6 }) {
+            "Tank drive does not support lateral motion"
+        }
 
         return WheelVelocities(
             t.linearVel.x - t.angVel * 0.5 * trackWidth,

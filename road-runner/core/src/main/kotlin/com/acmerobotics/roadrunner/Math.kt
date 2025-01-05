@@ -40,7 +40,7 @@ data class MinMax(@JvmField val min: Double, @JvmField val max: Double)
  * @param[samples] \(n\)
  */
 fun range(begin: Double, end: Double, samples: Int): List<Double> {
-    require(samples >= 2)
+    require(samples >= 2) { "Number of samples ($samples) must be at least 2" }
     val dx = (end - begin) / (samples - 1)
     return (0 until samples).map { begin + dx * it }
 }
@@ -55,7 +55,7 @@ fun range(begin: Double, end: Double, samples: Int): List<Double> {
  * @param[samples] \(n\)
  */
 fun rangeCentered(begin: Double, end: Double, samples: Int): List<Double> {
-    require(samples >= 1)
+    require(samples >= 1) { "Number of samples must be at least 1" }
     val dx = (end - begin) / samples
     return (0 until samples).map { begin + 0.5 * dx + dx * it }
 }
@@ -132,8 +132,8 @@ fun integralScan(a: Double, b: Double, eps: Double, f: (Double) -> Double): Inte
 
 // precondition: source, target sorted and share the same length
 fun lerpLookup(source: List<Double>, target: List<Double>, query: Double): Double {
-    require(source.size == target.size)
-    require(source.isNotEmpty())
+    require(source.size == target.size) { "source.size (${source.size}) != target.size (${target.size})" }
+    require(source.isNotEmpty()) { "source is empty" }
 
     val index = source.binarySearch(query)
     return if (index >= 0) {
@@ -156,8 +156,8 @@ fun lerpLookup(source: List<Double>, target: List<Double>, query: Double): Doubl
 
 // precondition: source, target sorted and share the same length; queries sorted
 fun lerpLookupMap(source: List<Double>, target: List<Double>, queries: List<Double>): List<Double> {
-    require(source.size == target.size)
-    require(source.isNotEmpty())
+    require(source.size == target.size) { "source.size (${source.size}) != target.size (${target.size})" }
+    require(source.isNotEmpty()) { "source is empty" }
 
     val result = mutableListOf<Double>()
 

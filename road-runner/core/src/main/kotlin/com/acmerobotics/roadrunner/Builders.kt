@@ -236,7 +236,9 @@ class PosePathSeqBuilder private constructor(
     ) : State
 
     private fun addEagerPosePath(disp: Double, segment: PosePath): PosePathSeqBuilder {
-        require(endDisp <= disp && disp <= posPath.length())
+        require(endDisp <= disp && disp <= posPath.length()) {
+            "Displacement $disp out of bounds [0, ${posPath.length()}]"
+        }
 
         val beginHeadingDual = segment.begin(3).heading
 
@@ -335,7 +337,9 @@ class PosePathSeqBuilder private constructor(
      * other heading segment. And in fact the heading at both knots will be \(C^2\)-continuous.
      */
     fun splineUntil(disp: Double, heading: Rotation2d): PosePathSeqBuilder {
-        require(endDisp < disp && disp <= posPath.length())
+        require(endDisp < disp && disp <= posPath.length()) {
+            "Displacement $disp out of bounds ($endDisp, ${posPath.length()}]"
+        }
 
         return PosePathSeqBuilder(
             posPath,
@@ -390,7 +394,9 @@ class PosePathSeqBuilder private constructor(
     fun splineUntilEnd(heading: Double) = splineUntilEnd(Rotation2d.exp(heading))
 
     internal fun build(): List<CompositePosePath> {
-        require(endDisp == posPath.length())
+        require(endDisp == posPath.length()) {
+            "Heading not specified for the entire path"
+        }
 
         return posePaths + listOf(
             CompositePosePath(

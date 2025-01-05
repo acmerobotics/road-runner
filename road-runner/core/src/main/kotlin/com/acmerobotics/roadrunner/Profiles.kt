@@ -34,8 +34,12 @@ data class DisplacementProfile(
     val length = disps.last()
 
     init {
-        require(disps.size == vels.size)
-        require(disps.size == accels.size + 1)
+        require(disps.size == vels.size) {
+            "disps.size() (${disps.size}) != vels.size() (${vels.size})"
+        }
+        require(disps.size == accels.size + 1) {
+            "disps.size() (${disps.size}) != accels.size() + 1 (${accels.size + 1})"
+        }
     }
 
     operator fun get(x: Double): DualNum<Time> {
@@ -152,7 +156,9 @@ data class TimeProfile @JvmOverloads constructor(
     val duration = times.last()
 
     init {
-        require(times.size == dispProfile.disps.size)
+        require(times.size == dispProfile.disps.size) {
+            "times.size() (${times.size}) != dispProfile.disps.size() (${dispProfile.disps.size})"
+        }
     }
 
     operator fun get(t: Double): DualNum<Time> {
@@ -260,9 +266,9 @@ fun profile(
     maxAccel: (Double) -> Double,
     resolution: Double,
 ): CancelableProfile {
-    require(length > 0.0)
-    require(resolution > 0.0)
-    require(beginEndVel >= 0.0)
+    require(length > 0.0) { "length ($length) must be positive" }
+    require(resolution > 0.0) { "resolution ($resolution) must be positive" }
+    require(beginEndVel >= 0.0) { "beginEndVel ($beginEndVel) must be non-negative" }
 
     val samples = max(1, ceil(length / resolution).toInt())
 
@@ -292,8 +298,12 @@ fun profile(
     minAccels: List<Double>,
     maxAccels: List<Double>,
 ): CancelableProfile {
-    require(maxVels.size == minAccels.size)
-    require(maxVels.size == maxAccels.size)
+    require(maxVels.size == minAccels.size) {
+        "maxVels.size() (${maxVels.size}) != minAccels.size() (${minAccels.size})"
+    }
+    require(maxVels.size == maxAccels.size) {
+        "maxVels.size() (${maxVels.size}) != maxAccels.size() (${maxAccels.size})"
+    }
 
     return CancelableProfile(
         merge(
@@ -349,9 +359,9 @@ fun forwardProfile(
     maxVels: List<Double>,
     maxAccels: List<Double>,
 ): DisplacementProfile {
-    require(beginVel >= 0.0)
-    require(maxVels.all { v -> v > 0.0 })
-    require(maxAccels.all { v -> v > 0.0 })
+    require(beginVel >= 0.0) { "beginVel ($beginVel) must be non-negative" }
+    require(maxVels.all { v -> v > 0.0 }) { "maxVels must be positive" }
+    require(maxAccels.all { v -> v > 0.0 }) { "maxAccels must be positive" }
 
     val newDisps = mutableListOf(0.0)
     val vels = mutableListOf(beginVel)
@@ -408,7 +418,7 @@ fun backwardProfile(
     minAccel: (Double) -> Double,
     resolution: Double,
 ): DisplacementProfile {
-    require(endVel >= 0.0)
+    require(endVel >= 0.0) { "endVel ($endVel) must be non-negative" }
 
     val samples = max(1, ceil(length / resolution).toInt())
 
@@ -552,7 +562,7 @@ class TranslationalVelConstraint(
     val minTransVel: Double,
 ) : VelConstraint {
     init {
-        require(minTransVel > 0.0)
+        require(minTransVel > 0.0) { "minTransVel ($minTransVel) must be positive" }
     }
 
     override fun maxRobotVel(robotPose: Pose2dDual<Arclength>, path: PosePath, s: Double) = minTransVel
@@ -563,7 +573,7 @@ class AngularVelConstraint(
     val maxAngVel: Double,
 ) : VelConstraint {
     init {
-        require(maxAngVel > 0.0)
+        require(maxAngVel > 0.0) { "maxAngVel ($maxAngVel) must be positive" }
     }
 
     override fun maxRobotVel(robotPose: Pose2dDual<Arclength>, path: PosePath, s: Double) =
@@ -585,8 +595,8 @@ class ProfileAccelConstraint(
     val maxAccel: Double,
 ) : AccelConstraint {
     init {
-        require(minAccel < 0.0)
-        require(maxAccel > 0.0)
+        require(minAccel < 0.0) { "minAccel ($minAccel) must be negative" }
+        require(maxAccel > 0.0) { "maxAccel ($maxAccel) must be positive" }
     }
 
     private val minMax = MinMax(minAccel, maxAccel)
@@ -601,7 +611,9 @@ class CompositeVelConstraint(
     val offsets: List<Double>
 ) : VelConstraint {
     init {
-        require(constraints.size + 1 == offsets.size)
+        require(constraints.size + 1 == offsets.size) {
+            "constraints.size() (${constraints.size}) + 1 != offsets.size() (${offsets.size})"
+        }
     }
 
     override fun maxRobotVel(robotPose: Pose2dDual<Arclength>, path: PosePath, s: Double): Double {
@@ -622,7 +634,9 @@ class CompositeAccelConstraint(
     val offsets: List<Double>
 ) : AccelConstraint {
     init {
-        require(constraints.size + 1 == offsets.size)
+        require(constraints.size + 1 == offsets.size) {
+            "constraints.size() (${constraints.size}) + 1 != offsets.size() (${offsets.size})"
+        }
     }
 
     override fun minMaxProfileAccel(robotPose: Pose2dDual<Arclength>, path: PosePath, s: Double): MinMax {
