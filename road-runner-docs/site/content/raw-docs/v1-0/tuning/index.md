@@ -98,6 +98,12 @@ localizers:
   to `new ThreeDeadWheelLocalizer(hardwareMap, PARAMS.inPerTick, pose)`. The
   code expects the two parallel encoders to be named `"par0"` and `"par1"` and
   the perpendicular one to be named `"perp"`.
+* **Pinpoint Odometry Computer**: Change the right-hand-side of `localizer = `&nbsp;
+  ([mecanum](https://github.com/acmerobotics/road-runner-quickstart/blob/5f35f4c22c1ae7c0be5b35da0961c8f3a181ad31/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/MecanumDrive.java#L240),
+  [tank](https://github.com/acmerobotics/road-runner-quickstart/blob/5f35f4c22c1ae7c0be5b35da0961c8f3a181ad31/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/TankDrive.java#L247))
+  to `new PinpointLocalizer(hardwareMap, PARAMS.inPerTick, pose)`. The code
+  expects a Pinpoint device to be configured with name `"pinpoint"`. **Tuning
+  for a Pinpoint device is the same as tuning for two dead wheels.**
 
 {{< hint >}}
 If you choose to use dead wheels, drive encoders are not needed, and those
