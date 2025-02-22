@@ -492,14 +492,16 @@ class PathBuilder private constructor(
         headingSegments + { linearUntil(it, heading) },
         heading
     )
-    fun forwardLinearHeading(distance: Double, heading: Double) = forwardLinearHeading(distance, Rotation2d.exp(heading))
+    fun forwardLinearHeading(distance: Double, heading: Double) =
+        forwardLinearHeading(distance, Rotation2d.exp(heading))
 
     fun forwardSplineHeading(distance: Double, heading: Rotation2d) = copy(
         positionPathSeqBuilder.forward(distance),
         headingSegments + { splineUntil(it, heading) },
         heading
     )
-    fun forwardSplineHeading(distance: Double, heading: Double) = forwardSplineHeading(distance, Rotation2d.exp(heading))
+    fun forwardSplineHeading(distance: Double, heading: Double) =
+        forwardSplineHeading(distance, Rotation2d.exp(heading))
 
     fun lineToX(posX: Double) = copyTangent(
         positionPathSeqBuilder.lineToX(posX),
@@ -716,8 +718,7 @@ class TrajectoryBuilder private constructor(
         velConstraintOverride: VelConstraint? = null,
         accelConstraintOverride: AccelConstraint? = null
     ) =
-        add(pathBuilder.forwardSplineHeading(distance, heading), velConstraintOverride, accelConstraintOverride
-    )
+        add(pathBuilder.forwardSplineHeading(distance, heading), velConstraintOverride, accelConstraintOverride)
 
     @JvmOverloads
     fun lineToX(
