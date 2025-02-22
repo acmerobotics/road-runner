@@ -133,6 +133,28 @@ fun chartSpline(q: QuinticSpline1d): XYChart {
 
         class BuildersTest {
             @Test
+            fun testForward() {
+                val r = Random.Default
+                repeat(100) {
+                    val beginPos = Vector2d(r.nextDouble(), r.nextDouble())
+                    val beginTangent = Rotation2d.exp(r.nextDouble())
+
+                    val distance = r.nextDouble()
+
+                    val posPath = PositionPathSeqBuilder(beginPos, beginTangent, 1e-6)
+                        .forward(distance)
+                        .build()
+                        .first()
+
+                    assertEquals(beginPos.x, posPath.begin(1).value().x, 1e-6)
+                    assertEquals(beginPos.y, posPath.begin(1).value().y, 1e-6)
+
+                    assertEquals(beginPos.x + distance * beginTangent.real, posPath.end(1).value().x, 1e-6)
+                    assertEquals(beginPos.y + distance * beginTangent.imag, posPath.end(1).value().y, 1e-6)
+                }
+            }
+
+            @Test
             fun testLineToX() {
                 val r = Random.Default
                 repeat(100) {
@@ -349,6 +371,25 @@ fun chartSpline(q: QuinticSpline1d): XYChart {
 
                 saveChart("posPathBuilder", chartPosPath(posPath))
                 saveChart("posePathBuilder", chartPosePath(posePath))
+            }
+
+            @Test
+            fun testPathBuilderForward() {
+                val posePath = PathBuilder(
+                    Pose2d(
+                        Vector2d(0.0, 0.0),
+                        Rotation2d.exp(0.0),
+                    ),
+                    1e-6,
+                )
+                    .forward(10.0)
+                    .forwardSplineHeading(10.0, PI / 2)
+                    .forwardConstantHeading(10.0)
+                    .forwardSplineHeading(10.0, 0.0)
+                    .build()
+                    .first()
+
+                saveChart("pathBuilder/forward", chartPosePathHeading(posePath))
             }
 
             @Test
