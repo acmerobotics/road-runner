@@ -90,6 +90,23 @@ class PositionPathSeqBuilder private constructor(
     /**
      * @usesMathJax
      *
+     * Adds a line segment that goes forward [distance].
+     */
+    fun forward(distance: Double): PositionPathSeqBuilder {
+        return addSegment(
+            Line(
+                nextBeginPos,
+                Vector2d(
+                    nextBeginPos.x + distance * nextBeginTangent.real,
+                    nextBeginPos.y + distance * nextBeginTangent.imag,
+                ),
+            ),
+        )
+    }
+
+    /**
+     * @usesMathJax
+     *
      * Adds a line segment that goes to \(x\)-coordinate [posX].
      */
     fun lineToX(posX: Double): PositionPathSeqBuilder {
@@ -459,6 +476,31 @@ class PathBuilder private constructor(
         }
     )
 
+    fun forward(distance: Double) = copyTangent(
+        positionPathSeqBuilder.forward(distance),
+        headingSegments + PosePathSeqBuilder::tangentUntil
+    )
+
+    fun forwardConstantHeading(distance: Double) = copy(
+        positionPathSeqBuilder.forward(distance),
+        headingSegments + PosePathSeqBuilder::constantUntil,
+        endHeading
+    )
+
+    fun forwardLinearHeading(distance: Double, heading: Rotation2d) = copy(
+        positionPathSeqBuilder.forward(distance),
+        headingSegments + { linearUntil(it, heading) },
+        heading
+    )
+    fun forwardLinearHeading(distance: Double, heading: Double) = forwardLinearHeading(distance, Rotation2d.exp(heading))
+
+    fun forwardSplineHeading(distance: Double, heading: Rotation2d) = copy(
+        positionPathSeqBuilder.forward(distance),
+        headingSegments + { splineUntil(it, heading) },
+        heading
+    )
+    fun forwardSplineHeading(distance: Double, heading: Double) = forwardSplineHeading(distance, Rotation2d.exp(heading))
+
     fun lineToX(posX: Double) = copyTangent(
         positionPathSeqBuilder.lineToX(posX),
         headingSegments + listOf { tangentUntil(it) }
@@ -625,6 +667,57 @@ class TrajectoryBuilder private constructor(
             pathBuilder.setReversed(reversed), beginEndVel, baseVelConstraint, baseAccelConstraint,
             poseMap, velConstraints, accelConstraints,
         )
+
+    @JvmOverloads
+    fun forward(
+        distance: Double,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) =
+        add(pathBuilder.forward(distance), velConstraintOverride, accelConstraintOverride)
+
+    @JvmOverloads
+    fun forwardConstantHeading(
+        distance: Double,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) =
+        add(pathBuilder.forwardConstantHeading(distance), velConstraintOverride, accelConstraintOverride)
+
+    @JvmOverloads
+    fun forwardLinearHeading(
+        distance: Double,
+        heading: Rotation2d,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) =
+        add(pathBuilder.forwardLinearHeading(distance, heading), velConstraintOverride, accelConstraintOverride)
+    @JvmOverloads
+    fun forwardLinearHeading(
+        distance: Double,
+        heading: Double,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) =
+        add(pathBuilder.forwardLinearHeading(distance, heading), velConstraintOverride, accelConstraintOverride)
+
+    @JvmOverloads
+    fun forwardSplineHeading(
+        distance: Double,
+        heading: Rotation2d,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) =
+        add(pathBuilder.forwardSplineHeading(distance, heading), velConstraintOverride, accelConstraintOverride)
+    @JvmOverloads
+    fun forwardSplineHeading(
+        distance: Double,
+        heading: Double,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) =
+        add(pathBuilder.forwardSplineHeading(distance, heading), velConstraintOverride, accelConstraintOverride
+    )
 
     @JvmOverloads
     fun lineToX(

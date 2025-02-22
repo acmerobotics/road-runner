@@ -422,6 +422,86 @@ class TrajectoryActionBuilder private constructor(
         turnTo(Rotation2d.exp(heading), turnConstraintsOverride)
 
     @JvmOverloads
+    fun forward(
+        distance: Double,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) = TrajectoryActionBuilder(
+        this,
+        tb.forward(
+            distance, velConstraintOverride, accelConstraintOverride
+        ),
+        n + 1, lastPoseUnmapped, lastPose, lastTangent, ms, cont
+    )
+
+    @JvmOverloads
+    fun forwardConstantHeading(
+        distance: Double,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) = TrajectoryActionBuilder(
+        this,
+        tb.forwardConstantHeading(
+            distance, velConstraintOverride, accelConstraintOverride
+        ),
+        n + 1, lastPoseUnmapped, lastPose, lastTangent, ms, cont
+    )
+
+    @JvmOverloads
+    fun forwardLinearHeading(
+        distance: Double,
+        heading: Rotation2d,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) = TrajectoryActionBuilder(
+        this,
+        tb.forwardLinearHeading(
+            distance, heading, velConstraintOverride, accelConstraintOverride
+        ),
+        n + 1, lastPoseUnmapped, lastPose, lastTangent, ms, cont
+    )
+    @JvmOverloads
+    fun forwardLinearHeading(
+        distance: Double,
+        heading: Double,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) = TrajectoryActionBuilder(
+        this,
+        tb.forwardLinearHeading(
+            distance, heading, velConstraintOverride, accelConstraintOverride
+        ),
+        n + 1, lastPoseUnmapped, lastPose, lastTangent, ms, cont
+    )
+
+    @JvmOverloads
+    fun forwardSplineHeading(
+        distance: Double,
+        heading: Rotation2d,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) = TrajectoryActionBuilder(
+        this,
+        tb.forwardSplineHeading(
+            distance, heading, velConstraintOverride, accelConstraintOverride
+        ),
+        n + 1, lastPoseUnmapped, lastPose, lastTangent, ms, cont
+    )
+    @JvmOverloads
+    fun forwardSplineHeading(
+        distance: Double,
+        heading: Double,
+        velConstraintOverride: VelConstraint? = null,
+        accelConstraintOverride: AccelConstraint? = null
+    ) = TrajectoryActionBuilder(
+        this,
+        tb.forwardSplineHeading(
+            distance, heading, velConstraintOverride, accelConstraintOverride
+        ),
+        n + 1, lastPoseUnmapped, lastPose, lastTangent, ms, cont
+    )
+
+    @JvmOverloads
     fun lineToX(
         posX: Double,
         velConstraintOverride: VelConstraint? = null,
