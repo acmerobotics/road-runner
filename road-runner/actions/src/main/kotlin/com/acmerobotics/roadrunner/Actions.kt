@@ -169,6 +169,11 @@ private class UntilTimeMarkerFactory(segmentIndex: Int, val dt: Double, val a: A
         seqCons(SleepAction(t.profile.inverse(segmentDisp) + t.duration - dt), a)
 }
 
+private class UntilDispMarkerFactory(segmentIndex: Int, val ds: Double, val a: Action) : MarkerFactory(segmentIndex) {
+    override fun make(t: TimeTrajectory, segmentDisp: Double) =
+        seqCons(SleepAction(t.profile.inverse(segmentDisp + t.profile.dispProfile.length - ds)), a)
+}
+
 fun interface TurnActionFactory {
     fun make(t: TimeTurn): Action
 }
@@ -374,6 +379,22 @@ class TrajectoryActionBuilder private constructor(
         )
     }
     fun untilTime(ds: Double, f: InstantFunction) = untilTime(ds, InstantAction(f))
+
+    /**
+     * Schedules action [a] to execute in parallel starting at a displacement [ds] before the end of the last trajectory
+     * segment.
+     *
+     * Cannot be called without an applicable pending trajectory.
+     */
+    fun untilDisp(ds: Double, a: Action): TrajectoryActionBuilder {
+        require(ds >= 0.0) { "Displacement ($ds) must be non-negative" }
+
+        return TrajectoryActionBuilder(
+            this, tb, n, lastPoseUnmapped, lastPose, lastTangent,
+            ms + listOf(UntilDispMarkerFactory(n, ds, a)), cont
+        )
+    }
+    fun untilDisp(ds: Double, f: InstantFunction) = untilDisp(ds, InstantAction(f))
 
     /**
      * Schedules action [a] to execute in parallel starting [dt] seconds after the last trajectory segment, turn, or
