@@ -164,6 +164,11 @@ private class DispMarkerFactory(segmentIndex: Int, val ds: Double, val a: Action
         seqCons(SleepAction(t.profile.inverse(segmentDisp + ds)), a)
 }
 
+private class UntilTimeMarkerFactory(segmentIndex: Int, val dt: Double, val a: Action) : MarkerFactory(segmentIndex) {
+    override fun make(t: TimeTrajectory, segmentDisp: Double) =
+        seqCons(SleepAction(t.profile.inverse(segmentDisp) + t.duration - dt), a)
+}
+
 fun interface TurnActionFactory {
     fun make(t: TimeTurn): Action
 }
@@ -355,6 +360,22 @@ class TrajectoryActionBuilder private constructor(
     fun afterDisp(ds: Double, f: InstantFunction) = afterDisp(ds, InstantAction(f))
 
     /**
+     * Schedules action [a] to execute in parallel starting at a time [dt] before the end of the last trajectory
+     * segment.
+     *
+     * Cannot be called without an applicable pending trajectory.
+     */
+    fun untilTime(dt: Double, a: Action): TrajectoryActionBuilder {
+        require(dt >= 0.0) { "Time ($dt) must be non-negative" }
+
+        return TrajectoryActionBuilder(
+            this, tb, n, lastPoseUnmapped, lastPose, lastTangent,
+            ms + listOf(UntilTimeMarkerFactory(n, dt, a)), cont
+        )
+    }
+    fun untilTime(ds: Double, f: InstantFunction) = untilTime(ds, InstantAction(f))
+
+    /**
      * Schedules action [a] to execute in parallel starting [dt] seconds after the last trajectory segment, turn, or
      * other action.
      */
@@ -373,6 +394,13 @@ class TrajectoryActionBuilder private constructor(
         }
     }
     fun afterTime(dt: Double, f: InstantFunction) = afterTime(dt, InstantAction(f))
+
+    /**
+     * Schedules action [a] to execute in parallel starting with the last trajectory segment.
+     * This is equivalent to [afterTime] with a dt of 0.
+     */
+    fun duringLast(a: Action) = afterTime(0.0, a)
+    fun duringLast(f: InstantFunction) = duringLast(InstantAction(f))
 
     fun setTangent(r: Rotation2d) =
         TrajectoryActionBuilder(this, tb.setTangent(r), n, lastPoseUnmapped, lastPose, lastTangent, ms, cont)
