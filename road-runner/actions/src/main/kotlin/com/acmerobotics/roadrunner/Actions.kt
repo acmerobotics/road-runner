@@ -151,17 +151,31 @@ private fun seqCons(hd: Action, tl: Action): Action =
 private sealed class MarkerFactory(
     val segmentIndex: Int,
 ) {
-    abstract fun make(t: TimeTrajectory, segmentDisp: Double): Action
+    abstract fun make(t: TimeTrajectory, segmentDisp: Double, segmentEndDisp: Double): Action
 }
 
 private class TimeMarkerFactory(segmentIndex: Int, val dt: Double, val a: Action) : MarkerFactory(segmentIndex) {
-    override fun make(t: TimeTrajectory, segmentDisp: Double) =
-        seqCons(SleepAction(t.profile.inverse(segmentDisp) + dt), a)
+    override fun make(t: TimeTrajectory, segmentDisp: Double, segmentEndDisp: Double) =
+        seqCons(
+            SleepAction(
+                t.profile.inverse(
+                    if (dt >= 0) segmentDisp else segmentEndDisp,
+                ) + dt,
+            ),
+            a,
+        )
 }
 
 private class DispMarkerFactory(segmentIndex: Int, val ds: Double, val a: Action) : MarkerFactory(segmentIndex) {
-    override fun make(t: TimeTrajectory, segmentDisp: Double) =
-        seqCons(SleepAction(t.profile.inverse(segmentDisp + ds)), a)
+    override fun make(t: TimeTrajectory, segmentDisp: Double, segmentEndDisp: Double) =
+        seqCons(
+            SleepAction(
+                t.profile.inverse(
+                    (if (ds >= 0) segmentDisp else segmentEndDisp) + ds,
+                ),
+            ),
+            a,
+        )
 }
 
 fun interface TurnActionFactory {
@@ -297,7 +311,7 @@ class TrajectoryActionBuilder private constructor(
                     for (m in ms) {
                         val i = m.segmentIndex - offset
                         if (i >= 0) {
-                            actions.add(m.make(timeTraj, traj.offsets[i]))
+                            actions.add(m.make(timeTraj, traj.offsets[i], traj.offsets[i + 1]))
                         } else {
                             msRem.add(m)
                         }
@@ -341,12 +355,14 @@ class TrajectoryActionBuilder private constructor(
      * The action start is clamped to the span of the current trajectory.
      *
      * Cannot be called without an applicable pending trajectory.
+     *
+     * If [ds] is negative, the action will execute when there [ds] units before the end of the current trajectory segment.
+     * The action will still execute during the same trajectory segment as it would with a positive [ds] value,
+     * but the displacement is subtracted from the end displacement of the current trajectory segment.
      */
     // TODO: Should calling this without an applicable trajectory implicitly begin an empty trajectory and execute the
     // action immediately?
     fun afterDisp(ds: Double, a: Action): TrajectoryActionBuilder {
-        require(ds >= 0.0) { "Displacement ($ds) must be non-negative" }
-
         return TrajectoryActionBuilder(
             this, tb, n, lastPoseUnmapped, lastPose, lastTangent,
             ms + listOf(DispMarkerFactory(n, ds, a)), cont
@@ -357,10 +373,12 @@ class TrajectoryActionBuilder private constructor(
     /**
      * Schedules action [a] to execute in parallel starting [dt] seconds after the last trajectory segment, turn, or
      * other action.
+     *
+     * If [dt] is negative, the action will execute [dt] seconds before the end of the current trajectory segment.
+     * The action will still execute during the same trajectory segment as it would with a positive [dt] value,
+     * but the time is subtracted from the end time of the current trajectory segment.
      */
     fun afterTime(dt: Double, a: Action): TrajectoryActionBuilder {
-        require(dt >= 0.0) { "Time ($dt) must be non-negative" }
-
         return if (n == 0) {
             TrajectoryActionBuilder(this, tb, 0, lastPoseUnmapped, lastPose, lastTangent, emptyList()) { tail ->
                 cont(ParallelAction(tail, seqCons(SleepAction(dt), a)))
