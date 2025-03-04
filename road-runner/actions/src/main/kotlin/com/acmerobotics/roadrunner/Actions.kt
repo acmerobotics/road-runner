@@ -154,24 +154,26 @@ private sealed class MarkerFactory(
     abstract fun make(t: TimeTrajectory, segmentDisp: Double, segmentEndDisp: Double): Action
 }
 
-private class TimeMarkerFactory(segmentIndex: Int, val dt: Double, val a: Action) : MarkerFactory(segmentIndex) {
+private class TimeMarkerFactory(segmentIndex: Int, val dt: Double, val a: Action, val relativeToStart: Boolean = true) :
+    MarkerFactory(segmentIndex) {
     override fun make(t: TimeTrajectory, segmentDisp: Double, segmentEndDisp: Double) =
         seqCons(
             SleepAction(
                 t.profile.inverse(
-                    if (dt >= 0) segmentDisp else segmentEndDisp,
+                    if (relativeToStart) segmentDisp else segmentEndDisp,
                 ) + dt,
             ),
             a,
         )
 }
 
-private class DispMarkerFactory(segmentIndex: Int, val ds: Double, val a: Action) : MarkerFactory(segmentIndex) {
+private class DispMarkerFactory(segmentIndex: Int, val ds: Double, val a: Action, val relativeToStart: Boolean = true) :
+    MarkerFactory(segmentIndex) {
     override fun make(t: TimeTrajectory, segmentDisp: Double, segmentEndDisp: Double) =
         seqCons(
             SleepAction(
                 t.profile.inverse(
-                    (if (ds >= 0) segmentDisp else segmentEndDisp) + ds,
+                    (if (relativeToStart) segmentDisp else segmentEndDisp) + ds,
                 ),
             ),
             a,
@@ -351,18 +353,16 @@ class TrajectoryActionBuilder private constructor(
     }
 
     /**
-     * Schedules action [a] to execute in parallel starting at a displacement [ds] after the last trajectory segment.
+     * Schedules action [a] to execute in parallel starting at a displacement [ds] after the previous trajectory segment.
      * The action start is clamped to the span of the current trajectory.
      *
      * Cannot be called without an applicable pending trajectory.
-     *
-     * If [ds] is negative, the action will execute when there [ds] units before the end of the current trajectory segment.
-     * The action will still execute during the same trajectory segment as it would with a positive [ds] value,
-     * but the displacement is subtracted from the end displacement of the current trajectory segment.
      */
     // TODO: Should calling this without an applicable trajectory implicitly begin an empty trajectory and execute the
     // action immediately?
     fun afterDisp(ds: Double, a: Action): TrajectoryActionBuilder {
+        require(ds >= 0.0) { "Displacement ($ds) must be non-negative" }
+
         return TrajectoryActionBuilder(
             this, tb, n, lastPoseUnmapped, lastPose, lastTangent,
             ms + listOf(DispMarkerFactory(n, ds, a)), cont
@@ -371,14 +371,12 @@ class TrajectoryActionBuilder private constructor(
     fun afterDisp(ds: Double, f: InstantFunction) = afterDisp(ds, InstantAction(f))
 
     /**
-     * Schedules action [a] to execute in parallel starting [dt] seconds after the last trajectory segment, turn, or
+     * Schedules action [a] to execute in parallel starting [dt] seconds after the previous trajectory segment, turn, or
      * other action.
-     *
-     * If [dt] is negative, the action will execute [dt] seconds before the end of the current trajectory segment.
-     * The action will still execute during the same trajectory segment as it would with a positive [dt] value,
-     * but the time is subtracted from the end time of the current trajectory segment.
      */
     fun afterTime(dt: Double, a: Action): TrajectoryActionBuilder {
+        require(dt >= 0.0) { "Time ($dt) must be non-negative" }
+
         return if (n == 0) {
             TrajectoryActionBuilder(this, tb, 0, lastPoseUnmapped, lastPose, lastTangent, emptyList()) { tail ->
                 cont(ParallelAction(tail, seqCons(SleepAction(dt), a)))
@@ -391,6 +389,36 @@ class TrajectoryActionBuilder private constructor(
         }
     }
     fun afterTime(dt: Double, f: InstantFunction) = afterTime(dt, InstantAction(f))
+
+    /**
+     * Schedules action [a] to execute in parallel starting at a displacement [ds] before the end of the current trajectory segment.
+     *
+     * Cannot be called without an applicable pending trajectory.
+     */
+    fun beforeEndDisp(ds: Double, a: Action): TrajectoryActionBuilder {
+        require(ds >= 0.0) { "Displacement ($ds) must be non-negative" }
+
+        return TrajectoryActionBuilder(
+            this, tb, n, lastPoseUnmapped, lastPose, lastTangent,
+            ms + listOf(DispMarkerFactory(n, -ds, a, false)), cont,
+        )
+    }
+    fun beforeEndDisp(ds: Double, f: InstantFunction) = beforeEndDisp(ds, InstantAction(f))
+
+    /**
+     * Schedules action [a] to execute in parallel starting [dt] seconds before the end of the current trajectory segment.
+     *
+     * Cannot be called without an applicable pending trajectory.
+     */
+    fun beforeEndTime(dt: Double, a: Action): TrajectoryActionBuilder {
+        require(dt >= 0.0) { "Time ($dt) must be non-negative" }
+
+        return TrajectoryActionBuilder(
+            this, tb, n, lastPoseUnmapped, lastPose, lastTangent,
+            ms + listOf(TimeMarkerFactory(n, -dt, a, false)), cont,
+        )
+    }
+    fun beforeEndTime(dt: Double, f: InstantFunction) = beforeEndTime(dt, InstantAction(f))
 
     fun setTangent(r: Rotation2d) =
         TrajectoryActionBuilder(this, tb.setTangent(r), n, lastPoseUnmapped, lastPose, lastTangent, ms, cont)
