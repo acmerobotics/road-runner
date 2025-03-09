@@ -139,18 +139,18 @@ fun chartSpline(q: QuinticSpline1d): XYChart {
                     val beginPos = Vector2d(r.nextDouble(), r.nextDouble())
                     val beginTangent = Rotation2d.exp(r.nextDouble())
 
-                    val distance = r.nextDouble()
+                    val ds = r.nextDouble()
 
                     val posPath = PositionPathSeqBuilder(beginPos, beginTangent, 1e-6)
-                        .forward(distance)
+                        .forward(ds)
                         .build()
                         .first()
 
                     assertEquals(beginPos.x, posPath.begin(1).value().x, 1e-6)
                     assertEquals(beginPos.y, posPath.begin(1).value().y, 1e-6)
 
-                    assertEquals(beginPos.x + distance * beginTangent.real, posPath.end(1).value().x, 1e-6)
-                    assertEquals(beginPos.y + distance * beginTangent.imag, posPath.end(1).value().y, 1e-6)
+                    assertEquals(beginPos.x + ds * beginTangent.real, posPath.end(1).value().x, 1e-6)
+                    assertEquals(beginPos.y + ds * beginTangent.imag, posPath.end(1).value().y, 1e-6)
                 }
             }
 
