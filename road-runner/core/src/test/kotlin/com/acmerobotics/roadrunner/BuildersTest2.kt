@@ -21,6 +21,24 @@ class BuildersTest2 {
         assertEquals(
             1,
             posBase
+                .forward(12.0)
+                .forward(24.0)
+                .build()
+                .size
+        )
+
+        assertEquals(
+            2,
+            posBase
+                .forward(12.0)
+                .forward(-12.0)
+                .build()
+                .size
+        )
+
+        assertEquals(
+            1,
+            posBase
                 .lineToX(12.0)
                 .lineToX(24.0)
                 .build()
