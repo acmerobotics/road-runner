@@ -98,9 +98,9 @@ class ActionRegressionTest {
         )
 
         assertEquals(
-            "SequentialAction(initialActions=[Trajectory, ParallelAction(initialActions=[" +
+            "SequentialAction(initialActions=[Trajectory, Trajectory, ParallelAction(initialActions=[" +
                 "SequentialAction(initialActions=" +
-                "[Trajectory, Trajectory]), SequentialAction(initialActions=[SleepAction(dt=2.0), A])])])",
+                "[Trajectory]), SequentialAction(initialActions=[SleepAction(dt=2.0), A])])])",
             base
                 .lineToX(10.0)
                 .lineToXLinearHeading(20.0, Rotation2d.exp(1.57))
@@ -112,10 +112,10 @@ class ActionRegressionTest {
         )
 
         assertEquals(
-            "SequentialAction(initialActions=[Trajectory, ParallelAction(initialActions=[" +
+            "SequentialAction(initialActions=[Trajectory, Trajectory, ParallelAction(initialActions=[" +
                 "SequentialAction(initialActions=[" +
-                "Trajectory, Trajectory]), SequentialAction(initialActions=[SleepAction(dt=2.0), A]), " +
-                "SequentialAction(initialActions=[SleepAction(dt=3.499999999999999), B])])])",
+                "Trajectory]), SequentialAction(initialActions=[SleepAction(dt=2.0), A]), " +
+                "SequentialAction(initialActions=[SleepAction(dt=2.5000000000000004), B])])])",
             base
                 .lineToX(10.0)
                 .lineToXLinearHeading(20.0, Rotation2d.exp(1.57))
@@ -167,7 +167,7 @@ class ActionRegressionTest {
         assertEquals(
             "ParallelAction(initialActions=[SequentialAction(initialActions=[Trajectory]), " +
                 "SequentialAction(" +
-                "initialActions=[SleepAction(dt=0.4472135954999579), A])])",
+                "initialActions=[SleepAction(dt=0.316227766016838), A])])",
             base
                 .afterDisp(1.0, LabelAction("A"))
                 .lineToX(0.25)
@@ -178,7 +178,7 @@ class ActionRegressionTest {
         assertEquals(
             "ParallelAction(initialActions=[SequentialAction(initialActions=[Trajectory, " +
                 "Trajectory]), " +
-                "SequentialAction(initialActions=[SleepAction(dt=0.4472135954999579), A])])",
+                "SequentialAction(initialActions=[SleepAction(dt=0.316227766016838), A])])",
             base
                 .afterDisp(1.0, LabelAction("A"))
                 .lineToX(0.25)
