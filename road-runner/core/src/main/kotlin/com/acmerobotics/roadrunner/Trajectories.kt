@@ -28,6 +28,8 @@ class DisplacementTrajectory(
 ) {
     constructor(t: Trajectory) : this(t.path, t.profile.baseProfile)
 
+    constructor(t: TimeTrajectory) : this(t.path, t.profile.dispProfile)
+
     fun length() = path.length()
 
     fun project(query: Vector2d, init: Double) = project(path, query, init)
