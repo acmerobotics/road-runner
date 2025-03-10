@@ -2,9 +2,9 @@ name: Road Runner CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "master", "main" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "master", "main" ]
   workflow_dispatch:
 
 defaults:
@@ -24,3 +24,12 @@ jobs:
         validate-wrappers: true
     - name: Build with Gradle
       run: ./gradlew build
+
+    - name: Store test reports
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: Test reports
+        path: |
+          **/build/reports/
+          **/build/test-results/
