@@ -35,7 +35,7 @@ and writing some of your own op modes before continuing.
 
 ## Getting Help
 
-Try asking the community over on the [FTC Discord](https://discord.com/invite/first-tech-challenge).
+Try asking the community over on the [FTC Discord](https://discord.com/invite/ftc).
 Many people over there have gone through the tuning process and can give the most
 practical advice for you and your team.
 
