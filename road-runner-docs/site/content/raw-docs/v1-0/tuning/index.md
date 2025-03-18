@@ -104,6 +104,18 @@ localizers:
   to `new PinpointLocalizer(hardwareMap, PARAMS.inPerTick, pose)`. The code
   expects a Pinpoint device to be configured with name `"pinpoint"`. **Tuning
   for a Pinpoint device is the same as tuning for two dead wheels.**
+* **SparkFun Optical Odometry Tracking Sensor (OTOS)**: Change the right-hand-side
+  of `localizer = `&nbsp; 
+  ([mecanum](https://github.com/acmerobotics/road-runner-quickstart/blob/5f35f4c22c1ae7c0be5b35da0961c8f3a181ad31/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/MecanumDrive.java#L240),
+  [tank](https://github.com/acmerobotics/road-runner-quickstart/blob/5f35f4c22c1ae7c0be5b35da0961c8f3a181ad31/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/TankDrive.java#L247)) 
+  to `new OTOSLocalizer(hardwareMap, pose)`. 
+  The code expects the OTOS device to be configured with name `"sensor_otos"`. 
+  You can also set  your `inPerTick` parameter in your drive class to `1.0`, 
+  as the OTOS itself reports values in inches.
+  The OTOS localizer also has four extra tuning OpModes described at the end of this guide, 
+  which should be done *before* tuning the rest of the robot.
+  After those are done, **the OTOS localizer can be tuned like the two dead wheel localizer**,
+  but without the odometry wheel locations from `AngularRampLogger`. 
 
 {{< hint >}}
 If you choose to use dead wheels, drive encoders are not needed, and those
@@ -382,3 +394,39 @@ following controller.
 ## `SplineTest`
 
 This routine follows a basic spline and validates the previous steps.
+
+## OTOS-Exclusive Tuners
+
+**Goal: Tune the OTOS device.** These steps should be done before tuning the rest of the robot.
+
+### `OTOSAngularScalarTuner`
+
+This routine will help you determine the angular scalar for the OTOS device. 
+Press start and rotate the robot 10 times (3600 degrees) in place.
+Once you are done, copy the angular scalar displayed by telemetry into 
+[the angular scalar parameter in OTOSLocalizer](https://github.com/acmerobotics/road-runner-quickstart/blob/d5fbfdc552358486d4d72682ae3d180313dfa588/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/OTOSLocalizer.java#L18)
+
+### `OTOSLinearScalarTuner`
+
+This routine will help you determine the linear scalar for the OTOS device.
+Press START and drive the robot forward a known distance.
+Once you are done, set
+[the linear scalar parameter in OTOSLocalizer](https://github.com/acmerobotics/road-runner-quickstart/blob/d5fbfdc552358486d4d72682ae3d180313dfa588/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/OTOSLocalizer.java#L19)
+"Uncorrected Distance Traveled X" value divided by the actual distance traveled.
+
+### `OTOSHeadingOffsetTuner`
+
+This routine will help you determine the heading offset for the OTOS device.
+Place the side of the robot against a field wall and press START, then push the robot forward a known distance.
+Once you are done, set the `h` argument to the Pose2D in 
+[the offset variable in OTOSLocalizer](https://github.com/acmerobotics/road-runner-quickstart/blob/d5fbfdc552358486d4d72682ae3d180313dfa588/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/OTOSLocalizer.java#L22)
+to the displayed "Heading Offset (radians)" value.
+
+### `OTOSPositionOffsetTuner`
+
+This routine will help you determine the position offset for the OTOS device.
+Place the robot in the corner of two field walls and press START,
+then rotate the robot 180 degrees and push it back into the corner.
+Then copy the displayed "X Offset" and "Y Offset" values 
+into the `x` and `y` arguments to 
+[the offset variable in OTOSLocalizer](https://github.com/acmerobotics/road-runner-quickstart/blob/d5fbfdc552358486d4d72682ae3d180313dfa588/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/OTOSLocalizer.java#L22)
