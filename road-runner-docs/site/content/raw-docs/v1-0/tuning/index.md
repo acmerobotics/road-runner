@@ -403,20 +403,23 @@ This routine follows a basic spline and validates the previous steps.
 
 This routine will help you determine the angular scalar for the OTOS device. 
 Press start and rotate the robot 10 times (3600 degrees) in place.
-Once you are done, copy the angular scalar displayed by telemetry into line 14 of `OTOSLocalizer.java`.
+Once you are done, copy the angular scalar displayed by telemetry into 
+[the angular scalar parameter in OTOSLocalizer](https://github.com/acmerobotics/road-runner-quickstart/blob/d5fbfdc552358486d4d72682ae3d180313dfa588/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/OTOSLocalizer.java#L18)
 
 ### `OTOSLinearScalarTuner`
 
 This routine will help you determine the linear scalar for the OTOS device.
 Press START and drive the robot forward a known distance.
-Once you are done, set line 15 of `OTOSLocalizer.java` to the displayed
+Once you are done, set
+[the linear scalar parameter in OTOSLocalizer](https://github.com/acmerobotics/road-runner-quickstart/blob/d5fbfdc552358486d4d72682ae3d180313dfa588/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/OTOSLocalizer.java#L19)
 "Uncorrected Distance Traveled X" value divided by the actual distance traveled.
 
 ### `OTOSHeadingOffsetTuner`
 
 This routine will help you determine the heading offset for the OTOS device.
 Place the side of the robot against a field wall and press START, then push the robot forward a known distance.
-Once you are done, set the `h` argument to the Pose2D in line 16 of `OTOSLocalizer.java` 
+Once you are done, set the `h` argument to the Pose2D in 
+[the offset variable in OTOSLocalizer](https://github.com/acmerobotics/road-runner-quickstart/blob/d5fbfdc552358486d4d72682ae3d180313dfa588/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/OTOSLocalizer.java#L22)
 to the displayed "Heading Offset (radians)" value.
 
 ### `OTOSPositionOffsetTuner`
@@ -425,4 +428,5 @@ This routine will help you determine the position offset for the OTOS device.
 Place the robot in the corner of two field walls and press START,
 then rotate the robot 180 degrees and push it back into the corner.
 Then copy the displayed "X Offset" and "Y Offset" values 
-into the `x` and `y` arguments to the Pose2D in line 16 of `OTOSLocalizer.java`.
+into the `x` and `y` arguments to 
+[the offset variable in OTOSLocalizer](https://github.com/acmerobotics/road-runner-quickstart/blob/d5fbfdc552358486d4d72682ae3d180313dfa588/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/OTOSLocalizer.java#L22)
