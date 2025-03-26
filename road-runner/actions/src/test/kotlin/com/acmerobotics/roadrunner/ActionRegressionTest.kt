@@ -141,9 +141,54 @@ class ActionRegressionTest {
         assertEquals(
             "ParallelAction(initialActions=[SequentialAction(initialActions=[]), " +
                 "SequentialAction(initialActions=[" +
-                "SleepAction(dt=1.0), a])])",
+                "SleepAction(dt=1.0), A])])",
             base
-                .afterTime(1.0, LabelAction("a"))
+                .afterTime(1.0, LabelAction("A"))
+                .build()
+                .toString()
+        )
+    }
+
+    @Test
+    @Strictfp
+    fun testTrajectoryTimeNegativeMarkers() {
+        assertEquals(
+            "ParallelAction(initialActions=[" +
+                    "SequentialAction(initialActions=[Trajectory, Trajectory]), " +
+                    "SequentialAction(initialActions=[SleepAction(dt=2.32842712474619), A])" +
+                    "])",
+            base
+                .beforeEndTime(0.5, LabelAction("A"))
+                .lineToX(20.0)
+                .lineToXLinearHeading(30.0, Math.PI / 2)
+                .build()
+                .toString()
+        )
+
+        assertEquals(
+            "SequentialAction(initialActions=[Trajectory, ParallelAction(initialActions=[" +
+                    "SequentialAction(initialActions=[Trajectory, Trajectory]), " +
+                    "SequentialAction(initialActions=[SleepAction(dt=1.4999999999999993), A])" +
+                    "])])",
+            base
+                .lineToX(10.0)
+                .beforeEndTime(0.5, LabelAction("A"))
+                .lineToXLinearHeading(20.0, Math.PI / 2)
+                .lineToX(30.0)
+                .build()
+                .toString(),
+        )
+
+        assertEquals(
+            "SequentialAction(initialActions=[Trajectory, Trajectory, ParallelAction(initialActions=[" +
+                    "SequentialAction(initialActions=[Trajectory]), " +
+                    "SequentialAction(initialActions=[SleepAction(dt=1.5000000000000009), A])" +
+                    "])])",
+            base
+                .lineToX(10.0)
+                .lineToXLinearHeading(20.0, Math.PI / 2)
+                .beforeEndTime(0.5, LabelAction("A"))
+                .lineToX(30.0)
                 .build()
                 .toString()
         )
@@ -198,6 +243,51 @@ class ActionRegressionTest {
                 .afterDisp(1.0, LabelAction("A"))
                 .lineToX(0.25)
                 .lineToXLinearHeading(10.25, PI / 4)
+                .build()
+                .toString()
+        )
+    }
+
+    @Test
+    @Strictfp
+    fun testTrajectoryDispNegativeMarkers() {
+        assertEquals(
+            "ParallelAction(initialActions=[" +
+                    "SequentialAction(initialActions=[Trajectory, Trajectory]), " +
+                    "SequentialAction(initialActions=[SleepAction(dt=2.121320343559643), A])" +
+                    "])",
+            base
+                .beforeEndDisp(2.5, LabelAction("A"))
+                .lineToX(20.0)
+                .lineToXLinearHeading(30.0, Math.PI / 2)
+                .build()
+                .toString()
+        )
+
+        assertEquals(
+            "SequentialAction(initialActions=[Trajectory, ParallelAction(initialActions=[" +
+                    "SequentialAction(initialActions=[Trajectory, Trajectory]), " +
+                    "SequentialAction(initialActions=[SleepAction(dt=1.2928932188134519), A])" +
+                    "])])",
+            base
+                .lineToX(10.0)
+                .beforeEndDisp(2.5, LabelAction("A"))
+                .lineToXLinearHeading(20.0, Math.PI / 2)
+                .lineToX(30.0)
+                .build()
+                .toString(),
+        )
+
+        assertEquals(
+            "SequentialAction(initialActions=[Trajectory, Trajectory, ParallelAction(initialActions=[" +
+                    "SequentialAction(initialActions=[Trajectory]), " +
+                    "SequentialAction(initialActions=[SleepAction(dt=1.2928932188134532), A])" +
+                    "])])",
+            base
+                .lineToX(10.0)
+                .lineToXLinearHeading(20.0, Math.PI / 2)
+                .beforeEndDisp(2.5, LabelAction("A"))
+                .lineToX(30.0)
                 .build()
                 .toString()
         )
