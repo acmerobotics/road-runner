@@ -192,6 +192,18 @@ class ActionRegressionTest {
                 .build()
                 .toString()
         )
+
+        assertEquals(
+            "ParallelAction(initialActions=[" +
+                    "SequentialAction(initialActions=[Trajectory]), " +
+                    "SequentialAction(initialActions=[SleepAction(dt=-0.5), A])" +
+                    "])",
+            base
+                .afterTime(-0.5, LabelAction("A"))
+                .lineToX(10.0)
+                .build()
+                .toString()
+        )
     }
 
     @Test
@@ -291,5 +303,13 @@ class ActionRegressionTest {
                 .build()
                 .toString()
         )
+
+        assertFails {
+            base
+                .afterDisp(-2.5, LabelAction("A"))
+                .lineToX(10.0)
+                .build()
+                .toString()
+        }
     }
 }
