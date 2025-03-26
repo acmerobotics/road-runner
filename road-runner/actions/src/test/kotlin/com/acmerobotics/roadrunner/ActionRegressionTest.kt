@@ -44,9 +44,8 @@ class LabelAction(private val s: String) : Action {
 }
 
 class ActionRegressionTest {
-    @Test
-    @Strictfp
-    fun testTrajectoryActionBuilder() {
+    companion object {
+        @JvmField
         val base =
             TrajectoryActionBuilder(
                 { TurnAction(it) },
@@ -58,7 +57,11 @@ class ActionRegressionTest {
                 TranslationalVelConstraint(20.0),
                 ProfileAccelConstraint(-10.0, 10.0),
             )
+    }
 
+    @Test
+    @Strictfp
+    fun testTrajectoryActionBuilder() {
         assertEquals(
             "SequentialAction(initialActions=[Trajectory])",
             base
@@ -75,7 +78,11 @@ class ActionRegressionTest {
                 .build()
                 .toString(),
         )
+    }
 
+    @Test
+    @Strictfp
+    fun testTrajectoryContinuity() {
         assertEquals(
             "SequentialAction(initialActions=[Trajectory, SleepAction(dt=10.0), Trajectory])",
             base
@@ -96,11 +103,15 @@ class ActionRegressionTest {
                 .build()
                 .toString()
         )
+    }
 
+    @Test
+    @Strictfp
+    fun testTrajectoryTimeMarkers() {
         assertEquals(
-            "SequentialAction(initialActions=[Trajectory, ParallelAction(initialActions=[" +
+            "SequentialAction(initialActions=[Trajectory, Trajectory, ParallelAction(initialActions=[" +
                 "SequentialAction(initialActions=" +
-                "[Trajectory, Trajectory]), SequentialAction(initialActions=[SleepAction(dt=2.0), A])])])",
+                "[Trajectory]), SequentialAction(initialActions=[SleepAction(dt=2.0), A])])])",
             base
                 .lineToX(10.0)
                 .lineToXLinearHeading(20.0, Rotation2d.exp(1.57))
@@ -112,10 +123,10 @@ class ActionRegressionTest {
         )
 
         assertEquals(
-            "SequentialAction(initialActions=[Trajectory, ParallelAction(initialActions=[" +
+            "SequentialAction(initialActions=[Trajectory, Trajectory, ParallelAction(initialActions=[" +
                 "SequentialAction(initialActions=[" +
-                "Trajectory, Trajectory]), SequentialAction(initialActions=[SleepAction(dt=2.0), A]), " +
-                "SequentialAction(initialActions=[SleepAction(dt=3.499999999999999), B])])])",
+                "Trajectory]), SequentialAction(initialActions=[SleepAction(dt=2.0), A]), " +
+                "SequentialAction(initialActions=[SleepAction(dt=2.5000000000000004), B])])])",
             base
                 .lineToX(10.0)
                 .lineToXLinearHeading(20.0, Rotation2d.exp(1.57))
@@ -136,7 +147,11 @@ class ActionRegressionTest {
                 .build()
                 .toString()
         )
+    }
 
+    @Test
+    @Strictfp
+    fun testTrajectoryDispMarkers() {
         assertFails {
             base
                 .afterDisp(1.0, LabelAction("A"))
@@ -167,7 +182,7 @@ class ActionRegressionTest {
         assertEquals(
             "ParallelAction(initialActions=[SequentialAction(initialActions=[Trajectory]), " +
                 "SequentialAction(" +
-                "initialActions=[SleepAction(dt=0.4472135954999579), A])])",
+                "initialActions=[SleepAction(dt=0.316227766016838), A])])",
             base
                 .afterDisp(1.0, LabelAction("A"))
                 .lineToX(0.25)
@@ -178,7 +193,7 @@ class ActionRegressionTest {
         assertEquals(
             "ParallelAction(initialActions=[SequentialAction(initialActions=[Trajectory, " +
                 "Trajectory]), " +
-                "SequentialAction(initialActions=[SleepAction(dt=0.4472135954999579), A])])",
+                "SequentialAction(initialActions=[SleepAction(dt=0.316227766016838), A])])",
             base
                 .afterDisp(1.0, LabelAction("A"))
                 .lineToX(0.25)
