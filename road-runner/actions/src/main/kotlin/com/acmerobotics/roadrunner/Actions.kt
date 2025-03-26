@@ -353,29 +353,41 @@ class TrajectoryActionBuilder private constructor(
     }
 
     /**
-     * Schedules action [a] to execute in parallel starting at a displacement [ds] after the previous trajectory segment.
-     * The action start is clamped to the span of the current trajectory.
+     * Schedules action [a] to execute in parallel starting at a displacement [ds] relative to the start of the next trajectory segment, turn, or other action.
+     *
+     * If [ds] is positive, the action will execute [ds] units after the start of the next trajectory segment.
+     * If [ds] is negative, the action will execute [ds] units before the end of the previous trajectory segment.
+     * Note that the start of the next trajectory segment is the same as the end of the previous trajectory segment.
+     *
+     * The action start is clamped to the span of the current trajectory (not the trajectory segment),
+     * but the current trajectory will wait for the action to complete.
      *
      * Cannot be called without an applicable pending trajectory.
      */
     // TODO: Should calling this without an applicable trajectory implicitly begin an empty trajectory and execute the
     // action immediately?
     fun afterDisp(ds: Double, a: Action): TrajectoryActionBuilder {
-        require(ds >= 0.0) { "Displacement ($ds) must be non-negative" }
+        val relativeToStart = ds >= 0.0
 
         return TrajectoryActionBuilder(
             this, tb, n, lastPoseUnmapped, lastPose, lastTangent,
-            ms + listOf(DispMarkerFactory(n, ds, a)), cont
+            ms + listOf(DispMarkerFactory(if (relativeToStart) n else n - 1, ds, a, relativeToStart)), cont,
         )
     }
     fun afterDisp(ds: Double, f: InstantFunction) = afterDisp(ds, InstantAction(f))
 
     /**
-     * Schedules action [a] to execute in parallel starting [dt] seconds after the previous trajectory segment, turn, or
-     * other action.
+     * Schedules action [a] to execute in parallel starting [dt] seconds relative to the start of the next trajectory segment, turn, or other action.
+     *
+     * If [dt] is positive, the action will execute [dt] seconds after the start of the next trajectory segment.
+     * If [dt] is negative, the action will execute [dt] seconds before the end of the previous trajectory segment.
+     * Note that the start of the next trajectory segment is the same as the end of the previous trajectory segment.
+     *
+     * The action start is clamped to the span of the current trajectory (not the trajectory segment),
+     * but the current trajectory will wait for the action to complete.
      */
     fun afterTime(dt: Double, a: Action): TrajectoryActionBuilder {
-        require(dt >= 0.0) { "Time ($dt) must be non-negative" }
+        val relativeToStart = dt >= 0.0
 
         return if (n == 0) {
             TrajectoryActionBuilder(this, tb, 0, lastPoseUnmapped, lastPose, lastTangent, emptyList()) { tail ->
@@ -384,41 +396,11 @@ class TrajectoryActionBuilder private constructor(
         } else {
             TrajectoryActionBuilder(
                 this, tb, n, lastPoseUnmapped, lastPose, lastTangent,
-                ms + listOf(TimeMarkerFactory(n, dt, a)), cont
+                ms + listOf(TimeMarkerFactory(if (relativeToStart) n else n - 1, dt, a, relativeToStart)), cont,
             )
         }
     }
     fun afterTime(dt: Double, f: InstantFunction) = afterTime(dt, InstantAction(f))
-
-    /**
-     * Schedules action [a] to execute in parallel starting at a displacement [ds] before the end of the current trajectory segment.
-     *
-     * Cannot be called without an applicable pending trajectory.
-     */
-    fun beforeEndDisp(ds: Double, a: Action): TrajectoryActionBuilder {
-        require(ds >= 0.0) { "Displacement ($ds) must be non-negative" }
-
-        return TrajectoryActionBuilder(
-            this, tb, n, lastPoseUnmapped, lastPose, lastTangent,
-            ms + listOf(DispMarkerFactory(n, -ds, a, false)), cont,
-        )
-    }
-    fun beforeEndDisp(ds: Double, f: InstantFunction) = beforeEndDisp(ds, InstantAction(f))
-
-    /**
-     * Schedules action [a] to execute in parallel starting [dt] seconds before the end of the current trajectory segment.
-     *
-     * Cannot be called without an applicable pending trajectory.
-     */
-    fun beforeEndTime(dt: Double, a: Action): TrajectoryActionBuilder {
-        require(dt >= 0.0) { "Time ($dt) must be non-negative" }
-
-        return TrajectoryActionBuilder(
-            this, tb, n, lastPoseUnmapped, lastPose, lastTangent,
-            ms + listOf(TimeMarkerFactory(n, -dt, a, false)), cont,
-        )
-    }
-    fun beforeEndTime(dt: Double, f: InstantFunction) = beforeEndTime(dt, InstantAction(f))
 
     fun setTangent(r: Rotation2d) =
         TrajectoryActionBuilder(this, tb.setTangent(r), n, lastPoseUnmapped, lastPose, lastTangent, ms, cont)

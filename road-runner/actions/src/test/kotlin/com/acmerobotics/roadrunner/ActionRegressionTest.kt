@@ -158,8 +158,8 @@ class ActionRegressionTest {
                     "SequentialAction(initialActions=[SleepAction(dt=2.32842712474619), A])" +
                     "])",
             base
-                .beforeEndTime(0.5, LabelAction("A"))
                 .lineToX(20.0)
+                .afterTime(-0.5, LabelAction("A"))
                 .lineToXLinearHeading(30.0, Math.PI / 2)
                 .build()
                 .toString()
@@ -172,8 +172,8 @@ class ActionRegressionTest {
                     "])])",
             base
                 .lineToX(10.0)
-                .beforeEndTime(0.5, LabelAction("A"))
                 .lineToXLinearHeading(20.0, Math.PI / 2)
+                .afterTime(-0.5, LabelAction("A"))
                 .lineToX(30.0)
                 .build()
                 .toString(),
@@ -187,8 +187,8 @@ class ActionRegressionTest {
             base
                 .lineToX(10.0)
                 .lineToXLinearHeading(20.0, Math.PI / 2)
-                .beforeEndTime(0.5, LabelAction("A"))
                 .lineToX(30.0)
+                .afterTime(-0.5, LabelAction("A"))
                 .build()
                 .toString()
         )
@@ -257,8 +257,8 @@ class ActionRegressionTest {
                     "SequentialAction(initialActions=[SleepAction(dt=2.121320343559643), A])" +
                     "])",
             base
-                .beforeEndDisp(2.5, LabelAction("A"))
                 .lineToX(20.0)
+                .afterDisp(-2.5, LabelAction("A"))
                 .lineToXLinearHeading(30.0, Math.PI / 2)
                 .build()
                 .toString()
@@ -271,8 +271,8 @@ class ActionRegressionTest {
                     "])])",
             base
                 .lineToX(10.0)
-                .beforeEndDisp(2.5, LabelAction("A"))
                 .lineToXLinearHeading(20.0, Math.PI / 2)
+                .afterDisp(-2.5, LabelAction("A"))
                 .lineToX(30.0)
                 .build()
                 .toString(),
@@ -286,8 +286,8 @@ class ActionRegressionTest {
             base
                 .lineToX(10.0)
                 .lineToXLinearHeading(20.0, Math.PI / 2)
-                .beforeEndDisp(2.5, LabelAction("A"))
                 .lineToX(30.0)
+                .afterDisp(-2.5, LabelAction("A"))
                 .build()
                 .toString()
         )
