@@ -141,9 +141,66 @@ class ActionRegressionTest {
         assertEquals(
             "ParallelAction(initialActions=[SequentialAction(initialActions=[]), " +
                 "SequentialAction(initialActions=[" +
-                "SleepAction(dt=1.0), a])])",
+                "SleepAction(dt=1.0), A])])",
             base
-                .afterTime(1.0, LabelAction("a"))
+                .afterTime(1.0, LabelAction("A"))
+                .build()
+                .toString()
+        )
+    }
+
+    @Test
+    @Strictfp
+    fun testTrajectoryTimeNegativeMarkers() {
+        assertEquals(
+            "ParallelAction(initialActions=[" +
+                "SequentialAction(initialActions=[Trajectory, Trajectory]), " +
+                "SequentialAction(initialActions=[SleepAction(dt=2.32842712474619), A])" +
+                "])",
+            base
+                .lineToX(20.0)
+                .afterTime(-0.5, LabelAction("A"))
+                .lineToXLinearHeading(30.0, Math.PI / 2)
+                .build()
+                .toString()
+        )
+
+        assertEquals(
+            "SequentialAction(initialActions=[Trajectory, ParallelAction(initialActions=[" +
+                "SequentialAction(initialActions=[Trajectory, Trajectory]), " +
+                "SequentialAction(initialActions=[SleepAction(dt=1.4999999999999993), A])" +
+                "])])",
+            base
+                .lineToX(10.0)
+                .lineToXLinearHeading(20.0, Math.PI / 2)
+                .afterTime(-0.5, LabelAction("A"))
+                .lineToX(30.0)
+                .build()
+                .toString(),
+        )
+
+        assertEquals(
+            "SequentialAction(initialActions=[Trajectory, Trajectory, ParallelAction(initialActions=[" +
+                "SequentialAction(initialActions=[Trajectory]), " +
+                "SequentialAction(initialActions=[SleepAction(dt=1.5000000000000009), A])" +
+                "])])",
+            base
+                .lineToX(10.0)
+                .lineToXLinearHeading(20.0, Math.PI / 2)
+                .lineToX(30.0)
+                .afterTime(-0.5, LabelAction("A"))
+                .build()
+                .toString()
+        )
+
+        assertEquals(
+            "ParallelAction(initialActions=[" +
+                "SequentialAction(initialActions=[Trajectory]), " +
+                "SequentialAction(initialActions=[SleepAction(dt=-0.5), A])" +
+                "])",
+            base
+                .afterTime(-0.5, LabelAction("A"))
+                .lineToX(10.0)
                 .build()
                 .toString()
         )
@@ -201,5 +258,58 @@ class ActionRegressionTest {
                 .build()
                 .toString()
         )
+    }
+
+    @Test
+    @Strictfp
+    fun testTrajectoryDispNegativeMarkers() {
+        assertEquals(
+            "ParallelAction(initialActions=[" +
+                "SequentialAction(initialActions=[Trajectory, Trajectory]), " +
+                "SequentialAction(initialActions=[SleepAction(dt=2.121320343559643), A])" +
+                "])",
+            base
+                .lineToX(20.0)
+                .afterDisp(-2.5, LabelAction("A"))
+                .lineToXLinearHeading(30.0, Math.PI / 2)
+                .build()
+                .toString()
+        )
+
+        assertEquals(
+            "SequentialAction(initialActions=[Trajectory, ParallelAction(initialActions=[" +
+                "SequentialAction(initialActions=[Trajectory, Trajectory]), " +
+                "SequentialAction(initialActions=[SleepAction(dt=1.2928932188134519), A])" +
+                "])])",
+            base
+                .lineToX(10.0)
+                .lineToXLinearHeading(20.0, Math.PI / 2)
+                .afterDisp(-2.5, LabelAction("A"))
+                .lineToX(30.0)
+                .build()
+                .toString(),
+        )
+
+        assertEquals(
+            "SequentialAction(initialActions=[Trajectory, Trajectory, ParallelAction(initialActions=[" +
+                "SequentialAction(initialActions=[Trajectory]), " +
+                "SequentialAction(initialActions=[SleepAction(dt=1.2928932188134532), A])" +
+                "])])",
+            base
+                .lineToX(10.0)
+                .lineToXLinearHeading(20.0, Math.PI / 2)
+                .lineToX(30.0)
+                .afterDisp(-2.5, LabelAction("A"))
+                .build()
+                .toString()
+        )
+
+        assertFails {
+            base
+                .afterDisp(-2.5, LabelAction("A"))
+                .lineToX(10.0)
+                .build()
+                .toString()
+        }
     }
 }
