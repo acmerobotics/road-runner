@@ -44,9 +44,8 @@ class LabelAction(private val s: String) : Action {
 }
 
 class ActionRegressionTest {
-    @Test
-    @Strictfp
-    fun testTrajectoryActionBuilder() {
+    companion object {
+        @JvmField
         val base =
             TrajectoryActionBuilder(
                 { TurnAction(it) },
@@ -58,7 +57,11 @@ class ActionRegressionTest {
                 TranslationalVelConstraint(20.0),
                 ProfileAccelConstraint(-10.0, 10.0),
             )
+    }
 
+    @Test
+    @Strictfp
+    fun testTrajectoryActionBuilder() {
         assertEquals(
             "SequentialAction(initialActions=[Trajectory])",
             base
@@ -75,7 +78,11 @@ class ActionRegressionTest {
                 .build()
                 .toString(),
         )
+    }
 
+    @Test
+    @Strictfp
+    fun testTrajectoryContinuity() {
         assertEquals(
             "SequentialAction(initialActions=[Trajectory, SleepAction(dt=10.0), Trajectory])",
             base
@@ -96,7 +103,11 @@ class ActionRegressionTest {
                 .build()
                 .toString()
         )
+    }
 
+    @Test
+    @Strictfp
+    fun testTrajectoryTimeMarkers() {
         assertEquals(
             "SequentialAction(initialActions=[Trajectory, Trajectory, ParallelAction(initialActions=[" +
                 "SequentialAction(initialActions=" +
@@ -136,7 +147,11 @@ class ActionRegressionTest {
                 .build()
                 .toString()
         )
+    }
 
+    @Test
+    @Strictfp
+    fun testTrajectoryDispMarkers() {
         assertFails {
             base
                 .afterDisp(1.0, LabelAction("A"))
