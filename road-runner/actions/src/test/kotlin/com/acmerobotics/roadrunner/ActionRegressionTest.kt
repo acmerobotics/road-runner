@@ -2,10 +2,14 @@ package com.acmerobotics.roadrunner
 
 import com.acmerobotics.dashboard.canvas.Canvas
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket
+import java.io.File
+import java.io.PrintWriter
+import java.io.StringWriter
 import kotlin.math.PI
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
+import kotlin.test.assertFalse
 
 class TrajectoryAction(val t: TimeTrajectory) : Action {
     override fun run(p: TelemetryPacket): Boolean {
@@ -31,7 +35,7 @@ class TurnAction(val t: TimeTurn) : Action {
     override fun toString() = "Turn"
 }
 
-class LabelAction(private val s: String) : Action {
+class LabelAction(val s: String) : Action {
     override fun run(p: TelemetryPacket): Boolean {
         TODO("Not yet implemented")
     }
@@ -42,6 +46,17 @@ class LabelAction(private val s: String) : Action {
 
     override fun toString() = s
 }
+
+fun sexpFromAction(a: Action): Sexp =
+    when (a) {
+        is TrajectoryAction -> Sexp.Atom("traj")
+        is TurnAction -> Sexp.Atom("turn")
+        is LabelAction -> Sexp.Atom(a.s)
+        is SleepAction -> Sexp.list(Sexp.Atom("sleep"), Sexp.Atom(String.format("%.10f", a.dt)))
+        is SequentialAction -> Sexp.list(listOf(Sexp.Atom("seq")) + a.initialActions.map(::sexpFromAction))
+        is ParallelAction -> Sexp.list(listOf(Sexp.Atom("par")) + a.initialActions.map(::sexpFromAction))
+        else -> Sexp.Atom("unk")
+    }
 
 class ActionRegressionTest {
     companion object {
@@ -57,101 +72,115 @@ class ActionRegressionTest {
                 TranslationalVelConstraint(20.0),
                 ProfileAccelConstraint(-10.0, 10.0),
             )
+
+        const val UPDATE = false
     }
 
     @Test
     @Strictfp
-    fun testTrajectoryActionBuilder() {
-        assertEquals(
-            "SequentialAction(initialActions=[Trajectory])",
-            base
-                .lineToX(10.0)
-                .build()
-                .toString()
-        )
+    fun test() {
+        val sw = StringWriter()
+        PrintWriter(sw).use { pw ->
+            val config = Config.create(color = false)
+            fun printAction(a: Action) {
+                pw.println(prettyPrint(sexpFromAction(a), config))
+            }
 
-        assertEquals(
-            "SequentialAction(initialActions=[Trajectory])",
-            base
-                .lineToX(10.0)
-                .lineToX(20.0)
-                .build()
-                .toString(),
-        )
+            pw.println("basic")
+            printAction(
+                base
+                    .lineToX(10.0)
+                    .build()
+            )
+            printAction(
+                base
+                    .lineToX(10.0)
+                    .lineToX(20.0)
+                    .build()
+            )
+            pw.println()
+
+            pw.println("continuity")
+            printAction(
+                base
+                    .lineToX(10.0)
+                    .waitSeconds(10.0)
+                    .lineToX(20.0)
+                    .build()
+            )
+            printAction(
+                base
+                    .lineToX(10.0)
+                    .lineToXLinearHeading(20.0, Rotation2d.exp(1.57))
+                    .lineToX(30.0)
+                    .lineToX(40.0)
+                    .build()
+            )
+            pw.println()
+
+            pw.println("time markers")
+            printAction(
+                base
+                    .lineToX(10.0)
+                    .lineToXLinearHeading(20.0, Rotation2d.exp(1.57))
+                    .afterTime(2.0, LabelAction("A"))
+                    .lineToX(25.0)
+                    .lineToX(30.0)
+                    .build()
+            )
+            printAction(
+                base
+                    .lineToX(10.0)
+                    .lineToXLinearHeading(20.0, Rotation2d.exp(1.57))
+                    .afterTime(2.0, LabelAction("A"))
+                    .lineToX(25.0)
+                    .afterTime(1.5, LabelAction("B"))
+                    .lineToX(35.0)
+                    .build()
+            )
+            printAction(
+                base
+                    .afterTime(1.0, LabelAction("a"))
+                    .build()
+            )
+            pw.println()
+
+            pw.println("disp markers")
+            printAction(
+                base
+                    .afterDisp(1.0, LabelAction("A"))
+                    .lineToX(10.0)
+                    .build()
+            )
+            printAction(
+                base
+                    .afterDisp(1.0, LabelAction("A"))
+                    .lineToX(0.25)
+                    .build()
+            )
+            printAction(
+                base
+                    .afterDisp(1.0, LabelAction("A"))
+                    .lineToX(0.25)
+                    .lineToXLinearHeading(10.25, PI / 4)
+                    .build()
+            )
+        }
+
+        val f = File("values.txt")
+        if (UPDATE) {
+            f.writeText(sw.toString())
+        } else {
+            val expected = f.readText()
+            assertEquals(expected, sw.toString())
+        }
+
+        assertFalse(UPDATE)
     }
 
     @Test
     @Strictfp
-    fun testTrajectoryContinuity() {
-        assertEquals(
-            "SequentialAction(initialActions=[Trajectory, SleepAction(dt=10.0), Trajectory])",
-            base
-                .lineToX(10.0)
-                .waitSeconds(10.0)
-                .lineToX(20.0)
-                .build()
-                .toString()
-        )
-
-        assertEquals(
-            "SequentialAction(initialActions=[Trajectory, Trajectory, Trajectory])",
-            base
-                .lineToX(10.0)
-                .lineToXLinearHeading(20.0, Rotation2d.exp(1.57))
-                .lineToX(30.0)
-                .lineToX(40.0)
-                .build()
-                .toString()
-        )
-    }
-
-    @Test
-    @Strictfp
-    fun testTrajectoryTimeMarkers() {
-        assertEquals(
-            "SequentialAction(initialActions=[Trajectory, Trajectory, ParallelAction(initialActions=[" +
-                "SequentialAction(initialActions=" +
-                "[Trajectory]), SequentialAction(initialActions=[SleepAction(dt=2.0), A])])])",
-            base
-                .lineToX(10.0)
-                .lineToXLinearHeading(20.0, Rotation2d.exp(1.57))
-                .afterTime(2.0, LabelAction("A"))
-                .lineToX(25.0)
-                .lineToX(30.0)
-                .build()
-                .toString()
-        )
-
-        assertEquals(
-            "SequentialAction(initialActions=[Trajectory, Trajectory, ParallelAction(initialActions=[" +
-                "SequentialAction(initialActions=[" +
-                "Trajectory]), SequentialAction(initialActions=[SleepAction(dt=2.0), A]), " +
-                "SequentialAction(initialActions=[SleepAction(dt=2.5000000000000004), B])])])",
-            base
-                .lineToX(10.0)
-                .lineToXLinearHeading(20.0, Rotation2d.exp(1.57))
-                .afterTime(2.0, LabelAction("A"))
-                .lineToX(25.0)
-                .afterTime(1.5, LabelAction("B"))
-                .lineToX(35.0)
-                .build()
-                .toString()
-        )
-
-        assertEquals(
-            "ParallelAction(initialActions=[SequentialAction(initialActions=[]), " +
-                "SequentialAction(initialActions=[" +
-                "SleepAction(dt=1.0), a])])",
-            base
-                .afterTime(1.0, LabelAction("a"))
-                .build()
-                .toString()
-        )
-    }
-
-    @Test
-    @Strictfp
-    fun testTrajectoryDispMarkers() {
+    fun testDispMarkFailures() {
         assertFails {
             base
                 .afterDisp(1.0, LabelAction("A"))
@@ -167,39 +196,5 @@ class ActionRegressionTest {
                 .build()
                 .toString()
         }
-
-        assertEquals(
-            "ParallelAction(initialActions=[SequentialAction(initialActions=[Trajectory]), " +
-                "SequentialAction(" +
-                "initialActions=[SleepAction(dt=0.44721359549995804), A])])",
-            base
-                .afterDisp(1.0, LabelAction("A"))
-                .lineToX(10.0)
-                .build()
-                .toString()
-        )
-
-        assertEquals(
-            "ParallelAction(initialActions=[SequentialAction(initialActions=[Trajectory]), " +
-                "SequentialAction(" +
-                "initialActions=[SleepAction(dt=0.316227766016838), A])])",
-            base
-                .afterDisp(1.0, LabelAction("A"))
-                .lineToX(0.25)
-                .build()
-                .toString()
-        )
-
-        assertEquals(
-            "ParallelAction(initialActions=[SequentialAction(initialActions=[Trajectory, " +
-                "Trajectory]), " +
-                "SequentialAction(initialActions=[SleepAction(dt=0.316227766016838), A])])",
-            base
-                .afterDisp(1.0, LabelAction("A"))
-                .lineToX(0.25)
-                .lineToXLinearHeading(10.25, PI / 4)
-                .build()
-                .toString()
-        )
     }
 }

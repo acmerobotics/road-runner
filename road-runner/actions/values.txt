@@ -1,0 +1,21 @@
+basic
+(seq traj)
+(seq traj)
+
+continuity
+(seq traj (sleep 10.0000000000) traj)
+(seq traj traj traj)
+
+time markers
+(seq traj traj (par (seq traj) (seq (sleep 2.0000000000) A)))
+( seq
+  traj
+  traj
+  (par (seq traj) (seq (sleep 2.0000000000) A) (seq (sleep 2.5000000000) B))
+)
+(par (seq) (seq (sleep 1.0000000000) a))
+
+disp markers
+(par (seq traj) (seq (sleep 0.4472135955) A))
+(par (seq traj) (seq (sleep 0.3162277660) A))
+(par (seq traj traj) (seq (sleep 0.3162277660) A))
