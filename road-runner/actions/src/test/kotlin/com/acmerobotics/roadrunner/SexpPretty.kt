@@ -374,8 +374,8 @@ data class Config(
     val separator: Separator = Separator.EMPTY_LINE,
     val dataAlignment: DataAlignment = DataAlignment.NotAligned,
     val stickyComments: StickyComments = StickyComments.SAME_LINE,
-    val singletonLimit: Pair<Int, Int> = Pair(3, 50),  // Atom threshold, char threshold
-    val leadingThreshold: Pair<Int, Int> = Pair(3, 30)  // Atom threshold, char threshold
+    val singletonLimit: Pair<Int, Int> = Pair(3, 50), // Atom threshold, char threshold
+    val leadingThreshold: Pair<Int, Int> = Pair(3, 30) // Atom threshold, char threshold
 ) {
     companion object {
         /**
@@ -442,13 +442,15 @@ class SexpPrettyPrinter(private val config: Config = Config()) {
                     " ".repeat(formattedLine.indent) + formattedLine.content
                 is FormattedLine.Comment -> {
                     val prefix = if (config.comments is CommentHandling.Print &&
-                        config.comments.color != null) {
+                        config.comments.color != null
+                    ) {
                         "\u001B[${config.comments.color.code}m"
                     } else {
                         ""
                     }
                     val suffix = if (config.comments is CommentHandling.Print &&
-                        config.comments.color != null) {
+                        config.comments.color != null
+                    ) {
                         "\u001B[0m"
                     } else {
                         ""
@@ -550,7 +552,8 @@ class SexpPrettyPrinter(private val config: Config = Config()) {
 
         if (atoms.size < atomThreshold &&
             lastElement is Sexp.List &&
-            list.elements.size == atoms.size + 1) {
+            list.elements.size == atoms.size + 1
+        ) {
 
             // Check character count
             val totalCharCount = atoms.sumOf { it.value.length }
@@ -728,7 +731,8 @@ class SexpPrettyPrinter(private val config: Config = Config()) {
                 '\n' -> sb.append("\\n")
                 '\t' -> sb.append("\\t")
                 '\r' -> sb.append("\\r")
-                else -> if (c.isPrintable()) sb.append(c) else sb.append("\\u${c.toInt().toString(16).padStart(4, '0')}")
+                else -> if (c.isPrintable()) sb.append(c) else
+                    sb.append("\\u${c.code.toString(16).padStart(4, '0')}")
             }
         }
         return if (mustEscape(str)) "\"$sb\"" else sb.toString()
@@ -740,7 +744,8 @@ class SexpPrettyPrinter(private val config: Config = Config()) {
             when (c) {
                 '"', '\\' -> sb.append('\\').append(c)
                 ' ', '\t', '\n' -> sb.append(c)
-                else -> if (c.isPrintable()) sb.append(c) else sb.append("\\u${c.toInt().toString(16).padStart(4, '0')}")
+                else -> if (c.isPrintable()) sb.append(c) else
+                    sb.append("\\u${c.code.toString(16).padStart(4, '0')}")
             }
         }
         sb.append("\"")
