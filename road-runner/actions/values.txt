@@ -19,7 +19,7 @@ negative time markers
 (par (seq traj traj) (seq (sleep 2.3284271247) A))
 (seq traj (par (seq traj traj) (seq (sleep 1.5000000000) A)))
 (seq traj traj (par traj (seq (sleep 1.5000000000) A)))
-(par traj (seq (sleep -0.5000000000) A))
+(par traj A)
 
 disp markers
 (par traj (seq (sleep 0.4472135955) A))

@@ -156,28 +156,30 @@ private sealed class MarkerFactory(
 
 private class TimeMarkerFactory(segmentIndex: Int, val dt: Double, val a: Action, val relativeToStart: Boolean = true) :
     MarkerFactory(segmentIndex) {
-    override fun make(t: TimeTrajectory, segmentDisp: Double, segmentEndDisp: Double) =
-        seqCons(
-            SleepAction(
-                t.profile.inverse(
-                    if (relativeToStart) segmentDisp else segmentEndDisp,
-                ) + dt,
-            ),
-            a,
-        )
+    override fun make(t: TimeTrajectory, segmentDisp: Double, segmentEndDisp: Double): Action {
+        val sleepDt = t.profile.inverse(
+            if (relativeToStart) segmentDisp else segmentEndDisp,
+        ) + dt
+        return if (sleepDt > 0.0) {
+            seqCons(SleepAction(sleepDt), a)
+        } else {
+            a
+        }
+    }
 }
 
 private class DispMarkerFactory(segmentIndex: Int, val ds: Double, val a: Action, val relativeToStart: Boolean = true) :
     MarkerFactory(segmentIndex) {
-    override fun make(t: TimeTrajectory, segmentDisp: Double, segmentEndDisp: Double) =
-        seqCons(
-            SleepAction(
-                t.profile.inverse(
-                    (if (relativeToStart) segmentDisp else segmentEndDisp) + ds,
-                ),
-            ),
-            a,
+    override fun make(t: TimeTrajectory, segmentDisp: Double, segmentEndDisp: Double) : Action {
+        val sleepDt = t.profile.inverse(
+            (if (relativeToStart) segmentDisp else segmentEndDisp) + ds,
         )
+        return if (sleepDt > 0.0) {
+            seqCons(SleepAction(sleepDt), a)
+        } else {
+            a
+        }
+    }
 }
 
 fun interface TurnActionFactory {
@@ -346,11 +348,12 @@ class TrajectoryActionBuilder private constructor(
     /**
      * Waits [t] seconds.
      */
-    fun waitSeconds(t: Double): TrajectoryActionBuilder {
-        require(t >= 0.0) { "Time ($t) must be non-negative" }
-
-        return stopAndAdd(SleepAction(t))
-    }
+    fun waitSeconds(t: Double) =
+        if (t > 0.0) {
+            stopAndAdd(SleepAction(t))
+        } else {
+            this
+        }
 
     /**
      * Schedules action [a] to execute in parallel starting at a displacement [ds] relative to the start of the next trajectory segment, turn, or other action.
@@ -391,7 +394,11 @@ class TrajectoryActionBuilder private constructor(
 
         return if (n == 0) {
             TrajectoryActionBuilder(this, tb, 0, lastPoseUnmapped, lastPose, lastTangent, emptyList()) { tail ->
-                val m = seqCons(SleepAction(dt), a)
+                val m = if (dt > 0.0) {
+                    seqCons(SleepAction(dt), a)
+                } else {
+                    a
+                }
                 if (tail is NullAction) {
                     cont(m)
                 } else {
