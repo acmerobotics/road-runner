@@ -176,6 +176,23 @@ class ActionRegressionTest {
                     .lineToX(10.0)
                     .build()
             )
+            printAction(
+                base
+                    .lineToX(10.0)
+                    .lineToXLinearHeading(20.0, PI / 4)
+                    .lineToX(30.0)
+                    .afterTime(-100.0, LabelAction("A"))
+                    .build()
+            )
+            printAction(
+                base
+                    .lineToX(10.0)
+                    .lineToXLinearHeading(20.0, PI / 4)
+                    .endTrajectory()
+                    .lineToX(30.0)
+                    .afterTime(-100.0, LabelAction("A"))
+                    .build()
+            )
             pw.println()
 
             pw.println("disp markers")
@@ -222,6 +239,23 @@ class ActionRegressionTest {
                     .lineToXLinearHeading(20.0, Math.PI / 2)
                     .lineToX(30.0)
                     .afterDisp(-2.5, LabelAction("A"))
+                    .build()
+            )
+            printAction(
+                base
+                    .lineToX(10.0)
+                    .lineToXLinearHeading(20.0, PI / 4)
+                    .lineToX(30.0)
+                    .afterDisp(-100.0, LabelAction("A"))
+                    .build()
+            )
+            printAction(
+                base
+                    .lineToX(10.0)
+                    .lineToXLinearHeading(20.0, PI / 4)
+                    .endTrajectory()
+                    .lineToX(30.0)
+                    .afterDisp(-100.0, LabelAction("A"))
                     .build()
             )
             pw.println()
