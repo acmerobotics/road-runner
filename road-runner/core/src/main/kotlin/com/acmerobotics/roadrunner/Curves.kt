@@ -413,6 +413,7 @@ data class CompositePosePath(
 /**
  * Project position [query] onto position path [path] starting with initial guess [init].
  */
+// Uses the method of http://www.geometrie.tugraz.at/wallner/sproj.pdf
 fun project(path: PositionPath<Arclength>, query: Vector2d, init: Double): Double {
     // TODO: is ten iterations enough?
     return (1..10).fold(init) { s, _ ->
@@ -425,6 +426,7 @@ fun project(path: PositionPath<Arclength>, query: Vector2d, init: Double): Doubl
 /**
  * Project position [query] onto position path [path] starting with initial guess [init].
  */
+// Uses the method of http://www.geometrie.tugraz.at/wallner/sproj.pdf
 fun project(path: PosePath, query: Vector2d, init: Double): Double {
     // TODO: is ten iterations enough?
     return (1..10).fold(init) { s, _ ->

@@ -142,10 +142,10 @@ class NullAction : Action {
 }
 
 private fun seqCons(hd: Action, tl: Action): Action =
-    if (tl is SequentialAction) {
-        SequentialAction(listOf(hd) + tl.initialActions)
-    } else {
-        SequentialAction(hd, tl)
+    when (tl) {
+        is NullAction -> hd
+        is SequentialAction -> SequentialAction(listOf(hd) + tl.initialActions)
+        else -> SequentialAction(hd, tl)
     }
 
 private sealed class MarkerFactory(
@@ -319,10 +319,10 @@ class TrajectoryActionBuilder private constructor(
                         }
                     }
 
-                    if (actions.size == 1) {
-                        Pair(actions.first(), msRem)
-                    } else {
-                        Pair(ParallelAction(actions), msRem)
+                    when (actions.size) {
+                        0 -> Pair(NullAction(), msRem)
+                        1 -> Pair(actions.first(), msRem)
+                        else -> Pair(ParallelAction(actions), msRem)
                     }
                 }
 
@@ -391,7 +391,12 @@ class TrajectoryActionBuilder private constructor(
 
         return if (n == 0) {
             TrajectoryActionBuilder(this, tb, 0, lastPoseUnmapped, lastPose, lastTangent, emptyList()) { tail ->
-                cont(ParallelAction(tail, seqCons(SleepAction(dt), a)))
+                val m = seqCons(SleepAction(dt), a)
+                if (tail is NullAction) {
+                    cont(m)
+                } else {
+                    cont(ParallelAction(tail, m))
+                }
             }
         } else {
             TrajectoryActionBuilder(
@@ -892,6 +897,6 @@ class TrajectoryActionBuilder private constructor(
     }
 
     fun build(): Action {
-        return endTrajectory().cont(SequentialAction())
+        return endTrajectory().cont(NullAction())
     }
 }
