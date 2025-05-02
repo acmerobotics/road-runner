@@ -1,37 +1,74 @@
 basic
-traj
-traj
+(traj 2.0000000000)
+(traj 2.8284271247)
 
 continuity
-(seq traj (sleep 10.0000000000) traj)
-(seq traj traj traj)
+(seq (traj 2.0000000000) (sleep 10.0000000000) (traj 2.0000000000))
+(seq (traj 2.0000000000) (traj 2.0000000000) (traj 2.8284271247))
 
 time markers
-(seq traj traj (par traj (seq (sleep 2.0000000000) A)))
 ( seq
-  traj
-  traj
-  (par traj (seq (sleep 2.0000000000) A) (seq (sleep 2.5000000000) B))
+  (traj 2.0000000000)
+  (traj 2.0000000000)
+  (par (traj 2.0000000000) (seq (sleep 2.0000000000) A))
+)
+( seq
+  (traj 2.0000000000)
+  (traj 2.0000000000)
+    ( par
+    (traj 2.4494897428)
+    (seq (sleep 2.0000000000) A)
+    (seq (sleep 2.5000000000) B)
+)
 )
 (seq (sleep 1.0000000000) a)
 
 negative time markers
-(par (seq traj traj) (seq (sleep 2.3284271247) A))
-(seq traj (par (seq traj traj) (seq (sleep 1.5000000000) A)))
-(seq traj traj (par traj (seq (sleep 1.5000000000) A)))
-(par traj A)
-(seq traj traj (par traj A))
-(seq traj traj (par traj A))
+( par
+  (seq (traj 2.8284271247) (traj 2.0000000000))
+  (seq (sleep 2.3284271247) A)
+)
+( seq
+  (traj 2.0000000000)
+    ( par
+    (seq (traj 2.0000000000) (traj 2.0000000000))
+    (seq (sleep 1.5000000000) A)
+)
+)
+( seq
+  (traj 2.0000000000)
+  (traj 2.0000000000)
+  (par (traj 2.0000000000) (seq (sleep 1.5000000000) A))
+)
+(par (traj 2.0000000000) A)
+(seq (traj 2.0000000000) (traj 2.0000000000) (par (traj 2.0000000000) A))
+(seq (traj 2.0000000000) (traj 2.0000000000) (par (traj 2.3784142300) A))
 
 disp markers
-(par traj (seq (sleep 0.4472135955) A))
-(par traj (seq (sleep 0.3162277660) A))
-(par (seq traj traj) (seq (sleep 0.3162277660) A))
+(par (traj 2.0000000000) (seq (sleep 0.4472135955) A))
+(par (traj 0.3162277660) (seq (sleep 0.3162277660) A))
+( par
+  (seq (traj 0.3162277660) (traj 2.0000000000))
+  (seq (sleep 0.3162277660) A)
+)
 
 negative disp markers
-(par (seq traj traj) (seq (sleep 2.1213203436) A))
-(seq traj (par (seq traj traj) (seq (sleep 1.2928932188) A)))
-(seq traj traj (par traj (seq (sleep 1.2928932188) A)))
-(seq traj traj (par traj A))
-(seq traj traj (par traj A))
+( par
+  (seq (traj 2.8284271247) (traj 2.0000000000))
+  (seq (sleep 2.1213203436) A)
+)
+( seq
+  (traj 2.0000000000)
+    ( par
+    (seq (traj 2.0000000000) (traj 2.0000000000))
+    (seq (sleep 1.2928932188) A)
+)
+)
+( seq
+  (traj 2.0000000000)
+  (traj 2.0000000000)
+  (par (traj 2.0000000000) (seq (sleep 1.2928932188) A))
+)
+(seq (traj 2.0000000000) (traj 2.0000000000) (par (traj 2.0000000000) A))
+(seq (traj 2.0000000000) (traj 2.0000000000) (par (traj 2.3784142300) A))
 

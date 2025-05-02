@@ -49,7 +49,7 @@ class LabelAction(val s: String) : Action {
 
 fun sexpFromAction(a: Action): Sexp =
     when (a) {
-        is TrajectoryAction -> Sexp.Atom("traj")
+        is TrajectoryAction -> Sexp.list(Sexp.Atom("traj"), Sexp.Atom(String.format("%.10f", a.t.duration)))
         is TurnAction -> Sexp.Atom("turn")
         is LabelAction -> Sexp.Atom(a.s)
         is SleepAction -> Sexp.list(Sexp.Atom("sleep"), Sexp.Atom(String.format("%.10f", a.dt)))
