@@ -299,7 +299,7 @@ class TrajectoryActionBuilder private constructor(
                     baseVelConstraint,
                     baseAccelConstraint,
                     poseMap,
-                ),
+                ).setTangent(endTangent),
                 0,
                 endPoseUnmapped,
                 endPose,

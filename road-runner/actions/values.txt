@@ -5,6 +5,8 @@ basic
 continuity
 (seq (traj 2.0000000000) (sleep 10.0000000000) (traj 2.0000000000))
 (seq (traj 2.0000000000) (traj 2.0000000000) (traj 2.8284271247))
+(seq (traj 2.0000000000) (traj 2.0000000000) (traj 2.0000000000))
+(seq (traj 2.0000000000) (traj 2.0000000000) (traj 2.0000000000))
 
 time markers
 ( seq
@@ -42,7 +44,7 @@ negative time markers
 )
 (par (traj 2.0000000000) A)
 (seq (traj 2.0000000000) (traj 2.0000000000) (par (traj 2.0000000000) A))
-(seq (traj 2.0000000000) (traj 2.0000000000) (par (traj 2.3784142300) A))
+(seq (traj 2.0000000000) (traj 2.0000000000) (par (traj 2.0000000000) A))
 
 disp markers
 (par (traj 2.0000000000) (seq (sleep 0.4472135955) A))
@@ -70,5 +72,5 @@ negative disp markers
   (par (traj 2.0000000000) (seq (sleep 1.2928932188) A))
 )
 (seq (traj 2.0000000000) (traj 2.0000000000) (par (traj 2.0000000000) A))
-(seq (traj 2.0000000000) (traj 2.0000000000) (par (traj 2.3784142300) A))
+(seq (traj 2.0000000000) (traj 2.0000000000) (par (traj 2.0000000000) A))
 

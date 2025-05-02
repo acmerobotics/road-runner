@@ -117,6 +117,21 @@ class ActionRegressionTest {
                     .lineToX(40.0)
                     .build()
             )
+            printAction(
+                base
+                    .lineToX(10.0)
+                    .lineToXLinearHeading(20.0, PI / 4)
+                    .lineToX(30.0)
+                    .build()
+            )
+            printAction(
+                base
+                    .lineToX(10.0)
+                    .lineToXLinearHeading(20.0, PI / 4)
+                    .endTrajectory()
+                    .lineToX(30.0)
+                    .build()
+            )
             pw.println()
 
             pw.println("time markers")
