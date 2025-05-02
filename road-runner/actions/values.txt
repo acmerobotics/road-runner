@@ -9,19 +9,13 @@ continuity
 (seq (traj 2.0000000000) (traj 2.0000000000) (traj 2.0000000000))
 
 time markers
-( seq
-  (traj 2.0000000000)
-  (traj 2.0000000000)
-  (par (traj 2.0000000000) (seq (sleep 2.0000000000) A))
+( par
+  (seq (traj 2.0000000000) (traj 2.0000000000) (traj 2.0000000000))
+  (seq (sleep 6.0000000000) A)
 )
-( seq
-  (traj 2.0000000000)
-  (traj 2.0000000000)
-    ( par
-    (traj 2.4494897428)
-    (seq (sleep 2.0000000000) A)
-    (seq (sleep 2.5000000000) B)
-)
+( par
+  (seq (traj 2.0000000000) (traj 2.0000000000) (traj 2.4494897428))
+  (par (seq (sleep 6.0000000000) A) (seq (sleep 6.5000000000) B))
 )
 (seq (sleep 1.0000000000) a)
 
@@ -30,20 +24,16 @@ negative time markers
   (seq (traj 2.8284271247) (traj 2.0000000000))
   (seq (sleep 2.3284271247) A)
 )
-( seq
-  (traj 2.0000000000)
-    ( par
-    (seq (traj 2.0000000000) (traj 2.0000000000))
-    (seq (sleep 1.5000000000) A)
+( par
+  (seq (traj 2.0000000000) (traj 2.0000000000) (traj 2.0000000000))
+  (seq (sleep 3.5000000000) A)
 )
-)
-( seq
-  (traj 2.0000000000)
-  (traj 2.0000000000)
-  (par (traj 2.0000000000) (seq (sleep 1.5000000000) A))
+( par
+  (seq (traj 2.0000000000) (traj 2.0000000000) (traj 2.0000000000))
+  (seq (sleep 5.5000000000) A)
 )
 (par (traj 2.0000000000) A)
-(seq (traj 2.0000000000) (traj 2.0000000000) (par (traj 2.0000000000) A))
+(par (seq (traj 2.0000000000) (traj 2.0000000000) (traj 2.0000000000)) A)
 (seq (traj 2.0000000000) (traj 2.0000000000) (par (traj 2.0000000000) A))
 
 disp markers
@@ -51,7 +41,7 @@ disp markers
 (par (traj 0.3162277660) (seq (sleep 0.3162277660) A))
 ( par
   (seq (traj 0.3162277660) (traj 2.0000000000))
-  (seq (sleep 0.3162277660) A)
+  (seq (sleep 0.3872983346) A)
 )
 
 negative disp markers
@@ -59,18 +49,14 @@ negative disp markers
   (seq (traj 2.8284271247) (traj 2.0000000000))
   (seq (sleep 2.1213203436) A)
 )
-( seq
-  (traj 2.0000000000)
-    ( par
-    (seq (traj 2.0000000000) (traj 2.0000000000))
-    (seq (sleep 1.2928932188) A)
+( par
+  (seq (traj 2.0000000000) (traj 2.0000000000) (traj 2.0000000000))
+  (seq (sleep 1.2928932188) A)
 )
+( par
+  (seq (traj 2.0000000000) (traj 2.0000000000) (traj 2.0000000000))
+  (seq (sleep 1.2928932188) A)
 )
-( seq
-  (traj 2.0000000000)
-  (traj 2.0000000000)
-  (par (traj 2.0000000000) (seq (sleep 1.2928932188) A))
-)
-(seq (traj 2.0000000000) (traj 2.0000000000) (par (traj 2.0000000000) A))
+(par (seq (traj 2.0000000000) (traj 2.0000000000) (traj 2.0000000000)) A)
 (seq (traj 2.0000000000) (traj 2.0000000000) (par (traj 2.0000000000) A))
 

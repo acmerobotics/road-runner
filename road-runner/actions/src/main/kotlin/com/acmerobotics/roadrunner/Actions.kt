@@ -148,39 +148,19 @@ private fun seqCons(hd: Action, tl: Action): Action =
         else -> SequentialAction(hd, tl)
     }
 
-private sealed class MarkerFactory(
+private sealed interface Marker
+
+private data class TimeMarker(
     val segmentIndex: Int,
-) {
-    abstract fun make(t: TimeTrajectory, segmentDisp: Double, segmentEndDisp: Double): Action
-}
+    val dt: Double,
+    val a: Action
+) : Marker
 
-private class TimeMarkerFactory(segmentIndex: Int, val dt: Double, val a: Action, val relativeToStart: Boolean = true) :
-    MarkerFactory(segmentIndex) {
-    override fun make(t: TimeTrajectory, segmentDisp: Double, segmentEndDisp: Double): Action {
-        val sleepDt = t.profile.inverse(
-            if (relativeToStart) segmentDisp else segmentEndDisp,
-        ) + dt
-        return if (sleepDt > 0.0) {
-            seqCons(SleepAction(sleepDt), a)
-        } else {
-            a
-        }
-    }
-}
-
-private class DispMarkerFactory(segmentIndex: Int, val ds: Double, val a: Action, val relativeToStart: Boolean = true) :
-    MarkerFactory(segmentIndex) {
-    override fun make(t: TimeTrajectory, segmentDisp: Double, segmentEndDisp: Double) : Action {
-        val sleepDt = t.profile.inverse(
-            (if (relativeToStart) segmentDisp else segmentEndDisp) + ds,
-        )
-        return if (sleepDt > 0.0) {
-            seqCons(SleepAction(sleepDt), a)
-        } else {
-            a
-        }
-    }
-}
+private data class DispMarker(
+    val segmentIndex: Int,
+    val ds: Double,
+    val a: Action
+) : Marker
 
 fun interface TurnActionFactory {
     fun make(t: TimeTurn): Action
@@ -210,7 +190,7 @@ class TrajectoryActionBuilder private constructor(
     private val lastPoseUnmapped: Pose2d,
     private val lastPose: Pose2d,
     private val lastTangent: Rotation2d,
-    private val ms: List<MarkerFactory>,
+    private val ms: List<Marker>,
     private val cont: (Action) -> Action,
 ) {
     @JvmOverloads
@@ -255,7 +235,7 @@ class TrajectoryActionBuilder private constructor(
         lastPoseUnmapped: Pose2d,
         lastPose: Pose2d,
         lastTangent: Rotation2d,
-        ms: List<MarkerFactory>,
+        ms: List<Marker>,
         cont: (Action) -> Action,
     ) :
         this(
@@ -306,31 +286,62 @@ class TrajectoryActionBuilder private constructor(
                 endTangent,
                 emptyList()
             ) { tail ->
-                val (aNew, msRem) = ts.zip(ts.scan(0) { acc, t -> acc + t.offsets.size - 1 }).foldRight(
-                    Pair(tail, ms)
-                ) { (traj, offset), (acc, ms) ->
-                    val timeTraj = TimeTrajectory(traj)
-                    val actions = mutableListOf(seqCons(trajectoryActionFactory.make(timeTraj), acc))
-                    val msRem = mutableListOf<MarkerFactory>()
-                    for (m in ms) {
-                        val i = m.segmentIndex - offset
-                        if (i >= 0) {
-                            actions.add(m.make(timeTraj, traj.offsets[i], traj.offsets[i + 1]))
-                        } else {
-                            msRem.add(m)
+                val timeTrajs = ts.map { TimeTrajectory(it) }
+                val trajDispOffsets = ts.scan(0.0) { acc, t -> acc + t.offsets.last() }
+                val segmentDispOffsets = mutableListOf<Double>()
+                val segmentTimeOffsets = mutableListOf<Double>()
+                run {
+                    var globalDispOffset = 0.0
+                    var globalTimeOffset = 0.0
+                    for ((traj, timeTraj) in ts.zip(timeTrajs)) {
+                        for (localDispOffset in traj.offsets.dropLast(1)) {
+                            segmentDispOffsets.add(globalDispOffset + localDispOffset)
+                            segmentTimeOffsets.add(
+                                globalTimeOffset +
+                                    timeTraj.profile.inverse(localDispOffset)
+                            )
                         }
+                        globalDispOffset += traj.offsets.last()
+                        globalTimeOffset += timeTraj.duration
                     }
+                    segmentDispOffsets.add(globalDispOffset)
+                    segmentTimeOffsets.add(globalTimeOffset)
+                }
 
-                    when (actions.size) {
-                        0 -> Pair(NullAction(), msRem)
-                        1 -> Pair(actions.first(), msRem)
-                        else -> Pair(ParallelAction(actions), msRem)
+                val actions = mutableListOf<Action>()
+                fun add(dt: Double, a: Action) {
+                    if (dt > 0.0) {
+                        actions.add(seqCons(SleepAction(dt), a))
+                    } else {
+                        actions.add(a)
+                    }
+                }
+                for (m in ms) {
+                    when (m) {
+                        is TimeMarker -> add(segmentTimeOffsets[m.segmentIndex] + m.dt, m.a)
+                        is DispMarker -> {
+                            val globalDisp = segmentDispOffsets[m.segmentIndex] + m.ds
+                            var added = false
+                            for ((i, timeTraj) in timeTrajs.withIndex()) {
+                                if (i == ts.lastIndex || globalDisp < trajDispOffsets[i + 1]) {
+                                    add(timeTraj.profile.inverse(globalDisp - trajDispOffsets[i]), m.a)
+                                    added = true
+                                    break
+                                }
+                            }
+                            require(added) { "Displacement marker never added" }
+                        }
                     }
                 }
 
-                require(msRem.isEmpty()) { "Unresolved markers" }
-
-                cont(aNew)
+                val trajActionSeq = timeTrajs.foldRight(tail) { timeTraj: TimeTrajectory, acc: Action ->
+                    seqCons(trajectoryActionFactory.make(timeTraj), acc)
+                }
+                cont(when (actions.size) {
+                    0 -> trajActionSeq
+                    1 -> ParallelAction(trajActionSeq, actions.first())
+                    else -> ParallelAction(trajActionSeq, ParallelAction(actions))
+                })
             }
         }
 
@@ -370,11 +381,9 @@ class TrajectoryActionBuilder private constructor(
     // TODO: Should calling this without an applicable trajectory implicitly begin an empty trajectory and execute the
     // action immediately?
     fun afterDisp(ds: Double, a: Action): TrajectoryActionBuilder {
-        val relativeToStart = ds >= 0.0
-
         return TrajectoryActionBuilder(
             this, tb, n, lastPoseUnmapped, lastPose, lastTangent,
-            ms + listOf(DispMarkerFactory(if (relativeToStart) n else n - 1, ds, a, relativeToStart)), cont,
+            ms + listOf(DispMarker(n, ds, a)), cont,
         )
     }
     fun afterDisp(ds: Double, f: InstantFunction) = afterDisp(ds, InstantAction(f))
@@ -390,8 +399,6 @@ class TrajectoryActionBuilder private constructor(
      * but the current trajectory will wait for the action to complete.
      */
     fun afterTime(dt: Double, a: Action): TrajectoryActionBuilder {
-        val relativeToStart = dt >= 0.0
-
         return if (n == 0) {
             TrajectoryActionBuilder(this, tb, 0, lastPoseUnmapped, lastPose, lastTangent, emptyList()) { tail ->
                 val m = if (dt > 0.0) {
@@ -408,7 +415,7 @@ class TrajectoryActionBuilder private constructor(
         } else {
             TrajectoryActionBuilder(
                 this, tb, n, lastPoseUnmapped, lastPose, lastTangent,
-                ms + listOf(TimeMarkerFactory(if (relativeToStart) n else n - 1, dt, a, relativeToStart)), cont,
+                ms + listOf(TimeMarker(n, dt, a)), cont,
             )
         }
     }
