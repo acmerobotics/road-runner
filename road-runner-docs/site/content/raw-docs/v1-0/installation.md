@@ -55,7 +55,7 @@ is **not** backwards compatible.
    implementation "com.acmerobotics.roadrunner:ftc:0.1.23"
    implementation "com.acmerobotics.roadrunner:core:1.0.1"
    implementation "com.acmerobotics.roadrunner:actions:1.0.1"
-   implementation "com.acmerobotics.dashboard:dashboard:0.4.16"
+   implementation "com.acmerobotics.dashboard:dashboard:0.4.17"
    ```
    at the end of the `dependencies` block.
 
