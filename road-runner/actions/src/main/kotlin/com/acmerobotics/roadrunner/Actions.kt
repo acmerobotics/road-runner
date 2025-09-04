@@ -287,7 +287,6 @@ class TrajectoryActionBuilder private constructor(
                 emptyList()
             ) { tail ->
                 val timeTrajs = ts.map { TimeTrajectory(it) }
-                val trajDispOffsets = ts.scan(0.0) { acc, t -> acc + t.offsets.last() }
                 val segmentDispOffsets = mutableListOf<Double>()
                 val segmentTimeOffsets = mutableListOf<Double>()
                 run {
@@ -316,6 +315,9 @@ class TrajectoryActionBuilder private constructor(
                         actions.add(a)
                     }
                 }
+
+                val trajDispOffsets = ts.scan(0.0) { acc, t -> acc + t.offsets.last() }
+                val trajTimeOffsets = timeTrajs.scan(0.0) { acc, t -> acc + t.duration }
                 for (m in ms) {
                     when (m) {
                         is TimeMarker -> add(segmentTimeOffsets[m.segmentIndex] + m.dt, m.a)
@@ -324,7 +326,8 @@ class TrajectoryActionBuilder private constructor(
                             var added = false
                             for ((i, timeTraj) in timeTrajs.withIndex()) {
                                 if (i == ts.lastIndex || globalDisp < trajDispOffsets[i + 1]) {
-                                    add(timeTraj.profile.inverse(globalDisp - trajDispOffsets[i]), m.a)
+                                    add(trajTimeOffsets[i] +
+                                        timeTraj.profile.inverse(globalDisp - trajDispOffsets[i]), m.a)
                                     added = true
                                     break
                                 }

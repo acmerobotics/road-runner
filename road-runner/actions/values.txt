@@ -41,7 +41,7 @@ disp markers
 (par (traj 0.3162277660) (seq (sleep 0.3162277660) A))
 ( par
   (seq (traj 0.3162277660) (traj 2.0000000000))
-  (seq (sleep 0.3872983346) A)
+  (seq (sleep 0.7035261006) A)
 )
 
 negative disp markers
@@ -51,11 +51,11 @@ negative disp markers
 )
 ( par
   (seq (traj 2.0000000000) (traj 2.0000000000) (traj 2.0000000000))
-  (seq (sleep 1.2928932188) A)
+  (seq (sleep 3.2928932188) A)
 )
 ( par
   (seq (traj 2.0000000000) (traj 2.0000000000) (traj 2.0000000000))
-  (seq (sleep 1.2928932188) A)
+  (seq (sleep 5.2928932188) A)
 )
 (par (seq (traj 2.0000000000) (traj 2.0000000000) (traj 2.0000000000)) A)
 (seq (traj 2.0000000000) (traj 2.0000000000) (par (traj 2.0000000000) A))
