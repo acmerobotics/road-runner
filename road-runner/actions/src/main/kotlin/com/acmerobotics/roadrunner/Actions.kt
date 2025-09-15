@@ -148,6 +148,15 @@ private fun seqCons(hd: Action, tl: Action): Action =
         else -> SequentialAction(hd, tl)
     }
 
+private fun parOf(actions: List<Action>): Action {
+    val nonNullActions = actions.filter { it !is NullAction }
+    return when (nonNullActions.size) {
+        0 -> NullAction()
+        1 -> nonNullActions.first()
+        else -> ParallelAction(nonNullActions)
+    }
+}
+
 private sealed interface Marker
 
 private data class TimeMarker(
@@ -287,6 +296,7 @@ class TrajectoryActionBuilder private constructor(
                 emptyList()
             ) { tail ->
                 val timeTrajs = ts.map { TimeTrajectory(it) }
+
                 val segmentDispOffsets = mutableListOf<Double>()
                 val segmentTimeOffsets = mutableListOf<Double>()
                 run {
@@ -307,17 +317,19 @@ class TrajectoryActionBuilder private constructor(
                     segmentTimeOffsets.add(globalTimeOffset)
                 }
 
-                val actions = mutableListOf<Action>()
+                val actionsByTraj = List(ts.size + 1) { mutableListOf<Action>() }
+                val trajTimeOffsets = timeTrajs.scan(0.0) { acc, t -> acc + t.duration }
                 fun add(dt: Double, a: Action) {
                     if (dt > 0.0) {
-                        actions.add(seqCons(SleepAction(dt), a))
+                        val i = trajTimeOffsets.indexOfLast { dt > it }
+                        require(i >= 0) { "No corresponding time offset found" }
+                        actionsByTraj[i].add(seqCons(SleepAction(dt - trajTimeOffsets[i]), a))
                     } else {
-                        actions.add(a)
+                        actionsByTraj.first().add(a)
                     }
                 }
 
                 val trajDispOffsets = ts.scan(0.0) { acc, t -> acc + t.offsets.last() }
-                val trajTimeOffsets = timeTrajs.scan(0.0) { acc, t -> acc + t.duration }
                 for (m in ms) {
                     when (m) {
                         is TimeMarker -> add(segmentTimeOffsets[m.segmentIndex] + m.dt, m.a)
@@ -337,13 +349,17 @@ class TrajectoryActionBuilder private constructor(
                     }
                 }
 
-                val trajActionSeq = timeTrajs.foldRight(tail) { timeTraj: TimeTrajectory, acc: Action ->
-                    seqCons(trajectoryActionFactory.make(timeTraj), acc)
-                }
-                cont(when (actions.size) {
-                    0 -> trajActionSeq
-                    1 -> ParallelAction(trajActionSeq, actions.first())
-                    else -> ParallelAction(trajActionSeq, ParallelAction(actions))
+                println(actionsByTraj)
+
+                cont(timeTrajs.zip(actionsByTraj.dropLast(1)).foldRight(
+                    parOf(listOf(tail) + actionsByTraj.last())
+                ) { (timeTraj: TimeTrajectory, actions), acc: Action ->
+                    val primaryAction = seqCons(trajectoryActionFactory.make(timeTraj), acc)
+                    when (actions.size) {
+                        0 -> primaryAction
+                        1 -> ParallelAction(primaryAction, actions.first())
+                        else -> ParallelAction(primaryAction, ParallelAction(actions))
+                    }
                 })
             }
         }
