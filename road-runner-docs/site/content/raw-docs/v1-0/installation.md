@@ -52,10 +52,10 @@ is **not** backwards compatible.
    ```
    between the `android` and `dependencies` blocks. Also put
    ```groovy
-   implementation "com.acmerobotics.roadrunner:ftc:0.1.23"
+   implementation "com.acmerobotics.roadrunner:ftc:0.1.25"
    implementation "com.acmerobotics.roadrunner:core:1.0.1"
    implementation "com.acmerobotics.roadrunner:actions:1.0.1"
-   implementation "com.acmerobotics.dashboard:dashboard:0.4.17"
+   implementation "com.acmerobotics.dashboard:dashboard:0.5.0"
    ```
    at the end of the `dependencies` block.
 
