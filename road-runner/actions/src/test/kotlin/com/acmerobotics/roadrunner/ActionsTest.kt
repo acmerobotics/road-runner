@@ -120,4 +120,22 @@ class ActionsTest {
         )
         assertEquals(listOf(1), steps)
     }
+
+    @Test
+    fun testWaitUntilCondition() {
+        var condition = false
+        var count = 0
+
+        assertEquals(
+            2,
+            runBlockingCount(
+                WaitUntilAction({
+                    count++
+                    condition = count >= 3
+                    condition
+                })
+            )
+        )
+        assert(condition)
+    }
 }

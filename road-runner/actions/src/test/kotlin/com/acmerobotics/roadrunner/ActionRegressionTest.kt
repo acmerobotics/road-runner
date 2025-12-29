@@ -55,6 +55,11 @@ fun sexpFromAction(a: Action): Sexp =
         is SleepAction -> Sexp.list(Sexp.Atom("sleep"), Sexp.Atom(String.format("%.10f", a.dt)))
         is SequentialAction -> Sexp.list(listOf(Sexp.Atom("seq")) + a.initialActions.map(::sexpFromAction))
         is ParallelAction -> Sexp.list(listOf(Sexp.Atom("par")) + a.initialActions.map(::sexpFromAction))
+        is WaitUntilAction -> Sexp.list(
+            Sexp.atom("waitUntil"),
+            Sexp.Atom(String.format("%.10f", a.minTime)),
+            Sexp.Atom(String.format("%.10f", a.maxTime))
+        )
         is NullAction -> Sexp.Atom("null")
         else -> Sexp.Atom("unk")
     }

@@ -134,6 +134,38 @@ class InstantAction(val f: InstantFunction) : Action {
     }
 }
 
+fun interface ConditionalFunction {
+    fun condition(): Boolean
+}
+
+/**
+ * Blocking action that waits until [f] is true, for a minimum duration of [minTime]
+ * and a maximum duration of [maxTime].
+ */
+data class WaitUntilAction(
+    val f: ConditionalFunction,
+    val minTime: Double = 0.0,
+    val maxTime: Double = Double.MAX_VALUE
+) : Action {
+    private var beginTs = -1.0;
+
+    override fun run(p: TelemetryPacket): Boolean {
+        val t = if (beginTs < 0) {
+            beginTs = now()
+            0.0
+        } else {
+            now() - beginTs
+        }
+
+        if (t < minTime) return true
+        if (t >= maxTime) return false
+
+        return !f.condition()
+    }
+
+    override fun preview(fieldOverlay: Canvas) {}
+}
+
 /**
  * Null action that does nothing.
  */
