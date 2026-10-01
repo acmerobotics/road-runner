@@ -24,7 +24,7 @@ called. Wherever possible, the trajectory builder encourages continuity.
 
 <!-- (You can read more about actions on [this page](../actions).) -->
 
-Trajectory sequences have been extended intoa a full actions system. Each action
+Trajectory sequences have been extended into a full [actions system](../actions/). Each action
 describes a task that executes in a bunch of small steps. For example, following
 a trajectory is an action made up of "read encoders, compute deviation from the
 trajectory, set motor powers, read encoders, compute deviation ...". The
@@ -38,19 +38,48 @@ Markers are included in the new system. Here's an example:
 builder
 .lineToX(-12)
 .afterDisp(5, dispMarker)
-.splineTo(Vector2d(-24, -12), -Math.PI / 2)
+.splineTo(new Vector2d(-24, -12), -Math.PI / 2)
 .turn(Math.PI / 2)
 .afterTime(0.5, tempMarker)
 .turn(Math.PI / 2)
 .setReversed(true)
-.splineTo(Vector2d(-36, 0), Math.PI)
+.splineTo(new Vector2d(-36, 0), Math.PI)
 ```
 
 The action `dispMarker` triggers 5 units after the end of the first line and 
 is similar to a displacement marker. The action `tempMarker` triggers half of a second
-after the first turn begins and is similar to a temporal marker.
+after the first turn ends and is similar to a temporal marker. At that point, the
+second turn may still be running. To start an action with a movement, put
+`afterTime(0, action)` before that movement; see the
+[timing examples](../builder-ref/#aftertime).
 
 {{< video markers >}}
+
+## Vector Helpers
+
+The 1.0 `Vector2d` API keeps the basic vector operations. Helpers from 0.5.x can
+be written as static Java methods (or top-level Kotlin functions) using those
+operations:
+
+<!-- sample: vectorHelpers -->
+
+`angleBetween()` returns the unsigned angle in radians, from 0 to pi. It is
+undefined for a zero vector. Projection onto a zero vector is also undefined;
+the examples throw an exception for these cases. Clamping the cosine avoids
+`NaN` when roundoff puts it just outside `[-1, 1]`.
+
+To replace `v.rotated(angle)`, apply a rotation to the vector:
+
+<!-- sample: vectorRotation -->
+
+For a path tangent toward a destination, use the bearing of the difference
+vector, rather than the angle between two position vectors:
+
+<!-- sample: vectorBearing -->
+
+The bearing is in radians in the coordinate frame of the positions. It is
+undefined when the positions coincide. `Vector2d.angleCast()` expects a unit
+vector; `Math.atan2()` can find the bearing without normalizing the difference.
 
 ## PID Controller
 

@@ -7,7 +7,7 @@ weight: 5
 
 Actions help you define simple behaviors that are easy to combine into large
 routines. By breaking down autonomous programs you make them easier to
-understandand and modify. And then the base actions can be reused in new
+understand and modify. And then the base actions can be reused in new
 autonomous programs so you never need to start from scratch. But most
 importantly of all your code will play nice with the Road Runner Quickstart.
 Let's see how this all works!
@@ -69,6 +69,7 @@ That's all there is to it!
 
 The quickstart comes with a small set of actions to start from.
 * `SleepAction`: sleep for a duration
+* `InstantAction`: run a short operation and finish immediately
 * `SequentialAction`: execute a bunch of actions one after the other
 * `ParallelAction`: execute a bunch of actions at the same time
 * `FollowTrajectoryAction`: follow a trajectory (separate tank and mecanum versions)
@@ -83,13 +84,15 @@ in alternating fashion, actions A and B appear to proceed concurrently. But the
 illusion is easily ruined if "step A" takes a long time and starves B of the
 chance to run.
 
-To create a custom action, make a class that implements `Action` and with the
-following two methods: 
+To create a custom action, implement `Action`'s required method:
 * `public boolean run(TelemetryPacket packet)`: Code to run repeatedly while the
   method returns `true`. Any data added to `packet` will be sent to FTC
   Dashboard&mdash;see its [telemetry
   documentation](https://acmerobotics.github.io/ftc-dashboard/features#telemetry)
   for details. 
+
+You can also override `public void preview(Canvas fieldOverlay)` to draw a preview
+on the field overlay. Its default implementation does nothing.
 
 Calls to `run()` should complete quickly. Delays longer than 100ms will begin to
 noticeably impinge on other actions. 
@@ -105,3 +108,64 @@ Also if you only use the class `SpinUp` inside `spinUp()` you can move the class
 inside the method.
 
 <!-- sample: actionsShooterRefactor -->
+
+### Lambdas and `InstantAction`
+
+`Action` is a functional interface, so a Java lambda can implement `run()` without
+declaring a class. For example, this helper waits for a condition:
+
+<!-- sample: actionsLambda -->
+
+The lambda runs once per scheduler step. Returning `true` keeps it scheduled;
+returning `false` finishes it. Check the condition once per call, without a busy
+loop or `Thread.sleep()`.
+
+Use `InstantAction` for a short operation that does not need to run again, such as
+setting a servo position or starting a motor. Its callback has no return value;
+the action returns `false` after calling it. The callback runs when the action is
+scheduled, not when the action object is constructed.
+
+You can stack these small actions to start a mechanism and then wait for it:
+
+<!-- sample: actionsStartAndWait -->
+
+For example, a shooter can call
+`startAndWait(() -> motor.setPower(0.8), () -> motor.getVelocity() >= 10_000.0)`.
+Setting power completes immediately, while checking velocity continues over
+subsequent steps. The motor stays powered after this action finishes; add a
+separate action to stop it when appropriate.
+
+### Wrapping another action
+
+An action can add behavior around an existing action. Delegate each step to the
+child and return its result so the wrapper finishes when the child does:
+
+<!-- sample: actionsWrapper -->
+
+Forwarding `preview()` preserves the child's field overlay. A lambda is enough
+when no preview is needed; an anonymous class lets you implement both methods.
+Call the child's `run()` once per step, rather than calling `runBlocking()` inside
+the wrapper, so other actions can continue running.
+
+Actions may hold execution state, including timers and lists of unfinished
+children. Create fresh action instances for each execution instead of reusing a
+completed action or scheduling the same instance in multiple places.
+
+## Timing and waiting for parallel actions
+
+`afterTime()` schedules an action relative to its position in the builder. Put
+`afterTime(0, mechanismAction)` **before** a movement to start the mechanism with
+that movement. Putting it after the movement schedules it at the movement's end.
+See the [builder reference](../builder-ref/#aftertime) for both examples.
+
+A time marker does not make subsequent builder steps wait for its action to
+finish. If both the drive and the mechanism must finish before proceeding, group
+them in a `ParallelAction` and put the next step after that group in a
+`SequentialAction`:
+
+<!-- sample: actionsWaitForBoth -->
+
+Here, `nextAction` starts only after both `driveAction` and `mechanismAction`
+finish. `SleepAction(0.9)` and `waitSeconds(0.9)` both accept fractional seconds.
+A wait delays its own sequence; actions running in parallel can continue during
+the wait.

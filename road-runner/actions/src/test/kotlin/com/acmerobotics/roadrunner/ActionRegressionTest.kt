@@ -10,6 +10,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
 import kotlin.test.assertFalse
+import kotlin.test.assertIs
 
 class TrajectoryAction(val t: TimeTrajectory) : Action {
     override fun run(p: TelemetryPacket): Boolean {
@@ -177,6 +178,65 @@ class ActionRegressionTest {
         }
 
         assertFalse(UPDATE)
+    }
+
+    @Test
+    fun testTimeMarkerBeforeAndAfterMovement() {
+        val marker = LabelAction("marker")
+        val before = assertIs<ParallelAction>(
+            base.afterTime(0.0, marker).lineToX(10.0).build()
+        )
+        assertIs<TrajectoryAction>(before.initialActions[0])
+        val beforeMarker = assertIs<SequentialAction>(before.initialActions[1])
+        assertEquals(listOf(SleepAction(0.0), marker), beforeMarker.initialActions)
+
+        val after = assertIs<ParallelAction>(
+            base.lineToX(10.0).afterTime(0.0, marker).build()
+        )
+        val trajectory = assertIs<TrajectoryAction>(after.initialActions[0])
+        val afterMarker = assertIs<SequentialAction>(after.initialActions[1])
+        assertEquals(trajectory.t.duration, assertIs<SleepAction>(afterMarker.initialActions[0]).dt, 1e-6)
+        assertEquals(marker, afterMarker.initialActions[1])
+    }
+
+    @Test
+    fun testTimeMarkerAfterTurn() {
+        val marker = LabelAction("marker")
+        val action = assertIs<SequentialAction>(
+            base.turn(PI / 2).afterTime(0.5, marker).turn(PI / 2).build()
+        )
+        assertEquals(2, action.initialActions.size)
+        assertIs<TurnAction>(action.initialActions[0])
+        val parallel = assertIs<ParallelAction>(action.initialActions[1])
+        assertIs<TurnAction>(parallel.initialActions[0])
+        val markerSequence = assertIs<SequentialAction>(parallel.initialActions[1])
+        assertEquals(listOf(SleepAction(0.5), marker), markerSequence.initialActions)
+    }
+
+    @Test
+    fun testFractionalWaitsWithTimeMarker() {
+        val lift = LabelAction("lift")
+        val outtake = LabelAction("outtake")
+        val reset = LabelAction("reset")
+        val action = assertIs<ParallelAction>(
+            base
+                .afterTime(0.0, lift)
+                .strafeTo(Vector2d(40.0, 32.0))
+                .waitSeconds(0.9)
+                .stopAndAdd(outtake)
+                .waitSeconds(0.9)
+                .stopAndAdd(reset)
+                .waitSeconds(4.0)
+                .build()
+        )
+        val sequence = assertIs<SequentialAction>(action.initialActions[0])
+        assertIs<TrajectoryAction>(sequence.initialActions[0])
+        assertEquals(
+            listOf(SleepAction(0.9), outtake, SleepAction(0.9), reset, SleepAction(4.0)),
+            sequence.initialActions.drop(1)
+        )
+        val markerSequence = assertIs<SequentialAction>(action.initialActions[1])
+        assertEquals(listOf(SleepAction(0.0), lift), markerSequence.initialActions)
     }
 
     @Test

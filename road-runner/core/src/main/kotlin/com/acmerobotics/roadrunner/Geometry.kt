@@ -90,6 +90,9 @@ data class Rotation2d(@JvmField val real: Double, @JvmField val imag: Double) {
     operator fun plus(x: Double) = this * exp(x)
     operator fun minus(r: Rotation2d) = (r.inverse() * this).log()
 
+    /**
+     * Applies this rotation to [v]. For example, `Rotation2d.exp(angle).times(v)` rotates [v] by `angle` radians.
+     */
     operator fun times(v: Vector2d) = Vector2d(real * v.x - imag * v.y, imag * v.x + real * v.y)
     operator fun times(pv: PoseVelocity2d) = PoseVelocity2d(this * pv.linearVel, pv.angVel)
     operator fun times(r: Rotation2d) =
