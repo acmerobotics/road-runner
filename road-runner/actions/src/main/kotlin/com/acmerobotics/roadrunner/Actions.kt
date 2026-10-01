@@ -328,7 +328,8 @@ class TrajectoryActionBuilder private constructor(
     fun stopAndAdd(f: InstantFunction) = stopAndAdd(InstantAction(f))
 
     /**
-     * Waits [t] seconds.
+     * Ends the current trajectory and waits [t] seconds before continuing the sequence. Fractional seconds are supported.
+     * Actions scheduled in parallel may continue during the wait.
      */
     fun waitSeconds(t: Double): TrajectoryActionBuilder {
         require(t >= 0.0) { "Time ($t) must be non-negative" }
@@ -355,8 +356,13 @@ class TrajectoryActionBuilder private constructor(
     fun afterDisp(ds: Double, f: InstantFunction) = afterDisp(ds, InstantAction(f))
 
     /**
-     * Schedules action [a] to execute in parallel starting [dt] seconds after the last trajectory segment, turn, or
-     * other action.
+     * Schedules action [a] to execute in parallel starting [dt] seconds after the end of the last trajectory segment,
+     * turn, or sequential action. At the beginning of the builder, the delay is measured from the start of the
+     * built action. Trajectory markers use the planned segment timing, not the robot's measured progress.
+     *
+     * Place `afterTime(0.0, a)` before a movement to start [a] with that movement. Placing it after the movement
+     * starts [a] at the movement's end. Subsequent builder steps do not wait for [a] to finish; use a
+     * [ParallelAction] inside a [SequentialAction] when both actions must finish before proceeding.
      */
     fun afterTime(dt: Double, a: Action): TrajectoryActionBuilder {
         require(dt >= 0.0) { "Time ($dt) must be non-negative" }

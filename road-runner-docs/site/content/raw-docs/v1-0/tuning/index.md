@@ -395,6 +395,20 @@ following controller.
 
 This routine follows a basic spline and validates the previous steps.
 
+The planned velocity is continuous, but its slope need not be: acceleration can
+change abruptly as the profile switches between accelerating and decelerating,
+or as different velocity constraints become active. A sharp corner in a velocity
+plot does not by itself indicate a discontinuity in velocity or heading.
+
+If the robot moves abruptly near a spline join, inspect the path shape and
+curvature first. Try adjusting the waypoints and tangents, or using a single
+spline where possible. Splitting the same path into more segments does not
+guarantee smoother acceleration. Keep wheel and angular velocity limits in mind
+when experimenting with constraints; replacing them with only a translational
+velocity limit can allow commands that the drivetrain cannot follow. See the
+[variable constraints guide](../guides/variable-constraints/) and
+[discussion of the two-spline test](https://github.com/acmerobotics/road-runner/issues/107).
+
 ## OTOS-Exclusive Tuners
 
 **Goal: Tune the OTOS device.** These steps should be done before tuning the rest of the robot.
